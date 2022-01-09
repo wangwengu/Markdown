@@ -60,6 +60,14 @@
 
 #### Git提交远程仓库
 
+##### SSH 提交 （不推荐）
+
++ 原因
+
+  >同一个账号创建多个仓库的时候，得创建多个 `ssh` 不同密钥，麻烦
+
++ 提交步骤（只能链接一个仓库，原因如上）
+
 > 1. 链接远程仓库 `git remote add origin 仓库的SSH地址`
 >    + 例如 `git remote add origin git@github.com:wangwengu/Spiders.git`
 >    + 错误 `failed to push some refs to 'git@github.com:wangwengu/Spiders.git'`
@@ -71,3 +79,10 @@
 >    + 忽略文件夹 `**/__pycache__` 忽略__pycache__文件夹
 >    + 忽略文件 `*.swp` 忽略所有后缀名为swp的文件
 >      + <font style="color:red">**忽略多个文件时，一行写一个，不能在一行里面填写**</font> 
+
+##### 使用HTTP提交（推荐）
+
++ 提交步骤
+
+  > 1. 同 `SSH` 提交步骤
+  > 2. 不同点：务必选择 `HTTP` 提交，形如以 `https://`
