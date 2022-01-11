@@ -42,3 +42,14 @@ H(x)\;=\;-\sum\nolimits_{i\;=\;1}^{n}P(x_i)log_2P(x_i) \\
 Gain(D,\;a)\;=\;Ent(D)\;-\;\sum\limits_{i\;=\;1}^{n}\frac{\lvert{D_v}\rvert}{\lvert{D}\rvert}Ent(D_v)
 $$
 
+$$
+a\equiv b\pmod p
+$$
+
+$$
+\begin{align*}
+  A &= B + C \\
+    &= C + D + C \\
+    &= 2C + D
+\end{align*}
+$$
