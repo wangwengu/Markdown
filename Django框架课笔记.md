@@ -919,46 +919,617 @@ requestAnimationFrame(AC_GAME_ANIMATION);
      }
      ```
 
+##### 部署 `nginx` 与对接 `acapp`
 
-###### 部署 `nginx` 与对接 `acapp`
+###### 增加容器运行的端口
 
-+ 增加容器运行的端口
+> 1. `https` 是 `443` 端口；`http` 是 `80` 端口
+>
+> 2. 给容器增加端口映射
+>
+>    + 登录容器，关闭所有运行中的任务
+>
+>    + 登录<font style="color:red">**运行容器的服务器**</font>，然后执行
+>
+>      ```dockerfile
+>      # 将容器保存成镜像，将CONTAINER_NAME替换成容器名称
+>      docker commit CONTAINER_NAME django_lesson:1.1
+>      # 停止容器
+>      docker stop CONTAINER_NAME
+>      # 删除容器
+>      docker rm CONTAINER_NAME
+>      # 使用保存的镜像重新创建容器
+>      docker run -p 20000:22 -p 8000:8000 -p 80:80 -p 443:443 --name CONTAINER_NAME -itd django_lesson:1.1
+>      ```
+>
+>    + 去租的服务器中开放 `80` 和 `443` 端口
+>
 
-  > 1. `https` 是 `443` 端口；`http` 是 `80` 端口
+###### 创建 `Acapp`
+
++ 第一步：修改相关配置文件
+
+  > 1. [讲义位置](https://www.acwing.com/file_system/file/content/whole/index/content/3257028/)
+  > 2. 将 [nginx.conf](https://www.acwing.com/user/myspace/application/conf/nginx_conf/149/) 中的内容写到服务器 `/etc/nginx/nginx.conf`
+  > 3. 将 [acapp.key](https://www.acwing.com/user/myspace/application/conf/acapp_key/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.key`
+  > 4. 将 [acapp.pem](https://www.acwing.com/user/myspace/application/conf/acapp_pem/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.pem`
+  > 5. 启动 `nginx` 服务 `sudo /etc/init.d/nginx start`，出现 `OK` 则说明成功启动服务
+
++ 第二步：修改 `Django` 项目的配置
+
+  > 1. 打开 `acapp/acapp/settings.py`
   >
-  > 2. 给容器增加端口映射
+  >    ```python
+  >    # 将域名添加到ALLOWED_HOSTS
+  >    ALLOWED_HOSTS = [
+  >        # 注意：删除开头的https://
+  >        'app149.acapp.acwing.com.cn'
+  >    ]
+  >    ```
   >
-  >    + 登录容器，关闭所有运行中的任务
+  > 2. 将 `DEBUG = True` 设置为 `DEBUG = False`
   >
-  >    + 登录<font style="color:red">**运行容器的服务器**</font>，然后执行
+  > 3. 将创建的 `app` 下的 `static` 文件，归档（复制）到根目录 `acapp` 下
   >
-  >      ```dockerfile
-  >      # 将容器保存成镜像，将CONTAINER_NAME替换成容器名称
-  >      docker commit CONTAINER_NAME django_lesson:1.1
-  >      # 停止容器
-  >      docker stop CONTAINER_NAME
-  >      # 删除容器
-  >      docker rm CONTAINER_NAME
-  >      # 使用保存的镜像重新创建容器
-  >      docker run -p 20000:22 -p 8000:8000 -p 80:80 -p 443:443 --name CONTAINER_NAME -itd django_lesson:1.1
-  >      ```
+  >    ```python
+  >    # 根目录下出现了static文件
+  >    python3 manage.py collectstatic
+  >    ```
+  
++ 第三步：修改 `uwsgi` 配置文件
+
+  >1. `uwsgi` 相当于在 `nginx` 和 `django` 中间架起了一座桥梁，访问速度更加快速和流畅
   >
-  >    + 去租的服务器中开放 `80` 和 `443` 端口
+  >2. 具体配置如下，例如：将配置文件写入 `acapp/scripts/uwsgi.ini`
   >
+  >   ```ini
+  >   [uwsgi]
+  >   ; IP地址+端口号
+  >   socket          = 127.0.0.1:8000
+  >   ; Django项目地址
+  >   chdir           = /home/django/acapp
+  >   ; Django项目中wsgi的地址
+  >   wsgi-file       = acapp/wsgi.py
+  >   master          = true
+  >   ; 开的进程（核）的数量
+  >   processes       = 2
+  >   ; 每个进程（核）的线程数量
+  >   threads         = 5
+  >   vacuum          = true
+  >   ```
+  >
+  >3. 启动 `uwsgi` 服务
+  >
+  >   + `uwsgi --ini scripts/uwsgi.ini`
+  >   + <font style="color:red">**注意⚠️：务必关闭 python3 ... runserver 服务**</font>
 
-+ 创建 `Acapp`
++ 第四步：填写剩余的信息
 
-  + 第一步：修改相关配置文件
+  > 1. `css` 地址：`https://app149.acapp.acwing.com.cn/static/css/game.css`
+  > 2. `js` 地址：`https://app149.acapp.acwing.com.cn/statis/js/dist/game.js`
+  > 3. 主类名：`js` 中暴露出来的类名（加 `export`）
 
-    > 1. [讲义位置](https://www.acwing.com/file_system/file/content/whole/index/content/3257028/)
-    > 2. 将 [nginx.conf](https://www.acwing.com/user/myspace/application/conf/nginx_conf/149/) 中的内容写到服务器 `/etc/nginx/nginx.conf`
-    > 3. 将 [acapp.key](https://www.acwing.com/user/myspace/application/conf/acapp_key/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.key`
-    > 4. 将 [acapp.pem](https://www.acwing.com/user/myspace/application/conf/acapp_pem/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.pem`
-    > 5. 启动 `nginx` 服务 `sudo /etc/init.d/nginx start`，出现 `OK` 则说明成功启动服务
++ 第五步：相关问题出错排查
 
-  + 第二步：修改 `Django` 项目的配置
+  + 加载静态文件出错
 
-    >
+    + 进入 `nginx` 配置文件
+
+      ```bash
+      # 修改nginx配置信息
+      # 进入nginx配置文件夹
+      cd /etc/nginx
+      # 修改nginx配置文件
+      sudo vim nginx.conf
+      ```
+
+    + 修改 `nginx` 配置文件
+
+      ```nginx
+      # 将static文件修改成自己的
+      alias /home/django/acapp/static/;
+      # 将media文件修改成自己的
+      alias /home/django/acapp/media/;
+      # 将443端口修改成自己网站地址
+      server_name app149.acapp.acwing.com.cn;
+      # 将80端口修改成自己网站地址
+      server_name app149.acapp.acwing.com.cn;
+      ```
+
++ `acapp bug` 修复
+
+  + `acwing` 中应用的坐标位置不对
+
+    + 产生原因：代码 `e.clientX, e.clientY` 写的是应用页面的相对位置，而画布是网页的绝对位置（最左上角），故需要做一个映射，使用函数 [`getBoundingClientRect()`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect)
+
+    + 图示如下：
+
+      ![1642122637189](https://gitee.com/peter95535/image-bed/raw/master/img/1642122637189.jpg)
+  
+    + 修改 `acapp/game/statis/js/src/playground/player/zbase.js`
+  
+      ```javascript
+      const rect = outer.ctx.canvas.getBoundingClientRect();
+      outer.move_to(e.clientX - rect.left, e.clientY - rect.top);
+      outer.shoot_fireball(e.clientX - rect.left, e.clientY - rect.top);
+      ```
+
+    + 重新打包之后，记得将 `app` 里面的 `static` 加载到根目录下，使用命令 `python3 manage.py collectstatic`
+
+    + 清理下缓存，然后重新加载页面即可
+
+  + 显示菜单界面
+  
+    + 修改 `acapp/game/static/js/src/zbase.js`
+  
+      ```javascript
+      <!-- 取消此行的注释 -->
+      this.menu = new AcGameMenu(this);
+      ```
+  
+    + 修改 `acapp/game/static/js/src/playground/zbase.js`
+  
+      ```javascript
+      class AcGamePlayground {
+          constructor(root) {
+              this.root = root;
+              this.$playground = $(`
+                  <div class = "ac_game_playground"></div>
+              `);
+              <!-- 刚开始隐藏玩家界面 -->
+              this.hide();
+          }
+          show() {
+              this.$playground.show();
+              <!-- 将代码移动此处，玩家界面出来之后，再计算页面大小 -->
+              this.root.$ac_game.append(this.$playground);
+              this.width = this.$playground.width();
+              this.height = this.$playground.height();
+              this.game_map = new GameMap(this);
+              this.players = [];
+              this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, "white", this.height * 0.2, true));
+              for (let i = 0; i < 10; i ++ ) {
+                  this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, this.get_random_color(), this.height * 0.2, false));
+              }
+          }
+      }
+      ```
+  
+    + 修改 `acapp/scripts/compress_game_js.sh`
+  
+      ```bash
+      # 先执行python3 manage.py collectstatic命令
+      # 再输入yes
+      echo yes | python3 manage.py collectstatic
+      ```
+
+  + 自适应页面大小
+  
+    + 修改 `acapp/game/static/css/game.css`
+  
+      ```css
+      .ac_game_menu_field {
+          /* 顶部和左边距修改成百分比% */
+          top: 15%;
+          left: 20%;
+      }
+      
+      .ac_game_menu_field_item {
+          /* 设置字体大小 */
+          font-size: 5vh;
+      }
+      ```
+  
+
+##### 创建账号系统
+
+###### 创建数据表
+
++ 第一步：将 `acapp/acapp/setting.py` 中的 `DEBUG` 改成 `True`，否则，前端只会出现错误代码不会出现具体错误信息
+
++ 第二步：在根目录下，运行命令 `python3 manage.py createsuperuser` 创建超级用户
+
++ 第三步：创建数据库表，进入 `acapp/game/models`
+
+  + 创建 `player/player.py` 写入以下内容，函数 [`CASCADE`](https://www.cnblogs.com/nucdy/p/5768784.html) 的用法
+
+    ```python
+    # 继承数据库基类
+    from django.db import models
+    # 继承数据库用户表
+    from django.contrib.auth.models import User
+    # 每个数据表类都需要继承models.Model类
+    class Player(models.Model):
+        # 继承基础的用户信息（一对一的映射）
+        # CASCADE 级联删除，user 删除的时候与之有关的对象都一并删除
+        user = models.OneToOneField(User, on_delete = models.CASCADE)
+        # 照片的URL
+        photo = models.URLField(max_length = 256, blank = True)
+    	# 显示用户的名称
+        def __str__(self):
+            return str(self.user)
+    ```
+
+  + 将数据库表注册到管理员页面，修改 `acapp/game/admin.py`
+
+    ```python
+    # 引入Player表
+    from game.models.player.player import Player
+    
+    # Register your models here.
+    # 将player表注册到管理员页面
+    admin.site.register(Player)
+    ```
+
+  + 退到项目根目录下，按照顺序执行如下命令
+
+    ```django
+    python3 manage.py makemigrations
+    python3 manage.py migrate
+    ```
+
+  + 重启 `uwsgi` 服务
+
+  + <font style="color:red">**对数据库每一次改动都需要迁移并且重启服务**</font>
+
+###### 登录注册界面
+
++ 主要逻辑步骤
+
+  + 用户登录的时候会向服务器发送请求 `getinfo`，服务器会返回相对应的信息；当用户登录成功时，会返回用户的基本信息和头像信息；当用户未登录时，返回未登录信息
+
+  + 附图一
+
+    ![WeChatd3418912a93399114cc7d3435a258078](https://gitee.com/peter95535/image-bed/raw/master/img/WeChatd3418912a93399114cc7d3435a258078.png)
+
+  + 附图二
+
+    ![39750_2f407ec749-a](https://gitee.com/peter95535/image-bed/raw/master/img/39750_2f407ec749-a.png)
+
++ 判断是 `web` 端还是 `acapp` 端
+
+  + 修改 `acapp/game/static/js/src/zbase.js`
+
+    ```javascript
+    export class AcGame {
+        <!-- 添加 AcWingOs 变量，用于判断是哪个端口 -->
+        constructor(id, AcWingOS) {
+            this.AcWingOS = AcWingOS;
+        }
+    }
+    ```
+
++ 编写 `getinfo` 函数
+
+  + 创建 `acapp/game/views/settings/getinfo.py`
+
+    ```python
+    # 引入 JsonResponse 包
+    from django.http import JsonResponse
+    # 引入 Player 数据库表（类）
+    from game.models.player.player import Player
+    
+    def getinfo_acapp(request):
+        # 取得第一个用户值的信息
+        player = Player.objects.all()[0]
+        return JsonResponse({
+            # 返回响应的结果
+            'result': "success",
+            # 返回用户名
+            'username': player.user.username,
+            # 返回用户的头像
+            'photo': player.photo
+        })
+    
+    def getinfo_web(request):
+        player = Player.objects.all()[0]
+        return JsonResponse({
+            'result': "success",
+            'username': player.user.username,
+            'photo': player.photo
+        })
+    
+    def getinfo(request):
+        # 获取平台的信息
+        platform = request.GET.get('platform')
+        # 如果是 ACAPP 端
+        if platform == 'ACAPP':
+            return getinfo_acapp(request)
+        elif:
+            return getinfo_web(request)
+    ```
+
++ 调用 `getinfo` 函数
+
+  + 修改 `acapp/game/urls/settings/index.py`
+
+    ```python
+    from django.urls import path
+    # 调用getinfo函数
+    from game.views.settings.getinfo import getinfo
+    
+    urlpatterns = [
+        # 添加路径
+        path('getinfo/', getinfo, name = 'settings_getinfo')
+    ]
+    ```
+
+  + 修改 `acapp/game/urls/index.py`
+
+    ```python
+    # 导入include关键字
+    from django.urls import path, include
+    
+    urlpatterns = [
+        # 添加路径路由
+        path('settings/', include('game.urls.settings.index'))
+    ]
+    ```
+
++ 解决用户头像问题
+
+  + 创建 `acapp/game/static/js/src/settings/zbase.js` 并写入以下内容
+  
+    ```javascript
+    class Settings {
+        constructor(root) {
+            this.root = root;
+            <!-- 默认平台是 WEB 平台 -->
+            this.platform = "WEB";
+            if (this.root.AcWingOS) {
+                this.platform = "ACAPP";
+            }
+            this.start();
+        }
+        start() {
+            this.getinfo();
+        }
+        login() {
+            
+        }
+        getinfo() {
+            let outer = this;
+            $.ajax({
+                <!-- url 地址别写错 -->
+                url: "https://app149.acapp.acwing.com.cn/settings/getinfo/",
+                type: "GET",
+                data: {
+                    platform: outer.platform
+                },
+                success: function(resp) {
+                    console.log(resp);
+                    <!-- 如果是登录状态，则显示菜单界面 -->
+                    if (resp.result == "success") {
+                        outer.hide();
+                        outer.root.menu.show();
+                    }
+                    <!-- 如果是未登录状态，则跳转到登录界面 -->
+                    else {
+                        outer.login();
+                    }
+                }
+            });
+        }
+        hide() {}
+    }
+    ```
+  
+  + 修改 `acapp/game/static/js/src/zbase.js`，并写入以下内容
+  
+    ```javascript
+    this.settings = new Settings(this);
+    ```
+  
+  + 修改 `acapp/game/static/js/src/menu/zbase.js`，添加一下内容
+  
+    ```javascript
+    show() {
+    	this.$menu.show();
+    }
+    ```
+  
+  + 修改 `acapp/game/views/settings/getinfo.py`
+  
+    ```python
+    def getinfo_web(request):
+        user = request.user
+        if not user.is_authenticated:
+            return JsonResponse({
+                'result': "未登录"
+            })
+        else:
+            player = Player.objects.all()[0]
+            return JsonResponse({
+                'result': "success",
+                'username': player.user.username,
+                'photo': player.photo
+            })
+    ```
+  
+    
+  
+  + 修改 `acapp/game/static/js/src/menu/zbase.js`
+  
+    ```javascript
+    <!-- 一开始将菜单界面 menu 隐藏 -->
+    <!-- 如果是登录状态，再进行显示 -->
+    this.hide();
+    ```
+  
+  + 头像渲染问题
+  
+    + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+      ```javascript
+      class Settings {
+          constructor(root) {
+              <!-- 添加用户的用户名和头像 -->
+              this.username = "";
+              this.photo = "";
+          }
+          getinfo() {
+                  success: function(resp) {
+                      if (resp.result === "success") {
+                          <!-- 如果成功登录，获取用户的名称的头像 -->
+                          outer.username = resp.username;
+                          outer.photo = resp.photo;
+                          
+                      }
+                  }
+              });
+          }
+      }
+      ```
+  
+    + 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+  
+      ```javascript
+      class Player extends AcGameObject {
+          constructor(playground, x, y, radius, color, speed, is_me) {
+              <!-- 如果是本人，则获取头像和头像地址 -->
+              if (this.is_me) {
+                  this.img = new Image();
+                  this.img.src = this.playground.root.settings.photo;
+              }
+          }
+          render() {
+              <!-- 如果是本人，则加载用户头像并且将头像画出来 -->
+              if (this.is_me) {
+                  this.ctx.save();
+                  this.ctx.beginPath();
+                  this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                  this.ctx.stroke();
+                  this.ctx.clip();
+                  this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); 
+                  this.ctx.restore();
+              }
+              else {
+                  this.ctx.beginPath();
+                  this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                  this.ctx.fillStyle = this.color;
+                  this.ctx.fill();
+              }
+          }
+      }
+      ```
+  
++ 编写登录注册界面
+
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    class Settings {
+        constructor(root) {
+            <!-- 创建 settings 界面 -->
+            this.$settings = $(`
+                <div class ="ac_game_settings"></div>
+            `);
+            <!-- 将 settigns 界面加入到 ac_game 中 -->
+            this.root.$ac_game.append(this.$settings);
+        }
+    }
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 添加 ac_game_settings 的样式 */
+    .ac_game_settings {
+        width: 100%;
+        height: 100%;
+        background-image: url("/static/image/menu/background.gif");
+        background-size: 100% 100%;
+        user-select: none;
+    }
+    ```
+  
+  + 添加登录注册界面 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    class Settings {
+        constructor(root) {
+            this.$settings = $(`
+                <div class="ac_game_settings">
+                	<!-- 添加登录界面 -->
+                    <div class="ac_game_settings_login"></div>
+                    <!-- 添加注册界面 -->
+                    <div class="ac_game_settings_register"></div>
+                </div>
+            `);
+            <!-- 获取登录权柄 -->
+            this.$login = this.$settings.find(".ac_game_settings_login");
+            <!-- 将登录界面隐藏 -->
+            this.$login.hide();
+            <!-- 获取注册权柄 -->
+            this.$register = this.$settings.find(".ac_game_settings_register");
+            <!-- 将注册界面隐藏 -->
+            this.$register.hide();
+        }
+        login() {
+            <!-- 登录时，先将注册界面隐藏 -->
+            this.$register.hide();
+            <!-- 再将登录界面打开 -->
+            this.$login.show();
+        }
+        register() {
+            <!-- 注册时，先将登录界面隐藏 -->
+            this.$login.hide();
+            <!-- 再将注册界面打开 -->
+            this.$register.show();
+        }
+    }
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 添加 ac_game_settings_login 的样式 */
+    .ac_game_settings_login {
+        height: 41vh;
+        width: 20vw;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+    ```
+  
+  + 编写登录代码，修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+      	<div class="ac_game_settings">
+    		<div class="ac_game_settings_login">
+      			<div class="ac_game_settings_title">
+    				登录
+              	</div>
+    		</div>
+    	</div>
+    `);
+    
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 添加 ac_game_settings_login 的样式 */
+    .ac_game_settings_login {
+        border-radius: 5px;
+    }
+    
+    /* 修改 ac_game_settings_title 的样式 */
+    .ac_game_settings_title {
+        color: white;
+        font-size: 3vh;
+        text-align: center;
+        padding-top: 2vh;
+        margin-bottom: 2vh;
+    }
+    ```
+  
+    
+  
 
 #### 注意事项
 

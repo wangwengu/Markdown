@@ -1115,7 +1115,7 @@ public:
 
 #### 模拟题专题
 
-##### [LeetCode299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
+##### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
 
 **题目描述**
 
@@ -1197,3 +1197,272 @@ public:
 ```
 
 ###### end
+
+#### 字典树
+
+##### [LeetCode 212. 单词搜索 II](https://leetcode-cn.com/problems/word-search-ii/)
+
+**题目描述**
+
+> 给定一个 `m x n` 二维字符网格 `board` 和一个单词（字符串）列表 `words`，找出所有同时在二维网格和字典中出现的单词。
+>
+> 单词必须按照字母顺序，通过 相邻的单元格 内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母在一个单词中不允许被重复使用。
+
+**示例 1**
+
+> 输入：`board = [["o","a","a","n"],["e","t","a","e"],["i","h","k","r"],["i","f","l","v"]], words = ["oath","pea","eat","rain"]`
+> 输出：`["eat","oath"]`
+
+**示例 2**
+
+> 输入：`board = [["a","b"],["c","d"]], words = ["abcb"]`
+> 输出：`[]`
+
+**提示**
+
+> + $m == board.length$
+> + $n == board[i].length$
+> + $1 <= m, n <= 12$
+> + $board[i][j] 是一个小写英文字母$
+> + $1 <= words.length <= 3 * 10^4$
+> + $1 <= words[i].length <= 10$
+> + `words[i]` 由小写英文字母组成
+> + `words` 中的所有字符串互不相同
+
+**题解**
+
+> 1. 使用字典树存储每个单词
+> 2. 从每一个起点，深度优先搜索每个单词即可
+
+**代码**
+
+```c++
+class Solution {
+public:
+    // 定义字典树结构体
+    struct Node {
+        int id;
+        Node* son[26];
+        Node() {
+            id = -1;
+            for (int i = 0; i < 26; i ++ ) son[i] = NULL;
+        }
+    }*root;
+    int n, m;
+    int dx[4] = {1, -1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    unordered_set<int> ids;
+    void insert(string word, int id) {
+        auto p = root;
+        for (int i = 0; i < word.size(); i ++ ) {
+            int u = word[i] - 'a';
+            if (!p -> son[u]) p -> son[u] = new Node();
+            p = p -> son[u];
+        }
+        p -> id = id;
+        return;
+    }
+    void dfs(vector<vector<char>>& g, int x, int y, Node* p) {
+        if (p -> id != -1) ids.insert(p -> id);
+        char t = g[x][y];
+        g[x][y] = '.';
+        for (int i = 0; i < 4; i ++ ) {
+            int tx = x + dx[i];
+            int ty = y + dy[i];
+            if (tx < 0 || tx >= n || ty < 0 || ty >= m || g[tx][ty] == '.') continue;
+            int u = g[tx][ty] - 'a';
+            if (p -> son[u]) dfs(g, tx, ty, p -> son[u]);
+        }
+        g[x][y] = t;
+        return;
+    }
+    vector<string> findWords(vector<vector<char>>& g, vector<string>& words) {
+        n = g.size(), m = g[0].size();
+        root = new Node();
+        for (int i = 0; i < words.size(); i ++ ) insert(words[i], i);
+        vector<string> res;
+        for (int i = 0; i < n; i ++ )
+            for (int j = 0; j < m; j ++ ) {
+                int u = g[i][j] - 'a';
+                if (root -> son[u]) dfs(g, i, j, root -> son[u]);
+            }
+        for (auto& id : ids) res.push_back(words[id]);
+        return res;
+    }
+};
+```
+
+#### 字符串专题
+
+##### KMP
+
+###### [LeetCode 214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
+
+**题目描述**
+
+> 给定一个字符串 s，你可以通过在字符串前面添加字符将其转换为回文串。找到并返回可以用这种方式转换的最短回文串。
+
+**示例 1**
+
+> 输入：`s = "aacecaaa"`
+> 输出：`"aaacecaaa"`
+
+**示例 2**
+
+> 输入：`s = "abcd"`
+> 输出：`"dcbabcd"`
+
+**提示**
+
+> + $0 <= s.length <= 5 * 10^4$
+> + $s$ 仅由小写英文字母组成
+
+**手写稿**
+
+![WechatIMG95](https://gitee.com/peter95535/image-bed/raw/master/img/WechatIMG95.jpeg)
+
+**思路**
+
+> 1. 要想让 `c + a + b` 最短，则只要 `c` 和 `b` 最短即可，换句话说，让 `a` 最长即可
+>
+> 2. 通过上述分析，问题转化为在原串`（a + b）`中寻找最长回文子串即可解决问题
+>
+> 3. 通过以下步骤，寻找最长回文子串即可
+>
+>    + 将原串逆序复制一遍，用 `#` 连接，放在原串的后面
+>    
+>      ![image-20220118072649711](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220118072649711.png)
+>    
+>    + 寻找新串 `a + b + b + a` 的最长回文前缀即可，即 `KMP` 的 `next` 数组的含义
+>    
+> 4. 找出 `a` 之后，将 `a` 之后的部分，即 `b` 截取出来，逆序放到最前方
+>
+
+**代码**
+
+```c++
+class Solution {
+public:
+    string shortestPalindrome(string s) {
+        string t = s;
+        t = ' ' + t + '#' + string(t.rbegin(), t.rend());
+        int n = t.size();
+        vector<int> ne(n + 5);
+        for (int i = 2, j = 0; i < n; i ++ ) {
+            while (j && t[i] != t[j + 1]) j = ne[j];
+            if (t[i] == t[j + 1]) j ++;
+            ne[i] = j;
+        }
+        t = s.substr(ne[n - 1]);
+        return string(t.rbegin(), t.rend()) + s;
+    }
+};
+```
+
+#### 扫描线问题
+
+##### [LeetCode 218. 天际线问题](https://leetcode-cn.com/problems/the-skyline-problem/)
+
+**问题描述**
+
+> 城市的天际线是从远处观看该城市中所有建筑物形成的轮廓的外部轮廓。给你所有建筑物的位置和高度，请返回由这些建筑物形成的 天际线 。
+>
+> 每个建筑物的几何信息由数组 `buildings` 表示，其中三元组 `buildings[i] = [lefti, righti, heighti]` 表示：
+>
+> + `lefti` 是第 `i` 座建筑物左边缘的 `x` 坐标。
+> + `righti` 是第 `i` 座建筑物右边缘的 `x` 坐标。
+> + `heighti` 是第 `i` 座建筑物的高度。
+>
+> 天际线 应该表示为由 “关键点” 组成的列表，格式 `[[x1,y1],[x2,y2],...]` ，并按 `x` 坐标 进行 排序 。关键点是水平线段的左端点。列表中最后一个点是最右侧建筑物的终点，`y` 坐标始终为 `0` ，仅用于标记天际线的终点。此外，任何两个相邻建筑物之间的地面都应被视为天际线轮廓的一部分。
+>
+> 注意：输出天际线中不得有连续的相同高度的水平线。例如 `[...[2 3], [4 5], [7 5], [11 5], [12 7]...]` 是不正确的答案；三条高度为 `5` 的线应该在最终输出中合并为一个：`[...[2 3], [4 5], [12 7], ...]`
+
+**示例 1**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/merged.jpg)
+
+> 输入：`buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]`
+> 输出：`[[2,10],[3,15],[7,12],[12,0],[15,10],[20,8],[24,0]]`
+> 解释：
+> 图 `A` 显示输入的所有建筑物的位置和高度，
+> 图 `B` 显示由这些建筑物形成的天际线。图 `B` 中的红点表示输出列表中的关键点。
+
+**示例 2**
+
+> 输入：`buildings = [[0,2,3],[2,5,3]]`
+> 输出：`[[0,3],[5,0]]`
+
+**提示**
+
+> + $1 <= buildings.length <= 10^4$
+> + $0 <= left_i < right_i <= 2^{31} - 1$
+> + $1 <= height_i <= 2^{31} - 1$
+> + $buildings 按 left_i 非递减排序$
+
+**题解**
+
+> 1. 将横坐标按照从小到大排序，如果横坐标相同，则分下列三种情况：
+>
+>    + 如果是左端点，则按照从大到小排序
+>
+>      ![1](https://gitee.com/peter95535/image-bed/raw/master/img/1.jpg)
+>
+>    + 如果是右端点，则按照从小到大排序
+>
+>      ![2](https://gitee.com/peter95535/image-bed/raw/master/img/2.jpg)
+>
+>    + 如果是左右端点重合，则按照先处理左端点，再处理右端点
+>
+>      ![3](https://gitee.com/peter95535/image-bed/raw/master/img/3.jpg)
+>
+> 2. 使用 `pair` （默认升序）数组 `point` 来存储每一个点，排序，由于第三种情况的存在，所以，将左端点的值存储为负数，作用有二：
+>
+>    + 当左右端点重合的时候，可以保证的是先处理左端点，再处理右端点、
+>    + 可以根据正负号，判断当前处理的是左端点还是右端点
+>
+> 3. 遍历 `point` 数组，使用 `multiset` 存储高度，分为两种情况：
+>
+>    + 如果当前遍历的点是左端点并且当前点大于 `multiset` 中的最大值，说明高度升高，一定产生关键点，记录答案，并将当前点插入 `multiset` 中
+>    + 如果当前遍历的点是右端点 `h` ，先将右端点 `h` 删除，查看最大值，若 `h` 大于 `multiset` 的最大值，则说明 `h` 就是最大值，那么高度也会发生变化，即高度变低，记录答案即可
+>
+> 4. 问题解答
+>
+>    + 为啥要分左端点和右端点处理，题目不是说水平线段的左端点？
+>
+>      ![image-20220118134627011](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220118134627011.png)
+>
+>      + 如图，答案并不都是在左端点，其中一个答案在红色矩形的右端点
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> getSkyline(vector<vector<int>>& g) {
+        vector<vector<int>> res;
+        vector<pair<int, int>> point;
+        multiset<int> height;
+        for (auto& item : g) {
+            point.push_back({item[0], -item[2]});
+            point.push_back({item[1], item[2]});
+        }
+        // 先将x轴加入答案
+        height.insert(0);
+        sort(point.begin(), point.end());
+        for (auto& p : point) {
+            int x = p.first, h = abs(p.second);
+            if (p.second < 0) { // 左端点
+                if (h > *height.rbegin()) res.push_back({x, h});
+                height.insert(h);
+            }
+            else { // 右端点
+                height.erase(height.find(h));
+                if (h > *height.rbegin()) res.push_back({x, *height.rbegin()});
+            }
+        }
+        return res;
+    }
+};
+```
+
+#### end

@@ -84,4 +84,23 @@
 
   > 1. 同`SSH` 提交步骤
   > 2. 不同点：务必选择`HTTP` 提交，形如以`https://`
-  >
+
+##### 常见问题汇总
+
+> 1. 问题 `1`
+>
+>    + 问题描述
+>
+>      > **! [rejected]**    **master -> master (fetch first)**
+>      >
+>      > **error: failed to push some refs to 'https://github.com/wangwengu/Markdown.git'**
+>
+>    + 问题原因
+>
+>      > `github` 中的 `README.md` 文件不在本地代码目录中
+>
+>    + 解决方案
+>
+>      > 使用 `git pull --rebase origin master` 进行代码合并即可解决
+>
+> 2. 
