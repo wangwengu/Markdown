@@ -22,11 +22,15 @@
 
 **输入样例**
 
-> 3 2
+```c++
+3 2
+```
 
 **输出样例**
 
-> 16
+```c++
+16
+```
 
 **手写稿**
 
@@ -81,6 +85,10 @@ int main() {
 }
 ```
 
+**标签**
+
+`动态规划`
+
 ##### [Acwing 327. 玉米田](https://www.acwing.com/problem/content/329/)
 
 **题目描述**
@@ -111,13 +119,17 @@ int main() {
 
 **输入样例**
 
-> 2 3
-> 1 1 1
-> 0 1 0
+```c++
+2 3
+1 1 1
+0 1 0
+```
 
 **输出样例**
 
-> 9
+```c++
+9
+```
 
 **手写稿**
 
@@ -170,6 +182,10 @@ int main() {
     return 0;
 }
 ```
+
+**标签**
+
+`动态规划`
 
 ##### [LeetCode 213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
 
@@ -239,6 +255,10 @@ public:
     }
 };
 ```
+
+**标签**
+
+`动态规划`
 
 ##### [LeetCode 221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
 
@@ -360,6 +380,10 @@ public:
 };
 ```
 
+**标签**
+
+`动态规划`
+
 ##### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
 
 **题目描述**
@@ -403,6 +427,10 @@ public:
     }
 };
 ```
+
+**标签**
+
+`动态规划`
 
 ##### [LeetCode 300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
@@ -596,6 +624,98 @@ public:
 };
 ```
 
+**标签**
+
+`位运算`
+
+##### [LeetCode 338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
+
+**题目描述**
+
+> 给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 `1` 的个数 ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
+
+**示例 1**
+
+> 输入：`n = 2`
+> 输出：`[0,1,1]`
+> 解释：
+> `0 --> 0`
+> `1 --> 1`
+> `2 --> 10`
+
+**示例 2**
+
+> 输入：`n = 5`
+> 输出：`[0,1,1,2,1,2]`
+> 解释：
+> `0 --> 0`
+> `1 --> 1`
+> `2 --> 10`
+> `3 --> 11`
+> `4 --> 100`
+> `5 --> 101`
+
+**提示**
+
+> + $0 <= n <= 10^5$
+
+**进阶**
+
+> 很容易就能实现时间复杂度为 `O(n log n)` 的解决方案，你可以在线性时间复杂度 `O(n)` 内用一趟扫描解决此问题吗？
+> 你能不使用任何内置函数解决此问题吗？（如，`C++` 中的 `__builtin_popcount` ）
+
+**方法一：枚举 + 位运算**
+
+**步骤**
+
+> 1. 遍历每一个数字，检查每一个数字的二进制位中含有的 `1` 的个数即可
+> 2. 使用 `lowbit` 函数进行检查 `1` 的数量
+>    + `lowbit` 函数 `x & -x` 可以取得 `x` 的最后一位 `1`
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int get(int x) {
+        int res = 0;
+        while (x) {
+            x -= x & -x;
+            res ++;
+        }
+        return res;
+    }
+    vector<int> countBits(int n) {
+        vector<int> res;
+        for (int i = 0; i <= n; i ++ ) res.push_back(get(i));
+        return res;
+    }
+};
+```
+
+**方法二：动态规划 + 位运算**
+
+**手写稿**
+
+![WX20220122-134731@2x](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220122-134731@2x.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<int> countBits(int n) {
+        vector<int> f(n + 1);
+        for (int i = 0; i <= n; i ++ ) f[i] = f[i >> 1] + (i & 1);
+        return f;
+    }
+};
+```
+
+**标签**
+
+` 动态规划`、`位运算`
+
 ##### end
 
 #### 数学相关
@@ -659,6 +779,10 @@ public:
     }
 };
 ```
+
+**标签**
+
+`三路归并`、`归并排序`
 
 ##### [LeetCode 279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
@@ -739,11 +863,333 @@ public:
 };
 ```
 
+**标签**
 
+`动态规划`、`数学`
+
+##### [LeetCode 233. 数字 1 的个数](https://leetcode-cn.com/problems/number-of-digit-one/)
+
+**题目描述**
+
+> 给定一个整数 `n`，计算所有小于等于 `n` 的非负整数中数字 `1` 出现的个数。
+
+**示例 1**
+
+> 输入：`n = 13`
+> 输出：`6`
+
+**示例 2**
+
+> 输入：`n = 0`
+> 输出：`0`
+
+**提示**
+
+> + $0 <= n <= 10^9$
+
+**题解**
+
+> 1. 将数字分解成每个数字，存放到 vector 里面，注意顺序问题
+> 2. 从前往后依次遍历每个数字，判断当前位置上 1 的个数累加即可
+
+**手写稿**
+
+![WX20220119-100611@2x (1)](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220119-100611@2x%20(1).png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int countDigitOne(int n) {
+        vector<int> num;
+        while (n) {
+            num.push_back(n % 10);
+            n /= 10;
+        }
+        // 注意顺序问题
+        reverse(num.begin(), num.end());
+        int res = 0;
+        for (int i = 0; i < num.size(); i ++ ) {
+            int left = 0, right = 0, p = 1;
+            for (int j = 0; j < i; j ++ ) left = left * 10 + num[j];
+            for (int j = i + 1; j < num.size(); j ++ )
+                right = right * 10 + num[j], p *= 10;
+            if (num[i] == 0) res += left * p;
+            else if (num[i] == 1) res += left * p + right + 1;
+            else res += (left + 1) * p;
+        }
+        return res;
+    }
+};
+```
+
+**标签**
+
+`数学`
+
+##### [LeetCode 231. 2 的幂](https://leetcode-cn.com/problems/power-of-two/)
+
+**题目描述**
+
+> 给你一个整数 `n`，请你判断该整数是否是 `2` 的幂次方。如果是，返回 `true` ；否则，返回 `false` 。
+>
+> 如果存在一个整数 `x`  使得 `n == 2x` ，则认为 `n` 是 `2` 的幂次方。
+
+**示例 1**
+
+> 输入：`n = 1`
+> 输出：`true`
+> 解释：$2^0 = 1$
+
+**示例 2**
+
+> 输入：`n = 16`
+> 输出：`true`
+> 解释：$2^4 = 16$
+
+**示例 3**
+
+> 输入：`n = 3`
+> 输出：`false`
+
+**示例 4**
+
+> 输入：`n = 4`
+> 输出：`true`
+
+**示例 5**
+
+> 输入：`n = 5`
+> 输出：`false`
+
+**提示**
+
+> + $-2^{31} <= n <= 2^{31} - 1$
+
+**进阶**
+
+> 你能够不使用循环/递归解决此问题吗？
+
+**方法一：对数**
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool isPowerOfTwo(int n) {
+        if (n <= 0) return false;
+        return (log2(n) - int(log2(n))) == 0;
+    }
+};
+```
+
+**方法二：位运算**
+
+**解析**
+
+> 1. 一个数字 `x` 如果是 `2` 的幂，则说明 `x` 的二进制表示为 `000001000000`
+> 2. `lowbit` 计算最后一位 `1` 的大小，判断是否和 `x` 相等即可
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool isPowerOfTwo(int n) {
+        if (n <= 0) return false;
+        return (n & -n) == n;
+    }
+};
+```
+
+**方法三：取巧的位运算**
+
+**解析**
+
+> 1. 由<a href="https://baike.baidu.com/item/%E7%AE%97%E6%9C%AF%E5%9F%BA%E6%9C%AC%E5%AE%9A%E7%90%86/10920095">算术基本定理</a>可知，任意自然数都可以唯一分解为若干个质数的乘积，数 `x` 若是 `2` 的幂，则 `x` 的质因数只有 `2`，除此之外，不存在其他的质因数
+>    + 反证法
+>      + 如果 `x` 的质因数除了 `2` 之外，还有质因数 `p`，则 `p` 一定不能被分解，因为 `p` 也是质数
+> 2. 找出最大的只含有 `2` 的质因子的数 `x`，不难发现，所有满足质因子只有 `2` 的数均是 `x` 的因子
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool isPowerOfTwo(int n) {
+        if (n <= 0) return false;
+        return (1 << 30) % n == 0;
+    }
+};
+```
+
+**标签**
+
+`对数`、`位运算`
+
+##### [LeetCode 326. 3 的幂](https://leetcode-cn.com/problems/power-of-three/)
+
+**题目描述**
+
+> 给定一个整数，写一个函数来判断它是否是 `3` 的幂次方。如果是，返回 `true` ；否则，返回 `false` 。
+>
+> 整数 `n` 是 `3` 的幂次方需满足：存在整数 `x` 使得 `n == 3x`
+
+**示例 1**
+
+> 输入：`n = 27`
+> 输出：`true`
+
+**示例 2**
+
+> 输入：`n = 0`
+> 输出：`false`
+
+**示例 3**
+
+> 输入：`n = 9`
+> 输出：`true`
+
+**示例 4**
+
+> 输入：`n = 45`
+> 输出：`false`
+
+**提示**
+
+> + $-2^{31} <= n <= 2^{31} - 1$
+
+**方法一：对数函数**
+
+**公式推导**
+
+> 由于 c++ 没有以任意自然数为底的对数函数，因此，需要使用换底公式进行推导计算，证明如下：
+> $$
+> 换底公式：log_ab = \frac{log_cb}{log_ca}，其中c为任意自然数 \\
+> 当c=10时，有log_ab = \frac{loga}{logb}
+> $$
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool isPowerOfThree(int n) {
+        // 不能是负数
+        if (n <= 0) return false;
+        double x = log10(n) / log10(3);
+        return x == int(x);
+    }
+};
+```
+
+**方法二：打表**
+
+**步骤**
+
+> 1. 对于任意一个数 `x` 来说，$3^x$ 可能的取值为 $3^0, 3^1, 3^2, 3^3,..., 3^n,..., 3^{+\infty}$
+> 2. 取最大值 $3^n = 3 * 3 ^ {n - 1}$ ，可以看出所有比最大值小的数同时又是 `3` 的幂的数都是最大值的因子，因此，可以找出最大值，然后判断是否是最大值的因子即可
+> 3. <font style="color: red">**注意：x必须得是质数，原因：<a href="https://baike.baidu.com/item/%E7%AE%97%E6%9C%AF%E5%9F%BA%E6%9C%AC%E5%AE%9A%E7%90%86/10920095">算术基本定理</a>**</font>，详细解释如下
+>    + 由算术基本定理可知，任意<font style="color: red">**自然数**</font>都可以<font style="color: red">**唯一**</font>分解为若干个<font style="color: red">**质数**</font>相乘
+>    + 反证法
+>      + 如果数 `x` 分解之后的质数除了 `3` 之外，还有别的质数 `p`，则 `x` 一定不是 `3` 的幂，因为 `p` 也是质数，且不能再次分解
+>      + 因此，如果数 `x` 是 `3` 的幂，则其质因子有且只有 `3` 才可
+> 4. 找出最大的满足质因子只有 `3` 的数 `x`，不难发现，所有满足质因子只有 `3` 的数均是 `x` 的因子
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool isPowerOfThree(int n) {
+        if (n <= 0) return false;
+        return 1162261467 % n == 0;
+    }
+};
+```
+
+**标签**
+
+`对数`、`算术基本定理`、`数论`
+
+##### [LeetCode 342. 4的幂](https://leetcode-cn.com/problems/power-of-four/)
+
+**题目描述**
+
+> 给定一个整数，写一个函数来判断它是否是 `4` 的幂次方。如果是，返回 `true` ；否则，返回 `false` 。
+>
+> 整数 `n` 是 `4` 的幂次方需满足：存在整数 `x` 使得 `n == 4x`
+
+**示例 1**
+
+> 输入：`n = 16`
+> 输出：`true`
+
+**示例 2**
+
+> 输入：`n = 5`
+> 输出：`false`
+
+**示例 3**
+
+> 输入：`n = 1`
+> 输出：`true`
+
+**提示**
+
+> + $-2^{31} <= n <= 2{31} - 1$
+
+**进阶**
+
+> 你能不使用循环或者递归来完成本题吗？
+
+**方法一：对数**
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool isPowerOfFour(int n) {
+        if (n <= 0) return false;
+        double x = log10(n) / log10(4);
+        return x == int(x);
+    }
+};
+```
+
+**方法二：位运算**
+
+**解析**
+
+> 1. 如果数 `x` 是 `4` 的幂，则 `x` 也一定是 `2` 的幂，即有 $4 ^ x = (2 ^ 2)^x = (2 ^ x) ^ 2$
+>    + 先对 `x` 进行开方得到 `r`，判断 $r^2$ 是否等于 `x`
+>      + 不等于，返回❌
+>      + 等于，判断 `r` 是否是 `2` 的幂即可
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool isPowerOfFour(int n) {
+        if (n <= 0) return false;
+        int r = sqrt(n);
+        if (r * r != n) return false;
+        return (1 << 30) % n == 0;
+    }
+};
+```
+
+**标签**
+
+`对数`、`位运算`
 
 ##### end
 
-#### 滑动窗口专题
+#### 滑动窗口【双端队列】专题
 
 ##### [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
 
@@ -818,6 +1264,87 @@ public:
 };
 ```
 
+ **标签**
+
+`滑动窗口`、`双端队列`、`环`
+
+##### [LeetCode 239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+
+**题目描述**
+
+> 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+>
+> 返回滑动窗口中的最大值。
+
+**示例 1**
+
+> 输入：`nums = [1,3,-1,-3,5,3,6,7], k = 3`
+> 输出：`[3,3,5,5,6,7]`
+> 解释：
+> 滑动窗口的位置                            最大值
+>
+> ---------------               -----
+>
+> `[1  3  -1] -3  5  3  6  7       3
+>  1 [3  -1  -3] 5  3  6  7       3
+>  1  3 [-1  -3  5] 3  6  7       5
+>  1  3  -1 [-3  5  3] 6  7       5
+>  1  3  -1  -3 [5  3  6] 7       6
+>  1  3  -1  -3  5 [3  6  7]      7`
+
+**示例 2**
+
+> 输入：`nums = [1], k = 1`
+> 输出：`[1]`
+
+**示例 3**
+
+> 输入：`nums = [1,-1], k = 1`
+> 输出：`[1,-1]`
+
+**示例 4**
+
+> 输入：`nums = [9,11], k = 2`
+> 输出：`[11]`
+
+**示例 5**
+
+> 输入：`nums = [4,-2], k = 2`
+> 输出：`[4]`
+
+**提示**
+
+> + $1 <= nums.length <= 10^5$
+> + $-10^4 <= nums[i] <= 10^4$
+> + $1 <= k <= nums.length$
+
+**题解**
+
+> 1. <font style="color: red">**记住，单调队列是双端队列即可**</font>
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& g, int k) {
+        deque<int> dq;
+        vector<int> res;
+        for (int i = 0; i < g.size(); i ++ ) {
+            if (dq.size() && i - dq.front() + 1 > k) dq.pop_front();
+            while (dq.size() && g[i] >= g[dq.back()]) dq.pop_back();
+            dq.push_back(i);
+            if (i >= k - 1) res.push_back(g[dq.front()]);
+        }
+        return res;
+    }
+};
+```
+
+**标签**
+
+`滑动窗口`
+
 ##### end
 
 #### 阅读理解题
@@ -875,6 +1402,10 @@ public:
     }
 };
 ```
+
+**标签**
+
+`阅读理解`
 
 ##### end
 
@@ -951,6 +1482,10 @@ public:
     }
 };
 ```
+
+**标签**
+
+`双指针`、`快慢指针`、`环`
 
 ###### [LeetCode 142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
@@ -1044,6 +1579,10 @@ public:
  };
  ```
 
+**标签**
+
+`双指针`、`快慢指针`、`环`
+
 ###### [LeetCode 287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
 
 **题目描述**
@@ -1111,11 +1650,17 @@ public:
 };
 ```
 
+**标签**
+
+`双指针`、`快慢指针`、`环`
+
 ###### end
 
 #### 模拟题专题
 
-##### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
+##### 模拟
+
+###### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
 
 **题目描述**
 
@@ -1196,7 +1741,292 @@ public:
 };
 ```
 
+**标签**
+
+`模拟`
+
+###### [LeetCode 273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
+
+**题目描述**
+
+> 将非负整数 num 转换为其对应的英文表示。
+
+**示例 1**
+
+> 输入：`num = 123`
+> 输出：`"One Hundred Twenty Three"`
+
+**示例 2**
+
+> 输入：`num = 12345`
+> 输出：`"Twelve Thousand Three Hundred Forty Five"`
+
+**示例 3**
+
+> 输入：`num = 1234567`
+> 输出：`"One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"`
+
+**示例 4**
+
+> 输入：`num = 1234567891`
+> 输出：`"One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven Thousand Eight Hundred Ninety One"`
+
+**提示**
+
+> + $0 <= num <= 2^{31} - 1$
+
+**手写稿**
+
+![1](https://gitee.com/peter95535/image-bed/raw/master/img/1.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    // 预处理数据
+    string nums0_19[20] = {
+        "Zero", "One", "Two", "Three", "Four", 
+        "Five", "Six", "Seven", "Eight", "Nine",
+        "Ten", "Eleven", "Twelve", "Thirteen",
+        "Fourteen", "Fifteen", "Sixteen", "Seventeen",
+        "Eighteen", "Nineteen"
+    };
+    string nums20_90[8] = {
+        "Twenty", "Thirty", "Forty", "Fifty",
+        "Sixty", "Seventy", "Eighty", "Ninety"
+    };
+    string nums1000_1e9[4] = {
+        "Billion ", "Million ", "Thousand ", ""
+    };
+    string get(int x) {
+        if (x == 0) return "Zero";
+        string res;
+        if (x >= 100) {
+            res += nums0_19[x / 100] + " Hundred ";
+            x %= 100;
+        }
+        if (x >= 20) {
+            res += nums20_90[x / 10 - 2] + " ";
+            x %= 10;
+        }
+        if (x) res += nums0_19[x] + " ";
+        return res;
+    }
+    string numberToWords(int num) {
+        if (num == 0) return "Zero";
+        string res;
+        for (int i = 1e9, j = 0; i >= 1; i /= 1000, j ++ )
+            if (num >= i) {
+                res += get(num / i) + nums1000_1e9[j];
+                num %= i;
+            }
+        // 注意空格问题
+        res.pop_back();
+        return res;
+    }
+};
+```
+
+**标签**
+
+`模拟`、`数字转换`、`中英文`
+
 ###### end
+
+##### 表达式求值
+
+###### [LeetCode 224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
+
+**题目描述**
+
+> 给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
+
+**示例 1**
+
+> 输入：`s = "1 + 1"`
+> 输出：`2`
+
+**示例 2**
+
+> 输入：`s = " 2-1 + 2 "`
+> 输出：`3`
+
+**示例 3**
+
+> 输入：`s = "(1+(4+5+2)-3)+(6+8)"`
+> 输出：`23`
+
+**提示**
+
+> + $1 <= s.length <= 3 * 10^5$
+> + `s` 由数字`、'+'、'-'、'('、')'、`和 `' '` 组成
+> + `s` 表示一个有效的表达式
+
+**题解**
+
+> 1. 使用两个栈，一个是数字栈 `num` ，另一个是字符串栈 `oper`
+> 2. 遍历每一个字符，分以下五种情况：
+>    + 如果遇到空格，直接 `continue`
+>    + 如果遇到`(`，直接入栈 `oper`
+>    + 如果遇到 `)` ，计算答案，直到 `oper` 栈顶为 `(` 的时候停止
+>    + 如果遇到数字，则计算数字的大小，入栈 `num`<font style="color:red">**（注意数字不一定是一位数）**</font>
+>    + 如果遇到 `+`，`-`，则继续进行如下判断：
+>      + 如果当前值是第一位，例如 `+2`，则为了方便计算，在前面补一个 `0` 即可
+>      + 如果当前位不是第一位并且前一位是括号，例如 `(+2)`，则为了方便，补一个 `0` 即可
+>      + 除上述情况外，正常计算，直到栈为空或者遇到 `(` 的时候停止
+> 3. 如果栈中还有运算符，则继续计算，直到栈为空，答案就是栈顶元素
+
+**代码**
+
+```c++
+class Solution {
+public:
+    stack<int> num;
+    stack<char> oper;
+    void eval() {
+        int b = num.top(); num.pop();
+        int a = num.top(); num.pop();
+        char op = oper.top(); oper.pop();
+        if (op == '+') num.push(a + b);
+        else num.push(a - b);
+        return;
+    }
+    int calculate(string s) {
+        for (int i = 0; i < s.size(); i ++ ) {
+            if (s[i] == ' ') continue;
+            else if (s[i] == '(') oper.push(s[i]);
+            else if (s[i] == ')') {
+                while (oper.top() != '(') eval();
+                // 弹出左括号
+                oper.pop();
+            }
+            else if (isdigit(s[i])) {
+                int sum = 0;
+                while (i < s.size() && isdigit(s[i]))
+                    sum = sum * 10 + (s[i ++ ] - '0');
+                num.push(sum);
+                i --;
+            }
+            else {
+                // 处理特殊情况，如 +2 + a 或者 (-2 + a) 等类似情况
+                if (!i || s[i - 1] == '(') num.push(0);
+                while (oper.size() && oper.top() != '(') eval();
+                // 将当前括号入栈
+                oper.push(s[i]);
+            }
+        }
+        while (oper.size()) eval();
+        return num.top();
+    }
+};
+```
+
+**标签**
+
+`栈`、`表达式求值`
+
+###### [LeetCode 282. 给表达式添加运算符](https://leetcode-cn.com/problems/expression-add-operators/)
+
+**题目描述**
+
+> 给定一个仅包含数字 `0-9` 的字符串 `num` 和一个目标值整数 `target` ，在 `num` 的数字之间添加 二元 运算符（不是一元）`+`、`-` 或 `*` ，返回所有能够得到目标值的表达式。
+
+**示例 1**
+
+> 输入: `num = "123", target = 6`
+> 输出: `["1+2+3", "1*2*3"] `
+
+**示例 2**
+
+> 输入: `num = "232", target = 8`
+> 输出: `["2*3+2", "2+3*2"]`
+
+**示例 3**
+
+> 输入: `num = "105", target = 5`
+> 输出: `["1*0+5","10-5"]`
+
+**示例 4**
+
+> 输入: `num = "00", target = 0`
+> 输出: `["0+0", "0-0", "0*0"]`
+
+**示例 5**
+
+> 输入: `num = "3456237490", target = 9191`
+> 输出: `[]`
+
+**提示**
+
+> + $1 <= num.length <= 10$
+> + $num 仅含数字$
+> + $-2^{31} <= target <= 2^{31} - 1$
+
+**手写稿**
+
+![w](https://gitee.com/peter95535/image-bed/raw/master/img/w.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    typedef long long LL;
+    string path;
+    vector<string> res;
+    // 保证答案不越界，但是不保证中间过程不越界
+    void dfs(string& num, int u, int len, LL a, LL b, LL target) {
+        if (u == num.size())
+            if (a == target) {
+                res.push_back(path.substr(0, len - 1));
+                return;
+            }
+        LL c = 0;
+        for (int i = u; i < num.size(); i ++ ) {
+            c = c * 10 + (num[i] - '0');
+            path[len ++ ] = num[i];
+            // 枚举第len位填写的运算符
+            // +
+            path[len] = '+';
+            dfs(num, i + 1, len + 1, a + b * c, 1, target);
+            if (i + 1 < num.size()) {
+                // -
+                path[len] = '-';
+                dfs(num, i + 1, len + 1, a + b * c, -1, target);
+                // *
+                path[len] = '*';
+                dfs(num, i + 1, len + 1, a, b * c, target);
+            }
+            // 不能有前导0
+            if (num[u] == '0') return;
+        }
+        return;
+    }
+    vector<string> addOperators(string num, int target) {
+        // 扩容
+        path.resize(100);
+        /*
+        	参数1: num字符串
+        	参数2: 当前枚举的是num中的哪位字符
+        	参数3: 答案字符串的长度
+        	参数4: a的值
+        	参数5: b的值
+        	参数6: 目标值
+        */
+        dfs(num, 0, 0, 0, 1, target);
+        return res;
+    }
+};
+```
+
+**标签**
+
+`dfs`、`表达式求值`
+
+###### end
+
+##### end
 
 #### 字典树
 
@@ -1292,6 +2122,10 @@ public:
 };
 ```
 
+**标签**
+
+`dfs`、`字典树`
+
 #### 字符串专题
 
 ##### KMP
@@ -1358,6 +2192,10 @@ public:
     }
 };
 ```
+
+**标签**
+
+`字符串`、`回文串`、`KMP`
 
 #### 扫描线问题
 
@@ -1464,5 +2302,1620 @@ public:
     }
 };
 ```
+
+**标签**
+
+`扫描线`
+
+#### 对顶堆
+
+##### [LeetCode 295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
+
+**题目描述**
+
+> 中位数是有序列表中间的数。如果列表长度是偶数，中位数则是中间两个数的平均值。
+>
+> 例如，
+>
+> `[2,3,4]` 的中位数是 `3`
+>
+> `[2,3]` 的中位数是 `(2 + 3) / 2 = 2.5`
+>
+> 设计一个支持以下两种操作的数据结构：
+>
+> `void addNum(int num)` - 从数据流中添加一个整数到数据结构中。
+> `double findMedian()` - 返回目前所有元素的中位数。
+
+**示例**
+
+> `addNum(1)`
+> `addNum(2)`
+> `findMedian() -> 1.5`
+> `addNum(3) `
+> `findMedian() -> 2`
+
+**进阶**
+
+> 如果数据流中所有整数都在 `0` 到 `100` 范围内，你将如何优化你的算法？
+> 如果数据流中 `99%` 的整数都在 `0` 到 `100` 范围内，你将如何优化你的算法？
+
+**手写稿**
+
+![WX20220120-215203@2x](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220120-215203@2x.png)
+
+**记忆技巧**
+
+> **大根堆**
+>
+> > 1. 记忆技巧：大根堆即为把<font style="color:red">**小于等于(`less`)**</font>当前数的数字往下按
+> > 2. 定义：`priority_queue<int, vector<int>> q;`
+>
+> **小根堆**
+>
+> > 1. 记忆技巧：小根堆即为把<font style="color:red">**大于等于(`greater`)**</font>当前数的数字往下按
+> > 2. 定义：`priority_queue<int, vector<int>, greater<int>> q;`
+
+**代码**
+
+```c++
+class MedianFinder {
+public:
+    // 大根堆
+    priority_queue<int, vector<int>> left;
+    // 小根堆
+    priority_queue<int, vector<int>, greater<int>> right;
+    MedianFinder() {}
+    
+    void addNum(int num) {
+        if (left.empty() || num <= left.top()) {
+            left.push(num);
+            // 左边添加完数据之后，如果出现左边元素的个数大于右边元素的个数 + 1
+            // 因为保证左边元素的数量等于右边元素的数量或者等于右边元素的数量 + 1
+            // 则说明需要进行调整，调整即可
+            if (left.size() > right.size() + 1) right.push(left.top()), left.pop();
+        }
+        else {
+            right.push(num);
+            // 同理
+            if (right.size() > left.size()) left.push(right.top()), right.pop();
+        }
+        return;
+    }
+    
+    double findMedian() {
+        if (left.size() + right.size() & 1) return left.top();
+        return (left.top() + right.top()) / 2.0;
+    }
+};
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder* obj = new MedianFinder();
+ * obj->addNum(num);
+ * double param_2 = obj->findMedian();
+ */
+```
+
+**标签**
+
+`优先队列`、`对顶堆`
+
+#### 设计数据结构
+
+##### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+
+**题目描述**
+
+> 序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+>
+> 请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+>
+> 提示: 输入输出格式与 `LeetCode` 目前使用的方式一致，详情请参阅 `LeetCode` 序列化二叉树的格式。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
+
+**示例 1**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/serdeser.jpg)
+
+> 输入：`root = [1,2,3,null,null,4,5]`
+> 输出：`[1,2,3,null,null,4,5]`
+
+**示例 2**
+
+> 输入：`root = []`
+> 输出：`[]`
+
+**示例 3**
+
+> 输入：`root = [1]`
+> 输出：`[1]`
+
+**示例 4**
+
+> 输入：`root = [1,2]`
+> 输出：`[1,2]`
+
+**提示**
+
+> + $树中结点数在范围 [0, 10^4] 内$
+> + $-1000 <= Node.val <= 1000$
+
+**手写稿**
+
+![WX20220121-142021@2x](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220121-142021@2x.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Codec {
+public:
+    string str;
+    void dfs_s(TreeNode* root) {
+        if (!root) {
+            str += "#,";
+            return;
+        }
+        str += to_string(root -> val) + ",";
+        dfs_s(root -> left);
+        dfs_s(root -> right);
+        return;
+    }
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        // 深搜
+        dfs_s(root);
+        return str;
+    }
+    TreeNode* dfs_d(string& data, int &u) {
+        if (data[u] == '#') {
+            // 跳过#和后面的,
+            u += 2;
+            return NULL;
+        }
+        int k = u;
+        while (data[u] != ',') u ++;
+        auto root = new TreeNode(stoi(data.substr(k, u - k)));
+        // 跳过,
+        u ++;
+        root -> left = dfs_d(data, u);
+        root -> right = dfs_d(data, u);
+        return root;
+    }
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        int u = 0;
+        return dfs_d(data, u);
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec ser, deser;
+// TreeNode* ans = deser.deserialize(ser.serialize(root));
+```
+
+**标签**
+
+`dfs`、`数据结构`
+
+#### 深度优先搜索
+
+##### [LeetCode 306. 累加数](https://leetcode-cn.com/problems/additive-number/)
+
+**题目描述**
+
+> 累加数 是一个字符串，组成它的数字可以形成累加序列。
+>
+> 一个有效的 累加序列 必须 至少 包含 `3` 个数。除了最开始的两个数以外，序列中的每个后续数字必须是它之前两个数字之和。
+>
+> 给你一个只包含数字 `'0'-'9'` 的字符串，编写一个算法来判断给定输入是否是 累加数 。如果是，返回 `true` ；否则，返回 `false` 。
+>
+> 说明：累加序列里的数，除数字 `0` 之外，不会 以 `0` 开头，所以不会出现 `1, 2, 03` 或者 `1, 02, 3` 的情况。
+
+**示例 1**
+
+> 输入：`"112358"`
+> 输出：`true`
+> 解释：累加序列为: `1, 1, 2, 3, 5, 8 。1 + 1 = 2, 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8`
+
+**示例 2**
+
+> 输入：`"199100199"`
+> 输出：`true`
+> 解释：累加序列为: `1, 99, 100, 199。1 + 99 = 100, 99 + 100 = 199`
+
+**提示**
+
+> + $1 <= num.length <= 35$
+> + $num 仅由数字（0 - 9）组成$
+
+**进阶**
+
+> 你计划如何处理由过大的整数输入导致的溢出?
+
+**步骤**
+
+> 1. 深度优先搜索，爆搜 `num` 字符串，枚举每个数字字符并且将其记录在 `path` 数组当中 ，查看是否满足答案
+> 2. 递归出口
+>    + 如果 `path` 的个数大于等于 `3` 个，进行判断 `path[n - 3] + path[n - 2] == path[n - 1]` 是否成立，分以下两种情况
+>      + 如果条件成立，则继续向下操作
+>      + 如果条件不成立，则直接截去当前分支，即返回 `false`
+>    + 如果当前枚举的字符位置 `u` 为最后一个位置，则进行如下判断
+>      + 如果 `path` 的个数大于等于 `3` 个，则说明存在一组答案，返回 `true`
+>      + 否则，返回 `false`
+> 3. 遍历字符串即可
+
+**代码**
+
+```c++
+class Solution {
+public:
+    string add(string& a, string& b) {
+        vector<int> A, B, C;
+        for (int i = a.size() - 1; i >= 0; i -- ) A.push_back(a[i] - '0');
+        for (int i = b.size() - 1; i >= 0; i -- ) B.push_back(b[i] - '0');
+        for (int i = 0, t = 0; i < A.size() || i < B.size() || t; i ++ ) {
+            if (i < A.size()) t += A[i];
+            if (i < B.size()) t += B[i];
+            C.push_back(t % 10);
+            t /= 10;
+        }
+        string res;
+        for (int i = C.size() - 1; i >= 0; i -- ) res += to_string(C[i]);
+        return res;
+    }
+    bool dfs(string& num, vector<string>& path, int u) {
+        int n = path.size();
+        // 如果个数大于等于3个
+        if (n >= 3) {
+            string a = path[n - 3];
+            string b = path[n - 2];
+            string c = path[n - 1];
+            string d = add(a, b);
+            // 如果不相等，返回false
+            if (d != c) return false;
+        }
+        // 如果枚举到最后一个字符
+        if (u == num.size()) {
+            // 如果个数大于等于3个，返回true
+            if (path.size() >= 3) return true;
+            return false;
+        }
+        for (int i = u; i < num.size(); i ++ ) {
+            // 从u开始截取长度为i - u + 1的字符串
+            path.push_back(num.substr(u, i - u + 1));
+            // 如果能够搜索到正确答案，则返回true
+            if (dfs(num, path, i + 1)) return true;
+            // 回溯
+            path.pop_back();
+            // 如果出现前导0，则返回false
+            // 注意，在后面添加此条件，说明当前字符已经被遍历过
+            // 即0已经被遍历过，接下来要遍历的是形如01，02之类的数字，必不满足条件，返回即可
+            if (num[u] == '0') return false;
+        }
+        return false;
+    }
+    bool isAdditiveNumber(string num) {
+        vector<string> path;
+        return dfs(num, path, 0);
+    }
+};
+```
+
+**标签**
+
+`dfs`、`高精度`
+
+#### 树状数组
+
+##### 原理
+
+**手写稿**
+
+![1262039](https://gitee.com/peter95535/image-bed/raw/master/img/1262039.png)
+
+##### 注意事项
+
+> 1. <font style="color: red">**先搞明白树状数组存的值的意义，此点至关重要！！！**</font>
+
+##### [P3374 【模板】树状数组 1](https://www.luogu.com.cn/problem/P3374)
+
+**题目描述**
+
+> 如题，已知一个数列，你需要进行下面两种操作：
+>
+> - 将某一个数加上 `x`
+> - 求出某区间每一个数的和
+
+**输入格式**
+
+> 第一行包含两个正整数 `n,m`，分别表示该数列数字的个数和操作的总个数。
+>
+> 第二行包含 `n` 个用空格分隔的整数，其中第 `i` 个数字表示数列第 `i` 项的初始值。
+>
+> 接下来 `m` 行每行包含 `3` 个整数，表示一个操作，具体如下：
+>
+> - `1 x k` 含义：将第 `x` 个数加上 `k`
+> - `2 x y` 含义：输出区间 `[x,y]` 内每个数的和
+
+**输出格式**
+
+> 输出包含若干行整数，即为所有操作 `2` 的结果。
+
+**输入 #1**
+
+```c++
+5 5
+1 5 4 2 3
+1 1 3
+2 2 5
+1 3 -1
+1 4 2
+2 1 4
+```
+
+**输出 #1**
+
+```c++
+14
+16
+```
+
+**数据范围**
+
+> 对于 `30%` 的数据，$1≤n≤8$，$1≤m≤10$；
+> 对于 `70%` 的数据，$1≤n,m≤10^4$；
+> 对于 `100%` 的数据，$1≤n,m≤5×10^5$。
+
+**样例说明**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/2256.png)
+
+故输出结果`14、16`
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 500010;
+int n, m;
+LL tr[N];
+int lowbit(int x) {
+    return x & -x;
+}
+void add(int x, int c) {
+    for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
+    return;
+}
+int sum(int x) {
+    LL res = 0;
+    for (int i = x; i; i -= lowbit(i)) res += tr[i];
+    return res;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1, t; i <= n; i ++ ) {
+        scanf("%d", &t);
+        // 一开始在树状数组的下标为i的位置上添加t
+        add(i, t);
+        // 注意必须使用add函数，因为add函数当中包含对其他下标的值的更新
+    }
+    while (m -- ) {
+        int op, x, y;
+        scanf("%d%d%d", &op, &x, &y);
+        if (op == 1) add(x, y);
+        else cout << sum(y) - sum(x - 1) << endl;
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`树状数组`
+
+##### [AcWing 241. 楼兰图腾](https://www.acwing.com/problem/content/243/)
+
+**题目描述**
+
+> 在完成了分配任务之后，西部 `314` 来到了楼兰古城的西部。
+>
+> 相传很久以前这片土地上(比楼兰古城还早)生活着两个部落，一个部落崇拜尖刀(`V`)，一个部落崇拜铁锹(`∧`)，他们分别用 `V` 和 `∧` 的形状来代表各自部落的图腾。
+>
+> 西部 `314` 在楼兰古城的下面发现了一幅巨大的壁画，壁画上被标记出了 `n` 个点，经测量发现这 `n` 个点的水平位置和竖直位置是两两不同的。
+>
+> 西部 `314` 认为这幅壁画所包含的信息与这 `n` 个点的相对位置有关，因此不妨设坐标分别为 $(1,y_1),(2,y_2),…,(n,y_n)，$其中 $y_1∼y_n$ 是 `1` 到 `n` 的一个排列。
+>
+> 西部 `314` 打算研究这幅壁画中包含着多少个图腾。
+>
+> 如果三个点 $(i,y_i),(j,y_j),(k,y_k)$ 满足 `1≤i<j<k≤n` 且 $y_i>y_j,y_j<y_k$，则称这三个点构成 `V` 图腾;
+>
+> 如果三个点 $(i,y_i),(j,y_j),(k,y_k)$ 满足 `1≤i<j<k≤n` 且 $y_i<y_j,y_j>y_k$，则称这三个点构成 `∧` 图腾;
+>
+> 西部 `314` 想知道，这 `n` 个点中两个部落图腾的数目。
+>
+> 因此，你需要编写一个程序来求出 `V` 的个数和 `∧` 的个数。
+
+**输入格式**
+
+> 第一行一个数 `n`。
+>
+> 第二行是 `n` 个数，分别代表 `y1，y2,…,yn`。
+
+**输出格式**
+
+> 两个数，中间用空格隔开，依次为 `V` 的个数和 `∧` 的个数。
+
+**数据范围**
+
+> 对于所有数据，`n≤200000`，且输出答案不会超过 `int64`。
+> $y_1∼y_n$ 是 `1` 到 `n` 的一个排列。
+
+**输入样例**
+
+```c++
+5
+1 5 3 2 4
+```
+
+**输出样例**
+
+```c++
+3 4
+```
+
+**手写稿**
+
+> 1. 使用 `g[i]` 表示原数组；`tr[i]` 表示在树状数组中<font style="color: red">下标为 `i` </font>的位置上有一个数字，使用 `1` 做标记；如果下标为 `i` 的位置上没有数字，使用 `0` 做标记，由于数组初始化为 `0`，因此，不需要再额外做标记 ；`great[i]` 表示 `g` 数组中比 `g[i]` 大的数字的个数；`lesser[i]` 表示 `g` 数组中比 `g[i]` 小的数字的个数
+> 2. 以 `g` 数组的每一个下标 `i` 为索引，寻找 `i` 左边比 `g[i]` 大的数字的个数和 `i` 右边比 `g[i]` 大的数字的个数，根据乘法原理，两者即可求得 $\vee$ 的个数；同理，求得 $\wedge$ 的个数
+> 3. 两次遍历【<font style="color: red">极易混淆需重点阅读</font>】
+>    + 第一次遍历【<font style="color: red">从前往后</font>】
+>      + 在当前情况（从前往后）下，`great[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之前</font>的所有数字当中比 `g[i]` <font style="color: red">大</font> 的数字的个数；`less[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之前</font>的所有数字当中比 `g[i]` <font style="color: red">小 </font>的数字的个数
+>    + 第二次遍历【<font style="color: red">从后往前</font>】
+>      + 在当前情况（从后往前）下，`great[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之后</font>的所有数字当中比 `g[i]` <font style="color: red">大</font> 的数字的个数；`less[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之后</font>的所有数字当中比 `g[i]` <font style="color: red">小</font> 的数字的个数
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+typedef long long LL;
+const int N = 200010;
+int n;
+int g[N], tr[N], great[N], lesser[N];
+int lowbit(int x) {
+    return x & -x;
+}
+void add(int x, int c) {
+    for (int i = x; i <= n; i += lowbit(i) ) tr[i] += c;
+    return;
+}
+int sum(int x) {
+    int res = 0; 
+    for (int i = x; i; i -= lowbit(i)) res += tr[i];
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    // 【从前往后】遍历数组
+    for (int i = 1; i <= n; i ++ ) {
+        int y = g[i];
+        // great[i]表示在【下标】i【之前】的所有数字当中比y【大】的数字的个数
+        great[i] = sum(n) - sum(y);
+        // lesser[i]表示在【下标】i【之前】的所有数字当中比y【小】的数字的个数
+        lesser[i] = sum(y - 1);
+        // 在下标为y的位置上添加1，表示在下标为y的位置上有一个数字
+        add(y, 1);
+    }
+    // 初始化数组
+    memset(tr, 0, sizeof tr);
+    LL res1 = 0, res2 = 0;
+    // 【从后往前】遍历数组
+    for (int i = n; i; i -- ) {
+        int y = g[i];
+        // sum(n) - sum(y) 表示在【下标】为i【之后】的所有数字当中比y【大】的数字的个数
+        res1 += great[i] * (LL)(sum(n) - sum(y));
+        // sum(y - 1) 表示在【下标】为i【之后】的所有数字当中比y【小】的数字的个数
+        res2 += lesser[i] * (LL)sum(y - 1);
+        // 在下标为y的位置上添加1，表示在下标为y的位置上有一个数字
+        add(y, 1);
+    }
+    printf("%lld %lld\n", res1, res2);
+    return 0;
+}
+```
+
+**标签**
+
+`树状数组`
+
+##### [AcWing 242. 一个简单的整数问题](https://www.acwing.com/problem/content/description/248/)
+
+**题目描述**
+
+> 给定长度为 `N` 的数列 `A`，然后输入 `M` 行操作指令。
+>
+> 第一类指令形如 `C l r d`，表示把数列中第 `l∼r` 个数都加 `d`。
+>
+> 第二类指令形如 `Q x`，表示询问数列中第 `x` 个数的值。
+>
+> 对于每个询问，输出一个整数表示答案。
+
+**输入格式**
+
+> 第一行包含两个整数 `N` 和 `M`。
+>
+> 第二行包含 `N` 个整数 `A[i]`。
+>
+> 接下来 `M` 行表示 `M` 条指令，每条指令的格式如题目描述所示。
+
+**输出格式**
+
+> 对于每个询问，输出一个整数表示答案。
+>
+> 每个答案占一行。
+
+**数据范围**
+
+> + $1≤N,M≤10^5$,
+> + $|d|≤10000$,
+> + $|A[i]|≤10^9$
+
+**输入样例**
+
+```c++
+10 5
+1 2 3 4 5 6 7 8 9 10
+Q 4
+Q 1
+Q 2
+C 1 6 3
+Q 2
+```
+
+**输出样例**
+
+```c++
+4
+1
+2
+5
+```
+
+**步骤**
+
+> 1. 树状数组可以解决的问题：
+>    + 区间求和
+>    + 单点更新
+>    
+> 2. 本题的要求有两个操作
+>
+>    + 将原数组变成树状数组（差分数组）
+>
+>    + 将题目中的两个操作变成树状数组的经典操作
+>
+>      + 第一个操作是数列中的第 `l ～ r` 个数字都加上 `d`，分若干个步骤将其转化为树状数组的经典操作之一即单点更新
+>        + 第 `l ～ r` 个数字添加 `d`，由差分数组 `tr` 可知，`tr[l] += d，tr[r + 1] -= d` 即可完成操作，对应树状数组经典操作的单点更新
+>
+>      + 第二个操作是查询数列中的第 `x` 个数字，分若干个步骤将其转化为树状数组的经典操作之一即区间求和
+>        + 修改第 `x` 个数字，由差分数组 `tr` 可知，`sum[1 ~ x]` 即为第 `x` 个数字的值，对应树状数组的区间求和操作
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+int n, m;
+int g[N], tr[N];
+int lowbit(int x) {
+    return x & -x;
+}
+void add(int x, int c) {
+    for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
+    return;
+}
+int sum(int x) {
+    int res = 0;
+    for (int i = x; i; i -= lowbit(i)) res += tr[i];
+    return res;
+}
+int main() {
+    scanf("%d%d",&n, &m);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        // 构建差分树状数组
+        add(i, g[i] - g[i - 1]);
+    }
+    char op[2];
+    while (m -- ) {
+        scanf("%s", op);
+        if (op[0] == 'C') {
+            int l, r, d;
+            scanf("%d%d%d", &l, &r, &d);
+            // tr[l] += d;
+            add(l, d);
+            // tr[r + 1] -= d;
+            add(r + 1, -d);
+        }
+        else {
+            int x;
+            scanf("%d", &x);
+            // 求和
+            cout << sum(x) << endl;
+        }
+    }
+    return 0;
+}
+```
+
+##### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
+
+**题目描述**
+
+> 给定一个长度为 `N` 的数列 `A`，以及 `M` 条指令，每条指令可能是以下两种之一：
+>
+> 1. `C l r d`，表示把 `A[l],A[l+1],…,A[r]` 都加上 `d`。
+> 2. `Q l r`，表示询问数列中第 `l∼r` 个数的和。
+>
+> 对于每个询问，输出一个整数表示答案。
+
+**输入格式**
+
+> 第一行两个整数 `N,M`。
+>
+> 第二行 `N` 个整数 `A[i]`。
+>
+> 接下来 `M` 行表示 `M` 条指令，每条指令的格式如题目描述所示。
+
+**输出格式**
+
+> 对于每个询问，输出一个整数表示答案。
+>
+> 每个答案占一行。
+
+**数据范围**
+
+> + $1≤N,M≤10^5,$
+> + $|d|≤10000,$
+> + $|A[i]|≤10^9$
+
+**输入样例**
+
+```c++
+10 5
+1 2 3 4 5 6 7 8 9 10
+Q 4 4
+Q 1 10
+Q 2 4
+C 3 6 3
+Q 2 4
+```
+
+**输出样例**
+
+```c++
+4
+55
+9
+15
+```
+
+**手写稿**
+
+![1292230](https://gitee.com/peter95535/image-bed/raw/master/img/1292230.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+int n, m;
+int g[N];
+LL tr1[N], tr2[N];
+int lowbit(int x) {
+    return x & -x;
+}
+void add(LL tr[], int x, LL c) {
+    for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
+    return;
+}
+LL sum(LL tr[], LL x) {
+    LL res = 0;
+    for (int i = x; i; i -= lowbit(i)) res += tr[i];
+    return res;
+}
+LL prefix_sum(int x) {
+    return sum(tr1, x) * (x + 1) - sum(tr2, x);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    for (int i = 1; i <= n; i ++ ) {
+        int b = g[i] - g[i - 1];
+        // 第一个数组tr1存的是红+紫
+        add(tr1, i, b);
+        // 第二个数组tr2存的是紫
+        add(tr2, i, (LL)i * b);
+    }
+    while (m -- ) {
+        char op[2];
+        scanf("%s", op);
+        if (op[0] == 'C') {
+            int l, r, d;
+            scanf("%d%d%d", &l, &r, &d);
+            add(tr1, l, d), add(tr2, l, l * d);
+            add(tr1, r + 1, -d), add(tr2, r + 1, (r + 1) * -d);
+        }
+        else {
+            int l, r;
+            scanf("%d%d", &l, &r);
+            cout << prefix_sum(r) - prefix_sum(l - 1) << endl;
+        }
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`树状数组`
+
+##### [AcWing 244. 谜一样的牛](https://www.acwing.com/problem/content/245/)
+
+**题目描述**
+
+> 有 `n` 头奶牛，已知它们的身高为 `1∼n` 且各不相同，但不知道每头奶牛的具体身高。
+>
+> 现在这 `n` 头奶牛站成一列，已知第 `i` 头牛前面有 $A_i$ 头牛比它低，求每头奶牛的身高。
+
+**输入格式**
+
+> 第 `1` 行：输入整数 `n`。
+>
+> 第 `2..n` 行：每行输入一个整数 $A_i$，第 `i` 行表示第 `i` 头牛前面有 $A_i$ 头牛比它低。
+> （注意：因为第 `1` 头牛前面没有牛，所以并没有将它列出）
+
+**输出格式**
+
+> 输出包含 `n` 行，每行输出一个整数表示牛的身高。
+>
+> 第 `i` 行输出第 `i` 头牛的身高。
+
+**数据范围**
+
+> + $1≤n≤10^5$
+
+**输入样例**
+
+```c++
+5
+1
+2
+1
+0
+```
+
+**输出样例**
+
+```c++
+2
+4
+5
+3
+1
+```
+
+**手写稿**
+
+![1301406](https://gitee.com/peter95535/image-bed/raw/master/img/1301406.png)
+
+**步骤**
+
+> 1. `h[i]` 代表在第 `i` 头牛之前有 `h[i]` 头牛比当前第 `i` 头牛矮
+> 2. 从后往前遍历，在剩下的数字（包括当前数字）当中寻找第 `h[i] + 1` 小的数字即可
+> 3. 样例模拟（从后往前）
+>    + 初始化：牛的高度可选择范围 `1，2，3，4，5`（不一定有序）
+>    + 第一步：倒数第一个数字是 `0`，代表在牛的高度可选择范围`[1, 2, 3, 4, 5]`内有 `0` 头牛比自己矮，即在牛的高度可选择范围`[1, 2, 3, 4, 5]`内寻找第 `1(h[i] + 1)` 小的高度的牛，即为 `1`，此时，剩下的牛的高度选择可为 `2，3，4，5`
+>    + 第二步：倒数第二个数字是 `1`，代表在牛的高度可选择范围`[2, 3, 4, 5]`内有 `1` 头牛比自己矮，即在牛的高度可选择范围`[2, 3, 4, 5]`内寻找第 `2(h[i] + 1)` 小的高度的牛，即为 `3`，此时，剩下的牛的高度选择可为 `2，4，5`
+>    + 第三步：倒数第三个数字是 `2`，代表在牛的高度可选择范围`[2, 4, 5]`内有 `2` 头牛比自己矮，即在牛的高度可选择范围`[2, 4, 5]`内寻找第 `3(h[i] + 1)` 小的高度的牛，即为 `5`，此时，剩下的牛的高度选择可为 `2，4`
+>    + 第四步：倒数第四个数字是 `1`，代表在牛的高度可选择范围`[2, 4]`内有 `1` 头牛比自己矮，即在牛的高度可选择范围`[2, 4]`内寻找第 `2(h[i] + 1)` 小的高度的牛，即为 `4`，此时，剩下的牛的高度可选择为 `2`
+>    + 第五步：剩下的牛的高度为 `2`，故答案为 `[2, 4, 5, 3, 1]`
+> 4. 实现方式：树状数组 + 二分
+>    + 树状数组 `tr[i]` 表示高度为 `i` 是否可以使用，`1` 代表可使用，否则，不可使用
+>      + 树状数组初始化为 `1`，表明一开始，每个数字都可以使用
+>    + 树状数组 `sum[i]` 前缀和是单调的，故可以使用二分
+> 5. 注意事项
+>    + 二分的是【<font style = "color: red">**牛的高度**</font>】
+>    + 树状数组 `tr[i]` 表示高度为 `i` 的牛是否可以使用，`1` 代表可以使用，否则，不可使用
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n;
+int h[N], tr[N], ans[N];
+int lowbit(int x) {
+    return x & -x;
+}
+void add(int x, int c) {
+    for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
+    return;
+}
+int sum(int x) {
+    int res = 0;
+    for (int i = x; i; i -= lowbit(i)) res += tr[i];
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    // 下标从2开始，因为第一头牛前面没有比它矮的，默认为0，题目中已经标注
+    for (int i = 2; i <= n; i ++ ) scanf("%d", &h[i]);
+    // 每头牛初始化为1，表明当前这头牛的高度i可以被使用【未被剔除】
+    for (int i = 1; i <= n; i ++ ) add(i, 1);
+    for (int i = n; i; i --) {
+        // 寻找i前面的第h[i]小的数，算上当前值，故寻找第h[i] + 1个数字
+        int k = h[i] + 1;
+        // 二分的是牛的高度，即查看当前牛的高度是否满足答案
+        int l = 1, r = n;
+        while (l < r) {
+            int mid = l + r >> 1;
+            // mid代表牛的高度
+            if (sum(mid) >= k) r = mid;
+            else l = mid + 1;
+        }
+        // 将结果加入答案
+        ans[i] = r;
+        // 将已经加入答案的数字进行排除
+        add(r, -1);
+    }
+    for (int i = 1; i <= n; i ++ ) cout << ans[i] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`树状数组`
+
+#### 线段树
+
+##### 原理
+
+![1310947](https://gitee.com/peter95535/image-bed/raw/master/img/1310947.png)
+
+##### [AcWing 1275. 最大数](https://www.acwing.com/problem/content/1277/)
+
+**题目描述**
+
+> 给定一个正整数数列 $a_1,a_2,…,a_n$，每一个数都在 $0∼p−1$ 之间。
+>
+> 可以对这列数进行两种操作：
+>
+> 1. 添加操作：向序列后添加一个数，序列长度变成 `n+1`；
+> 2. 询问操作：询问这个序列中最后 `L` 个数中最大的数是多少。
+>
+> 程序运行的最开始，整数序列为空。
+>
+> 一共要对整数序列进行 `m` 次操作。
+>
+> 写一个程序，读入操作的序列，并输出询问操作的答案。
+
+**输入格式**
+
+> 第一行有两个正整数 `m,p`，意义如题目描述；
+>
+> 接下来 `m` 行，每一行表示一个操作。
+>
+> 如果该行的内容是 `Q L`，则表示这个操作是询问序列中最后 `L` 个数的最大数是多少；
+>
+> 如果是 `A t`，则表示向序列后面加一个数，加入的数是 `(t+a) mod p`。其中，`t` 是输入的参数，`a` 是在这个添加操作之前最后一个询问操作的答案（如果之前没有询问操作，则 `a=0`）。
+>
+> 第一个操作一定是添加操作。对于询问操作，`L>0` 且不超过当前序列的长度。
+
+**输出格式**
+
+> 对于每一个询问操作，输出一行。该行只有一个数，即序列中最后 `L` 个数的最大数。
+
+**数据范围**
+
+> + $1≤m≤2×10^5$,
+> + $1≤p≤2×10^9$,
+> + $0≤t<p$
+
+**输入样例**
+
+```c++
+10 100
+A 97
+Q 1
+Q 1
+A 17
+Q 2
+A 63
+Q 1
+Q 1
+Q 3
+A 99
+```
+
+**输出样例**
+
+```c++
+97
+97
+97
+60
+60
+97
+```
+
+**样例解释**
+
+> 最后的序列是 `97,14,60,96`。
+
+**备注**
+
+![2111618](https://gitee.com/peter95535/image-bed/raw/master/img/2111618.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 200010;
+int n, m, p;
+struct Node {
+    int l, r, Max; // Max是区间[l, r]的最大值
+}tr[N * 4];
+void build(int u, int l, int r) { // u当前节点的下标，[l, r]是区间左右端点
+    tr[u] = {l, r};
+    // 区间只有一个数字
+    if (l == r) return;
+    int mid = l + r >> 1;
+    // 左子树
+    build(u << 1, l, mid);
+    // 右子树
+    build(u << 1 | 1, mid + 1, r);
+    return;
+}
+int query(int u, int l, int r) {
+    // 如果线段树的区间完全包含在所查询区间的内部，则直接返回最大值即可
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].Max;
+    int mid = tr[u].l + tr[u].r >> 1;
+    int Max = 0;
+    /**
+    	问题：为啥不判断两个区间不相交的情况？
+    	回答：查看备注
+    */
+    // 如果左边区间有重合，则查询左边
+    // 至于为啥不能写成query(u << 1, l, mid)，查看原理的样例模拟即可知晓
+    if (l <= mid) Max = query(u << 1, l, r);
+    // 如果右边区间有重合，则查询右边
+    // 至于为啥不能写成query(u << 1, l, mid)，查看原理的样例模拟即可知晓
+    if (r > mid) Max = max(Max, query(u << 1 | 1, l, r));
+    return Max;
+}
+// 由子节点更新父节点
+void pushup(int u) {
+    tr[u].Max = max(tr[u << 1].Max, tr[u << 1 | 1].Max);
+    return;
+}
+void modify(int u, int x, int c) {
+    // 如果到达叶子结点即区间左右端点都是x，则修改值即可
+    // 由于只有一个值，因此，区间最大值即为当前值本身
+    if (tr[u].l == x && tr[u].r == x) tr[u].Max = c;
+    else {
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 和左边有交集
+        if (x <= mid) modify(u << 1, x, c);
+        // 和右边有交集
+        if (x > mid) modify(u << 1 | 1, x, c);
+        // 由子节点更新父节点
+        pushup(u);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &m, &p);
+    // 最多有m个操作，因此，区间右端点为m
+    build(1, 1, m);
+    int x, last = 0;
+    char op[2];
+    while (m -- ) {
+        scanf("%s%d", op, &x);
+        if (op[0] == 'Q') {
+            // 查询最后x个数字的最大值，其区间为[n - x + 1, n]
+            last = query(1, n - x + 1, n);
+            cout << last << endl;
+        }
+        else {
+            // 修改第n + 1个值
+            modify(1, n + 1, (x + 0LL + last) % p);
+            n ++;
+        }
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`线段树`
+
+##### [AcWing 245. 你能回答这些问题吗](https://www.acwing.com/problem/content/246/)
+
+**题目描述**
+
+> 给定长度为 `N` 的数列 `A`，以及 `M` 条指令，每条指令可能是以下两种之一：
+>
+> 1. `1 x y`，查询区间 `[x,y]` 中的最大连续子段和，即 $max_{x≤l≤r≤y}\{∑\limits_{i=l}^rA[i]\}$。
+> 2. `2 x y`，把 `A[x]` 改成 `y`。
+>
+> 对于每个查询指令，输出一个整数表示答案。
+
+**输入格式**
+
+> 第一行两个整数 `N,M`。
+>
+> 第二行 `N` 个整数 `A[i]`。
+>
+> 接下来 `M` 行每行 `3` 个整数 `k,x,y`，`k=1` 表示查询（此时如果 `x>y`，请交换 `x,y`），`k=2` 表示修改。
+
+**输出格式**
+
+> 对于每个查询指令输出一个整数表示答案。
+>
+> 每个答案占一行。
+
+**数据范围**
+
+> + $N≤500000,M≤100000$,
+> + $−1000≤A[i]≤1000$
+
+**输入样例**
+
+```c++
+5 3
+1 2 -3 4 5
+1 2 3
+2 2 -1
+1 3 2
+```
+
+**输出样例**
+
+```c++
+2
+-1
+```
+
+**手写稿**
+
+![2111320](https://gitee.com/peter95535/image-bed/raw/master/img/2111320.jpg)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 500010;
+struct Node {
+    int l, r; // 区间左右端点
+    int maxSum; // 最大连续子区间和
+    int lMaxSum, rMaxSum; // 最大前缀和和最大后缀和
+    int sum; // 区间和
+}tr[N * 4];
+int n, m;
+int g[N];
+void pushup(Node& u, Node& l, Node& r) {
+    u.maxSum = max(max(l.maxSum, r.maxSum), l.rMaxSum + r.lMaxSum);
+    u.lMaxSum = max(l.lMaxSum, l.sum + r.lMaxSum);
+    u.rMaxSum = max(r.rMaxSum, r.sum + l.rMaxSum);
+    u.sum = l.sum + r.sum;
+    return;
+}
+// 由父节点更新子节点
+void pushup(int u) {
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
+    return;
+}
+void build(int u, int l, int r) {
+    // 到达叶子节点[l, r]是下标，记录所有属性值
+    if (l == r) tr[u] = {l, r, g[l], g[l], g[l], g[l]};
+    else {
+        // 如果没有到达叶子结点，则只记录区间端点即可，别的值暂时无法得出
+        tr[u] = {l, r};
+        int mid = l + r >> 1;
+        build(u << 1, l, mid);
+        build(u << 1 | 1, mid + 1, r);
+        // 更新【父节点】中除了区间端点之外的其余属性值即可
+        pushup(u);
+    }
+    return;
+}
+// 由于树状数组的节点是结构体，因此，返回值是节点【结构体】
+Node query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    else {
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 区间查询区间可能不存在
+        // 如果查询的区间在线段树区间的左边
+        if (r <= mid) return query(u << 1, l, r);
+        // 如果查询的区间在线段树区间的右边
+        else if (l > mid) return query(u << 1 | 1, l, r);
+        else {
+            // 如果查询的区间和左右端点有交集
+            auto left = query(u << 1, l, r);
+            auto right = query(u << 1 | 1, l, r);
+            // 使用结构体节点
+            Node res;
+            pushup(res, left, right);
+            return res;
+        }
+    }
+}
+void modify(int u, int x, int c) {
+    // 找到叶子节点
+    if (tr[u].l == x && tr[u].r == x) tr[u] = {x, x, c, c, c, c};
+    else {
+        // 根据题目描述修改的区间一定是合法区间，一定会有相交
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 如果和左区间有交集
+        if (x <= mid) modify(u << 1, x, c);
+        // 如果和右区间有交集
+        else modify(u << 1 | 1, x, c);
+        // 修改完记得更新父节点
+        pushup(u);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    build(1, 1, n);
+    int k, x, y;
+    while (m -- ) {
+        scanf("%d%d%d", &k, &x, &y);
+        if (k == 1) {
+            // 如果左端点大于右端点，则交换端点即可
+            if (x > y) swap(x, y);
+            cout << query(1, x, y).maxSum << endl;
+        }
+        else modify(1, x, y);
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`线段树`
+
+##### [AcWing 246. 区间最大公约数](https://www.acwing.com/problem/content/247/)
+
+**题目描述**
+
+> 给定一个长度为 `N` 的数列 `A`，以及 `M` 条指令，每条指令可能是以下两种之一：
+>
+> 1. `C l r d`，表示把 `A[l],A[l+1],…,A[r]` 都加上 `d`。
+> 2. `Q l r`，表示询问 `A[l],A[l+1],…,A[r]` 的最大公约数(`GCD`)。
+>
+> 对于每个询问，输出一个整数表示答案。
+
+**输入格式**
+
+> 第一行两个整数 `N,M`。
+>
+> 第二行 `N` 个整数 `A[i]`。
+>
+> 接下来 `M` 行表示 `M` 条指令，每条指令的格式如题目描述所示。
+
+**输出格式**
+
+> 对于每个询问，输出一个整数表示答案。
+>
+> 每个答案占一行。
+
+**数据范围**
+
+> + $N≤500000,M≤100000$,
+> + $1≤A[i]≤10^{18}$,
+> + $|d|≤10^{18}$
+
+**输入样例**
+
+```c++
+5 5
+1 3 5 7 9
+Q 1 5
+C 1 5 1
+Q 1 5
+C 3 3 6
+Q 2 4
+```
+
+**输出样例**
+
+```c++
+1
+2
+4
+```
+
+**手写稿**
+
+![2012309](https://gitee.com/peter95535/image-bed/raw/master/img/2012309.jpg)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 500010;
+struct Node {
+    int l, r; // 区间左右端点
+    LL sum, d; // 区间和和区间的最大公约数
+}tr[N * 4];
+int n, m;
+LL g[N];
+// 注意类型LL
+LL gcd(LL a, LL b) {
+    if (!b) return a;
+    return gcd(b, a % b);
+}
+void pushup(Node& u, Node& l, Node& r) {
+    u.sum = l.sum + r.sum;
+    u.d = gcd(l.d, r.d);
+    return;
+}
+void pushup(int u) {
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
+    return;
+}
+void build(int u, int l, int r) {
+    if (l == r) {
+        // 注意类型LL
+        LL a = g[r] - g[r - 1];
+        tr[u] = {l, r, a, a};
+    }
+    else {
+        tr[u] = {l, r};
+        int mid = l + r >> 1;
+        build(u << 1, l, mid);
+        build(u << 1 | 1, mid + 1, r);
+        // 注意更新下父节点u
+        pushup(u);
+    }
+    return;
+}
+Node query(int u, int l, int r) {
+    // 如果线段树中的区间包含在所查询区间的内部，则直接返回
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    else {
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 如果查询区间出现在线段树区间的左边
+        if (r <= mid) return query(u << 1, l, r);
+        // 如果查询区间出现在线段树区间的右边
+        else if (l > mid) return query(u << 1 | 1, l, r);
+        else {
+            // 如果查询区间处于线段树区间的两边
+            auto left = query(u << 1, l, r);
+            auto right = query(u << 1 | 1, l, r);
+            Node res;
+            pushup(res, left, right);
+            return res;
+        }
+    }
+}
+void modify(int u, int x, LL c) {
+    if (tr[u].l == x && tr[u].r == x) {
+        // 注意类型LL
+        LL a = tr[u].sum + c;
+        tr[u] = {x, x, a, a};
+    }
+    else {
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 如果数x位于左区间
+        if (x <= mid) modify(u << 1, x, c);
+        // 如果数x位于右区间
+        else modify(u << 1 | 1, x, c);
+        // 更新父节点u
+        pushup(u);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) scanf("%lld", &g[i]);
+    build(1, 1, n);
+    char op[2];
+    int l, r;
+    LL d;
+    while (m -- ) {
+        scanf("%s", op);
+        if (op[0] == 'Q') {
+            scanf("%d%d", &l, &r);
+            // 注意最大公约数可能是负数，记得取绝对值
+            cout << abs(gcd(query(1, 1, l).sum, query(1, l + 1, r).d)) << endl; 
+        }
+        else {
+            scanf("%d%d%lld", &l, &r, &d);
+            modify(1, l, d);
+            // 记得判断是否越界
+            if (r + 1 <= n) modify(1, r + 1, -d);
+        }
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`差分`、`树状数组`
+
+##### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
+
+**题目描述**
+
+> 给定一个长度为 `N` 的数列 `A`，以及 `M` 条指令，每条指令可能是以下两种之一：
+>
+> 1. `C l r d`，表示把 `A[l],A[l+1],…,A[r]` 都加上 `d`。
+> 2. `Q l r`，表示询问数列中第 `l∼r` 个数的和。
+>
+> 对于每个询问，输出一个整数表示答案。
+
+**输入格式**
+
+> 第一行两个整数 `N,M`。
+>
+> 第二行 `N` 个整数 `A[i]`。
+>
+> 接下来 `M` 行表示 `M` 条指令，每条指令的格式如题目描述所示。
+
+**输出格式**
+
+> 对于每个询问，输出一个整数表示答案。
+>
+> 每个答案占一行。
+
+**数据范围**
+
+> + $1≤N,M≤10^5$,
+> + $|d|≤10000$,
+> + $|A[i]|≤10^9$
+
+**输入样例**
+
+```c++
+10 5
+1 2 3 4 5 6 7 8 9 10
+Q 4 4
+Q 1 10
+Q 2 4
+C 3 6 3
+Q 2 4
+```
+
+**输出样例**
+
+```c++
+4
+55
+9
+15
+```
+
+**步骤**
+
+> 1. `pushdown` 操作（懒标记）
+>    + 用途
+>      + 将当前区间中的每一个数字都添加上 `d`
+>    + 步骤
+>      + 第一步：查看当前根节点 `u` 所在区间是否属于查询的区间
+>      + 第二步：更新相对应的信息
+>      + 第三步：将懒标记 `add` 设置为 `0`，表示已经下放完毕
+> 2. 注意 `pushdown` 和 `pushup` 的位置
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+struct Node {
+    int l, r;
+    LL sum; // 区间和
+    int add; // 懒标记
+}tr[N * 4];
+int n, m;
+int g[N];
+void pushup(int u) {
+    // 懒标记【不包含】当前节点
+    tr[u].sum = tr[u << 1].sum + tr[u << 1 | 1].sum;
+    return;
+}
+void pushdown(int u) {
+    auto &root = tr[u], &left = tr[u << 1], &right = tr[u << 1 | 1];
+    // 如果有懒标记，则将懒标记进行下放
+    if (root.add) {
+        // 左孩子的懒标记进行累加，同时，区间和也需要累加
+        left.add += root.add, left.sum += (LL)(left.r - left.l + 1) * root.add;
+        // 右孩子的懒标记进行累加，同时，区间和也需要累加
+        right.add += root.add, right.sum += (LL)(right.r - right.l + 1) * root.add;
+        // 懒标记置为0
+        root.add = 0;
+    }
+    return;
+}
+void build(int u, int l, int r) {
+    // 如果到达叶子结点，则更新相对应的信息
+    if (l == r) tr[u] = {l, r, g[l], 0};
+    else {
+        // 更新区间的左右端点信息
+        tr[u] = {l, r};
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 如果和左区间有交集，建立树状数组
+        build(u << 1, l, mid);
+        // 如果和右区间有交集，建立树状数组
+        build(u << 1 |1, mid + 1, r);
+        // 由子节点更新父节点
+        pushup(u);
+    }
+    return;
+}
+void modify(int u, int l, int r, int d) {
+    // 如果树状数组区间的左右端点包含在要查询的区间内部，则直接更新相对应的信息
+    if (tr[u].l >= l && tr[u].r <= r) {
+        tr[u].sum += (LL)(tr[u].r - tr[u].l + 1) * d;
+        tr[u].add += d;
+    }
+    else { // 必须要进行分裂
+        // 分裂之前必须要进行pushdown操作，即下放懒标记操作
+        pushdown(u);
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 如果和左区间有交集
+        if (l <= mid) modify(u << 1, l, r, d);
+        // 如果和右区间有交集
+        if (r > mid) modify(u << 1 | 1, l, r, d);
+        // 由子节点信息更新父节点信息
+        pushup(u);
+    }
+    return;
+}
+LL query(int u, int l, int r) {
+    // 如果树状数组区间的左右端点包含在要查询的区间内部，则直接更新相对应的信息
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].sum;
+    // 要进行分裂
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    LL sum = 0;
+    // 如果和左边区间有交集
+    if (l <= mid) sum += query(u << 1, l, r);
+    // 如果和右边区间有交集
+    if (r > mid) sum += query(u << 1 | 1, l, r);
+    return sum;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    build(1, 1, n);
+    while (m -- ) {
+        char op[2];
+        int l, r, d;
+        scanf("%s", op);
+        if (op[0] == 'C') {
+            scanf("%d%d%d", &l, &r, &d);
+            modify(1, l, r, d);
+        }
+        else {
+            scanf("%d%d", &l, &r);
+            cout << query(1, l, r) << endl;
+        }
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`树状数组`、`懒标记`
+
+##### [AcWing 247. 亚特兰蒂斯](https://www.acwing.com/problem/content/249/)
+
+**题目描述**
+
+> 有几个古希腊书籍中包含了对传说中的亚特兰蒂斯岛的描述。
+>
+> 其中一些甚至包括岛屿部分地图。
+>
+> 但不幸的是，这些地图描述了亚特兰蒂斯的不同区域。
+>
+> 您的朋友 `Bill` 必须知道地图的总面积。
+>
+> 你自告奋勇写了一个计算这个总面积的程序。
+
+**输入格式**
+
+> 输入包含多组测试用例。
+>
+> 对于每组测试用例，第一行包含整数 `n`，表示总的地图数量。
+>
+> 接下来 `n` 行，描绘了每张地图，每行包含四个数字 $x_1,y_1,x_2,y_2$（不一定是整数），$(x_1,y_1)$ 和 $(x_2,y_2)$ 分别是地图的左上角位置和右下角位置。
+>
+> 注意，坐标轴 `x` 轴从上向下延伸，`y` 轴从左向右延伸。
+>
+> 当输入用例 `n=0` 时，表示输入终止，该用例无需处理。
+
+**输出格式**
+
+> 每组测试用例输出两行。
+>
+> 第一行输出 `Test case #k`，其中 `k` 是测试用例的编号，从 `1` 开始。
+>
+> 第二行输出 `Total explored area: a`，其中 `a` 是总地图面积（即此测试用例中所有矩形的面积并，注意如果一片区域被多个地图包含，则在计算总面积时只计算一次），精确到小数点后两位数。
+>
+> 在每个测试用例后输出一个空行。
+
+**数据范围**
+
+> + $1≤n≤10000$,
+> + $0≤x1<x2≤100000$,
+> + $0≤y1<y2≤100000$
+> + 注意，本题 $n$ 的范围上限加强至 $10000$。
+
+**输入样例**
+
+```c++
+2
+10 10 20 20
+15 15 25 25.5
+0
+```
+
+**输出样例**
+
+```c++
+Test ccase #1
+Total explored area: 180.00 
+```
+
+**样例解释**
+
+> 样例所示地图覆盖区域如下图所示，两个矩形区域所覆盖的总面积，即为样例的解。
+
+![2051745.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_4acba44c27-%E6%97%A0%E6%A0%87%E9%A2%98-20220205174554149.png)
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**标签**
+
+`树状数组`、`扫描线`
+
+##### end
 
 #### end

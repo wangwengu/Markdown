@@ -53,3 +53,14 @@ $$
     &= 2C + D
 \end{align*}
 $$
+
+$$
+a^{+\infty} \\
+a^{-\infty}
+$$
+
+$$
+\vee \\
+\wedge
+$$
+

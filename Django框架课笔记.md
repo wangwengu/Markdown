@@ -1528,8 +1528,626 @@ requestAnimationFrame(AC_GAME_ANIMATION);
     }
     ```
   
-    
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
   
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<!-- 添加用户名信息 -->
+    		<div class="ac_game_settings_username">
+    			<!-- 用户名和密码等信息样式类似，因此设置类名相同 -->
+    			<div class="ac_game_settings_item">
+    				<input type="text" placeholder="用户名">
+    			</div>
+    		</div>
+    	</div>
+    `);
+    ```
+    
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改 ac_game_settings_username 的样式 */
+    .ac_game_settings_username {
+        /* 将其变成块状元素 */
+        display: block;
+        height: 7vh;
+    }
+    
+    /* 修改 ac_game_settings_item 的样式 */
+    .ac_game_settings_item {
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* 修改 ac_game_settings_item 下的 input 的样式 */
+    .ac_game_settings_item > input {
+        width: 90%;
+        line-height: 3vh;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    ```
+  
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<div class="ac_game_settings_login">
+    			<!-- 添加密码信息 -->
+    			<div class="ac_game_settings_password">
+    				<!-- 用户名和密码等信息样式类似，因此设置类名相同 -->
+    				<div class="ac_game_settings_item">
+    					<input type="password" placeholder="密码">
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    `);
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改 ac_game_settings_password 的样式 */
+    .ac_game_settings_password {
+        display: block;
+        height: 7vh;
+    }
+    ```
+  
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<div class="ac_game_settings_login">
+    			<div class="ac_game_settings_submit">
+    				div class="ac_game_settings_item">
+    					<button>登录</button>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    `);
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改 ac_game_settings_submit 的样式 */
+    .ac_game_settings_submit {
+        display: block;
+        height: 7vh;
+    }
+    
+    /* 修改 ac_game_settings_item 下的 button 的样式 */
+    .ac_game_settings_item > button {
+        color: white;
+        width: 90%;
+        line-height: 3vh;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #4CAF50;
+        border-radius: 5px;
+    }
+    ```
+  
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<div class="ac_game_settings_login">
+    			<div class="ac_game_settings_error_messages">
+    				用户名密码错误
+    			</div>
+    		</div>
+    	</div>
+    `);
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改 ac_game_settings_error_messages 的样式 */
+    .ac_game_settings_error_messages {
+        color: red;
+        font-size: 0.8vh;
+        display: inline;
+        float: left;
+        padding-left: 1vw;
+    }
+    ```
+  
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<div class="ac_game_settings_login">
+    			<div class="ac_game_settings_option">
+    				注册
+    			</div>
+    		</div>
+    	</div>
+    `);
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改 ac_game_settings_option 的样式 */
+    .ac_game_settings_option {
+        color: white;
+        font-size: 1.8vh;
+        display: inline;
+        float: right;
+        padding-right: 1vw;
+        cursor: pointer;
+    }
+    ```
+  
+  + 下载 `logo` 图片到 `acapp/game/static/image/settings/acwing_login.png`
+  
+    + `wget --output-document=图片别名 图片地址 ` [图片地址](https://cdn.acwing.com/media/article/image/2021/11/18/1_ea3d5e7448-logo64x64_2.png)
+    + 记得重启服务
+  
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<div class="ac_game_settings_login">
+    			<!-- 记得加个换行符 -->
+    			<br>
+    			<div class="ac_game_settings_acwing">
+    				<img width="30px;" src="https://app149.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
+    			</div>
+    		</div>
+    	</div>
+    `);
+    
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改 ac_game_settings_acwing 的样式 */
+    .ac_game_settings_acwing {
+        display: block;
+        height: 7vh;
+    }
+    
+    /* 修改 ac_game_settings_acwing 下的 img 的样式 */
+    .ac_game_settings_acwing > img {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+    }
+    ```
+  
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<div class="ac_game_settings_login">
+    			<div class="ac_game_settings_acwing">
+    				<br>
+    				<div>
+    					AcWing一键登录
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    `);
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改 ac_game_settings_login 的样式 */
+    .ac_game_settings_login {
+        /* 修改高度为 43 vh */
+        height: 43vh;
+    }
+    
+    /* 修改 ac_game_settings_acwing 下的 img 的样式 */
+    .ac_game_settings_acwing > img {
+        /* 修改为块状元素 */
+        display: block;
+    }
+    
+    /* 修改 ac_game_settings_acwing 下的 div 的样式 */
+    .ac_game_settings_acwing > div {
+        color: white;
+        font-size: 1.5vh;
+        text-align: center;
+    }
+    ```
+  
+  + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    this.$settings = $(`
+    	<div class="ac_game_settings">
+    		<div class="ac_game_settings_register">
+    			<div class="ac_game_settings_title">
+    				注册
+    			</div>
+    			<div class="ac_game_settings_username">
+    				<div class="ac_game_settings_item">
+    					<input type="text" placeholder="用户名">
+    				</div>
+    			</div>
+    			<div class="ac_game_settings_password">
+    				<div class="ac_game_settings_item">
+    					<input type="password" placeholder="密码">
+    				</div>
+    			</div>
+    			<div class="ac_game_settings_password">
+    				<div class="ac_game_settings_item">
+    					<input type="password" placeholder="确认密码">
+    				</div>
+    			</div>
+    			<div class="ac_game_settings_submit">
+    				<div class="ac_game_settings_item">
+    					<button>注册</button>
+    				</div>
+    			</div>
+    			<div class="ac_game_settings_error_messages">
+    			</div>
+    			<div class="ac_game_settings_option">
+    				登录
+    			</div>
+    			<br>
+    			<div class="ac_game_settings_acwing">
+    				<img width="30px;" src="https://app149.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
+    				<br>
+    				<div>
+    					AcWing一键登录
+    				</div>
+    			</div>
+    	</div>
+    `);
+    ```
+  
+  + 修改 `acapp/game/static/css/game.css`
+  
+    ```css
+    /* 修改ac_game_settings_register的样式 */
+    .ac_game_settings_register {
+        height: 50vh;
+        width: 20vw;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+    }
+    ```
+  
+  + 将登录和注册等相关信息抠出来，修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+    ```javascript
+    <!-- 将登录所用的用户名、密码等信息抠出来 -->
+    <!-- 注意是this.$login不是this.$settings -->
+    this.$login_username = this.$login.find(".ac_game_settings_username input");
+    this.$login_password = this.$login.find(".ac_game_settings_password input");
+    this.$login_submit = this.$login.find(".ac_game_settings_submit button");
+    this.$login_error_message = this.$login.find(".ac_game_settings_error_messages");
+    this.$login_register = this.$login.find(".ac_game_settings_option");
+    <!-- 将注册所用的用户名、密码等信息抠出来 -->
+    <!-- 注意是this.$register不是this.$settings -->
+    this.$register_username = this.$register.find(".ac_game_settings_username input");
+    this.$register_password = this.$register.find(".ac_game_settings_password_first input");
+    this.$register_password_confirm = this.$register.find(".ac_game_settings_password_second input");
+    this.$register_submit = this.$register.find(".ac_game_settings_submit button");
+    this.$register_error_message = this.$register.find(".ac_game_settings_error_messages");
+    this.$register_login = this.$register.find(".ac_game_settings_option");
+    hide() {
+    	this.$settings.hide();
+    }
+    ```
+  
+  + 登录和注册之间的跳转
+  
+    ```javascript
+    start() {
+        <!-- 添加监听事件 -->
+    	this.add_listening_events();
+    }
+    add_listening_events() {
+        <!-- 添加登录的监听事件 -->
+    	this.add_listening_events_login();
+        <!-- 添加注册的监听事件 -->
+    	this.add_listening_events_register();
+    }
+    add_listening_events_login() {
+    	let outer = this;
+        <!-- 绑定监听事件 -->
+        <!-- 在登录界面点击注册，跳转到注册界面 -->
+    	this.$login_register.click(function() {
+    		outer.register();
+    	});
+    }
+    add_listening_events_register() {
+    	let outer = this;
+        <!-- 绑定监听事件 -->
+        <!-- 在注册界面点击登录，跳转到登录界面 -->
+    	this.$register_login.click(function() {
+    		outer.login();
+    	});
+    }
+    ```
+  
+  + 登录后台交互
+  
+    + 创建 `acapp/game/views/settings/login.py`，写入以下内容
+  
+      ```python
+      from django.http import JsonResponse
+      from django.contrib.auth import authenticate, login
+      
+      def signin(request):
+          data = request.GET
+          username = data.get('username')
+          password = data.get('password')
+      	# Django存储的是密码的哈希值，因此，使用内置函数
+      	# Django比较的是密码的哈希值，不是密码的值本身，先将输入的密码哈希，再与数据库中的哈希值进行比较，查看是否一致
+          user = authenticate(username = username, password = password)
+          if not user:
+              return JsonResponse({
+                  'result': "用户名或者密码不正确"
+              })
+      	# login内置函数将登录的信息存储在浏览器的cookie里面
+          login(request, user)
+          return JsonResponse({
+              'result': "success"
+          })
+      ```
+  
+    + 修改 `acapp/game/urls/settings/index.py`
+  
+      ```python
+      # 添加signin函数
+      from game.views.settings.login import signin
+      
+      urlpatterns = [
+          # 添加相对应的路由
+          path('login/', signin, name = 'settings_login')
+      ]
+      ```
+  
+    + 修改 `acapp/game/static/js/src/settings/zbase.js`
+  
+      ```javascript
+      add_listening_events_login() {
+          <!-- 给提交按钮绑定监听函数 -->
+      	this.$login_submit.click(function() {
+      		outer.login_on_remote();
+      	});
+      }
+      login_on_remote() {
+      	let outer = this;
+          <!-- 获取input里面输入的值 -->
+      	let username = this.$login_username.val();
+          <!-- 获取input里面输入的值 -->
+      	let password = this.$login_password.val();
+          <!-- 将错误信息清空 -->
+      	this.$login_error_message.empty();
+      	$.ajax({
+      		url: 'https://app149.acapp.acwing.com.cn/settings/login/',
+      		type: 'GET',
+      		data: {
+      			username: username,
+      			password: password
+      		},
+      		success: function(resp) {
+      			console.log(resp);
+      			if (resp.result === 'success') {
+      				location.reload();
+      			}
+      			else {
+      				outer.$login_error_message.html(resp.result);
+      			}
+      		}
+      	});
+      }
+      ```
+  
+  + 登出后台交互
+  
+    + 修改 `acapp/game/views/settings/logout.py`
+  
+      ```python
+      from django.http import JsonResponse
+      # 导入登出函数
+      from django.contrib.auth import logout
+      
+      def signout(request):
+          user = request.user
+          # 如果用户没有登录，则正常返回
+          if not user.is_authenticated:
+              return JsonResponse({
+                  'result': "success"
+              })
+          # 如果用户处于登录状态，则退出登录，之后再正常返回
+          logout(request)
+          return JsonResponse({
+              'result': "success"
+          })
+      ```
+    
+    + 修改 `acapp/game/urls/settings/index.py`
+    
+      ```python
+      # 导入视图函数
+      from game.views.settings.logout import signout
+      
+      urlpatterns = [
+          # 添加路由
+          path('logout/', signout, name = 'settings_logout')
+      ]
+      ```
+    
+    + 修改 `acapp/game/static/js/src/settings/zbase.js`
+    
+      ```javascript
+      <!-- 添加登出函数 -->
+      logout_on_remote() {
+          <!-- 如果当前登录的平台是ACAPP，则直接返回即可，因为ACAPP不是退出登录而是关闭界面 -->
+      	if (this.platform === 'ACAPP') return false;
+      	$.ajax({
+      		url: 'https://app149.acapp.acwing.com.cn/settings/logout/',
+      		type: 'GET',
+      		success: function(resp) {
+      			console.log(resp);
+      			if (resp.result === 'success') {
+                      <!-- 刷新界面 -->
+      				location.reload();
+      			}
+      		}
+      	});
+      }
+      ```
+    
+    + 绑定登出点击事件，修改 `acapp/game/static/js/src/menu/zbase.js`
+    
+      ```javascript
+      this.$menu = $(`
+      	<div class="ac_game_menu">
+      		<div class="ac_game_menu_field">
+      			<div class="ac_game_menu_field_item ac_game_menu_field_item_settings">
+      				退出
+      			</div>
+      		</div>
+      	</div>
+      `);
+      <!-- 获取设置的权柄 -->
+      this.$settings = this.$menu.find('.ac_game_menu_field_item_settings');
+      <!-- 点击设置的时候，触发点击事件 -->
+      this.$settings.click(function() {
+          <!-- 调用logout_on_remote()函数 -->
+      	outer.root.settings.logout_on_remote();
+      });
+      ```
+    
+  + 注册后台交互
+  
+    + 修改 `acapp/game/views/settings/register.py`
+  
+      ```python
+      from django.http import JsonResponse
+      from django.contrib.auth import login
+      from django.contrib.auth.models import User
+      from game.models.player.player import Player
+      
+      def register(request):
+          data = request.GET
+          # 获取用户名，否则，返回空
+          # strip()去除前后空格
+          username = data.get('username', '').strip()
+          # 获取密码，否则，返回空
+          # strip()去除前后空格
+          password = data.get('password', '').strip()
+          # 获取确认密码，否则，返回空
+          # strip()去除前后空格
+          password_confirm = data.get('password_confirm', '').strip()
+          if not username or not password or not password_confirm:
+              return JsonResponse({
+                  'result': '用户名或者密码不能为空'
+              })
+          if password != password_confirm:
+              return JsonResponse({
+                  'result': '两次密码不一致'
+              })
+          if User.objects.filter(username = username).exists():
+              return JsonResponse({
+                  'result': '用户名已存在'
+              })
+          user = User(username = username)
+          user.set_password(password)
+          # 将新创建的用户进行保存
+          user.save()
+          # 创建user的其他属性
+          Player.objects.create(
+                  user = user,
+                  photo = 'https://ss0.baidu.com/-Po3dSag_xI4khGko9WTAnF6hhy/baike/pic/item/4afbfbedab64034f930bfd5eafc379310b551da7.jpg')
+          # 将新用户注册到后台页面
+          login(request, user)
+          return JsonResponse({
+              'result': 'success'
+          })
+      ```
+      
+    + 修改路由 `acapp/game/urls/settings/index.py`
+    
+      ```python
+      # 导入注册视图
+      from game.views.settings.register import register
+      
+      urlpatterns = [
+          # 添加注册路由
+          path('register/', register, name = 'settings_register')
+      ]
+      ```
+    
+    + 修改前端页面 `acapp/game/static/js/src/settings/zbase.js`
+    
+      ```javascript
+      class Settings {
+          add_listening_events_register() {
+              <!-- 绑定提交按钮事件 -->
+              this.$register_submit.click(function() {
+                  outer.register_on_remote();
+              });
+          }
+          register_on_remote() {
+              let outer = this;
+              let username = this.$register_username.val();
+              let password = this.$register_password.val();
+              let password_confirm = this.$register_password_confirm.val();
+              this.$register_error_message.empty();
+              $.ajax({
+                  url: 'https://app149.acapp.acwing.com.cn/settings/register/',
+                  type: 'GET',
+                  data: {
+                      username: username,
+                      password: password,
+                      password_confirm: password_confirm
+                  },
+                  success: function(resp) {
+                      console.log(resp);
+                      if (resp.result === 'success') {
+                          <!-- 重新加载页面 -->
+                          location.reload();
+                      }
+                      else {
+                          <!-- 打印错误信息 -->
+                          outer.$register_error_message.html(resp.result);
+                      }
+                  }
+              })
+          }
+      }
+      ```
+    
+  + 网页端 `AcWing` 一键登录
+  
+    + 
+  
+
+#### end
 
 #### 注意事项
 
