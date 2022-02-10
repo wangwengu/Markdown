@@ -2144,7 +2144,61 @@ requestAnimationFrame(AC_GAME_ANIMATION);
     
   + 网页端 `AcWing` 一键登录
   
-    + 
+    + 第一步：在 `Django` 中集成 `redis` 也叫内存数据库，存储的是键值对
+    
+      + 安装 `redis` ，执行命令 `pip3 install django_redis` 进行安装
+    
+      + 配置 `acapp/acapp/settings.py` 文件，写入内容
+    
+        ```python
+        # 注意粘贴的位置，位于# Database的位置，也就是数据库的位置
+        CACHES = { 
+            'default': {
+                'BACKEND': 'django_redis.cache.RedisCache',
+                'LOCATION': 'redis://127.0.0.1:6379/1',
+                "OPTIONS": {
+                    "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                },  
+            },  
+        }
+        USER_AGENTS_CACHE = 'default'
+        ```
+    
+      + 启动 `redis-server` 服务
+    
+        ```bash
+        sudo redis-server /etc/redis/redis.conf
+        ```
+    
+      + 使用 `top` 命令查看是否含有进程 `redis-server`
+    
+      + 重启服务 `uwsgi`即可
+    
+      + `redis` 的基本操作
+    
+        + 执行命令 `python3 manage.py shell`，打开 `django` 后台
+    
+          ```python
+          # 导入缓存包
+          from django.core.cache import cache
+          # 查询所有的键keys，支持正则表达式
+          cache.keys('*')
+          # 设置键值对
+          # 第一个参数：key
+          # 第二个参数：value
+          # 第三个参数：过期时间（单位：秒），None表示永远不会过期
+          cache.set('yxc', 1, 5)
+          # 查询某个键是否存在，存在返回True，否则，返回False
+          cache.has_key('wyp')
+          # 查询某个键对应的值
+          cache.get('wyp')
+          # 删除关键字
+          cache.delete('wyp')
+          ```
+    
+    + 第二步：`OAuth2` 协议执行过程详解
+    
+      ![2110029](https://gitee.com/peter95535/image-bed/raw/master/img/2110029.png)
   
 
 #### end

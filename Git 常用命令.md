@@ -103,4 +103,16 @@
 >
 >      > 使用 `git pull --rebase origin master` 进行代码合并即可解决
 >
-> 2. 
+> 2. 问题 `2`
+>
+>    + 问题描述
+>
+>      > `git push` 之后需要输入用户名 `Username for 'https://github.com'` 和密码 `Password for 'https://wangwengu@github.com'`
+>
+>    + 问题原因
+>
+>      > `personal token access` 过期了
+>
+>    + 解决方案
+>
+>      > 重新生成 `personal token access` 即可，同时需要注意勾选第一个选项卡✅的所有内容

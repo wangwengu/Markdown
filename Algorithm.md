@@ -1,6 +1,388 @@
 #### 动态规划专题
 
-##### [Acwing 1064. 小国王](https://www.acwing.com/problem/content/1066/)
+##### 树形`DP`
+
+###### 树的直径经典求法
+
+**前提条件**
+
+![2091531](https://gitee.com/peter95535/image-bed/raw/master/img/2091531.png)
+
+**定理**
+
+> 任意寻找树中的某一点，寻找树中距离当前节点最远的点 `u`，再寻找距离 `u` 最远的点 `v`，则树的直径即为 `u` 到 `v` 经过的节点数目
+
+**证明**
+
+![2091538](https://gitee.com/peter95535/image-bed/raw/master/img/2091538.png)
+
+###### [AcWing 1072. 树的最长路径](https://www.acwing.com/problem/content/1074/)
+
+**题目描述**
+
+> 给定一棵树，树中包含 `n` 个结点（编号`1~n`）和 `n−1` 条无向边，每条边都有一个权值。
+>
+> 现在请你找到树中的一条最长路径。
+>
+> 换句话说，要找到一条路径，使得使得路径两端的点的距离最远。
+>
+> 注意：路径中可以只包含一个点。
+
+**输入格式**
+
+> 第一行包含整数 `n`。
+>
+> 接下来 `n−1` 行，每行包含三个整数 $a_i,b_i,c_i$，表示点 $a_i$ 和 $b_i$ 之间存在一条权值为 $c_i$ 的边。
+
+**输出格式**
+
+> 输出一个整数，表示树的最长路径的长度。
+
+**数据范围**
+
+> + $1≤n≤10000,$
+> + $1≤a_i,b_i≤n,$
+> + $−10^5≤c_i≤10^5$
+
+**输入样例**
+
+```c++
+6
+5 1 6
+1 4 5
+6 3 9
+2 6 8
+6 1 7
+```
+
+**输出样例**
+
+```c++
+22
+```
+
+**手写稿**
+
+![2101347](https://gitee.com/peter95535/image-bed/raw/master/img/2101347.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 10010, M = N << 1;
+int n, idx, ans;
+int h[N], e[M], w[M], ne[M];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++ ;
+    return;
+}
+// 返回以u为根结点的最大权值和
+int dfs(int u, int father) {
+    // d1表示最大值，d2表示次大值
+    int d1 = 0, d2 = 0;
+    // 以u为根结点的子树的最大权值和
+    int dist = 0;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        if (j == father) continue; // 原因在题解中已经解释
+        int d = dfs(j, u) + w[i];
+        dist = max(dist, d);
+        if (d >= d1) d2 = d1, d1 = d;
+        else if (d >= d2) d2 = d;
+    }
+    ans = max(ans, d1 + d2);
+    return dist;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < n - 1; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    dfs(1, -1);
+    cout << ans << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`树形DP`
+
+###### [AcWing 846. 树的重心](https://www.acwing.com/problem/content/description/848/)
+
+**题目描述**
+
+> 给定一颗树，树中包含 `n` 个结点（编号 `1∼n`）和 `n−1` 条无向边。
+>
+> 请你找到树的重心，并输出将重心删除后，剩余各个连通块中点数的最大值。
+>
+> 重心定义：重心是指树中的一个结点，如果将这个点删除后，剩余各个连通块中点数的最大值最小，那么这个节点被称为树的重心。
+
+**输入格式**
+
+> 第一行包含整数 `n`，表示树的结点数。
+>
+> 接下来 `n−1` 行，每行包含两个整数 `a` 和 `b`，表示点 `a` 和点 `b` 之间存在一条边。
+
+**输出格式**
+
+> 输出一个整数 `m`，表示将重心删除后，剩余各个连通块中点数的最大值。
+
+**数据范围**
+
+> + $1≤n≤10^5$
+
+**输入样例**
+
+```c++
+9
+1 2
+1 7
+1 4
+2 8
+2 5
+4 3
+3 9
+4 6
+```
+
+**输出样例**
+
+```c++
+4
+```
+
+**手写稿**
+
+![2092103](https://gitee.com/peter95535/image-bed/raw/master/img/2092103.png)
+
+**注意事项**
+
+> 1. 为啥 `dfs(int u, int father)` 要定义一个 `father` 变量，以防止 `圈2` 操作，从而导致无限循环
+>
+>    ![2092107](https://gitee.com/peter95535/image-bed/raw/master/img/2092107.png)
+>
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 100010, M = N << 1;
+int n, idx, ans = 1e9;
+int h[N], e[M], ne[M];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+int dfs(int u, int father) { // 以u为根节点的树中的节点个数
+    int res = 0; // 以u为根结点的树中的节点个数的最大值
+    int num = 1; // 各个子树的节点的个数，至少包含当前的节点，故初始值为1
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        // 如果当前遍历的点是其父亲节点，则返回，防止产生死循环，原因已解释
+        if (j == father) continue;
+        int d = dfs(j, u);
+        num += d;
+        res = max(res, d);
+    }
+    ans = min(ans, max(res, n - num));
+    return num;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < n - 1; i ++ ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        // 无向图
+        add(a, b);
+        add(b, a);
+    }
+    dfs(1, -1);
+    cout << ans << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`动态规划`、`树形DP`、`深度优先搜索`
+
+###### [AcWing 1073. 树的中心](https://www.acwing.com/problem/content/1075/)
+
+**题目描述**
+
+> 给定一棵树，树中包含 `n` 个结点（编号`1~n`）和 `n−1` 条无向边，每条边都有一个权值。
+>
+> 请你在树中找到一个点，使得该点到树中其他结点的最远距离最近。
+
+**输入格式**
+
+> 第一行包含整数 `n`。
+>
+> 接下来 `n−1` 行，每行包含三个整数 $a_i,b_i,c_i$，表示点 $a_i$ 和 $b_i$ 之间存在一条权值为 $c_i$ 的边。
+
+**输出格式**
+
+> 输出一个整数，表示所求点到树中其他结点的最远距离。
+
+**数据范围**
+
+> + $1≤n≤10000,$
+> + $1≤a_i,b_i≤n,$
+> + $1≤c_i≤10^5$
+
+**输入样例**
+
+```c++
+5 
+2 1 1 
+3 2 1 
+4 3 1 
+5 1 1
+```
+
+**输出样例**
+
+```c++
+2
+```
+
+**手写稿**
+
+![2101940](https://gitee.com/peter95535/image-bed/raw/master/img/2101940.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 10010, M = N << 1, INF = 0x3f3f3f3f;
+int n, idx;
+// d1[u]和d2[u]分别表示根为u的最长路径和次长路径
+// up[u]表示向u的上方搜索的最长路径
+// p1[u]表示u的最大值来自于父节点还是子节点
+int h[N], e[M], w[M], ne[M], d1[N], d2[N], up[N], p1[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// 向下搜索
+int dfs_d(int u, int father) { // dfs_d返回节点u的所有【子树】的最大路径和
+    // 初始化节点的最大路径和次大路径为负无穷
+    d1[u] = d2[u] = -INF;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        // 如果当前节点j是u的父亲，则返回，原因在楼上的一道题里面已经描述过
+        if (j == father) continue;
+        // 记得加上当前权值w[i]
+        int d = dfs_d(j, u) + w[i];
+        // 更新最大值和次大值，同时要记得更新u的最大值来自的路径，只需要记最大值即可
+        if (d >= d1[u]) d2[u] = d1[u], d1[u] = d, p1[u] = j;
+        else if (d >= d2[u]) d2[u] = d;
+    }
+    // 如果d1和d2没有被更新，则说明是叶节点，则将其最大值和次大值都初始化为0即可
+    if (d1[u] == -INF) d1[u] = d2[u] = 0;
+    // 返回节点u最大值
+    return d1[u];
+}
+// 向上搜索
+void dfs_u(int u, int father) {
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        if (j == father) continue;
+        // 注意是up[j]和up[u]的位置
+        // 注意w[i]是加在max的外面的
+        if (p1[u] == j) up[j] = max(up[u], d2[u]) + w[i];
+        else up[j] = max(up[u], d1[u]) + w[i];
+        dfs_u(j, u);
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < n - 1; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    // 树的向下寻找【用子节点更新父节点】
+    dfs_d(1, -1);
+    // 树的向上寻找【用父节点更新子节点】
+    dfs_u(1, -1);
+    int res = INF;
+    for (int i = 1; i <= n; i ++ ) res = min(res, max(d1[i], up[i]));
+    cout << res << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`树形DP`、`换根DP`
+
+###### [AcWing 1075. 数字转换](https://www.acwing.com/problem/content/1077/)
+
+**题目描述**
+
+> 如果一个数 `x` 的约数之和 `y`（不包括他本身）比他本身小，那么 `x` 可以变成 `y`，`y` 也可以变成 `x`。
+>
+> 例如，`4` 可以变为 `3`，`1` 可以变为 `7`。
+>
+> 限定所有数字变换在不超过 `n` 的正整数范围内进行，求不断进行数字变换且不出现重复数字的最多变换步数。
+
+**输入格式**
+
+> 输入一个正整数 `n`。
+
+**输出格式**
+
+> 输出不断进行数字变换且不出现重复数字的最多变换步数。
+
+**数据范围**
+
+> + $1≤n≤50000$
+
+**输入样例**
+
+```c++
+7
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**样例解释**
+
+> 一种方案为：`4→3→1→74→3→1→7`。
+
+###### end
+
+##### 状态压缩 `DP`
+
+###### [Acwing 1064. 小国王](https://www.acwing.com/problem/content/1066/)
 
 **题目描述**
 
@@ -89,7 +471,7 @@ int main() {
 
 `动态规划`
 
-##### [Acwing 327. 玉米田](https://www.acwing.com/problem/content/329/)
+###### [Acwing 327. 玉米田](https://www.acwing.com/problem/content/329/)
 
 **题目描述**
 
@@ -187,7 +569,9 @@ int main() {
 
 `动态规划`
 
-##### [LeetCode 213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+##### 状态机
+
+###### [LeetCode 213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
 
 **题目描述**
 
@@ -260,7 +644,83 @@ public:
 
 `动态规划`
 
-##### [LeetCode 221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
+###### [AcWing 1058. 股票买卖 V](https://www.acwing.com/problem/content/1060/)
+
+**题目描述**
+
+> 给定一个长度为 `N` 的数组，数组中的第 `i` 个数字表示一个给定股票在第 `i` 天的价格。
+>
+> 设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+>
+> - 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+> - 卖出股票后，你无法在第二天买入股票 (即冷冻期为 `1` 天)。
+
+**输入格式**
+
+> 第一行包含整数 `N`，表示数组长度。
+>
+> 第二行包含 `N` 个不超过 `10000` 的正整数，表示完整的数组。
+
+**输出格式**
+
+> 输出一个整数，表示最大利润。
+
+**数据范围**
+
+> + $1≤N≤10^5$
+
+**输入样例**
+
+```c++
+5
+1 2 3 0 2
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**样例解释**
+
+> 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]，第一笔交易可得利润 `2-1 = 1`，第二笔交易可得利润 `2-0 = 2`，共得利润 `1+2 = 3`。
+
+**手写稿**
+
+![2091151](https://gitee.com/peter95535/image-bed/raw/master/img/2091151.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n;
+int w[N];
+int f[N][3];
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &w[i]);
+    // 注意初始化
+    f[0][0] = f[0][1] = -1e9, f[0][2] = 0;
+    for (int i = 1; i <= n; i ++ ) {
+        f[i][0] = max(f[i - 1][0], f[i - 1][2] - w[i]);
+        f[i][1] = f[i - 1][0] + w[i];
+        f[i][2] = max(f[i - 1][2], f[i - 1][1]);
+    }
+    cout << max(f[n][1], f[n][2]) << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`动态规划`、`状态机`
+
+##### 未分类 `DP`
+
+###### [LeetCode 221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
 
 **题目描述**
 
@@ -284,8 +744,6 @@ public:
 
 > 输入：`matrix = [["0"]]`
 > 输出：`0`
-
-
 
 **提示**
 
@@ -384,7 +842,7 @@ public:
 
 `动态规划`
 
-##### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
+###### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
 
 **题目描述**
 
@@ -432,7 +890,7 @@ public:
 
 `动态规划`
 
-##### [LeetCode 300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+###### [LeetCode 300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
 **题目描述**
 
@@ -3194,6 +3652,122 @@ int main() {
 
 `树状数组`
 
+##### [LeetCode 307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
+
+**题目描述**
+
+> 给你一个数组 `nums` ，请你完成两类查询。
+>
+> 其中一类查询要求 更新 数组 `nums` 下标对应的值
+> 另一类查询要求返回数组 `nums` 中索引 `left` 和索引 `right` 之间（ 包含 ）的 `nums` 元素的 和 ，其中 `left <= right`
+> 实现 `NumArray` 类：
+>
+> + `NumArray(int[] nums)` 用整数数组 `nums` 初始化对象
+> + `void update(int index, int val)` 将 `nums[index]` 的值 更新 为 `val`
+> + `int sumRange(int left, int right)` 返回数组 `nums` 中索引 `left` 和索引 `right` 之间（ 包含 ）的 `nums` 元素的 和 `（即，nums[left] + nums[left + 1], ..., nums[right]）`
+
+**示例 1**
+
+> 输入：
+> `["NumArray", "sumRange", "update", "sumRange"]
+> [[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]`
+> 输出：
+> `[null, 9, null, 8]`
+>
+> 解释：
+> `NumArray numArray = new NumArray([1, 3, 5]);
+> numArray.sumRange(0, 2); // 返回 1 + 3 + 5 = 9
+> numArray.update(1, 2);   // nums = [1,2,5]
+> numArray.sumRange(0, 2); // 返回 1 + 2 + 5 = 8`
+
+**提示**
+
+> + $1 <= nums.length <= 3 * 10^4$
+> + $-100 <= nums[i] <= 100$
+> + $0 <= index < nums.length$
+> + $-100 <= val <= 100$
+> + $0 <= left <= right < nums.length$
+> + $调用 pdate 和 sumRange 方法次数不大于 3 * 10^4 $
+
+**解题步骤**
+
+> 1. 树状数组解决的基本问题
+>
+>    + 单点更新
+>    + 区间求和
+>
+> 2. 本题单点更新略有特殊，本题的单点更新不是将某个值 `tr[i] += val` ，而是 `tr[i] = val` ，因此，本题的 `val` 应该为 `val = val - nums[i]` ，这样，`tr[i] += val` 变成 `tr[i] = tr[i] + val - nums[i] = val` ，同时，将 `nums[i] = val` 才符合题意
+>
+> 3. 必须更新的原因
+>
+>    + 模拟样例
+>
+>      + 输入
+>
+>        > `["NumArray","update","sumRange","update","sumRange"]`
+>        > `[[[7]],[0,2],[0,0],[0,9],[0,0]]`
+>
+>      + 输出
+>
+>        > `[null,null,2,null,9]`
+
+**代码**
+
+```c++
+class NumArray {
+public:
+    int n;
+    vector<int> tr, nums;
+    int lowbit(int x) {
+        return x & -x;
+    }
+    void add(int x, int c) {
+        for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
+        return;
+    }
+    int sum(int x) {
+        int res = 0;
+        for (int i = x; i; i -= lowbit(i)) res += tr[i];
+        return res;
+    }
+    NumArray(vector<int>& _nums) {
+        nums = _nums;
+        n = nums.size();
+        nums.resize(n + 1);
+        tr = vector<int>(n + 5);
+        // 构建树状数组
+        for (int i = 0; i < n; i ++ ) add(i + 1, nums[i]);
+    }
+    
+    void update(int index, int val) {
+        // 树状数组下标从1开始
+        add(index + 1, val - nums[index]);
+        // 更新原数组
+        // 更新缘由在解题步骤中
+        nums[index] = val;
+        return;
+    }
+    
+    int sumRange(int left, int right) {
+        left ++, right ++;
+        return sum(right) - sum(left - 1);
+    }
+};
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray* obj = new NumArray(nums);
+ * obj->update(index,val);
+ * int param_2 = obj->sumRange(left,right);
+ */
+```
+
+**标签**
+
+`树状数组`
+
+##### end
+
 #### 线段树
 
 ##### 原理
@@ -3906,15 +4480,339 @@ Total explored area: 180.00
 
 **手写稿**
 
+![2071347](https://gitee.com/peter95535/image-bed/raw/master/img/2071347.png)
 
+**疑点详解**
+
+> 1. 线段树中存储的节点是线段不是点，注意两者之间的对应关系
+>
+>    ![2071518](https://gitee.com/peter95535/image-bed/raw/master/img/2071518.png)
+>    
+> 1. 离散化的原因
+>
+>    + 注意树状数组中的值就是下标，并且`y` 轴上的端点不一定是整数，有可能是小数，因此，为了防止出现小数的情况，故使用离散化处理
+>    
+>    + 举例说明 `g = [1, 1.5, 2, 5]`
+>      + 如果不使用离散化，则不能计算 `g[1 ~ 1.5]` 的和
+>      + 如果使用离散化，则 `1，1.5，2，2.5` 所对应的下标为 `0，1，2，3` 都是整数，则可以计算
+>    
+> 1. 树状数组中的节点的属性值 cnt 分类讨论的原因
+>
+>    ![2071546](https://gitee.com/peter95535/image-bed/raw/master/img/2071546.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+const int N = 10010;
+struct Segment {
+    double x, y1, y2;
+    // 表明当前线段是左边界还是右边界，左边界的权值为1，右边界的权值为-1
+    int k;
+    bool operator < (Segment &T) { // 按照横坐标x进行排序
+        return x < T.x;
+    }
+}segs[N * 2]; // 1个矩形对应2个横坐标，因此，N个矩形对应2 * N个横坐标
+struct Node {
+    int l, r;
+    int cnt; // 当前区间被覆盖的层数
+    double len; // 当前y轴上大于1的区间长度，注意变量的类型
+}tr[N * 8]; // 左边界横坐标对应4N空间，右边界横坐标对应4N空间，共8N空间
+int n;
+vector<double> ys; // 存储y轴上所有的无重复的点，用来做离散化，注意变量类型
+// 查找大于等于y的数据的下标所在位置
+int find(double y) {
+    return lower_bound(ys.begin(), ys.end(), y) - ys.begin();
+}
+void pushup(int u) {
+    // 如果当前线段树区间被覆盖，则当前区间的长度即为线段树的长度len
+    if (tr[u].cnt) tr[u].len = ys[tr[u].r + 1] - ys[tr[u].l];
+    else if (tr[u].l != tr[u].r) // 如果不是叶节点
+        tr[u].len = tr[u << 1].len + tr[u << 1 | 1].len;
+    else tr[u].len = 0; // 如果是叶节点记得初始化长度为0
+    return;
+}
+void build(int u, int l, int r) {
+    // 初始化树状数组，不用管tr的区间问题，即使l != r也要进行初始化
+    tr[u] = {l, r, 0, 0};
+    if (l != r) {
+        int mid = l + r >> 1;
+        build(u << 1, l, mid);
+        build(u << 1 | 1, mid + 1, r);
+    }
+    return;
+}
+void modify(int u, int l, int r, int k) {
+    if (tr[u].l >= l && tr[u].r <= r) {
+        tr[u].cnt += k;
+        // 计算长度，因为k不一定为正数，如果cnt == 0，则需要通过当前根节点的子节点进行计算
+        pushup(u);
+    }
+    else {
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (l <= mid) modify(u << 1, l, r, k);
+        if (r > mid) modify(u << 1 | 1, l, r, k);
+        // 计算长度，因为k不一定为正数，如果cnt == 0，则需要通过当前根节点的子节点进行计算
+        pushup(u);
+    }
+    return;
+}
+int main() {
+    int T = 0;
+    while (scanf("%d", &n), n) {
+        ys.clear(); // 多组输入，注意每次清空ys里面的数据
+        for (int i = 0, j = 0; i < n; i ++ ) {
+            double x1, y1, x2, y2;
+            scanf("%lf%lf%lf%lf", &x1, &y1, &x2, &y2);
+            segs[j ++ ] = {x1, y1, y2, 1};
+            segs[j ++ ] = {x2, y1, y2, -1};
+            ys.push_back(y1);
+            ys.push_back(y2);
+        }
+        // 对于y轴上的点进行排序，方便去重处理
+        sort(ys.begin(), ys.end());
+        // 去重的前提是有序序列，因此，事先要排序，原因在于此
+        ys.erase(unique(ys.begin(), ys.end()), ys.end());
+        // 建立线段树，区间的个数等于点的个数减一，点的范围[0, n - 1],换算区间的话，再减一，区间的范围为[0, n - 2]
+        build(1, 0, ys.size() - 2);
+        // 对于segs进行排序
+        sort(segs, segs + n * 2);
+        // 计算总面积
+        double res = 0;
+        for (int i = 0; i < n * 2; i ++ ) {
+            if (i > 0) res += tr[1].len * (segs[i].x - segs[i - 1].x);
+            modify(1, find(segs[i].y1), find(segs[i].y2) - 1, segs[i].k);
+        }
+        printf("Test case #%d\nTotal explored area: %.2lf\n\n", ++T, res);
+    }
+    return 0;
+}
+```
 
 **标签**
 
 `树状数组`、`扫描线`
+
+##### [AcWing 1277. 维护序列](https://www.acwing.com/problem/content/1279/)
+
+**题目描述**
+
+> 老师交给小可可一个维护数列的任务，现在小可可希望你来帮他完成。
+>
+> 有长为 `N` 的数列，不妨设为 $a_1,a_2,…,a_N$。
+>
+> 有如下三种操作形式：
+>
+> 1. 把数列中的一段数全部乘一个值；
+> 2. 把数列中的一段数全部加一个值；
+> 3. 询问数列中的一段数的和，由于答案可能很大，你只需输出这个数模 `P` 的值。
+
+**输入格式**
+
+> 第一行两个整数 `N` 和 `P`；
+>
+> 第二行含有 `N` 个非负整数，从左到右依次为 $a_1,a_2,…,a_N$；
+>
+> 第三行有一个整数 `M`，表示操作总数；
+>
+> 从第四行开始每行描述一个操作，输入的操作有以下三种形式：
+>
+> - 操作 `1`：`1 t g c`，表示把所有满足 $t≤i≤g$ 的 $a_i$ 改为 $a_i×c$；
+> - 操作 `2`：`2 t g c`，表示把所有满足 $t≤i≤g$ 的 $a_i$ 改为 $a_i+c$；
+> - 操作 `3`：`3 t g`，询问所有满足 $t≤i≤g$ 的 $a_i$ 的和模 `P` 的值。
+>
+> 同一行相邻两数之间用一个空格隔开，每行开头和末尾没有多余空格。
+
+**输出格式**
+
+对每个操作 `3`，按照它在输入中出现的顺序，依次输出一行一个整数表示询问结果。
+
+**数据范围**
+
+> + $1≤N,M≤10^5$,
+> + $1≤t≤g≤N$,
+> + $0≤c,a_i≤10^9$,
+> + $1≤P≤10^9$
+
+**输入样例**
+
+```c++
+7 43
+1 2 3 4 5 6 7
+5
+1 2 5 5
+3 2 4
+2 3 7 9
+3 1 3
+3 4 7
+```
+
+**输出样例**
+
+```c++
+2
+35
+8
+```
+
+**样例解释**
+
+> 初始时数列为 `{1,2,3,4,5,6,7}`；
+>
+> 经过第 `1` 次操作后，数列为 `{1,10,15,20,25,6,7}`；
+>
+> 对第 `2` 次操作，和为 `10+15+20=45`，模 `43` 的结果是 `2`；
+>
+> 经过第 `3` 次操作后，数列为 `{1,10,24,29,34,15,16}`；
+>
+> 对第 `4` 次操作，和为 `1+10+24=35`，模 `43` 的结果是 `35`；
+>
+> 对第 `5` 次操作，和为 `29+34+15+16=94`，模 `43` 的结果是 `8`。
+
+**解题步骤**
+
+> 1. 线段树中维护五个信息
+>
+>    + 区间左右端点 `[l, r]`
+>    + 区间和 `sum`
+>    + 懒标记 `add` 和 `mul`，表示区间内的每个数字添加 `add` 和 乘以 `mul`
+>
+> 2. 当线段树中的节点同时含有懒标记 `add` 和 `mul` 的时候，如何确定顺序，以方便好维护信息？
+>
+>    + 分两种情况：先 `add` 在 `mul` 和先 `mul` 再 `add`
+>
+>      + 第一种情况：先 `add` 再 `mul`
+>
+>        ![2081729](https://gitee.com/peter95535/image-bed/raw/master/img/2081729.png)
+>
+>      + 第二种情况：先 `mul` 再 `add`
+>
+>        ![2081730](https://gitee.com/peter95535/image-bed/raw/master/img/2081730.png)
+>
+>      + 综上所述，顺序应该为先 `mul` 再 `add` 即可
+>
+>    + 确定完顺序之后，按照顺序先 `mul` 再 `add` 的操作，进行分析，查看值的变化
+>
+>      ![2082022](https://gitee.com/peter95535/image-bed/raw/master/img/2082022.png)
+>
+>      + 备注
+>        + `x ✖️ mul + add` 是原来的数，也就是区间和 `sum`
+>        + 按照顺序先 `mul` 再 `add`，以方便区分变量，故使用 `mul'` 和 `add'` 来表示即可
+>
+> 3. 使用先 `mul` 再 `add` 的顺序简化区间加和区间乘操作
+>
+>    + 区间加
+>      + 令 `mul = 1，add = d` 即可
+>    + 区间乘
+>      + 令 `mul = d，add = 0` 即可
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+struct Node {
+    int l, r; // 左右区间
+    LL sum; // 区间和
+    int mul, add; // 区间乘懒标记mul和区间加懒标记add
+}tr[N * 4];
+int n, m, p;
+int g[N];
+void eval(Node& root, int mul, int add) {
+    // 原理查看解析
+    root.sum = (root.sum * mul + (LL)(root.r - root.l + 1) * add) % p;
+    root.mul = (LL)root.mul * mul % p;
+    root.add = ((LL)root.add * mul + add) % p;
+    return;
+}
+void pushup(int u) {
+    // 记得取模
+    tr[u].sum = (tr[u << 1].sum + tr[u << 1 | 1].sum) % p;
+    return;
+}
+void pushdown(int u) {
+    eval(tr[u << 1], tr[u].mul, tr[u].add);
+    eval(tr[u << 1 | 1], tr[u].mul, tr[u].add);
+    // 记得将懒标记清空
+    tr[u].mul = 1, tr[u].add = 0;
+    return;
+}
+void build(int u, int l, int r) {
+    if (l == r) tr[u] = {l, r, g[l], 1, 0};
+    else {
+        // sum先随便设置一个值
+        tr[u] = {l, r, 0, 1, 0};
+        int mid = tr[u].l + tr[u].r >> 1;
+        build(u << 1, l, mid);
+        build(u << 1 | 1, mid + 1, r);
+        pushup(u);
+    }
+    return;
+}
+void modify(int u, int l, int r, int mul, int add) {
+    if (tr[u].l >= l && tr[u].r <= r) eval(tr[u], mul, add);
+    else { // 区间要进行分裂
+        // 懒标记下传
+        pushdown(u);
+        int mid = tr[u].l + tr[u].r >> 1;
+        // 左边有交集
+        if (l <= mid) modify(u << 1, l, r, mul, add);
+        // 右边有交集
+        if (r > mid) modify(u << 1 | 1, l, r, mul, add);
+        // 由子节点更新父节点
+        pushup(u);
+    }
+    return;
+}
+int query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].sum;
+    // 查询的时候需要将懒标记下传
+    pushdown(u);
+    int sum = 0;
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 左边有交集
+    if (l <= mid) sum += query(u << 1, l, r);
+    // 右边有交集，记得取模
+    if (r > mid) sum = (sum + query(u << 1 | 1, l, r)) % p;
+    return sum;
+}
+int main() {
+    scanf("%d%d", &n, &p);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    // 建立线段树
+    build(1, 1, n);
+    scanf("%d", &m);
+    while (m -- ) {
+        int num, l, r, k;
+        scanf("%d", &num);
+        // 区间乘
+        if (num == 1) {
+            scanf("%d%d%d", &l, &r, &k);
+            modify(1, l, r, k, 0);
+        }
+        // 区间加
+        else if (num == 2) {
+            scanf("%d%d%d", &l, &r, &k);
+            modify(1, l, r, 1, k);
+        }
+        // 区间查询
+        else {
+            scanf("%d%d", &l, &r);
+            cout << query(1, l, r) << endl;
+        }
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`线段树`
 
 ##### end
 
