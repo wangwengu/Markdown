@@ -116,3 +116,25 @@
 >    + 解决方案
 >
 >      > 重新生成 `personal token access` 即可，同时需要注意勾选第一个选项卡✅的所有内容
+>    
+> 3. 问题 3
+>
+>    + 问题描述
+>
+>      > 输入 `git push` 之后，出现错误， `fatal: The current branch master has no upstream branch.`
+>
+>    +  问题原因
+>
+>      > 本地仓库跟远程仓库关联不起来，对应不上，不知道推到哪里去
+>
+>    + 解决方案
+>
+>      + 方案一
+>
+>        > 1. 按照提示，运行命令 `git push --set-upstream origin master` 即可
+>
+>      + 方案二
+>
+>        > 1. 先运行命令 `git remote set-url origin 仓库地址`
+>        >    + 注意区分 `HTTPS` 地址和 `SSH` 地址
+>        > 2. 再运行命令 `git push --set-upstream origin master` 即可

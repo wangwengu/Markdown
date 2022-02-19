@@ -1,8 +1,8 @@
-#### 动态规划专题
+### 动态规划专题
 
-##### 树形`DP`
+#### 树形`DP`
 
-###### 树的直径经典求法
+##### 树的直径经典求法
 
 **前提条件**
 
@@ -16,7 +16,7 @@
 
 ![2091538](https://gitee.com/peter95535/image-bed/raw/master/img/2091538.png)
 
-###### [AcWing 1072. 树的最长路径](https://www.acwing.com/problem/content/1074/)
+##### [AcWing 1072. 树的最长路径](https://www.acwing.com/problem/content/1074/)
 
 **题目描述**
 
@@ -117,7 +117,7 @@ int main() {
 
 `树形DP`
 
-###### [AcWing 846. 树的重心](https://www.acwing.com/problem/content/description/848/)
+##### [AcWing 846. 树的重心](https://www.acwing.com/problem/content/description/848/)
 
 **题目描述**
 
@@ -221,7 +221,7 @@ int main() {
 
 `动态规划`、`树形DP`、`深度优先搜索`
 
-###### [AcWing 1073. 树的中心](https://www.acwing.com/problem/content/1075/)
+##### [AcWing 1073. 树的中心](https://www.acwing.com/problem/content/1075/)
 
 **题目描述**
 
@@ -263,7 +263,7 @@ int main() {
 
 **手写稿**
 
-![2101940](https://gitee.com/peter95535/image-bed/raw/master/img/2101940.png)
+![2171435](https://gitee.com/peter95535/image-bed/raw/master/img/2171435.png)
 
 **代码**
 
@@ -340,7 +340,7 @@ int main() {
 
 `树形DP`、`换根DP`
 
-###### [AcWing 1075. 数字转换](https://www.acwing.com/problem/content/1077/)
+##### [AcWing 1075. 数字转换](https://www.acwing.com/problem/content/1077/)
 
 **题目描述**
 
@@ -378,11 +378,288 @@ int main() {
 
 > 一种方案为：`4→3→1→74→3→1→7`。
 
-###### end
+**手写稿**
 
-##### 状态压缩 `DP`
+![2111129](https://gitee.com/peter95535/image-bed/raw/master/img/2111129.png)
 
-###### [Acwing 1064. 小国王](https://www.acwing.com/problem/content/1066/)
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 50010;
+int n, idx, ans;
+int h[N], e[N], ne[N], st[N], sum[N];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+int dfs(int u) {
+    int d1 = 0, d2 = 0;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        int d = dfs(j) + 1;
+        if (d >= d1) d2 = d1, d1 = d;
+        else if (d >= d2) d2 = d;
+    }
+    ans = max(ans, d1 + d2);
+    return d1;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ )
+        // 使用i去更新i*j，其中i就是约数
+        for (int j = 2; j <= n / i; j ++ )
+            sum[i * j] += i;
+    for (int i = 2; i <= n; i ++ )
+        // 如果i的约数之和sum[i]符合要求
+        if (i > sum[i]) {
+            // 注意边的顺序，要求sum[i] -> i，因此，因为add(sum[i], i)而不是add(i, add[i])
+            add(sum[i], i);
+            // 因为可能会有多棵树，因此，需要记录下树的哪些节点被访问过
+            st[i] = true;
+        }
+    for (int i = 1; i <= n; i ++ )
+        // 如果当前节点没有被访问过，则访问，即访问森林中的下一棵树
+        if (!st[i]) dfs(i);
+    cout << ans << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`树形DP`、`深度优先搜索`
+
+##### [AcWing 285. 没有上司的舞会](https://www.acwing.com/problem/content/287/)
+
+**题目描述**
+
+> `Ural` 大学有 `N` 名职员，编号为 `1∼N`。
+>
+> 他们的关系就像一棵以校长为根的树，父节点就是子节点的直接上司。
+>
+> 每个职员有一个快乐指数，用整数 $H_i$ 给出，其中 $1≤i≤N$。
+>
+> 现在要召开一场周年庆宴会，不过，没有职员愿意和直接上司一起参会。
+>
+> 在满足这个条件的前提下，主办方希望邀请一部分职员参会，使得所有参会职员的快乐指数总和最大，求这个最大值。
+
+**输入格式**
+
+> 第一行一个整数 `N`。
+>
+> 接下来 `N` 行，第 `i` 行表示 `i` 号职员的快乐指数 $H_i$。
+>
+> 接下来 `N−1` 行，每行输入一对整数 `L,K`，表示 `K` 是 `L` 的直接上司。
+
+**输出格式**
+
+> 输出最大的快乐指数。
+
+**数据范围**
+
+> + $1≤N≤6000$,
+> + $−128≤Hi≤127$
+
+**输入样例**
+
+```c++
+7
+1
+1
+1
+1
+1
+1
+1
+1 3
+2 3
+6 4
+7 4
+4 5
+3 5
+```
+
+**输出样例**
+
+```c++
+5
+```
+
+**手写稿**
+
+![2150818](https://gitee.com/peter95535/image-bed/raw/master/img/2150818.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 6010;
+int n, idx;
+int happy[N], h[N], e[N], ne[N], is_root[N];
+int f[N][2];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u) {
+    // 如果确定选择当前节点，则先将当前节点的快乐值➕
+    f[u][1] = happy[u];
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        // 先递归子树
+        dfs(j);
+        // 如果不选择根节点，则子树既可以选择，也可以不选择
+        f[u][0] += max(f[j][0], f[j][1]);
+        // 如果选择根节点，则子树只能不选择
+        f[u][1] += f[j][0];
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    memset(is_root, true, sizeof is_root);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &happy[i]);
+    for (int i = 1; i <= n - 1; i ++ ) {
+        int u, v;
+        scanf("%d%d", &u, &v);
+        add(v, u);
+        is_root[u] = false;
+    }
+    // 寻找根节点
+    int root = 0;
+    for (int i = 1; i <= n; i ++ )
+        if (is_root[i]) {
+            root = i;
+            break;
+        }
+    dfs(root);
+    cout << max(f[root][0], f[root][1]) << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`动态规划`、`树形DP`
+
+##### [AcWing 310. 最小高度树](https://leetcode-cn.com/problems/minimum-height-trees/)
+
+**题目描述**
+
+> 树是一个无向图，其中任何两个顶点只通过一条路径连接。 换句话说，一个任何没有简单环路的连通图都是一棵树。
+>
+> 给你一棵包含 `n` 个节点的树，标记为 `0` 到 `n - 1` 。给定数字 `n` 和一个有 `n - 1` 条无向边的 `edges` 列表（每一个边都是一对标签），其中 $edges[i] = [a_i, b_i]$ 表示树中节点 $a_i$ 和 $b_i$ 之间存在一条无向边。
+>
+> 可选择树中任何一个节点作为根。当选择节点 `x` 作为根节点时，设结果树的高度为 `h` 。在所有可能的树中，具有最小高度的树（即，`min(h)`）被称为 最小高度树 。
+>
+> 请你找到所有的 最小高度树 并按 任意顺序 返回它们的根节点标签列表。
+>
+> 树的 高度 是指根节点和叶子节点之间最长向下路径上边的数量。
+
+**示例 1**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/e1.jpg)
+
+> 输入：`n = 4, edges = [[1,0],[1,2],[1,3]]`
+> 输出：`[1]`
+> 解释：如图所示，当根是标签为 `1` 的节点时，树的高度是 `1` ，这是唯一的最小高度树。
+
+**示例 2**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/e2.jpg)
+
+> 输入：`n = 6, edges = [[3,0],[3,1],[3,2],[3,4],[5,4]]`
+> 输出：`[3,4]`
+
+**提示**
+
+> + $1 <= n <= 2 * 10^4$
+> + $edges.length == n - 1$
+> + $0 <= a_i, b_i < n$
+> + $a_i != b_i$
+> + $所有 (a_i, b_i) 互不相同$
+> + $给定的输入 保证 是一棵树，并且 不会有重复的边$
+
+**解题步骤**
+
+> 1. 对于每一个点 `u` 来说，将其当作根节点，然后计算以 `u` 为根的树的高度，统计出来所有的高度以后，循环求解即可
+>
+> 2. 计算树的高度，使用树形 `DP` 来计算
+>
+>    ![2171514](https://gitee.com/peter95535/image-bed/raw/master/img/2171514.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> g;
+    vector<int> d1, d2, up, p;
+    // 向下寻找
+    int dfs_d(int u, int father) {
+        for (auto& j : g[u]) {
+            if (j == father) continue;
+            int d = dfs_d(j, u) + 1;
+            if (d >= d1[u]) d2[u] = d1[u], d1[u] = d, p[u] = j;
+            else if (d >= d2[u]) d2[u] = d;
+        }
+        return d1[u];
+    }
+    // 向上寻找
+    void dfs_u(int u, int father) {
+        for (auto& j : g[u]) {
+            if (j == father) continue;
+            if (p[u] == j) up[j] = max(up[u], d2[u]) + 1;
+            else up[j] = max(up[u], d1[u]) + 1;
+            dfs_u(j, u);
+        }
+        return;
+    }
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+        g.resize(n + 5);
+        d1 = d2 = p = up = vector<int>(n + 5);
+        // 建图
+        for (auto& edge : edges) {
+            int a = edge[0], b = edge[1];
+            g[a].push_back(b);
+            g[b].push_back(a);
+        }
+        // 向下寻找
+        dfs_d(0, -1);
+        // 向上寻找
+        dfs_u(0, -1);
+        // 找最小值
+        int Min = 1e9;
+        for (int i = 0; i < n; i ++ ) Min = min(Min, max(up[i], d1[i]));
+        // 找答案
+        vector<int> res;
+        for (int i = 0; i < n; i ++ ) 
+            if (max(up[i], d1[i]) == Min) res.push_back(i);
+        return res;
+    }
+};
+```
+
+**标签**
+
+`树形DP`、`树的深度优先搜索`
+
+##### end
+
+#### 状态压缩 `DP`
+
+##### [Acwing 1064. 小国王](https://www.acwing.com/problem/content/1066/)
 
 **题目描述**
 
@@ -471,7 +748,7 @@ int main() {
 
 `动态规划`
 
-###### [Acwing 327. 玉米田](https://www.acwing.com/problem/content/329/)
+##### [Acwing 327. 玉米田](https://www.acwing.com/problem/content/329/)
 
 **题目描述**
 
@@ -569,9 +846,9 @@ int main() {
 
 `动态规划`
 
-##### 状态机
+#### 状态机
 
-###### [LeetCode 213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+##### [LeetCode 213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
 
 **题目描述**
 
@@ -644,7 +921,7 @@ public:
 
 `动态规划`
 
-###### [AcWing 1058. 股票买卖 V](https://www.acwing.com/problem/content/1060/)
+##### [AcWing 1058. 股票买卖 V](https://www.acwing.com/problem/content/1060/)
 
 **题目描述**
 
@@ -718,9 +995,9 @@ int main() {
 
 `动态规划`、`状态机`
 
-##### 未分类 `DP`
+#### 简单 `DP`
 
-###### [LeetCode 221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
+##### [LeetCode 221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
 
 **题目描述**
 
@@ -842,7 +1119,7 @@ public:
 
 `动态规划`
 
-###### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
+##### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
 
 **题目描述**
 
@@ -890,7 +1167,9 @@ public:
 
 `动态规划`
 
-###### [LeetCode 300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+#### `LIS`
+
+##### [LeetCode 300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
 **题目描述**
 
@@ -1022,11 +1301,289 @@ public:
 };
 ```
 
-##### end
+#### 背包模型
 
-#### 位运算专题
+##### 分组背包
 
-##### [LeetCode 260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
+###### [AcWing 10. 有依赖的背包问题](https://www.acwing.com/problem/content/description/10/)
+
+> 有 `N` 个物品和一个容量是 `V` 的背包。
+>
+> 物品之间具有依赖关系，且依赖关系组成一棵树的形状。如果选择一个物品，则必须选择它的父节点。
+>
+> 如下图所示：
+> ![QQ图片20181018170337.png](https://gitee.com/peter95535/image-bed/raw/master/img/1_bb51ecbcd2-QQ%E5%9B%BE%E7%89%8720181018170337.png)
+>
+> 如果选择物品 `5`，则必须选择物品 `1` 和 `2`。这是因为 `2` 是 `5` 的父节点，`1` 是 `2` 的父节点。
+>
+> 每件物品的编号是 `i`，体积是 $v_i$，价值是 $w_i$，依赖的父节点编号是 $p_i$。物品的下标范围是 $1…N$。
+>
+> 求解将哪些物品装入背包，可使物品总体积不超过背包容量，且总价值最大。
+>
+> 输出最大价值。
+
+**输入格式**
+
+> 第一行有两个整数 `N，V`，用空格隔开，分别表示物品个数和背包容量。
+>
+> 接下来有 `N` 行数据，每行数据表示一个物品。
+> 第 `i` 行有三个整数 $v_i,w_i,p_i$，用空格隔开，分别表示物品的体积、价值和依赖的物品编号。
+> 如果 $p_i=−1$，表示根节点。 **数据保证所有物品构成一棵树。**
+
+**输出格式**
+
+> 输出一个整数，表示最大价值。
+
+**数据范围**
+
+> + $1≤N,V≤100$
+> + $1≤v_i,w_i≤100$
+>
+> 父节点编号范围：
+>
+> - 内部结点：$1≤p_i≤N$;
+> - 根节点 $p_i=−1$;
+
+**输入样例**
+
+```c++
+5 7
+2 3 -1
+2 2 1
+3 5 1
+4 7 2
+3 6 2
+```
+
+**输出样例**
+
+```c++
+11
+```
+
+**手写稿**
+
+![2161118](https://gitee.com/peter95535/image-bed/raw/master/img/2161118.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110;
+int n, m, p, root, idx;
+int v[N], w[N], h[N], e[N], ne[N];
+int f[N][N];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u) {
+    for (int i = h[u]; i != -1; i = ne[i]) { // 枚举组
+        int son = e[i];
+        // 递归子树
+        dfs(son);
+        // 分组背包
+        // 逆序的原因，在图解中
+        for (int j = m - v[u]; j >= 0; j -- ) // 枚举组所占用的体积
+            for (int k = 0; k <= j; k ++ ) // 枚举组内物品所占体积
+                f[u][j] = max(f[u][j], f[u][j - k] + f[son][k]);
+    }
+    // 添加根节点的权值
+    for (int i = m; i >= v[u]; i -- ) f[u][i] = f[u][i - v[u]] + w[u];
+    // 如果体积连根节点也不能装下，则重置为0
+    // 重置的原因，在图解中
+    for (int i = 0; i < v[u]; i ++ ) f[u][i] = 0;
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d%d%d", &v[i], &w[i] ,&p);
+        if (p == -1) root = i;
+        else add(p, i);
+    }
+    dfs(root);
+    cout << f[root][m] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`动态规划`、`分组背包`、`树形DP`
+
+###### [AcWing 9. 分组背包问题](https://www.acwing.com/problem/content/description/9/)
+
+**题目描述**
+
+> 有 `N` 组物品和一个容量是 `V` 的背包。
+>
+> 每组物品有若干个，同一组内的物品最多只能选一个。
+> 每件物品的体积是 $v_{ij}$，价值是 $w_{ij}$，其中 $i$ 是组号，$j$ 是组内编号。
+>
+> 求解将哪些物品装入背包，可使物品总体积不超过背包容量，且总价值最大。
+>
+> 输出最大价值。
+
+**输入格式**
+
+> 第一行有两个整数 `N，V`，用空格隔开，分别表示物品组数和背包容量。
+>
+> 接下来有 `N` 组数据：
+>
+> - 每组数据第一行有一个整数 $S_i$，表示第 $i$ 个物品组的物品数量；
+> - 每组数据接下来有 $S_i$ 行，每行有两个整数 $v_{ij},w_{ij}$，用空格隔开，分别表示第 $i$ 个物品组的第 $j$ 个物品的体积和价值；
+
+**输出格式**
+
+> 输出一个整数，表示最大价值。
+
+**数据范围**
+
+> + $0<N,V≤100$
+> + $0<S_i≤100$
+> + $0<v_{ij},w_{ij}≤100$
+
+**输入样例**
+
+```c++
+3 5
+2
+1 2
+2 4
+1
+3 4
+1
+4 5
+```
+
+**输出样例**
+
+```c++
+8
+```
+
+**手写稿**
+
+![2142101](https://gitee.com/peter95535/image-bed/raw/master/img/2142101.png)
+
+**代码**
+
+**二维数组**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n, m;
+int s[N], v[N][N], w[N][N], f[N][N];
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &s[i]);
+        for (int j = 1; j <= s[i]; j ++ ) scanf("%d%d", &v[i][j], &w[i][j]);
+    }
+    for (int i = 1; i <= n; i ++ ) // 循环每一组
+        for (int j = 0; j <= m; j ++ ) { // 循环每一组的体积
+            f[i][j] = f[i - 1][j]; // 一件物品都不选
+            for (int k = 1; k <= s[i]; k ++) // 循环每一组内的商品
+                if (j >= v[i][k]) // 注意：体积需要大于等于当前物品体积才可转移
+                    f[i][j] = max(f[i][j], f[i - 1][j - v[i][k]] + w[i][k]);
+        }
+    cout << f[n][m] << endl;
+    return 0;
+}
+```
+
+**一维数组优化**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n, m;
+int f[N];
+int s[N], v[N][N], w[N][N];
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &s[i]);
+        for (int j = 1; j <= s[i]; j ++ ) scanf("%d%d", &v[i][j], &w[i][j]);
+    }
+    for (int i = 1; i <= n; i ++ ) // 循环每一组
+        for (int j = m; j >= 0; j -- ) { // 循环每一组的体积
+            for (int k = 1; k <= s[i]; k ++) // 每一件物品最多选择一件
+                if (j >= v[i][k]) // 注意：体积需要大于等于当前物品体积才可转移
+                    f[j] = max(f[j], f[j - v[i][k]] + w[i][k]);
+        }
+    cout << f[m] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`分组背包`
+
+##### 完全背包
+
+###### [AcWing 1021. 货币系统](https://www.acwing.com/problem/content/description/1023/)
+
+**题目描述**
+
+> 给你一个 `n` 种面值的货币系统，求组成面值为 `m` 的货币有多少种方案。
+
+**输入格式**
+
+> 第一行，包含两个整数 `n` 和 `m`。
+>
+> 接下来 `n` 行，每行包含一个整数，表示一种货币的面值。
+
+**输出格式**
+
+> 共一行，包含一个整数，表示方案数。
+
+**数据范围**
+
+> + $n≤15,m≤3000$
+
+**输入样例**
+
+```c++
+3 10
+1
+2
+5
+```
+
+**输出样例**
+
+```c++
+10
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**标签**
+
+`完全背包`
+
+#### end
+
+### 位运算专题
+
+#### [LeetCode 260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
 
 **题目描述**
 
@@ -1086,7 +1643,7 @@ public:
 
 `位运算`
 
-##### [LeetCode 338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
+#### [LeetCode 338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
 
 **题目描述**
 
@@ -1174,11 +1731,73 @@ public:
 
 ` 动态规划`、`位运算`
 
-##### end
+#### [AcWing 318. 最大单词长度乘积](https://leetcode-cn.com/problems/maximum-product-of-word-lengths/)
 
-#### 数学相关
+**题目描述**
 
-##### [LeetCode 264. 丑数 II](https://leetcode-cn.com/problems/ugly-number-ii/)
+> 给你一个字符串数组 `words` ，找出并返回 `length(words[i]) * length(words[j])` 的最大值，并且这两个单词不含有公共字母。如果不存在这样的两个单词，返回 `0` 。
+
+**示例 1**
+
+> 输入：`words = ["abcw","baz","foo","bar","xtfn","abcdef"]`
+> 输出：`16`
+> 解释：这两个单词为 `"abcw", "xtfn"`。
+
+**示例 2**
+
+> 输入：`words = ["a","ab","abc","d","cd","bcd","abcd"]`
+> 输出：`4` 
+> 解释：这两个单词为 `"ab", "cd"`。
+
+**示例 3**
+
+> 输入：`words = ["a","aa","aaa","aaaa"]`
+> 输出：`0`
+> 解释：不存在这样的两个单词。
+
+**提示**
+
+> + $2 <= words.length <= 1000$
+> + $1 <= words[i].length <= 1000$
+> + $words[i]$ 仅包含小写字母
+
+**手写稿**
+
+![2181145](https://gitee.com/peter95535/image-bed/raw/master/img/2181145.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int maxProduct(vector<string>& words) {
+        vector<int> state;
+        for (auto& word : words) {
+            int s = 0;
+            // 26位二进制，也就是说a, aa, aaa实际上映射的都是同一个数字
+            // 注意体会
+            for (auto& c : word) s |= 1 << (c - 'a');
+            state.push_back(s);
+        }
+        int res = 0;
+        for (int i = 0; i < words.size(); i ++ )
+            for (int j = i + 1; j < words.size(); j ++ )
+                if (!(state[i] & state[j]))
+                    res = max(res, (int)(words[i].size() * words[j].size()));
+        return res;
+    }
+};
+```
+
+**标签**
+
+`位运算`
+
+#### end
+
+### 数学相关
+
+#### [LeetCode 264. 丑数 II](https://leetcode-cn.com/problems/ugly-number-ii/)
 
 **题目描述**
 
@@ -1204,19 +1823,46 @@ public:
 
 **题解**
 
-> 1. 若 `a` 是丑数，则 `a * 2` 也是丑数
+> 1. 若 `a` 是<font style ="color: red">**丑数**</font>，则 `a * 2` 也是丑数
 >
 >    + $$
 >      若a是丑数，则a可以表示成 \\
 >      a = p_1^{n}\;*\;p_2^{m}\;*\;p_3^{k}，\;其中p_1为2，p_2为3，p_3为5 \\
->      现在来看\;a\;*\;p = p_1^{n}\;*\;p_2^{m}\;*\;p_3^{k}\;*\;p
+>      现在来看\;a\;*\;p = p_1^{n}\;*\;p_2^{m}\;*\;p_3^{k}\;*\;p，其中p为2，3，或5 \\
+>      证毕
 >      $$
 >
 > 2. 三指针做法
 
 **手写稿**
 
-![丑数 II](https://gitee.com/peter95535/image-bed/raw/master/img/%E4%B8%91%E6%95%B0%20II.png)
+![2172025](https://gitee.com/peter95535/image-bed/raw/master/img/2172025.png)
+
+**解题步骤**
+
+> 1. 初始丑树数组等于 `q = [1]`，定义三个指针，`i，j，k` 分别对应质因数 `2` 的集合，`3` 的集合，`5` 的集合，初始值为 `i = j = k = 0`
+>    + 第一步
+>      + `t = min(q[i] * 2, q[j] * 3, q[k] * 5) = min(1 * 2, 1 * 3, 1 * 5) = min(2,  3, 5) = 2`
+>      + `t` 取值为 `2`，对应的是 `i` 指针，因此，`i ++`
+>      + 此时，`q = [1, 2], i = 1, j = k = 0`
+>    + 第二步
+>      + `t = min(q[i] * 2, q[j] * 3, q[k] * 5) = min(4, 3, 5) = 3`
+>      + `t` 取值为 `3`，对应的是 `j` 指针，因此，`j ++`
+>      + 此时，`q = [1, 2, 3], i = 1, j = 1, k = 0`
+>    + 第三步
+>      + `t = min(q[i] * 2, q[j] * 3, q[k] * 5) = min(4, 6, 5) = 4`
+>      + `t` 取值为 `4`，对应的是 `i` 指针，因此，`i ++`
+>      + 此时，`q = [1, 2, 3, 4], i = 2, j = 1, k = 0`
+>    + 第四步
+>      + `t = min(q[i] * 2, q[j] * 3, q[k] * 5) = min(6, 6, 5) = 5`
+>      + `t` 取值为 `5`，对应的是 `k` 指针，因此，`k ++`
+>      + 此时，`q = [1, 2, 3, 4, 5], i = 2, j = 1, k = 1`
+>    + 第五步
+>      + `t = min(q[i] * 2, q[j] * 3, q[k] * 5) = min(6, 6, 10) = 6`
+>      + `t` 取值为 `6`，对应的是 `i` 和 `j` 指针，因此，`i ++, j ++`
+>        + 注意：如果有相等的，指针都需要进行移动，而不能只移动一个指针
+>      + 此时，`q = [1, 2, 3, 4, 5, 6], i = 3, j = 2, k = 1`
+>    + 依次类推
 
 **代码**
 
@@ -1242,7 +1888,82 @@ public:
 
 `三路归并`、`归并排序`
 
-##### [LeetCode 279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+#### [AcWing 313. 超级丑数](https://leetcode-cn.com/problems/super-ugly-number/)
+
+**题目描述**
+
+> 超级丑数 是一个正整数，并满足其所有质因数都出现在质数数组 `primes` 中。
+>
+> 给你一个整数 `n` 和一个整数数组 `primes` ，返回第 `n` 个 超级丑数 。
+>
+> 题目数据保证第 `n` 个 超级丑数 在 `32-bit` 带符号整数范围内。
+
+**示例 1**
+
+> 输入：`n = 12, primes = [2,7,13,19]`
+> 输出：`32`
+> 解释：给定长度为 `4` 的质数数组 `primes = [2,7,13,19]`，前 `12` 个超级丑数序列为：`[1,2,4,7,8,13,14,16,19,26,28,32]` 。
+
+**示例 2**
+
+> 输入：`n = 1, primes = [2,3,5]`
+> 输出：`1`
+> 解释：`1` 不含质因数，因此它的所有质因数都在质数数组 `primes = [2,3,5]` 中。
+
+**提示**
+
+> + $1 <= n <= 10^6$
+> + $1 <= primes.length <= 100$
+> + $2 <= primes[i] <= 1000$
+> + $题目数据 保证 primes[i] 是一个质数$
+> + $primes 中的所有值都 互不相同 ，且按 递增顺序 排列$
+
+**解题步骤**
+
+> 1. 同 `LeetCode 264 丑树 II`
+>
+> 2. 唯一不同的是由 `3` 指针变成 `k` 指针
+>
+> 3. 具体实现的细节
+>
+>    ![2180807](https://gitee.com/peter95535/image-bed/raw/master/img/2180807.png)
+>
+>    > 1. 三指针有一个寻找最小值的操作 `min(q[i] * 2, min(q[j] * 3, q[k] * 5))`，在本题中，将寻找 `k` 个指针的最小值操作，换成堆（优先队列来实现）
+>    > 2. 优先队列中维护两个变量，分别为 `k` 个指针对应的值以及下标
+>    > 3. 考虑一个问题，如何确定某个数 `x` 是由哪个质数迭代而来的
+>    >    + 对于丑树 $S_p$ 来说，其下一个数为 $k = S_p * p$ ，因此，当前质数 $p = k / S_p$
+>    > 4. 如果还是有些许模糊，手动模拟样例即可
+
+**代码**
+
+```c++
+class Solution {
+public:
+    typedef long long LL;
+    typedef pair<LL, LL> PLL;
+    int nthSuperUglyNumber(int n, vector<int>& primes) {
+        // 定义小根堆
+        priority_queue<PLL, vector<PLL>, greater<PLL>> heap;
+        // 含义在图示手写稿
+        for (auto& x : primes) heap.push({x, 1});
+        vector<int> q(n + 5);
+        q[1] = 1;
+        for (int i = 2; i <= n;) {
+            auto tp = heap.top(); heap.pop();
+            if (tp.first != q[i - 1]) q[i ++ ] = tp.first;
+            int idx = tp.second, p = tp.first / q[idx];
+            heap.push({(LL)p * q[idx + 1], idx + 1});
+        }
+        return q[n];
+    }
+};
+```
+
+**标签**
+
+`优先队列`、`K路归并`
+
+#### [LeetCode 279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
 **题目描述**
 
@@ -1325,7 +2046,7 @@ public:
 
 `动态规划`、`数学`
 
-##### [LeetCode 233. 数字 1 的个数](https://leetcode-cn.com/problems/number-of-digit-one/)
+#### [LeetCode 233. 数字 1 的个数](https://leetcode-cn.com/problems/number-of-digit-one/)
 
 **题目描述**
 
@@ -1386,7 +2107,7 @@ public:
 
 `数学`
 
-##### [LeetCode 231. 2 的幂](https://leetcode-cn.com/problems/power-of-two/)
+#### [LeetCode 231. 2 的幂](https://leetcode-cn.com/problems/power-of-two/)
 
 **题目描述**
 
@@ -1487,7 +2208,7 @@ public:
 
 `对数`、`位运算`
 
-##### [LeetCode 326. 3 的幂](https://leetcode-cn.com/problems/power-of-three/)
+#### [LeetCode 326. 3 的幂](https://leetcode-cn.com/problems/power-of-three/)
 
 **题目描述**
 
@@ -1572,7 +2293,7 @@ public:
 
 `对数`、`算术基本定理`、`数论`
 
-##### [LeetCode 342. 4的幂](https://leetcode-cn.com/problems/power-of-four/)
+#### [LeetCode 342. 4的幂](https://leetcode-cn.com/problems/power-of-four/)
 
 **题目描述**
 
@@ -1645,11 +2366,69 @@ public:
 
 `对数`、`位运算`
 
-##### end
+#### [AcWing 319. 灯泡开关](https://leetcode-cn.com/problems/bulb-switcher/)
 
-#### 滑动窗口【双端队列】专题
+**题目描述**
 
-##### [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
+> 初始时有 `n` 个灯泡处于关闭状态。第一轮，你将会打开所有灯泡。接下来的第二轮，你将会每两个灯泡关闭第二个。
+>
+> 第三轮，你每三个灯泡就切换第三个灯泡的开关（即，打开变关闭，关闭变打开）。第 `i` 轮，你每 `i` 个灯泡就切换第 `i` 个灯泡的开关。直到第 `n` 轮，你只需要切换最后一个灯泡的开关。
+>
+> 找出并返回 `n` 轮后有多少个亮着的灯泡。 
+
+**示例 1**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/bulb.jpg)
+
+> 输入：`n = 3`
+> 输出：`1 `
+> 解释：
+> 初始时, 灯泡状态 [关闭, 关闭, 关闭].
+> 第一轮后, 灯泡状态 [开启, 开启, 开启].
+> 第二轮后, 灯泡状态 [开启, 关闭, 开启].
+> 第三轮后, 灯泡状态 [开启, 关闭, 关闭]. 
+>
+> 你应该返回 `1`，因为只有一个灯泡还亮着。
+
+**示例 2**
+
+> 输入：`n = 0`
+> 输出：`0`
+
+**示例 3**
+
+> 输入：`n = 1`
+> 输出：`1`
+
+**提示**
+
+> + $0 <= n <= 10^9$
+
+**手写稿**
+
+![2181929](https://gitee.com/peter95535/image-bed/raw/master/img/2181929.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int bulbSwitch(int n) {
+        // 寻找1～n中完全平方数的个数
+        return sqrt(n);
+    }
+};
+```
+
+**标签**
+
+`完全平方数`、`脑筋急转弯`、`数论`
+
+#### end
+
+### 滑动窗口【双端队列】专题
+
+#### [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
 
 **题目描述**
 
@@ -1726,7 +2505,7 @@ public:
 
 `滑动窗口`、`双端队列`、`环`
 
-##### [LeetCode 239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+#### [LeetCode 239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
 **题目描述**
 
@@ -1803,11 +2582,11 @@ public:
 
 `滑动窗口`
 
-##### end
+#### end
 
-#### 阅读理解题
+### 阅读理解题
 
-##### [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
+#### [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
 
 **题目描述**
 
@@ -1865,13 +2644,13 @@ public:
 
 `阅读理解`
 
-##### end
+#### end
 
-#### 双指针专题
+### 双指针专题
 
-##### 快慢指针
+#### 快慢指针
 
-###### [LeetCode 141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+##### [LeetCode 141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 
 **题目描述**
 
@@ -1945,7 +2724,7 @@ public:
 
 `双指针`、`快慢指针`、`环`
 
-###### [LeetCode 142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+##### [LeetCode 142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
 **题目描述**
 
@@ -2041,7 +2820,7 @@ public:
 
 `双指针`、`快慢指针`、`环`
 
-###### [LeetCode 287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
+##### [LeetCode 287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
 
 **题目描述**
 
@@ -2112,13 +2891,13 @@ public:
 
 `双指针`、`快慢指针`、`环`
 
-###### end
+##### end
 
-#### 模拟题专题
+### 模拟题专题
 
-##### 模拟
+#### 模拟
 
-###### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
+##### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
 
 **题目描述**
 
@@ -2203,7 +2982,7 @@ public:
 
 `模拟`
 
-###### [LeetCode 273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
+##### [LeetCode 273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
 
 **题目描述**
 
@@ -2290,11 +3069,11 @@ public:
 
 `模拟`、`数字转换`、`中英文`
 
-###### end
+##### end
 
-##### 表达式求值
+#### 表达式求值
 
-###### [LeetCode 224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
+##### [LeetCode 224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
 
 **题目描述**
 
@@ -2384,7 +3163,7 @@ public:
 
 `栈`、`表达式求值`
 
-###### [LeetCode 282. 给表达式添加运算符](https://leetcode-cn.com/problems/expression-add-operators/)
+##### [LeetCode 282. 给表达式添加运算符](https://leetcode-cn.com/problems/expression-add-operators/)
 
 **题目描述**
 
@@ -2482,13 +3261,13 @@ public:
 
 `dfs`、`表达式求值`
 
-###### end
-
 ##### end
 
-#### 字典树
+#### end
 
-##### [LeetCode 212. 单词搜索 II](https://leetcode-cn.com/problems/word-search-ii/)
+### 字典树
+
+#### [LeetCode 212. 单词搜索 II](https://leetcode-cn.com/problems/word-search-ii/)
 
 **题目描述**
 
@@ -2584,11 +3363,11 @@ public:
 
 `dfs`、`字典树`
 
-#### 字符串专题
+### 字符串专题
 
-##### KMP
+#### KMP
 
-###### [LeetCode 214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
+###### [Leetode 214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
 
 **题目描述**
 
@@ -2655,9 +3434,9 @@ public:
 
 `字符串`、`回文串`、`KMP`
 
-#### 扫描线问题
+### 扫描线问题
 
-##### [LeetCode 218. 天际线问题](https://leetcode-cn.com/problems/the-skyline-problem/)
+#### [LeetCode 218. 天际线问题](https://leetcode-cn.com/problems/the-skyline-problem/)
 
 **问题描述**
 
@@ -2765,9 +3544,9 @@ public:
 
 `扫描线`
 
-#### 对顶堆
+### 对顶堆
 
-##### [LeetCode 295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
+#### [LeetCode 295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
 
 **题目描述**
 
@@ -2858,9 +3637,9 @@ public:
 
 `优先队列`、`对顶堆`
 
-#### 设计数据结构
+### 设计数据结构
 
-##### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+#### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 **题目描述**
 
@@ -2963,9 +3742,9 @@ public:
 
 `dfs`、`数据结构`
 
-#### 深度优先搜索
+### 深度优先搜索
 
-##### [LeetCode 306. 累加数](https://leetcode-cn.com/problems/additive-number/)
+#### [LeetCode 306. 累加数](https://leetcode-cn.com/problems/additive-number/)
 
 **题目描述**
 
@@ -3071,19 +3850,19 @@ public:
 
 `dfs`、`高精度`
 
-#### 树状数组
+### 树状数组
 
-##### 原理
+#### 原理
 
 **手写稿**
 
 ![1262039](https://gitee.com/peter95535/image-bed/raw/master/img/1262039.png)
 
-##### 注意事项
+#### 注意事项
 
 > 1. <font style="color: red">**先搞明白树状数组存的值的意义，此点至关重要！！！**</font>
 
-##### [P3374 【模板】树状数组 1](https://www.luogu.com.cn/problem/P3374)
+#### [P3374 【模板】树状数组 1](https://www.luogu.com.cn/problem/P3374)
 
 **题目描述**
 
@@ -3181,7 +3960,7 @@ int main() {
 
 `树状数组`
 
-##### [AcWing 241. 楼兰图腾](https://www.acwing.com/problem/content/243/)
+#### [AcWing 241. 楼兰图腾](https://www.acwing.com/problem/content/243/)
 
 **题目描述**
 
@@ -3298,7 +4077,7 @@ int main() {
 
 `树状数组`
 
-##### [AcWing 242. 一个简单的整数问题](https://www.acwing.com/problem/content/description/248/)
+#### [AcWing 242. 一个简单的整数问题](https://www.acwing.com/problem/content/description/248/)
 
 **题目描述**
 
@@ -3419,7 +4198,7 @@ int main() {
 }
 ```
 
-##### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
+#### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
 
 **题目描述**
 
@@ -3533,7 +4312,7 @@ int main() {
 
 `树状数组`
 
-##### [AcWing 244. 谜一样的牛](https://www.acwing.com/problem/content/245/)
+#### [AcWing 244. 谜一样的牛](https://www.acwing.com/problem/content/245/)
 
 **题目描述**
 
@@ -3652,7 +4431,7 @@ int main() {
 
 `树状数组`
 
-##### [LeetCode 307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
+#### [LeetCode 307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
 
 **题目描述**
 
@@ -3766,15 +4545,15 @@ public:
 
 `树状数组`
 
-##### end
+#### end
 
-#### 线段树
+### 线段树
 
-##### 原理
+#### 原理
 
 ![1310947](https://gitee.com/peter95535/image-bed/raw/master/img/1310947.png)
 
-##### [AcWing 1275. 最大数](https://www.acwing.com/problem/content/1277/)
+#### [AcWing 1275. 最大数](https://www.acwing.com/problem/content/1277/)
 
 **题目描述**
 
@@ -3933,7 +4712,7 @@ int main() {
 
 `线段树`
 
-##### [AcWing 245. 你能回答这些问题吗](https://www.acwing.com/problem/content/246/)
+#### [AcWing 245. 你能回答这些问题吗](https://www.acwing.com/problem/content/246/)
 
 **题目描述**
 
@@ -4082,7 +4861,7 @@ int main() {
 
 `线段树`
 
-##### [AcWing 246. 区间最大公约数](https://www.acwing.com/problem/content/247/)
+#### [AcWing 246. 区间最大公约数](https://www.acwing.com/problem/content/247/)
 
 **题目描述**
 
@@ -4245,7 +5024,7 @@ int main() {
 
 `差分`、`树状数组`
 
-##### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
+#### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
 
 **题目描述**
 
@@ -4413,7 +5192,7 @@ int main() {
 
 `树状数组`、`懒标记`
 
-##### [AcWing 247. 亚特兰蒂斯](https://www.acwing.com/problem/content/249/)
+#### [AcWing 247. 亚特兰蒂斯](https://www.acwing.com/problem/content/249/)
 
 **题目描述**
 
@@ -4596,7 +5375,7 @@ int main() {
 
 `树状数组`、`扫描线`
 
-##### [AcWing 1277. 维护序列](https://www.acwing.com/problem/content/1279/)
+#### [AcWing 1277. 维护序列](https://www.acwing.com/problem/content/1279/)
 
 **题目描述**
 
@@ -4814,6 +5593,68 @@ int main() {
 
 `线段树`
 
-##### end
-
 #### end
+
+### 贪心
+
+#### [LeetCode 316. 去除重复字母](https://leetcode-cn.com/problems/remove-duplicate-letters/)
+
+**问题描述**
+
+> 给你一个字符串 `s` ，请你去除字符串中重复的字母，使得每个字母只出现一次。需保证 返回结果的字典序最小（要求不能打乱其他字符的相对位置）。
+
+**示例 1**
+
+> 输入：`s = "bcabc"`
+> 输出：`"abc"`
+
+**示例 2**
+
+> 输入：`s = "cbacdcbc"`
+> 输出：`"acdb"`
+
+**提示**
+
+> + $1 <= s.length <= 10^4$
+> + $s$ 由小写英文字母组成
+> + 注意：该题与 [`1081`](https://leetcode-cn.com/problems/smallest-subsequence-of-distinct-characters) 相同
+
+**手写稿**
+
+![2181044](https://gitee.com/peter95535/image-bed/raw/master/img/2181044.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    string removeDuplicateLetters(string s) {
+        string res;
+        unordered_map<char, int> idxs;
+        unordered_map<char, bool> is_appear;
+        // 记录每个字符的下标所在的最后一位的位置
+        for (int i = 0; i < s.size(); i ++ ) idxs[s[i]] = i;
+        for (int i = 0; i < s.size(); i ++ ) {
+            // 如果当前字符出现过，则直接进行下一次循环
+            if (is_appear[s[i]]) continue;
+            // 判断是否可以删除当前字符
+            while (res.size() && res.back() > s[i] && idxs[res.back()] > i) {
+                is_appear[res.back()] = false;
+                res.pop_back();
+            }
+            res += s[i];
+            is_appear[s[i]] = true;
+        }
+        return res;
+    }
+};
+```
+
+**标签**
+
+`贪心`
+
+
+
+
+
