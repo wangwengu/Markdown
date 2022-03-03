@@ -40,11 +40,16 @@
 > 2. 将所有.o文件移出暂存区 `git restore --stage *.o`
 > 3. 将可执行文件main移出暂存区 `git restore --stage main`
 
-#### Git版本
+#### Git版本和拉取
 
 > 1. 将历史版本在一行中进行显示，且索引值会全部显示`git log --pretty=oneline`
 > 2. 将历史版本在一行中进行显示，且索引值显示前7位`git log --oneline`
 > 3. 回滚某个特定的历史版本`git reset --hard 版本号（索引值的前7位）`
+> 4. 拉取某个分支的某个版本
+>    + 拉取整个项目 `git clone HTTPS地址`
+>    + 切换分支 `git checkout branch_name`
+>    + 获取版本信息【`1` 和 `2`】
+>    + 回滚某个版本【`3`】
 
 #### Git分支
 
