@@ -29,7 +29,7 @@
 >
 >   ```python
 >   from django.shortcuts import render
->             
+>                       
 >   def index(request):
 >       # render的作用就是加载模板或者渲染模板
 >       return render(request, 'multiends/web.html')
@@ -1273,6 +1273,56 @@
 > }
 > ```
 
+##### 编写 `getinfo` 函数的 `VIEWS`
+
+> 创建 `acapp/game/views/settings/getinfo.py`
+>
+> ```python
+> # 引入 JsonResponse 包
+> from django.http import JsonResponse
+> # 引入 Player 数据库表（类）
+> from game.models.player.player import Player
+> 
+> def getinfo_acapp(request):
+>     # 取得第一个用户值的信息
+>     player = Player.objects.all()[0]
+>     return JsonResponse({
+>         # 返回响应的结果
+>         'result': "success",
+>         # 返回用户名
+>         'username': player.user.username,
+>         # 返回用户的头像
+>         'photo': player.photo
+> 	})
+> 
+> def getinfo_web(request):
+>     # 查找当前登录的用户
+>     user = request.user
+>     # 如果当前用户没有登录，user的值为Anonymous[匿名]User
+>     if not user.is_authenticated: # authenticated [已被认证]
+>         return JsonResponse({
+>             'result': "未登录"
+>         })
+>     else:
+> 		# 获取当前用户的所有信息
+>         player = Player.objects.get(user = user)
+>         return JsonResponse({
+>             'result': "success",
+>             'username': player.user.username,
+>             'photo': player.photo
+>         })
+> 
+> def getinfo(request):
+>     # 获取平台的信息ge
+>     platform = request.GET.get('platform')
+>     # 如果是 ACAPP 端
+>     if platform == 'ACAPP':
+>         return getinfo_acapp(request)
+>     # 注意：如果写成elif == 'WEB'，则会出现返回空，即报错，因此，写成else，以后再进行修改
+>     else:
+>         return getinfo_web(request)
+> ```
+
 ##### 编写 `getinfo` 函数的 `URL`
 
 > 修改 `app` 的路由 `acapp/game/urls/index.py`
@@ -1295,60 +1345,11 @@
 > from game.views.settings.getinfo import getinfo
 > 
 > urlpatterns = [
->      # 添加路径
->      path('getinfo/', getinfo, name = 'settings_getinfo')
+>        # 添加路径
+>        path('getinfo/', getinfo, name = 'settings_getinfo')
 > ]
 > ```
 >
-
-##### 编写 `getinfo` 函数的 `VIEWS`
-
-> 创建 `acapp/game/views/settings/getinfo.py`
->
-> ```python
-> # 引入 JsonResponse 包
-> from django.http import JsonResponse
-> # 引入 Player 数据库表（类）
-> from game.models.player.player import Player
-> 
-> def getinfo_acapp(request):
->     # 取得第一个用户值的信息
->     player = Player.objects.all()[0]
->     return JsonResponse({
->    		# 返回响应的结果
->         'result': "success",
->         # 返回用户名
->         'username': player.user.username,
->         # 返回用户的头像
->         'photo': player.photo
->     })
-> 
-> def getinfo_web(request):
->     # 查找当前登录的用户
->     user = request.user
->     # 如果当前用户没有登录，user的值为Anonymous[匿名]User
->     if not user.is_authenticated: # authenticated [已被认证]
->         return JsonResponse({
->             'result': "未登录"
->         })
->     else:
->         player = Player.objects.all()[0]
->         return JsonResponse({
->             'result': "success",
->             'username': player.user.username,
->             'photo': player.photo
->         })
-> 
-> def getinfo(request):
->     # 获取平台的信息ge
->     platform = request.GET.get('platform')
->     # 如果是 ACAPP 端
->     if platform == 'ACAPP':
->         return getinfo_acapp(request)
->     # 注意：如果写成elif == 'WEB'，则会出现返回空，即报错，因此，写成else，以后再进行修改
->     else:
->         return getinfo_web(request)
-> ```
 
 ##### 前端调用 `getinfo` 函数
 
@@ -1369,7 +1370,7 @@
 >            this.getinfo();
 >        }
 >        login() {}
->             getinfo() {
+>        getinfo() {
 >            let outer = this;
 >            $.ajax({
 >                <!-- url 地址别写错 -->
@@ -1477,7 +1478,7 @@
 >   }
 >   ```
 
-#### 编写登录界面
+#### 用户登录与注册页面
 
 ##### 隐藏菜单界面
 
@@ -1495,1075 +1496,993 @@
 
 ##### 编写登录界面的 `HTML`
 
+>   1.   下载 `logo` 图片到 `acapp/game/static/image/settings/acwing_login.png`
+>
+>   + `wget --output-document=图片别名 图片地址 ` [图片地址](https://cdn.acwing.com/media/article/image/2021/11/18/1_ea3d5e7448-logo64x64_2.png)
+>   + 记得重启服务
+>
+>   2.   修改 `acapp/game/static/js/src/settings/zbase.js`
+>
+>   ```javascript
+>   class Settings {
+>       constructor(root) {
+>           this.$settings = $(`
+>               <div class = "ac_game_settings">
+>               	<!-- 编写登录界面 -->
+>                   <div class = "ac_game_settings_login">
+>                       <div class = "ac_game_settings_title">
+>                           登录
+>                       </div>
+>                       <div class = "ac_game_settings_username">
+>                           <div class = "ac_game_settings_item">
+>                               <input type = "text" placeholder = "用户名">
+>                           </div>
+>                       </div>
+>                       <div class = "ac_game_settings_password">
+>                           <div class = "ac_game_settings_item">
+>                               <input type = "password" placeholder = "密码">
+>                           </div>
+>                       </div>
+>                       <div class = "ac_game_settings_submit">
+>                           <div class = "ac_game_settings_item">
+>                               <button>登录</button>
+>                           </div>
+>                       </div>
+>                       <div class = "ac_game_settings_error_messages"></div>
+>                       <div class = "ac_game_settings_option">
+>                           注册
+>                       </div>
+>                       <div class = "ac_game_settings_acwing">
+>                       	<br>
+>                           <img width = "30px;" src = "https://app1164.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
+>                           <br>
+>                           <div>
+>                               AcWing一键登录
+>                           </div>
+>                       </div>
+>                   </div>
+>               </div>
+>                           `);
+>           <!-- 将settings界面添加到主界面中去 -->
+>           this.root.$ac_game.append(this.$settings);
+>       }
+>   }
+>   ```
+
+##### 编写登录界面的 `css`
+
+>   修改 `acapp/game/static/css/game.css`
+>
+>   ```css
+>   /* 登录界面相关设置 */
+>   .ac_game_settings {
+>       width: 100%;
+>       height: 100%;
+>       background-image: url('/static/image/menu/background.gif');
+>       background-size: 100% 100%;
+>       user-select: none;
+>   }
+>   
+>   .ac_game_settings_login {
+>       height: 43vh;
+>       width: 20vw;
+>       position: relative;
+>       top: 50%;
+>       left: 50%;
+>       transform: translate(-50%, -50%);
+>       background-color: rgba(0, 0, 0, 0.7);
+>       border-radius: 5px;
+>   }
+>   
+>   .ac_game_settings_title {
+>       color: white;
+>       font-size: 3vh;
+>       text-align: center;
+>       padding-top: 2vh;
+>       margin-bottom: 2vh;
+>   }
+>   
+>   .ac_game_settings_username {
+>       display: block;
+>       height: 7vh;
+>   }
+>   
+>   .ac_game_settings_item {
+>       width: 100%;
+>       height: 100%;
+>   }
+>   
+>   .ac_game_settings_item > input {
+>       width: 90%;
+>       line-height: 3vh;
+>       position: relative;
+>       top: 50%;
+>       left: 50%;
+>       transform: translate(-50%, -50%);
+>   }
+>   
+>   .ac_game_settings_password {
+>       display: block;
+>       height: 7vh;
+>   }
+>   
+>   .ac_game_settings_submit {
+>       display: block;
+>       height: 7vh;
+>   }
+>   
+>   .ac_game_settings_item > button {
+>       color: white;
+>       width: 90%;
+>       line-height: 3vh;
+>       position: relative;
+>       top: 50%;
+>       left: 50%;
+>       transform: translate(-50%, -50%);
+>       background-color: #4CAF50;
+>       border-radius: 5px;
+>   }
+>   
+>   .ac_game_settings_error_messages {
+>       color: red;
+>       font-size: 0.8vh;
+>       display: inline;
+>       float: left;
+>       padding-left: 1vw;
+>   }
+>   
+>   .ac_game_settings_option {
+>       color: white;
+>       font-size: 1.8vh;
+>       display: inline;
+>       float: right;
+>       padding-right: 1vw;
+>       cursor: pointer;
+>   }
+>   
+>   .ac_game_settings_acwing {
+>       display: block;
+>       height: 7vh;
+>   }
+>   
+>   .ac_game_settings_acwing > img {
+>       position: relative;
+>       top: 50%;
+>       left: 50%;
+>       display: block;
+>       transform: translate(-50%, -50%);
+>       cursor: pointer;
+>   }
+>   
+>   .ac_game_settings_acwing > div {
+>       color: white;
+>       font-size: 1.5vh;
+>       text-align: center;
+>   }
+>   ```
+>   
+
+##### 编写注册界面的 `HTML`
+
 >   修改 `acapp/game/static/js/src/settings/zbase.js`
 >
 >   ```javascript
->   
+>   class Settings {
+>       constructor(root) {
+>           this.$settings = $(`
+>               <div class = "ac_game_settings">
+>               	<!-- 编写注册界面 -->
+>                   <div class = "ac_game_settings_register">
+>                       <div class = "ac_game_settings_title">
+>                           注册
+>                       </div>
+>                       <div class = "ac_game_settings_username">
+>                           <div class = "ac_game_settings_item">
+>                               <input type = "text" placeholder = "用户名">
+>                           </div>
+>                       </div>
+>                       <div class = "ac_game_settings_password">
+>                           <div class = "ac_game_settings_item">
+>                               <input type = "password" placeholder = "密码">
+>                           </div>
+>                       </div>
+>                       <div class = "ac_game_settings_password_confirm">
+>                           <div class = "ac_game_settings_item">
+>                               <input type = "password" placeholder = "确认密码">
+>                           </div>
+>                       </div>
+>                       <div class = "ac_game_settings_submit">
+>                           <div class = "ac_game_settings_item">
+>                               <button>注册</button>
+>                           </div>
+>                       </div>
+>                       <div class = "ac_game_settings_error_messages"></div>
+>                       <div class = "ac_game_settings_option">
+>                           登录
+>                       </div>
+>                       <div class = "ac_game_settings_acwing">
+>                           <br>
+>                           <img width = "30px;" src = "https://app1164.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
+>                           <br>
+>                           <div>
+>                               AcWing一键登录
+>                           </div>
+>                       </div>
+>                   </div>
+>               </div>
+>           `);
+>           <!-- 获取登录界面的权柄 -->
+>           this.$login = this.$settings.find(".ac_game_settings_login");
+>           <!-- 将登录界面隐藏，显示注册界面，方便调试 -->
+>           this.$login.hide();
+>           this.start();
+>       }
+>   }
 >   ```
 
-+ 
+##### 编写注册界面的 `css`
 
-  ```javascript
-  class Settings {
-      constructor(root) {
-          <!-- 创建 settings 界面 -->
-          this.$settings = $(`
-              <div class ="ac_game_settings"></div>
-          `);
-          <!-- 将 settigns 界面加入到 ac_game 中 -->
-          this.root.$ac_game.append(this.$settings);
-      }
-  }
-  ```
+>   修改 `acapp/game/static/css/game.css`
+>
+>   ```css
+>   /* 注册界面相关设置 */
+>   .ac_game_settings_register {
+>       height: 50vh;
+>       width: 20vw;
+>       position: relative;
+>       top: 50%;
+>       left: 50%;
+>       transform: translate(-50%, -50%);
+>       background-color: rgba(0, 0, 0, 0.7);
+>       border-radius: 5px;
+>   }
+>   ```
 
-+ 修改 `acapp/game/static/css/game.css`
+##### 登录和注册相互跳转
 
-  ```css
-  /* 添加 ac_game_settings 的样式 */
-  .ac_game_settings {
-      width: 100%;
-      height: 100%;
-      background-image: url("/static/image/menu/background.gif");
-      background-size: 100% 100%;
-      user-select: none;
-  }
-  ```
+>   修改 `acapp/game/static/js/src/settings/zbase.js`
+>
+>   ```javascript
+>   class Settings {
+>       constructor(root) {
+>           <!-- 获取登录的权柄 -->
+>           this.$login = this.$settings.find(".ac_game_settings_login");
+>           <!-- 获取登录中的注册按钮的权柄 -->
+>           this.$login_register = this.$login.find(".ac_game_settings_option");
+>           <!-- 获取注册的权柄 -->
+>           this.$register = this.$settings.find(".ac_game_settings_register");
+>           <!-- 获取注册中的登录按钮的权柄 -->
+>           this.$register_login = this.$register.find(".ac_game_settings_option");
+>           <!-- 默认显示登录界面，因此，一开始将注册界面隐藏 -->
+>           this.$register.hide();
+>           this.start();
+>       }
+>       start() {
+>           <!-- 添加监听事件 -->
+>           this.add_listening_events();
+>       }
+>       add_listening_events() {
+>           <!-- 添加登录的监听事件 -->
+>           this.add_listening_events_login();
+>           <!-- 添加注册的监听事件 -->
+>           this.add_listening_events_register();
+>       }
+>       add_listening_events_login() {
+>           <!-- 获取外部的权柄 -->
+>           let outer = this;
+>   		<!-- 点击注册按钮 -->
+>           this.$login_register.click(function() {
+>               <!-- 登录界面隐藏 -->
+>               outer.$login.hide();
+>               <!-- 注册界面显示 -->
+>               outer.$register.show();
+>           });
+>       }
+>       add_listening_events_register() {
+>           <!-- 获取外部的权柄 -->
+>           let outer = this;
+>           <!-- 点击登录按钮 -->
+>           this.$register_login.click(function() {
+>               <!-- 注册界面隐藏 -->
+>               outer.$register.hide();
+>               <!-- 登录界面显示 -->
+>               outer.$login.show();
+>           });
+>       }
+>   }
+>   ```
 
-+ 添加登录注册界面 `acapp/game/static/js/src/settings/zbase.js`
+#### 登录后台交互
 
-  ```javascript
-  class Settings {
-      constructor(root) {
-          this.$settings = $(`
-              <div class="ac_game_settings">
-              	<!-- 添加登录界面 -->
-                  <div class="ac_game_settings_login"></div>
-                  <!-- 添加注册界面 -->
-                  <div class="ac_game_settings_register"></div>
-              </div>
-          `);
-          <!-- 获取登录权柄 -->
-          this.$login = this.$settings.find(".ac_game_settings_login");
-          <!-- 将登录界面隐藏 -->
-          this.$login.hide();
-          <!-- 获取注册权柄 -->
-          this.$register = this.$settings.find(".ac_game_settings_register");
-          <!-- 将注册界面隐藏 -->
-          this.$register.hide();
-      }
-      login() {
-          <!-- 登录时，先将注册界面隐藏 -->
-          this.$register.hide();
-          <!-- 再将登录界面打开 -->
-          this.$login.show();
-      }
-      register() {
-          <!-- 注册时，先将登录界面隐藏 -->
-          this.$login.hide();
-          <!-- 再将注册界面打开 -->
-          this.$register.show();
-      }
-  }
-  ```
+##### 编写 `VIEWS` 函数
 
-+ 修改 `acapp/game/static/css/game.css`
+>   创建 `acapp/game/views/settings/login.py`，写入以下内容
+>
+>   ```python
+>   from django.http import JsonResponse
+>   from django.contrib.auth import authenticate, login
+>   
+>   def signin(request):
+>       # 接收【前端】发送来的数据
+>       data = request.GET
+>       username = data.get('username')
+>       password = data.get('password')
+>   	# Django存储的是密码的哈希值，因此，使用内置函数
+>   	# Django比较的是密码的哈希值，不是密码的值本身，先将输入的密码哈希，再与数据库中的哈希值进行比较，查看是否一致
+>       user = authenticate(username = username, password = password)
+>       if not user:
+>           return JsonResponse({
+>               'result': "用户名或者密码不正确"
+>           })
+>   	# login内置函数将登录的信息存储在浏览器的cookie里面
+>       login(request, user)
+>       return JsonResponse({
+>           'result': "success"
+>       })
+>   ```
 
-  ```css
-  /* 添加 ac_game_settings_login 的样式 */
-  .ac_game_settings_login {
-      height: 41vh;
-      width: 20vw;
-      position: relative;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 0.7);
-  }
-  ```
+##### 编写 `URL` 函数
 
-+ 编写登录代码，修改 `acapp/game/static/js/src/settings/zbase.js`
+>   修改 `acapp/game/urls/settings/index.py`
+>
+>   ```python
+>   # 添加signin函数
+>   from game.views.settings.login import signin
+>   
+>   urlpatterns = [
+>       # 添加相对应的路由
+>       path('login/', signin, name = 'settings_login')
+>   ]
+>   ```
 
-  ```javascript
-  this.$settings = $(`
-    	<div class="ac_game_settings">
-  		<div class="ac_game_settings_login">
-    			<div class="ac_game_settings_title">
-  				登录
-            	</div>
-  		</div>
-  	</div>
-  `);
-  
-  ```
+##### 前端调用 `signin` 函数
 
-+ 修改 `acapp/game/static/css/game.css`
+>   修改 `acapp/game/static/js/src/settings/zbase.js`
+>
+>   ```javascript
+>   class Settings {
+>       constructor(root) {
+>           <!-- 获取登录用户名的权柄 -->
+>           this.$login_username = this.$login.find(".ac_game_settings_username input");
+>           <!-- 获取登录密码的权柄 -->
+>           this.$login_password = this.$login.find(".ac_game_settings_password input");
+>           <!-- 获取登录按钮的权柄 -->
+>           this.$login_submit = this.$login.find(".ac_game_settings_submit");
+>           <!-- 获取登录错误信息的权柄 -->
+>           this.$login_error_message = this.$login.find(".ac_game_settings_error_messages");
+>           <!-- 获取登录中的注册按钮的权柄 -->
+>           this.$login_register = this.$login.find(".ac_game_settings_option");
+>           <!-- 将登录界面隐藏 -->
+>           this.$login.hide();
+>           this.$register = this.$settings.find(".ac_game_settings_register");
+>           this.$register_login = this.$register.find(".ac_game_settings_option");
+>           <!-- 将注册界面隐藏 -->
+>           this.$register.hide();
+>           this.start();
+>       }
+>       start() {
+>           this.add_listening_events();
+>           this.getinfo();
+>       }
+>       add_listening_events() {
+>           this.add_listening_events_login();
+>       }
+>       add_listening_events_login() {
+>           let outer = this;
+>           <!-- 点击登录按钮 -->
+>           this.$login_submit.click(function() {
+>               outer.login_on_remote();
+>           });
+>       }
+>       login_on_remote() {
+>           let outer = this;
+>           <!-- 获取用户名 -->
+>           let username = this.$login_username.val();
+>           <!-- 获取密码 -->
+>           let password = this.$login_password.val();
+>           <!-- 清空错误信息 -->
+>           this.$login_error_message.empty();
+>           $.ajax({
+>               url: 'https://app1164.acapp.acwing.com.cn/settings/login/',
+>               type: 'GET',
+>               data: {
+>                   username: username,
+>                   password: password
+>               },
+>               success: function(resp) {
+>                   <!-- 成功登录 -->
+>                   if (resp.result === "success") {
+>                       <!-- 重载页面 -->
+>                       location.reload();
+>                   }
+>                   else {
+>                       <!-- 打印错误信息 -->
+>                       outer.$login_error_message.html(resp.result);
+>                   }
+>               }
+>           });
+>       }
+>       <!-- 将settings页面进行隐藏 -->
+>       hide() {
+>           this.$settings.hide();
+>       }
+>   }
+>   ```
 
-  ```css
-  /* 添加 ac_game_settings_login 的样式 */
-  .ac_game_settings_login {
-      border-radius: 5px;
-  }
-  
-  /* 修改 ac_game_settings_title 的样式 */
-  .ac_game_settings_title {
-      color: white;
-      font-size: 3vh;
-      text-align: center;
-      padding-top: 2vh;
-      margin-bottom: 2vh;
-  }
-  ```
+#### 登出后台交互
 
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
+##### 编写 `VIEWS` 函数
 
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<!-- 添加用户名信息 -->
-  		<div class="ac_game_settings_username">
-  			<!-- 用户名和密码等信息样式类似，因此设置类名相同 -->
-  			<div class="ac_game_settings_item">
-  				<input type="text" placeholder="用户名">
-  			</div>
-  		</div>
-  	</div>
-  `);
-  ```
-  
-+ 修改 `acapp/game/static/css/game.css`
+>   修改 `acapp/game/views/settings/logout.py`
+>
+>   ```python
+>   from django.http import JsonResponse
+>   # 导入登出函数
+>   from django.contrib.auth import logout
+>   
+>   def signout(request):
+>       # request.user是系统内嵌的函数，查找当前登录的用户，如果当前没有用户登录
+>       # 返回匿名用户
+>       user = request.user
+>       # 如果用户没有登录，则正常返回
+>       if not user.is_authenticated:
+>           return JsonResponse({
+>               'result': "success"
+>           })
+>       # 如果用户处于登录状态，则退出登录，之后再正常返回
+>       logout(request)
+>       return JsonResponse({
+>           'result': "success"
+>       })
+>   ```
 
-  ```css
-  /* 修改 ac_game_settings_username 的样式 */
-  .ac_game_settings_username {
-      /* 将其变成块状元素 */
-      display: block;
-      height: 7vh;
-  }
-  
-  /* 修改 ac_game_settings_item 的样式 */
-  .ac_game_settings_item {
-      width: 100%;
-      height: 100%;
-  }
-  
-  /* 修改 ac_game_settings_item 下的 input 的样式 */
-  .ac_game_settings_item > input {
-      width: 90%;
-      line-height: 3vh;
-      position: relative;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-  }
-  ```
+##### 编写 `URL` 函数
 
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
+>   修改 `acapp/game/urls/settings/index.py`
+>
+>   ```python
+>   # 导入视图函数
+>   from game.views.settings.logout import signout
+>   
+>   urlpatterns = [
+>       # 添加路由
+>       path('logout/', signout, name = 'settings_logout')
+>   ]
+>   ```
 
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<div class="ac_game_settings_login">
-  			<!-- 添加密码信息 -->
-  			<div class="ac_game_settings_password">
-  				<!-- 用户名和密码等信息样式类似，因此设置类名相同 -->
-  				<div class="ac_game_settings_item">
-  					<input type="password" placeholder="密码">
-  				</div>
-  			</div>
-  		</div>
-  	</div>
-  `);
-  ```
+##### 前端调用 `signout` 函数
 
-+ 修改 `acapp/game/static/css/game.css`
+>   修改 `acapp/game/static/js/src/settings/zbase.js`
+>
+>   ```javascript
+>   <!-- 添加登出函数 -->
+>   logout_on_remote() {
+>       <!-- 如果当前登录的平台是ACAPP，则直接返回即可，因为ACAPP不是退出登录而是关闭界面 -->
+>   	if (this.platform === 'ACAPP') return false;
+>   	$.ajax({
+>   		url: 'https://app149.acapp.acwing.com.cn/settings/logout/',
+>   		type: 'GET',
+>   		success: function(resp) {
+>   			console.log(resp);
+>   			if (resp.result === 'success') {
+>                   <!-- 刷新界面 -->
+>   				location.reload();
+>   			}
+>   		}
+>   	});
+>   }
+>   ```
+>
+>   绑定登出点击事件，修改 `acapp/game/static/js/src/menu/zbase.js`
+>
+>   ```javascript
+>   class AcGameMenu {
+>       constructor(root) {
+>           this.root = root;
+>           this.$menu = $(`
+>               <div class="ac_game_menu">
+>               		<!-- 将设置修改成退出 -->
+>                       <div class="ac_game_menu_field_item ac_game_menu_field_item_settings">
+>                           退出
+>                       </div>
+>                   </div>
+>               </div>
+>           `);
+>           <!-- 获取设置的权柄 -->
+>           this.$settings = this.$menu.find(".ac_game_menu_field_item_settings");
+>       }
+>       add_listening_events() {
+>           let outer = this;
+>           <!-- 点击设置按钮 -->
+>           this.$settings.click(function() {
+>               outer.root.settings.logout_on_remote();
+>           });
+>       }
+>   }
+>   ```
 
-  ```css
-  /* 修改 ac_game_settings_password 的样式 */
-  .ac_game_settings_password {
-      display: block;
-      height: 7vh;
-  }
-  ```
+#### 注册后台交互
 
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
+##### 编写 `VIEWS` 函数
 
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<div class="ac_game_settings_login">
-  			<div class="ac_game_settings_submit">
-  				div class="ac_game_settings_item">
-  					<button>登录</button>
-  				</div>
-  			</div>
-  		</div>
-  	</div>
-  `);
-  ```
+>   修改 `acapp/game/views/settings/register.py`
+>
+>   ```python
+>   from django.http import JsonResponse
+>   from django.contrib.auth import login
+>   from django.contrib.auth.models import User
+>   from game.models.player.player import Player
+>   
+>   def register(request):
+>       data = request.GET
+>       # 获取用户名，否则，返回空
+>       # strip()去除前后空格
+>       username = data.get('username', '').strip()
+>       # 获取密码，否则，返回空
+>       # strip()去除前后空格
+>       password = data.get('password', '').strip()
+>       # 获取确认密码，否则，返回空
+>       # strip()去除前后空格
+>       password_confirm = data.get('password_confirm', '').strip()
+>       if not username or not password or not password_confirm:
+>           return JsonResponse({
+>               'result': '用户名或者密码不能为空'
+>           })
+>       if password != password_confirm:
+>           return JsonResponse({
+>               'result': '两次密码不一致'
+>           })
+>       if User.objects.filter(username = username).exists():
+>           return JsonResponse({
+>               'result': '用户名已存在'
+>           })
+>       user = User(username = username)
+>       user.set_password(password)
+>       # 将新创建的用户进行保存
+>       user.save()
+>       # 创建user的其他属性
+>       Player.objects.create(
+>           user = user,
+>           photo = 'https://ss0.baidu.com/-Po3dSag_xI4khGko9WTAnF6hhy/baike/pic/item/4afbfbedab64034f930bfd5eafc379310b551da7.jpg')
+>       # 将新用户注册到后台页面
+>       login(request, user)
+>       return JsonResponse({
+>           'result': 'success'
+>       })
+>   ```
 
-+ 修改 `acapp/game/static/css/game.css`
+##### 编写 `URL` 函数
 
-  ```css
-  /* 修改 ac_game_settings_submit 的样式 */
-  .ac_game_settings_submit {
-      display: block;
-      height: 7vh;
-  }
-  
-  /* 修改 ac_game_settings_item 下的 button 的样式 */
-  .ac_game_settings_item > button {
-      color: white;
-      width: 90%;
-      line-height: 3vh;
-      position: relative;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #4CAF50;
-      border-radius: 5px;
-  }
-  ```
+>   修改路由 `acapp/game/urls/settings/index.py`
+>
+>   ```python
+>   # 导入注册视图
+>   from game.views.settings.register import register
+>   
+>   urlpatterns = [
+>       # 添加注册路由
+>       path('register/', register, name = 'settings_register')
+>   ]
+>   ```
 
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
+##### 前端调用 `register` 函数
 
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<div class="ac_game_settings_login">
-  			<div class="ac_game_settings_error_messages">
-  				用户名密码错误
-  			</div>
-  		</div>
-  	</div>
-  `);
-  ```
+>   修改前端页面 `acapp/game/static/js/src/settings/zbase.js`
+>
+>   ```javascript
+>   class Settings {
+>       constructor(root) {
+>           this.$settings = $(`
+>               <div class = "ac_game_settings">
+>                   <div class = "ac_game_settings_register">
+>                   	<!-- 设置两个类名 -->
+>                   	<!-- 第一个类名：方便调整格式 -->
+>                   	<!-- 第二个类名：方便找到权柄并且便于后台获取获取 -->
+>                       <div class = "ac_game_settings_password ac_game_settings_password_first">
+>                           <div class = "ac_game_settings_item">
+>                               <input type = "password" placeholder = "密码">
+>                           </div>
+>                       </div>
+>                       <!-- 设置两个类名 -->
+>                   	<!-- 第一个类名：方便调整格式 -->
+>                   	<!-- 第二个类名：方便找到权柄并且便于后台获取获取 -->
+>                       <div class = "ac_game_settings_password ac_game_settings_password_second">
+>                           <div class = "ac_game_settings_item">
+>                               <input type = "password" placeholder = "确认密码">
+>                           </div>
+>                       </div>
+>                   </div>
+>               </div>
+>           `);
+>           <!-- 获取各种权柄 -->
+>           this.$register = this.$settings.find(".ac_game_settings_register");
+>           this.$register_username = this.$register.find(".ac_game_settings_username input");
+>           this.$register_password = this.$register.find(".ac_game_settings_password_first input");
+>           this.$register_password_confirm = this.$register.find(".ac_game_settings_password_second input");
+>           this.$register_submit = this.$register.find(".ac_game_settings_submit");
+>           this.$register_error_message = this.$register.find(".ac_game_settings_error_messages");
+>           this.$register_login = this.$register.find(".ac_game_settings_option");
+>           this.$register.hide();
+>           this.start();
+>       }
+>       add_listening_events_register() {
+>           <!-- 点击注册按钮 -->
+>           this.$register_submit.click(function() {
+>               outer.register_on_remote();
+>           });
+>       }
+>       register_on_remote() {
+>           let outer = this;
+>           let username = this.$register_username.val();
+>           let password = this.$register_password.val();
+>           let password_confirm = this.$register_password_confirm.val();
+>           this.$register_error_message.empty();
+>           $.ajax({
+>               url: 'https://app1164.acapp.acwing.com.cn/settings/register/',
+>               type: 'GET',
+>               data: {
+>                   username: username,
+>                   password: password,
+>                   password_confirm: password_confirm
+>               },
+>               success: function(resp) {
+>                   console.log(resp);
+>                   if (resp.result === 'success') {
+>                       <!-- 重新加载页面 -->
+>                       location.reload();
+>                   }
+>                   else {
+>                       <!-- 打印错误信息 -->
+>                       outer.$register_error_message.html(resp.result);
+>                   }
+>               }
+>           })
+>       }
+>   }
+>   ```
 
-+ 修改 `acapp/game/static/css/game.css`
+### 网页端 `AcWing` 一键登录
 
-  ```css
-  /* 修改 ac_game_settings_error_messages 的样式 */
-  .ac_game_settings_error_messages {
-      color: red;
-      font-size: 0.8vh;
-      display: inline;
-      float: left;
-      padding-left: 1vw;
-  }
-  ```
+#### `Redis` 教程
 
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
+##### `Django` 配置 `redis`
 
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<div class="ac_game_settings_login">
-  			<div class="ac_game_settings_option">
-  				注册
-  			</div>
-  		</div>
-  	</div>
-  `);
-  ```
+>   到这了！！！
 
-+ 修改 `acapp/game/static/css/game.css`
++ 第一步：在 `Django` 中集成 `redis` 也叫内存数据库，存储的是键值对
 
-  ```css
-  /* 修改 ac_game_settings_option 的样式 */
-  .ac_game_settings_option {
-      color: white;
-      font-size: 1.8vh;
-      display: inline;
-      float: right;
-      padding-right: 1vw;
-      cursor: pointer;
-  }
-  ```
+  + 安装 `redis` ，执行命令 `pip3 install django_redis` 进行安装
 
-+ 下载 `logo` 图片到 `acapp/game/static/image/settings/acwing_login.png`
-
-  + `wget --output-document=图片别名 图片地址 ` [图片地址](https://cdn.acwing.com/media/article/image/2021/11/18/1_ea3d5e7448-logo64x64_2.png)
-  + 记得重启服务
-
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
-
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<div class="ac_game_settings_login">
-  			<!-- 记得加个换行符 -->
-  			<br>
-  			<div class="ac_game_settings_acwing">
-  				<img width="30px;" src="https://app149.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
-  			</div>
-  		</div>
-  	</div>
-  `);
-  
-  ```
-
-+ 修改 `acapp/game/static/css/game.css`
-
-  ```css
-  /* 修改 ac_game_settings_acwing 的样式 */
-  .ac_game_settings_acwing {
-      display: block;
-      height: 7vh;
-  }
-  
-  /* 修改 ac_game_settings_acwing 下的 img 的样式 */
-  .ac_game_settings_acwing > img {
-      position: relative;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
-  }
-  ```
-
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
-
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<div class="ac_game_settings_login">
-  			<div class="ac_game_settings_acwing">
-  				<br>
-  				<div>
-  					AcWing一键登录
-  				</div>
-  			</div>
-  		</div>
-  	</div>
-  `);
-  ```
-
-+ 修改 `acapp/game/static/css/game.css`
-
-  ```css
-  /* 修改 ac_game_settings_login 的样式 */
-  .ac_game_settings_login {
-      /* 修改高度为 43 vh */
-      height: 43vh;
-  }
-  
-  /* 修改 ac_game_settings_acwing 下的 img 的样式 */
-  .ac_game_settings_acwing > img {
-      /* 修改为块状元素 */
-      display: block;
-  }
-  
-  /* 修改 ac_game_settings_acwing 下的 div 的样式 */
-  .ac_game_settings_acwing > div {
-      color: white;
-      font-size: 1.5vh;
-      text-align: center;
-  }
-  ```
-
-+ 修改 `acapp/game/static/js/src/settings/zbase.js`
-
-  ```javascript
-  this.$settings = $(`
-  	<div class="ac_game_settings">
-  		<div class="ac_game_settings_register">
-  			<div class="ac_game_settings_title">
-  				注册
-  			</div>
-  			<div class="ac_game_settings_username">
-  				<div class="ac_game_settings_item">
-  					<input type="text" placeholder="用户名">
-  				</div>
-  			</div>
-  			<div class="ac_game_settings_password">
-  				<div class="ac_game_settings_item">
-  					<input type="password" placeholder="密码">
-  				</div>
-  			</div>
-  			<div class="ac_game_settings_password">
-  				<div class="ac_game_settings_item">
-  					<input type="password" placeholder="确认密码">
-  				</div>
-  			</div>
-  			<div class="ac_game_settings_submit">
-  				<div class="ac_game_settings_item">
-  					<button>注册</button>
-  				</div>
-  			</div>
-  			<div class="ac_game_settings_error_messages">
-  			</div>
-  			<div class="ac_game_settings_option">
-  				登录
-  			</div>
-  			<br>
-  			<div class="ac_game_settings_acwing">
-  				<img width="30px;" src="https://app149.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
-  				<br>
-  				<div>
-  					AcWing一键登录
-  				</div>
-  			</div>
-  	</div>
-  `);
-  ```
-
-+ 修改 `acapp/game/static/css/game.css`
-
-  ```css
-  /* 修改ac_game_settings_register的样式 */
-  .ac_game_settings_register {
-      height: 50vh;
-      width: 20vw;
-      position: relative;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 0.7);
-      border-radius: 5px;
-  }
-  ```
-
-+ 将登录和注册等相关信息抠出来，修改 `acapp/game/static/js/src/settings/zbase.js`
-
-  ```javascript
-  <!-- 将登录所用的用户名、密码等信息抠出来 -->
-  <!-- 注意是this.$login不是this.$settings -->
-  this.$login_username = this.$login.find(".ac_game_settings_username input");
-  this.$login_password = this.$login.find(".ac_game_settings_password input");
-  this.$login_submit = this.$login.find(".ac_game_settings_submit button");
-  this.$login_error_message = this.$login.find(".ac_game_settings_error_messages");
-  this.$login_register = this.$login.find(".ac_game_settings_option");
-  <!-- 将注册所用的用户名、密码等信息抠出来 -->
-  <!-- 注意是this.$register不是this.$settings -->
-  this.$register_username = this.$register.find(".ac_game_settings_username input");
-  this.$register_password = this.$register.find(".ac_game_settings_password_first input");
-  this.$register_password_confirm = this.$register.find(".ac_game_settings_password_second input");
-  this.$register_submit = this.$register.find(".ac_game_settings_submit button");
-  this.$register_error_message = this.$register.find(".ac_game_settings_error_messages");
-  this.$register_login = this.$register.find(".ac_game_settings_option");
-  hide() {
-  	this.$settings.hide();
-  }
-  ```
-
-+ 登录和注册之间的跳转
-
-  ```javascript
-  start() {
-      <!-- 添加监听事件 -->
-  	this.add_listening_events();
-  }
-  add_listening_events() {
-      <!-- 添加登录的监听事件 -->
-  	this.add_listening_events_login();
-      <!-- 添加注册的监听事件 -->
-  	this.add_listening_events_register();
-  }
-  add_listening_events_login() {
-  	let outer = this;
-      <!-- 绑定监听事件 -->
-      <!-- 在登录界面点击注册，跳转到注册界面 -->
-  	this.$login_register.click(function() {
-  		outer.register();
-  	});
-  }
-  add_listening_events_register() {
-  	let outer = this;
-      <!-- 绑定监听事件 -->
-      <!-- 在注册界面点击登录，跳转到登录界面 -->
-  	this.$register_login.click(function() {
-  		outer.login();
-  	});
-  }
-  ```
-
-+ 登录后台交互
-
-  + 创建 `acapp/game/views/settings/login.py`，写入以下内容
+  + 配置 `acapp/acapp/settings.py` 文件，写入内容
 
     ```python
-    from django.http import JsonResponse
-    from django.contrib.auth import authenticate, login
-    
-    def signin(request):
-        data = request.GET
-        username = data.get('username')
-        password = data.get('password')
-    	# Django存储的是密码的哈希值，因此，使用内置函数
-    	# Django比较的是密码的哈希值，不是密码的值本身，先将输入的密码哈希，再与数据库中的哈希值进行比较，查看是否一致
-        user = authenticate(username = username, password = password)
-        if not user:
-            return JsonResponse({
-                'result': "用户名或者密码不正确"
-            })
-    	# login内置函数将登录的信息存储在浏览器的cookie里面
-        login(request, user)
-        return JsonResponse({
-            'result': "success"
-        })
-    ```
-
-  + 修改 `acapp/game/urls/settings/index.py`
-
-    ```python
-    # 添加signin函数
-    from game.views.settings.login import signin
-    
-    urlpatterns = [
-        # 添加相对应的路由
-        path('login/', signin, name = 'settings_login')
-    ]
-    ```
-
-  + 修改 `acapp/game/static/js/src/settings/zbase.js`
-
-    ```javascript
-    add_listening_events_login() {
-        <!-- 给提交按钮绑定监听函数 -->
-    	this.$login_submit.click(function() {
-    		outer.login_on_remote();
-    	});
+    # 注意粘贴的位置，位于# Database的位置，也就是数据库的位置
+    CACHES = { 
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://127.0.0.1:6379/1',
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },  
+        },  
     }
-    login_on_remote() {
-    	let outer = this;
-        <!-- 获取input里面输入的值 -->
-    	let username = this.$login_username.val();
-        <!-- 获取input里面输入的值 -->
-    	let password = this.$login_password.val();
-        <!-- 将错误信息清空 -->
-    	this.$login_error_message.empty();
-    	$.ajax({
-    		url: 'https://app149.acapp.acwing.com.cn/settings/login/',
-    		type: 'GET',
-    		data: {
-    			username: username,
-    			password: password
-    		},
-    		success: function(resp) {
-    			console.log(resp);
-    			if (resp.result === 'success') {
-    				location.reload();
-    			}
-    			else {
-    				outer.$login_error_message.html(resp.result);
-    			}
-    		}
-    	});
-    }
+    USER_AGENTS_CACHE = 'default'
     ```
 
-+ 登出后台交互
+  + 启动 `redis-server` 服务
 
-  + 修改 `acapp/game/views/settings/logout.py`
+    ```bash
+    sudo redis-server /etc/redis/redis.conf
+    ```
 
-    ```python
-    from django.http import JsonResponse
-    # 导入登出函数
-    from django.contrib.auth import logout
-    
-    def signout(request):
-        user = request.user
-        # 如果用户没有登录，则正常返回
-        if not user.is_authenticated:
-            return JsonResponse({
-                'result': "success"
-            })
-        # 如果用户处于登录状态，则退出登录，之后再正常返回
-        logout(request)
-        return JsonResponse({
-            'result': "success"
-        })
-    ```
-  
-  + 修改 `acapp/game/urls/settings/index.py`
-  
-    ```python
-    # 导入视图函数
-    from game.views.settings.logout import signout
-    
-    urlpatterns = [
-        # 添加路由
-        path('logout/', signout, name = 'settings_logout')
-    ]
-    ```
-  
-  + 修改 `acapp/game/static/js/src/settings/zbase.js`
-  
-    ```javascript
-    <!-- 添加登出函数 -->
-    logout_on_remote() {
-        <!-- 如果当前登录的平台是ACAPP，则直接返回即可，因为ACAPP不是退出登录而是关闭界面 -->
-    	if (this.platform === 'ACAPP') return false;
-    	$.ajax({
-    		url: 'https://app149.acapp.acwing.com.cn/settings/logout/',
-    		type: 'GET',
-    		success: function(resp) {
-    			console.log(resp);
-    			if (resp.result === 'success') {
-                    <!-- 刷新界面 -->
-    				location.reload();
-    			}
-    		}
-    	});
-    }
-    ```
-  
-  + 绑定登出点击事件，修改 `acapp/game/static/js/src/menu/zbase.js`
-  
-    ```javascript
-    this.$menu = $(`
-    	<div class="ac_game_menu">
-    		<div class="ac_game_menu_field">
-    			<div class="ac_game_menu_field_item ac_game_menu_field_item_settings">
-    				退出
-    			</div>
-    		</div>
-    	</div>
-    `);
-    <!-- 获取设置的权柄 -->
-    this.$settings = this.$menu.find('.ac_game_menu_field_item_settings');
-    <!-- 点击设置的时候，触发点击事件 -->
-    this.$settings.click(function() {
-        <!-- 调用logout_on_remote()函数 -->
-    	outer.root.settings.logout_on_remote();
-    });
-    ```
-  
-+ 注册后台交互
+  + 使用 `top` 命令查看是否含有进程 `redis-server`
 
-  + 修改 `acapp/game/views/settings/register.py`
+  + 重启服务 `uwsgi`即可
 
-    ```python
-    from django.http import JsonResponse
-    from django.contrib.auth import login
-    from django.contrib.auth.models import User
-    from game.models.player.player import Player
-    
-    def register(request):
-        data = request.GET
-        # 获取用户名，否则，返回空
-        # strip()去除前后空格
-        username = data.get('username', '').strip()
-        # 获取密码，否则，返回空
-        # strip()去除前后空格
-        password = data.get('password', '').strip()
-        # 获取确认密码，否则，返回空
-        # strip()去除前后空格
-        password_confirm = data.get('password_confirm', '').strip()
-        if not username or not password or not password_confirm:
-            return JsonResponse({
-                'result': '用户名或者密码不能为空'
-            })
-        if password != password_confirm:
-            return JsonResponse({
-                'result': '两次密码不一致'
-            })
-        if User.objects.filter(username = username).exists():
-            return JsonResponse({
-                'result': '用户名已存在'
-            })
-        user = User(username = username)
-        user.set_password(password)
-        # 将新创建的用户进行保存
-        user.save()
-        # 创建user的其他属性
-        Player.objects.create(
-                user = user,
-                photo = 'https://ss0.baidu.com/-Po3dSag_xI4khGko9WTAnF6hhy/baike/pic/item/4afbfbedab64034f930bfd5eafc379310b551da7.jpg')
-        # 将新用户注册到后台页面
-        login(request, user)
-        return JsonResponse({
-            'result': 'success'
-        })
-    ```
-    
-  + 修改路由 `acapp/game/urls/settings/index.py`
-  
-    ```python
-    # 导入注册视图
-    from game.views.settings.register import register
-    
-    urlpatterns = [
-        # 添加注册路由
-        path('register/', register, name = 'settings_register')
-    ]
-    ```
-  
-  + 修改前端页面 `acapp/game/static/js/src/settings/zbase.js`
-  
-    ```javascript
-    class Settings {
-        add_listening_events_register() {
-            <!-- 绑定提交按钮事件 -->
-            this.$register_submit.click(function() {
-                outer.register_on_remote();
-            });
-        }
-        register_on_remote() {
-            let outer = this;
-            let username = this.$register_username.val();
-            let password = this.$register_password.val();
-            let password_confirm = this.$register_password_confirm.val();
-            this.$register_error_message.empty();
-            $.ajax({
-                url: 'https://app149.acapp.acwing.com.cn/settings/register/',
-                type: 'GET',
-                data: {
-                    username: username,
-                    password: password,
-                    password_confirm: password_confirm
-                },
-                success: function(resp) {
-                    console.log(resp);
-                    if (resp.result === 'success') {
-                        <!-- 重新加载页面 -->
-                        location.reload();
-                    }
-                    else {
-                        <!-- 打印错误信息 -->
-                        outer.$register_error_message.html(resp.result);
-                    }
-                }
-            })
-        }
-    }
-    ```
-  
-+ 网页端 `AcWing` 一键登录
+  + `redis` 的基本操作
 
-  + 第一步：在 `Django` 中集成 `redis` 也叫内存数据库，存储的是键值对
-  
-    + 安装 `redis` ，执行命令 `pip3 install django_redis` 进行安装
-  
-    + 配置 `acapp/acapp/settings.py` 文件，写入内容
-  
+    + 执行命令 `python3 manage.py shell`，打开 `django` 后台
+
       ```python
-      # 注意粘贴的位置，位于# Database的位置，也就是数据库的位置
-      CACHES = { 
-          'default': {
-              'BACKEND': 'django_redis.cache.RedisCache',
-              'LOCATION': 'redis://127.0.0.1:6379/1',
-              "OPTIONS": {
-                  "CLIENT_CLASS": "django_redis.client.DefaultClient",
-              },  
-          },  
-      }
-      USER_AGENTS_CACHE = 'default'
+      # 导入缓存包
+      from django.core.cache import cache
+      # 查询所有的键keys，支持正则表达式
+      cache.keys('*')
+      # 设置键值对
+      # 第一个参数：key
+      # 第二个参数：value
+      # 第三个参数：过期时间（单位：秒），None表示永远不会过期
+      cache.set('yxc', 1, 5)
+      # 查询某个键是否存在，存在返回True，否则，返回False
+      cache.has_key('wyp')
+      # 查询某个键对应的值
+      cache.get('wyp')
+      # 删除关键字
+      cache.delete('wyp')
       ```
+
++ 第二步：`OAuth2` 协议执行过程详解
+
+  ![2110029](https://gitee.com/peter95535/image-bed/raw/master/img/2110029.png)
   
-    + 启动 `redis-server` 服务
+  + 注意事项：`token` 令牌只有需要拿用户名和密码的时候才有用，因为，第一次拿完之后会将信息存储在系统的数据库里面，下次，直接查询数据库即可
   
++ 第三步：`OAuth2` 具体逻辑代码，[讲义](https://www.acwing.com/blog/content/12466/)
+
+  + 第一步：添加 `player` 的 `openid` 属性
+
+    + 修改 `acapp/game/models/player`
+
+      ```python
+      # 添加openid属性
+      # 第一个参数：默认值
+      # 第二个参数：最大长度
+      # 第三个参数：空
+      # 第四个参数：空
+      openid = models.CharField(default = '', max_length = 50, blank = True, null = True)
+      ```
+
+    + 将修改注册到 `Django` 后台，返回到 `acapp/`，执行如下命令
+
       ```bash
-      sudo redis-server /etc/redis/redis.conf
+      # 准备做迁移，准备工作
+      python3 manage.py makemigrations
+      # 迁移
+      python3 manage.py migrate
       ```
-  
-    + 使用 `top` 命令查看是否含有进程 `redis-server`
-  
-    + 重启服务 `uwsgi`即可
-  
-    + `redis` 的基本操作
-  
-      + 执行命令 `python3 manage.py shell`，打开 `django` 后台
-  
-        ```python
-        # 导入缓存包
-        from django.core.cache import cache
-        # 查询所有的键keys，支持正则表达式
-        cache.keys('*')
-        # 设置键值对
-        # 第一个参数：key
-        # 第二个参数：value
-        # 第三个参数：过期时间（单位：秒），None表示永远不会过期
-        cache.set('yxc', 1, 5)
-        # 查询某个键是否存在，存在返回True，否则，返回False
-        cache.has_key('wyp')
-        # 查询某个键对应的值
-        cache.get('wyp')
-        # 删除关键字
-        cache.delete('wyp')
-        ```
-  
-  + 第二步：`OAuth2` 协议执行过程详解
-  
-    ![2110029](https://gitee.com/peter95535/image-bed/raw/master/img/2110029.png)
-    
-    + 注意事项：`token` 令牌只有需要拿用户名和密码的时候才有用，因为，第一次拿完之后会将信息存储在系统的数据库里面，下次，直接查询数据库即可
-    
-  + 第三步：`OAuth2` 具体逻辑代码，[讲义](https://www.acwing.com/blog/content/12466/)
-  
-    + 第一步：添加 `player` 的 `openid` 属性
-  
-      + 修改 `acapp/game/models/player`
-  
-        ```python
-        # 添加openid属性
-        # 第一个参数：默认值
-        # 第二个参数：最大长度
-        # 第三个参数：空
-        # 第四个参数：空
-        openid = models.CharField(default = '', max_length = 50, blank = True, null = True)
-        ```
-  
-      + 将修改注册到 `Django` 后台，返回到 `acapp/`，执行如下命令
-  
-        ```bash
-        # 准备做迁移，准备工作
-        python3 manage.py makemigrations
-        # 迁移
-        python3 manage.py migrate
-        ```
-  
-      + 务必记得重启服务器
-  
-    + 第二步：申请授权码 `code`
-  
-      + 修改 `acapp/game/views/settings/acwing/web/apply_code.py` 并且写入代码
-  
-        ```python
-        from django.http import JsonResponse
-        
-        # 申请授权码code的函数
-        def apply_code(request):
-            appid = '149'
-        ```
-  
-      + 修改 `acapp/game/views/settings/acwing/web/receive_code.py` 并且写入代码
-  
-        ```python
-        from django.shortcuts import redirect
-        
-        def receive_code(request):
-            pass
-        ```
-  
-      + 修改 `acapp/game/urls/settings/acwing/index.py`
-  
-        ```python
-        from django.urls import path
-        
-        urlpatterns = [
-        ]
-        ```
-  
-      + 修改 `acapp/game/urls/settings/index.py`
-  
-        ```python
-        # 导入include函数
-        from django.urls import path, include
-        
-        urlpatterns = [
-            # 添加web的路由
-            path('acwing/', include('game.urls.settings.acwing.index'))
-        ]
-        ```
-  
-      + 修改 `acapp/game/urls/settings/acwing/index.py`
-  
-        ```python
-        # 导入申请授权码的函数apply_code
-        from game.views.settings.acwing.apply_code import apply_code
-        # 导入接收授权码的函数receive_code
-        from game.views.settings.acwing.receive_code import receive_code
-        
-        urlpatterns = [
-            # 添加申请授权码的路由
-            path('web/apply_code/', apply_code, name = 'settings_acwing_apply_code'),
-            # 添加接收授权码的路由
-            path('web/receive_code/', receive_code, name = 'settings_acwing_receive_code')
-        ]
-        ```
-  
-      + 修改 `acapp/game/views/settings/acwing/web/apply_code.py`
-  
-        ```python
-        from django.http import JsonResponse
-        
-        def apply_code(request):
-            # 返回值
-            return JsonResponse({
-                'result': "success"
-            })
-        ```
-  
-      + 修改 `acapp/game/views/settings/acwing/web/receive_code.py`
-  
-        ```python
-        from django.shortcuts import redirect
-        
-        def receive_code(request):
-            # 返回重定向的网址
-            # 'index'对应【acapp/game/urls/index.py】中的路由的第一项，name=index
-            return redirect('index')
-        ```
-  
-      + 修改 `acapp/game/views/settings/getinfo.py`
-  
-        ```python
-        def getinfo_web(request):
-            user = request.user
-            if not user.is_authenticated:
-                return JsonResponse({
-                    'result': "未登录"
-                })
-            else:
-                # 返回当前用户的信息，而不是每次返回管理员信息，不能写死
-                player = Player.objects.get(user = user)
-                return JsonResponse({
-                    'result': "success",
-                    'username': player.user.username,
-                    'photo': player.photo
-                })
-        ```
-  
-      + 修改 `acapp/game/views/settings/acwing/web/apply_code.py`
-  
-        ```python
-        # 导入编码库
-        from urllib.parse import quote
-        # 导入随机数库
-        from random import randint
-        # 导入redis相关库
-        from django.core.cache import cache
-        
-        # 随机生成8位随机数
-        def get_state():
-            res = ''
-            for i in range(8):
-                res += str(randint(0, 9))
-            return res
-        
-        def apply_code(request):
-            # 重定向地址
-            redirect_uri = quote('https://app149.acapp.acwing.com.cn/settings/acwing/web/receive_code/')
-            # 获取用户信息
-            scope = 'userinfo'
-            # 获取状态，8位的随机数
-            state = get_state()
-            # 设置状态的有效期，单位：秒
-            cache.set(state, True, 7200)
-            # code的申请地址
-            apply_code_url = 'https://www.acwing.com/third_party/api/oauth2/web/authorize/'
-            return JsonResponse({
-                'result': "success",
-                # 返回拼接的url地址
-                'apply_code_url': apply_code_url + '?appid=%s&redirect_uri=%s&scope=%s&state=%s' % (appid, redirect_uri, scope, state)
-            })
-        ```
-  
-      + 修改 `acapp/game/static/js/src/settings/zbase.js`
-  
-        ```javascript
-        class Settings {
-            constructor(root) {
-                <!-- 找到AcWing一键登录的按钮 -->
-                this.$acwing_login = this.$settings.find(".ac_game_settings_acwing img")
-            }
-            add_listening_events() {
-                <!-- 添加外部权柄 -->
-                let outer = this;
-                <!-- 点击AcWing一键登录按钮 -->
-                this.$acwing_login.click(function() {
-                    <!-- 触发一键登录函数 -->
-                    outer.acwing_login();
-                });
-            }
-            <!-- 一键登录函数 -->
-            acwing_login() {
-                <!-- 返回ajax信息 -->
-                $.ajax({
-                    <!-- 请求的url -->
-                    url: 'https://app149.acapp.acwing.com.cn/settings/acwing/web/apply_code',
-                    type: 'GET',
-                    success: function(resp) {
-                        console.log(resp);
-                        if (resp.result === 'success') {
-                            <!-- 如果成功，返回重定向的网址 -->
-                            window.location.replace(resp.apply_code_url)
-                        }
-                    }
-                })
-            }
-        }
-        ```
-  
-      + 修改 `acapp/game/views/settings/acwing/web/receive_code.py`
+
+    + 务必记得重启服务器
+
+  + 第二步：申请授权码 `code`
+
+    + 修改 `acapp/game/views/settings/acwing/web/apply_code.py` 并且写入代码
+
+      ```python
+      from django.http import JsonResponse
       
-        ```python
-        import requests
-        from django.shortcuts import redirect
-        from django.core.cache import cache
-        from django.contrib.auth.models import User
-        from game.models.player.player import Player
-        from django.contrib.auth import login
-        from random import randint
-        
-        def receive_code(request):
-            # 获取数据
-            data = request.GET
-            # 获取授权码
-            code = data.get('code')
-            # 获取状态
-            state = data.get('state')
-            # 如果当前请求来源于别的地方，则直接忽略
-            if not cache.has_key(state):
-                return redirect('index')
-            # 将当前状态删掉
-            cache.delete(state)
-            # 获取access_token的API地址
-            apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
-            # 参数
-            params = {
-                'appid': '149',
-                'secret': '023a763448e444ae80815e8dc107fa8f',
-                'code': code
-            }
-            # 转成json格式
-            access_token_res = requests.get(apply_access_token_url, params = params).json()
-            # 提取access_token
-            access_token = access_token_res['access_token']
-            # 提取openid
-            openid = access_token_res['openid']
-            # 获取用户
-            players = Player.objects.filter(openid = openid)
-            # 如果用户已经存在
-            if players.exists():
-                # 直接登录即可
-                login(request, players[0].user)
-                # 重定向到首页
-                return redirect('index')
-            # 获取userinfo的API接口
-            get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
-            # 参数
-            params = {
-                'access_token': access_token,
-                'openid': openid
-            }
-            # 转成json格式
-            userinfo_res = requests.get(get_userinfo_url, params = params).json()
-            # 提取用户名
-            username = userinfo_res['username']
-            # 提取用户头像
-            photo = userinfo_res['photo']
-            # 如果用户已经存在【授权的账号的名称和当前网站的用户名重复】，则随机添加某个数，防止冲突
-            while User.objects.filter(username = username).exists():
-                username += str(randint(0, 9))
-          	# 创建用户的基本信息
-            user = User.objects.create(username = username)
-            # 创建用户的附加信息
-            player = Player.objects.create(user = user, photo = photo, openid = openid)
-            # 使用新创建的用户进行登录
-            login(request, user)
-            return redirect('index')
-        ```
-        
-  
+      # 申请授权码code的函数
+      def apply_code(request):
+          appid = '149'
+      ```
+
+    + 修改 `acapp/game/views/settings/acwing/web/receive_code.py` 并且写入代码
+
+      ```python
+      from django.shortcuts import redirect
+      
+      def receive_code(request):
+          pass
+      ```
+
+    + 修改 `acapp/game/urls/settings/acwing/index.py`
+
+      ```python
+      from django.urls import path
+      
+      urlpatterns = [
+      ]
+      ```
+
+    + 修改 `acapp/game/urls/settings/index.py`
+
+      ```python
+      # 导入include函数
+      from django.urls import path, include
+      
+      urlpatterns = [
+          # 添加web的路由
+          path('acwing/', include('game.urls.settings.acwing.index'))
+      ]
+      ```
+
+    + 修改 `acapp/game/urls/settings/acwing/index.py`
+
+      ```python
+      # 导入申请授权码的函数apply_code
+      from game.views.settings.acwing.apply_code import apply_code
+      # 导入接收授权码的函数receive_code
+      from game.views.settings.acwing.receive_code import receive_code
+      
+      urlpatterns = [
+          # 添加申请授权码的路由
+          path('web/apply_code/', apply_code, name = 'settings_acwing_apply_code'),
+          # 添加接收授权码的路由
+          path('web/receive_code/', receive_code, name = 'settings_acwing_receive_code')
+      ]
+      ```
+
+    + 修改 `acapp/game/views/settings/acwing/web/apply_code.py`
+
+      ```python
+      from django.http import JsonResponse
+      
+      def apply_code(request):
+          # 返回值
+          return JsonResponse({
+              'result': "success"
+          })
+      ```
+
+    + 修改 `acapp/game/views/settings/acwing/web/receive_code.py`
+
+      ```python
+      from django.shortcuts import redirect
+      
+      def receive_code(request):
+          # 返回重定向的网址
+          # 'index'对应【acapp/game/urls/index.py】中的路由的第一项，name=index
+          return redirect('index')
+      ```
+
+    + 修改 `acapp/game/views/settings/getinfo.py`
+
+      ```python
+      def getinfo_web(request):
+          user = request.user
+          if not user.is_authenticated:
+              return JsonResponse({
+                  'result': "未登录"
+              })
+          else:
+              # 返回当前用户的信息，而不是每次返回管理员信息，不能写死
+              player = Player.objects.get(user = user)
+              return JsonResponse({
+                  'result': "success",
+                  'username': player.user.username,
+                  'photo': player.photo
+              })
+      ```
+
+    + 修改 `acapp/game/views/settings/acwing/web/apply_code.py`
+
+      ```python
+      # 导入编码库
+      from urllib.parse import quote
+      # 导入随机数库
+      from random import randint
+      # 导入redis相关库
+      from django.core.cache import cache
+      
+      # 随机生成8位随机数
+      def get_state():
+          res = ''
+          for i in range(8):
+              res += str(randint(0, 9))
+          return res
+      
+      def apply_code(request):
+          # 重定向地址
+          redirect_uri = quote('https://app149.acapp.acwing.com.cn/settings/acwing/web/receive_code/')
+          # 获取用户信息
+          scope = 'userinfo'
+          # 获取状态，8位的随机数
+          state = get_state()
+          # 设置状态的有效期，单位：秒
+          cache.set(state, True, 7200)
+          # code的申请地址
+          apply_code_url = 'https://www.acwing.com/third_party/api/oauth2/web/authorize/'
+          return JsonResponse({
+              'result': "success",
+              # 返回拼接的url地址
+              'apply_code_url': apply_code_url + '?appid=%s&redirect_uri=%s&scope=%s&state=%s' % (appid, redirect_uri, scope, state)
+          })
+      ```
+
+    + 修改 `acapp/game/static/js/src/settings/zbase.js`
+
+      ```javascript
+      class Settings {
+          constructor(root) {
+              <!-- 找到AcWing一键登录的按钮 -->
+              this.$acwing_login = this.$settings.find(".ac_game_settings_acwing img")
+          }
+          add_listening_events() {
+              <!-- 添加外部权柄 -->
+              let outer = this;
+              <!-- 点击AcWing一键登录按钮 -->
+              this.$acwing_login.click(function() {
+                  <!-- 触发一键登录函数 -->
+                  outer.acwing_login();
+              });
+          }
+          <!-- 一键登录函数 -->
+          acwing_login() {
+              <!-- 返回ajax信息 -->
+              $.ajax({
+                  <!-- 请求的url -->
+                  url: 'https://app149.acapp.acwing.com.cn/settings/acwing/web/apply_code',
+                  type: 'GET',
+                  success: function(resp) {
+                      console.log(resp);
+                      if (resp.result === 'success') {
+                          <!-- 如果成功，返回重定向的网址 -->
+                          window.location.replace(resp.apply_code_url)
+                      }
+                  }
+              })
+          }
+      }
+      ```
+
+    + 修改 `acapp/game/views/settings/acwing/web/receive_code.py`
+    
+      ```python
+      import requests
+      from django.shortcuts import redirect
+      from django.core.cache import cache
+      from django.contrib.auth.models import User
+      from game.models.player.player import Player
+      from django.contrib.auth import login
+      from random import randint
+      
+      def receive_code(request):
+          # 获取数据
+          data = request.GET
+          # 获取授权码
+          code = data.get('code')
+          # 获取状态
+          state = data.get('state')
+          # 如果当前请求来源于别的地方，则直接忽略
+          if not cache.has_key(state):
+              return redirect('index')
+          # 将当前状态删掉
+          cache.delete(state)
+          # 获取access_token的API地址
+          apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
+          # 参数
+          params = {
+              'appid': '149',
+              'secret': '023a763448e444ae80815e8dc107fa8f',
+              'code': code
+          }
+          # 转成json格式
+          access_token_res = requests.get(apply_access_token_url, params = params).json()
+          # 提取access_token
+          access_token = access_token_res['access_token']
+          # 提取openid
+          openid = access_token_res['openid']
+          # 获取用户
+          players = Player.objects.filter(openid = openid)
+          # 如果用户已经存在
+          if players.exists():
+              # 直接登录即可
+              login(request, players[0].user)
+              # 重定向到首页
+              return redirect('index')
+          # 获取userinfo的API接口
+          get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
+          # 参数
+          params = {
+              'access_token': access_token,
+              'openid': openid
+          }
+          # 转成json格式
+          userinfo_res = requests.get(get_userinfo_url, params = params).json()
+          # 提取用户名
+          username = userinfo_res['username']
+          # 提取用户头像
+          photo = userinfo_res['photo']
+          # 如果用户已经存在【授权的账号的名称和当前网站的用户名重复】，则随机添加某个数，防止冲突
+          while User.objects.filter(username = username).exists():
+              username += str(randint(0, 9))
+        	# 创建用户的基本信息
+          user = User.objects.create(username = username)
+          # 创建用户的附加信息
+          player = Player.objects.create(user = user, photo = photo, openid = openid)
+          # 使用新创建的用户进行登录
+          login(request, user)
+          return redirect('index')
+      ```
+      
+
 + `AcWing` 网站 `Acapp` 的一键登录，[讲义](https://www.acwing.com/blog/content/12467/)
 
   + 第一步：将网页版写的函数复制到 `acapp/game/views/settings/acwing/acapp`
-  
+
     > 1. 使用命令 `cp ../web/* .`
-  
+
   + 第二步：修改 `acapp/game/views/settings/acwing/acapp/apply_code.py` 函数
-  
+
     ```python
     from django.http import JsonResponse
     from urllib.parse import quote
@@ -2590,9 +2509,9 @@
             'state': state
         })
     ```
-  
+
   + 第三步：修改路由 `acapp/game/urls/settings/acwing/index.py`
-  
+
     ```python
     from django.urls import path
     # 防止冲突，因此，起别名
@@ -2608,9 +2527,9 @@
         path('acapp/receive_code/', acapp_receive_code, name = 'settings_acwing_acapp_receive_code')
     ]
     ```
-  
+
   + 第四步：修改 `acapp/game/statis/js/src/settings/zbase.js`
-  
+
     ```javascript
     class Settings {
         start() {
@@ -2655,9 +2574,9 @@
         getinfo_web() {}
     }
     ```
-  
+
   + 第五步：修改 `acapp/game/views/settings/acwing/acapp/receive_code.py`
-  
+
     ```python
     import requests
     from django.shortcuts import redirect
@@ -2738,7 +2657,7 @@
             'photo': player.photo
         })
     ```
-  
+
 
 
 #### end

@@ -1389,6 +1389,75 @@ public:
 
 `LIS`、`最长上升子序列`
 
+##### [LeetCode 368. 最大整除子集](https://leetcode-cn.com/problems/largest-divisible-subset/)
+
+**题目描述**
+
+>   给你一个由 无重复 正整数组成的集合 `nums` ，请你找出并返回其中最大的整除子集 `answer` ，子集中每一元素对 `(answer[i], answer[j])` 都应当满足：
+>
+>   +   `answer[i] % answer[j] == 0` ，或
+>   +   `answer[j] % answer[i] == 0`
+>       如果存在多个有效解子集，返回其中任何一个均可。
+
+**示例 1**
+
+>   输入：`nums = [1,2,3]`
+>   输出：`[1,2]`
+>   解释：`[1,3]` 也会被视为正确答案。
+
+**示例 2**
+
+>   输入：`nums = [1,2,4,8]`
+>   输出：`[1,2,4,8]`
+
+**提示**
+
+>   +   $1 <= nums.length <= 1000$
+>   +   $1 <= nums[i] <= 2 * 10^9$
+>   +   $nums 中的所有整数 互不相同$
+
+**手写稿**
+
+![352205](https://gitee.com/peter95535/image-bed/raw/master/img/352205.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<int> largestDivisibleSubset(vector<int>& a) {
+        int n = a.size();
+        // 长度至少为1【其本身一个数字】
+        vector<int> f(n + 5, 1);
+        // 排序
+        sort(a.begin(), a.end());
+        // 记录f最大时的下标
+        int k = 1;
+        for (int i = 1; i <= n; i ++ ) {
+            for (int j = 1; j < i;j ++ )
+                if (a[i - 1] % a[j - 1] == 0) f[i] = max(f[i], f[j] + 1);
+            // 记录f最大时的下标
+            if (f[i] > f[k]) k = i;
+        }
+        // 倒序查找方案，先把最后一个方案加进去
+        vector<int> res(1, a[k - 1]);
+        while (f[k] > 1)
+            // 判断从哪个方案转移过来
+            for (int i = 1; i < k; i ++ )
+                if (a[k - 1] % a[i - 1] == 0 && f[k] == f[i] + 1) {
+                    k = i;
+                    res.push_back(a[k - 1]);
+                    break;
+                }
+        return res;
+    }
+};
+```
+
+**标签**
+
+`LIS`、`排序`
+
 #### 背包模型
 
 ##### 分组背包
@@ -2173,11 +2242,45 @@ public:
 
 `位运算`
 
+#### [LeetCode 371. 两整数之和](https://leetcode-cn.com/problems/sum-of-two-integers/)
+
+**题目描述**
+
+>   给你两个整数 `a` 和 `b` ，不使用 运算符 `+` 和 `-` ，计算并返回两整数之和。
+
+**示例 1**
+
+>   输入：`a = 1, b = 2`
+>   输出：`3`
+
+**示例 2**
+
+>   输入：`a = 2, b = 3`
+>   输出：`5`
+
+**提示**
+
+>   +   $-1000 <= a, b <= 1000$
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**题解**
+
+
+
 #### end
 
 ### 数学相关
 
-#### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
+####  普通数学
+
+##### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
 
 **题目描述**
 
@@ -2225,7 +2328,7 @@ public:
 
 `几何`、`数学`
 
-#### [LeetCode 264. 丑数 II](https://leetcode-cn.com/problems/ugly-number-ii/)
+##### [LeetCode 264. 丑数 II](https://leetcode-cn.com/problems/ugly-number-ii/)
 
 **题目描述**
 
@@ -2316,7 +2419,7 @@ public:
 
 `三路归并`、`归并排序`
 
-#### [AcWing 313. 超级丑数](https://leetcode-cn.com/problems/super-ugly-number/)
+##### [AcWing 313. 超级丑数](https://leetcode-cn.com/problems/super-ugly-number/)
 
 **题目描述**
 
@@ -2391,7 +2494,7 @@ public:
 
 `优先队列`、`K路归并`
 
-#### [LeetCode 279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+##### [LeetCode 279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
 **题目描述**
 
@@ -2474,7 +2577,7 @@ public:
 
 `动态规划`、`数学`
 
-#### [LeetCode 233. 数字 1 的个数](https://leetcode-cn.com/problems/number-of-digit-one/)
+##### [LeetCode 233. 数字 1 的个数](https://leetcode-cn.com/problems/number-of-digit-one/)
 
 **题目描述**
 
@@ -2535,7 +2638,7 @@ public:
 
 `数学`
 
-#### [LeetCode 231. 2 的幂](https://leetcode-cn.com/problems/power-of-two/)
+##### [LeetCode 231. 2 的幂](https://leetcode-cn.com/problems/power-of-two/)
 
 **题目描述**
 
@@ -2636,7 +2739,7 @@ public:
 
 `对数`、`位运算`
 
-#### [LeetCode 326. 3 的幂](https://leetcode-cn.com/problems/power-of-three/)
+##### [LeetCode 326. 3 的幂](https://leetcode-cn.com/problems/power-of-three/)
 
 **题目描述**
 
@@ -2721,7 +2824,7 @@ public:
 
 `对数`、`算术基本定理`、`数论`
 
-#### [LeetCode 342. 4的幂](https://leetcode-cn.com/problems/power-of-four/)
+##### [LeetCode 342. 4的幂](https://leetcode-cn.com/problems/power-of-four/)
 
 **题目描述**
 
@@ -2794,7 +2897,96 @@ public:
 
 `对数`、`位运算`
 
-#### [AcWing 319. 灯泡开关](https://leetcode-cn.com/problems/bulb-switcher/)
+##### [LeetCode 343. 整数拆分](https://leetcode-cn.com/problems/integer-break/)
+
+**题目描述**
+
+>   给定一个正整数 `n` ，将其拆分为 `k` 个 正整数 的和（ `k >= 2` ），并使这些整数的乘积最大化。
+>
+>   返回 你可以获得的最大乘积 。
+
+**示例 1**
+
+>   输入: `n = 2`
+>   输出: `1`
+>   解释: `2 = 1 + 1, 1 × 1 = 1`。
+
+**示例 2**
+
+>   输入: `n = 10`
+>   输出: `36`
+>   解释: `10 = 3 + 3 + 4, 3 × 3 × 4 = 36`。
+
+**提示**
+
+>   +   $2 <= n <= 58$
+
+**手写稿**
+
+![332159](https://gitee.com/peter95535/image-bed/raw/master/img/332159.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int integerBreak(int n) {
+        if (n <= 3) return 1 * (n - 1);
+        int res = 1;
+        while (n >= 5) n -= 3, res *= 3;
+        return res * n;
+    }
+};
+```
+
+**标签**
+
+`数学`
+
+##### [LeetCode 357. 计算各个位数不同的数字个数](https://leetcode-cn.com/problems/count-numbers-with-unique-digits/)
+
+**题目描述**
+
+>   给定一个非负整数 `n`，计算各位数字都不同的数字 `x` 的个数，其中 $0 ≤ x < 10^n$ 。
+
+**示例**
+
+>   输入: `2`
+>   输出: `91`
+>   解释: 答案应为除去 `11,22,33,44,55,66,77,88,99` 外，在 `[0,100)` 区间内的所有数字。
+
+**手写稿**
+
+![350904](https://gitee.com/peter95535/image-bed/raw/master/img/350904.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int countNumbersWithUniqueDigits(int n) {
+        // 0 ～ 9 共10个数字，n > 10 无意义
+        n = min(n, 10);
+        vector<int> f(n + 1);
+        // 0 特判
+        if (n == 0) return 1;
+        f[1] = 9;
+        for (int i = 2; i <= n; i ++ ) f[i] = f[i - 1] * (11 - i);
+        int res = 0;
+        for (int i = 1; i <= n; i ++ ) res += f[i];
+        // 加上 0 这个数字
+        return res + 1;
+    }
+};
+```
+
+**标签**
+
+`排列组合`、`数学`、`动态规划`
+
+#### 数论相关
+
+##### [AcWing 319. 灯泡开关](https://leetcode-cn.com/problems/bulb-switcher/)
 
 **题目描述**
 
@@ -2851,6 +3043,62 @@ public:
 **标签**
 
 `完全平方数`、`脑筋急转弯`、`数论`
+
+##### [LeetCode 365. 水壶问题](https://leetcode-cn.com/problems/water-and-jug-problem/)
+
+>   有两个水壶，容量分别为 `jug1Capacity` 和 `jug2Capacity` 升。水的供应是无限的。确定是否有可能使用这两个壶准确得到 `targetCapacity` 升。
+>
+>   如果可以得到 `targetCapacity` 升水，最后请用以上水壶中的一或两个来盛放取得的 `targetCapacity` 升水。
+>
+>   你可以：
+>
+>   装满任意一个水壶
+>   清空任意一个水壶
+>   从一个水壶向另外一个水壶倒水，直到装满或者倒空
+
+**示例 1**
+
+>   输入: `jug1Capacity = 3, jug2Capacity = 5, targetCapacity = 4`
+>   输出: `true`
+>   解释：来自著名的 ["Die Hard"](https://www.youtube.com/watch?v=BVtQNK_ZUJg)
+
+**示例 2**
+
+>   输入: `jug1Capacity = 2, jug2Capacity = 6, targetCapacity = 5`
+>   输出: `false`
+
+**示例 3**
+
+>   输入: `jug1Capacity = 1, jug2Capacity = 2, targetCapacity = 3`
+>   输出: `true`
+
+**提示**
+
+>   +   $1 <= jug1Capacity, jug2Capacity, targetCapacity <= 10^6$
+
+**手写稿**
+
+![351607](https://gitee.com/peter95535/image-bed/raw/master/img/351607.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int gcd(int a, int b) {
+        if (!b) return a;
+        return gcd(b, a % b);
+    }
+    bool canMeasureWater(int a, int b, int c) {
+        if (a + b < c) return false;
+        return c % gcd(a, b) == 0; 
+    }
+};
+```
+
+**标签**
+
+`贝祖定理`、`数论`、`欧几里得算法`
 
 #### end
 
@@ -6223,7 +6471,240 @@ public:
 
 `贪心`
 
-### 分治
+### 链表专题
+
+#### [LeetCode 328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+
+**题目描述**
+
+> 给定单链表的头节点 `head` ，将所有索引为奇数的节点和索引为偶数的节点分别组合在一起，然后返回重新排序的列表。
+>
+> 第一个节点的索引被认为是 奇数 ， 第二个节点的索引为 偶数 ，以此类推。
+>
+> 请注意，偶数组和奇数组内部的相对顺序应该与输入时保持一致。
+>
+> 你必须在 `O(1)` 的额外空间复杂度和 `O(n)` 的时间复杂度下解决这个问题。
+
+**示例 1**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/oddeven-linked-list.jpg)
+
+> 输入: `head = [1,2,3,4,5]`
+> 输出: `[1,3,5,2,4]`
+
+**示例 2**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/oddeven2-linked-list.jpg)
+
+> 输入: `head = [2,1,3,5,6,4,7]`
+> 输出: `[2,3,6,7,1,5,4]`
+
+**提示**
+
+> + $n ==  链表中的节点数$
+> + $0 <= n <= 10^4$
+> + $-10^6 <= Node.val <= 10^6$
+
+**手写稿**
+
+![312202](https://gitee.com/peter95535/image-bed/raw/master/img/312202.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* oddEvenList(ListNode* p) {
+        // odd是奇数链表，even是偶数链表
+        auto odd = new ListNode(-1), even = new ListNode(-1);
+        ListNode *a = odd, *b = even;
+        while (p) {
+            auto q = p -> next;
+            p -> next = a -> next;
+            a = a -> next = p;
+            if (!q) break;
+            auto r = q -> next;
+            q -> next = b -> next;
+            b = b -> next = q;
+            p = r;
+        }
+        a -> next = even -> next;
+        return odd -> next;
+    }
+};
+```
+
+**标签**
+
+`链表`
+
+### 迭代器专题
+
+#### [LeetCode 341. 扁平化嵌套列表迭代器](https://leetcode-cn.com/problems/flatten-nested-list-iterator/)
+
+**题目描述**
+
+>   给你一个嵌套的整数列表 `nestedList` 。每个元素要么是一个整数，要么是一个列表；该列表的元素也可能是整数或者是其他列表。请你实现一个迭代器将其扁平化，使之能够遍历这个列表中的所有整数。
+>
+>   实现扁平迭代器类 `NestedIterator` ：
+>
+>   +   `NestedIterator(List<NestedInteger> nestedList)` 用嵌套列表 `nestedList` 初始化迭代器。
+>   +   `int next()` 返回嵌套列表的下一个整数。
+>   +   `boolean hasNext()` 如果仍然存在待迭代的整数，返回 `true` ；否则，返回 `false` 。
+>       你的代码将会用下述伪代码检测：
+>
+>   ```c++
+>   initialize iterator with nestedList
+>   res = []
+>   while iterator.hasNext()
+>       append iterator.next() to the end of res
+>   return res
+>   ```
+>
+>
+>   如果 `res` 与预期的扁平化列表匹配，那么你的代码将会被判为正确。
+
+**示例 1**
+
+>   输入：`nestedList = [[1,1],2,[1,1]]`
+>   输出：`[1,1,2,1,1]`
+>   解释：通过重复调用 `next` 直到 `hasNext` 返回 `false`，`next` 返回的元素的顺序应该是: `[1,1,2,1,1]`。
+
+**示例 2**
+
+>   输入：`nestedList = [1,[4,[6]]]`
+>   输出：`[1,4,6]`
+>   解释：通过重复调用 `next` 直到 `hasNext` 返回 `false`，`next` 返回的元素的顺序应该是: `[1,4,6]`。
+
+**提示**
+
+>   +   $1 <= nestedList.length <= 500$
+>   +   $嵌套列表中的整数值在范围 [-106, 106] 内$
+
+**手写稿**
+
+![331157](https://gitee.com/peter95535/image-bed/raw/master/img/331157.png)
+
+**代码一：树的遍历【递归写法】**
+
+```c++
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * class NestedInteger {
+ *   public:
+ *     // Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     bool isInteger() const;
+ *
+ *     // Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // The result is undefined if this NestedInteger holds a nested list
+ *     int getInteger() const;
+ *
+ *     // Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // The result is undefined if this NestedInteger holds a single integer
+ *     const vector<NestedInteger> &getList() const;
+ * };
+ */
+
+class NestedIterator {
+public:
+    vector<int> q;
+    int k;
+    void dfs(NestedInteger& u) {
+        // 如果是叶子结点
+        if (u.isInteger()) q.push_back(u.getInteger());
+        // 遍历根节点的孩子节点
+        else for (auto& u1 : u.getList()) dfs(u1);
+        return;
+    }
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        k = 0;
+        for (auto& u : nestedList) dfs(u);
+    }
+    
+    int next() {
+        return q[k ++];
+    }
+    
+    bool hasNext() {
+        return k < q.size();
+    }
+};
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i(nestedList);
+ * while (i.hasNext()) cout << i.next();
+ */
+```
+
+**代码二：迭代**
+
+```c++
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * class NestedInteger {
+ *   public:
+ *     // Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     bool isInteger() const;
+ *
+ *     // Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // The result is undefined if this NestedInteger holds a nested list
+ *     int getInteger() const;
+ *
+ *     // Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // The result is undefined if this NestedInteger holds a single integer
+ *     const vector<NestedInteger> &getList() const;
+ * };
+ */
+
+class NestedIterator {
+public:
+    stack<NestedInteger> stk;
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        for (int i = nestedList.size() - 1; i >= 0; i -- ) 
+            stk.push(nestedList[i]);
+    }
+    
+    int next() {
+        int k = stk.top().getInteger(); stk.pop();
+        return k;
+    }
+    
+    bool hasNext() {
+        while (stk.size()) {
+            auto cur = stk.top();
+            if (cur.isInteger()) return true;
+            stk.pop();
+            for (int i = cur.getList().size() - 1; i >= 0; i -- ) stk.push(cur.getList()[i]);
+        }
+        return false;
+    }
+};
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i(nestedList);
+ * while (i.hasNext()) cout << i.next();
+ */
+```
+
+**标签**
+
+`设计数据结构`、`递归`、`迭代器`
+
+### 排序专题
 
 #### 快排
 
@@ -6370,84 +6851,209 @@ public:
 
 **标签**
 
-`分治`、`快速选择排序`
+`快速选择排序`
 
-### 链表专题
+#### 计数排序
 
-#### [LeetCode 328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+##### 原理
+
+**简介**
+
+>   计数排序不是基于比较的排序算法，其核心在于将输入的数据值转化为键存储在额外开辟的数组空间中。 作为一种线性时间复杂度的排序，计数排序要求输入的数据必须是有确定范围的整数。
+
+**动图演示**
+
+![v2-3c7ddb59df2d21b287e42a7b908409cb_b](https://gitee.com/peter95535/image-bed/raw/master/img/v2-3c7ddb59df2d21b287e42a7b908409cb_b.gif)
+
+##### [LeetCode 347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
 
 **题目描述**
 
-> 给定单链表的头节点 `head` ，将所有索引为奇数的节点和索引为偶数的节点分别组合在一起，然后返回重新排序的列表。
->
-> 第一个节点的索引被认为是 奇数 ， 第二个节点的索引为 偶数 ，以此类推。
->
-> 请注意，偶数组和奇数组内部的相对顺序应该与输入时保持一致。
->
-> 你必须在 `O(1)` 的额外空间复杂度和 `O(n)` 的时间复杂度下解决这个问题。
+>   给你一个整数数组 `nums` 和一个整数 `k` ，请你返回其中出现频率前 `k` 高的元素。你可以按 任意顺序 返回答案。
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/oddeven-linked-list.jpg)
-
-> 输入: `head = [1,2,3,4,5]`
-> 输出: `[1,3,5,2,4]`
+>   输入: `nums = [1,1,1,2,2,3], k = 2`
+>   输出: `[1,2]`
 
 **示例 2**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/oddeven2-linked-list.jpg)
-
-> 输入: `head = [2,1,3,5,6,4,7]`
-> 输出: `[2,3,6,7,1,5,4]`
+>   输入: `nums = [1], k = 1`
+>   输出: `[1]`
 
 **提示**
 
-> + $n ==  链表中的节点数$
-> + $0 <= n <= 10^4$
-> + $-10^6 <= Node.val <= 10^6$
+>   +   $1 <= nums.length <= 10^5$
+>   +   $k 的取值范围是 [1, 数组中不相同的元素的个数]$
+>   +   $题目数据保证答案唯一，换句话说，数组中前 k 个高频元素的集合是唯一的$
+
+**进阶**
+
+>   你所设计算法的时间复杂度 必须 优于 `O(n log n)` ，其中 `n` 是数组大小。
 
 **手写稿**
 
-![312202](https://gitee.com/peter95535/image-bed/raw/master/img/312202.png)
+![340943](https://gitee.com/peter95535/image-bed/raw/master/img/340943.png)
 
 **代码**
 
 ```c++
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode() : val(0), next(nullptr) {}
- *     ListNode(int x) : val(x), next(nullptr) {}
- *     ListNode(int x, ListNode *next) : val(x), next(next) {}
- * };
- */
 class Solution {
 public:
-    ListNode* oddEvenList(ListNode* p) {
-        // odd是奇数链表，even是偶数链表
-        auto odd = new ListNode(-1), even = new ListNode(-1);
-        ListNode *a = odd, *b = even;
-        while (p) {
-            auto q = p -> next;
-            p -> next = a -> next;
-            a = a -> next = p;
-            if (!q) break;
-            auto r = q -> next;
-            q -> next = b -> next;
-            b = b -> next = q;
-            p = r;
-        }
-        a -> next = even -> next;
-        return odd -> next;
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int, int> cnt;
+        int n = nums.size();
+        // 统计每个数字出现的次数
+        for (auto& num : nums) cnt[num] ++;
+        vector<int> s(n + 1);
+        for (auto [x, c] : cnt) s[c] ++;
+        int i = n, t = 0;
+        while (t < k) t += s[i --];
+        vector<int> res;
+        for (auto [x, c] : cnt)
+            if (c > i) res.push_back(x);
+        return res;
     }
 };
 ```
 
 **标签**
 
-`链表`
+`计数排序`
+
+#### 归并排序
+
+##### 多路归并
+
+###### [LeetCode 355. 设计推特](https://leetcode-cn.com/problems/design-twitter/)
+
+**题目描述**
+
+>   设计一个简化版的推特`(Twitter)`，可以让用户实现发送推文，关注/取消关注其他用户，能够看见关注人（包括自己）的最近 `10` 条推文。
+>
+>   实现 `Twitter` 类：
+>
+>   +   `Twitter()` 初始化简易版推特对象
+>   +   `void postTweet(int userId, int tweetId)` 根据给定的 `tweetId` 和 `userId` 创建一条新推文。每次调用此函数都会使用一个不同的 `tweetId` 。
+>   +   `List<Integer> getNewsFeed(int userId)` 检索当前用户新闻推送中最近  `10` 条推文的 `ID` 。新闻推送中的每一项都必须是由用户关注的人或者是用户自己发布的推文。推文必须 按照时间顺序由最近到最远排序 。
+>   +   `void follow(int followerId, int followeeId)` `ID` 为 `followerId` 的用户开始关注 `ID` 为 `followeeId` 的用户。
+>   +   `void unfollow(int followerId, int followeeId)` `ID` 为 `followerId` 的用户不再关注 `ID` 为 `followeeId` 的用户。
+
+**示例**
+
+>   输入
+>   `["Twitter", "postTweet", "getNewsFeed", "follow", "postTweet", "getNewsFeed", "unfollow", "getNewsFeed"]
+>   [[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]`
+>   输出
+>   `[null, null, [5], null, null, [6, 5], null, [5]]`
+>
+>   解释
+>   `Twitter twitter = new Twitter();`
+>   `twitter.postTweet(1, 5);` // 用户 `1` 发送了一条新推文 (用户 `id = 1`, 推文 `id = 5`)
+>   `twitter.getNewsFeed(1);`  // 用户 `1` 的获取推文应当返回一个列表，其中包含一个 `id` 为 `5` 的推文
+>   `twitter.follow(1, 2);`    // 用户 `1` 关注了用户 `2`
+>   `twitter.postTweet(2, 6);` // 用户 `2` 发送了一个新推文 (推文 `id = 6`)
+>   `twitter.getNewsFeed(1);`  // 用户 `1` 的获取推文应当返回一个列表，其中包含两个推文，`id` 分别为 `-> [6, 5] `。推文 `id 6` 应当在推文 `id 5` 之前，因为它是在 `5` 之后发送的
+>   `twitter.unfollow(1, 2);`  // 用户 `1` 取消关注了用户 `2`
+>   `twitter.getNewsFeed(1);`  // 用户 `1` 获取推文应当返回一个列表，其中包含一个 `id` 为 `5` 的推文。因为用户 `1` 已经不再关注用户 `2`
+
+**提示**
+
+>   +   $1 <= userId, followerId, followeeId <= 500$
+>   +   $0 <= tweetId <= 10^4$
+>   +   $所有推特的 ID 都互不相同$
+>   +   $postTweet、getNewsFeed、follow 和 unfollow 方法最多调用 3 * 10^4 次$
+
+**手写稿**
+
+![342158](https://gitee.com/peter95535/image-bed/raw/master/img/342158.png)
+
+**代码**
+
+```c++
+typedef pair<int, int> PII;
+#define x first
+#define y second
+class Twitter {
+public:
+    // 存储发布推文信息
+    unordered_map<int, vector<PII>> tweets;
+    // 存储用户的关注列表
+    unordered_map<int, unordered_set<int>> followers;
+    // 时间戳
+    int ts;
+    Twitter() {
+        ts = 0;
+    }
+    
+    void postTweet(int userId, int tweetId) {
+        tweets[userId].push_back({ts ++ , tweetId});
+        return;
+    }
+    
+    vector<int> getNewsFeed(int u) {
+        // 多路归并
+        priority_queue<vector<int>> heap;
+        followers[u].insert(u);
+        // 遍历u的所有关注者【包括自己】，其原因是因为自己的推文也算在最新的10条推文内
+        for (auto user : followers[u]) {
+            // 获取当前用户所有推文
+            auto& ts = tweets[user];
+            // 如果当前用户还有剩余的推文
+            if (ts.size()) {
+                // 找到当前用户的【最新发布】的推文的位置【数组的最后一个元素的下标】
+                int i = ts.size() - 1;
+                // 【推文发布的时间，推文编号，推文的位置，所属用户】
+                heap.push({ts[i].x, ts[i].y, i, user});
+            }
+        }
+        vector<int> res;
+        for (int i = 0; i < 10 && heap.size(); i ++ ) { // 最近的10条推文
+            auto t = heap.top(); heap.pop();
+            // 获取推文的编号
+            res.push_back(t[1]);
+            // 获取当前推文所属的下标位置
+            int j = t[2];
+            // 如果还有推文
+            if (j) {
+                // 多路归并的指针前移
+                j -- ;
+                // 获取当前推文所属的用户
+                auto& user = t[3];
+                // 获取用户的所有推文
+                auto& ts = tweets[user];
+                // 保存当前指针对应的推文的信息
+                // 【推文发布的时间，推文编号，推文的位置，所属用户】
+                heap.push({ts[j].x, ts[j].y, j, user});
+            }
+        }
+        return res;
+    }
+    
+    void follow(int followerId, int followeeId) {
+        followers[followerId].insert(followeeId);
+        return;
+    }
+    
+    void unfollow(int followerId, int followeeId) {
+        followers[followerId].erase(followeeId);
+        return;
+    }
+};
+
+/**
+ * Your Twitter object will be instantiated and called as such:
+ * Twitter* obj = new Twitter();
+ * obj->postTweet(userId,tweetId);
+ * vector<int> param_2 = obj->getNewsFeed(userId);
+ * obj->follow(followerId,followeeId);
+ * obj->unfollow(followerId,followeeId);
+ */
+```
+
+**标签**
+
+`多路归并`
 
 ### End
 
