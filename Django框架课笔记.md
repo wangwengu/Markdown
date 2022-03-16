@@ -29,7 +29,7 @@
 >
 >   ```python
 >   from django.shortcuts import render
->                       
+>                                 
 >   def index(request):
 >       # render的作用就是加载模板或者渲染模板
 >       return render(request, 'multiends/web.html')
@@ -1217,7 +1217,7 @@
 >  	photo = models.URLField(max_length = 256, blank = True)
 > 	# 显示用户的名称
 >  	def __str__(self):
->      	return str(self.user)
+>      		return str(self.user)
 > ```
 
 #### 注册到管理员页面
@@ -1273,7 +1273,7 @@
 > }
 > ```
 
-##### 编写 `getinfo` 函数的 `VIEWS`
+##### 编写 `getinfo_web` 函数的 `VIEWS`
 
 > 创建 `acapp/game/views/settings/getinfo.py`
 >
@@ -1323,7 +1323,7 @@
 >         return getinfo_web(request)
 > ```
 
-##### 编写 `getinfo` 函数的 `URL`
+##### 编写 `getinfo_web` 函数的 `URL`
 
 > 修改 `app` 的路由 `acapp/game/urls/index.py`
 >
@@ -1351,7 +1351,7 @@
 > ```
 >
 
-##### 前端调用 `getinfo` 函数
+##### 前端调用 `getinfo_web` 函数
 
 > 创建 `acapp/game/static/js/src/settings/zbase.js` 并写入以下内容
 >
@@ -1367,10 +1367,10 @@
 >            this.start();
 >        }
 >        start() {
->            this.getinfo();
+>            this.getinfo_web();
 >        }
 >        login() {}
->        getinfo() {
+>        getinfo_web() {
 >            let outer = this;
 >            $.ajax({
 >                <!-- url 地址别写错 -->
@@ -1862,7 +1862,7 @@
 >       }
 >       start() {
 >           this.add_listening_events();
->           this.getinfo();
+>           this.getinfo_web();
 >       }
 >       add_listening_events() {
 >           this.add_listening_events_login();
@@ -2141,528 +2141,521 @@
 >   }
 >   ```
 
+### `OAuth2` 协议
+
+#### 步骤详解
+
+>   ![2110029](https://gitee.com/peter95535/image-bed/raw/master/img/2110029.png)
+
+##### 注意事项
+
+>   `token` 令牌只有需要拿用户名和密码的时候才有用，因为，第一次拿完之后会将信息存储在系统的数据库里面，下次，直接查询数据库即可
+
+### `Redis` 教程
+
+#### `Django` 配置 `redis`
+
+>   1.   在 `Django` 中集成 `redis` 也叫内存数据库，存储的是键值对
+>
+>        +   安装 `redis` ，执行命令 `pip3 install django_redis` 进行安装
+>
+>        +   配置 `acapp/acapp/settings.py` 文件，写入内容
+>
+>            ```python
+>            # 注意粘贴的位置，位于# Database的位置，也就是数据库的位置
+>            CACHES = {
+>                'default': {
+>                    'BACKEND': 'django_redis.cache.RedisCache',
+>                    'LOCATION': 'redis://127.0.0.1:6379/1',
+>                    "OPTIONS": {
+>                        "CLIENT_CLASS": "django_redis.client.DefaultClient",
+>                    },
+>                },
+>            }
+>            USER_AGENTS_CACHE = 'default'
+>            ```
+>
+>   2.   启动 `redis-server` 服务
+>
+>        ```bash
+>        sudo redis-server /etc/redis/redis.conf
+>        ```
+>
+>   3.   使用 `top` 命令查看是否含有进程 `redis-server`
+>
+>   4.   重启服务 `uwsgi`即可，使得 `redis` 对 `Django` 项目生效
+
+#### `redis` 的基本操作
+
+>   1.   执行命令 `python3 manage.py shell`，打开 `django` 后台
+>
+>        ```python
+>        # 导入缓存包
+>        from django.core.cache import cache
+>        # 查询所有的键keys，支持正则表达式
+>        cache.keys('*')
+>        # 设置键值对
+>        # 第一个参数：key
+>        # 第二个参数：value
+>        # 第三个参数：过期时间（单位：秒），None表示永远不会过期
+>        cache.set('yxc', 1, 5)
+>        # 查询某个键是否存在，存在返回True，否则，返回False
+>        cache.has_key('wyp')
+>        # 查询某个键对应的值
+>        cache.get('wyp')
+>        # 删除关键字
+>        cache.delete('wyp')
+>        ```
+
 ### 网页端 `AcWing` 一键登录
 
-#### `Redis` 教程
+#### [讲义](https://www.acwing.com/blog/content/12466/)
 
-##### `Django` 配置 `redis`
+#### 给用户添加 `openid` 属性
 
->   到这了！！！
+>   1.   修改 `acapp/game/models/player/player.py`
+>
+>        ```python
+>        # 添加openid属性
+>        # 第一个参数：默认值
+>        # 第二个参数：最大长度
+>        # 第三个参数：空
+>        # 第四个参数：空
+>        openid = models.CharField(default = '', max_length = 50, blank = True, null = True)
+>        ```
+>
+>   2.   将修改注册到 `Django` 后台，返回到 `acapp/`，执行如下命令
+>
+>        ```python
+>        # 准备做迁移，准备工作
+>        python3 manage.py makemigrations
+>        # 迁移
+>        python3 manage.py migrate
+>        ```
+>
+>   3.   务必记得重启服务器
 
-+ 第一步：在 `Django` 中集成 `redis` 也叫内存数据库，存储的是键值对
+#### 申请用户信息
 
-  + 安装 `redis` ，执行命令 `pip3 install django_redis` 进行安装
+##### 编写申请用户信息的 `VIEWS`
 
-  + 配置 `acapp/acapp/settings.py` 文件，写入内容
+>   修改 `acapp/game/views/settings/acwing/web/apply_code.py`
+>
+>   ```python
+>   from django.http import JsonResponse
+>   # 导入编码库
+>   from urllib.parse import quote
+>   # 导入随机数库
+>   from random import randint
+>   # 导入redis相关库
+>   from django.core.cache import cache
+>   
+>   # 随机生成8位随机数
+>   def get_state():
+>       res = ''
+>       for i in range(8):
+>           res += str(randint(0, 9))
+>       return res
+>   
+>   # 申请授权码code的函数
+>   def apply_code(request):
+>       # 用户id
+>       appid = '1164'
+>       # 重定向地址
+>       # 一开始会报错，因为还没写receive_code
+>       # 但是逻辑就是这么个逻辑
+>       redirect_uri = quote('https://app1164.acapp.acwing.com.cn/settings/acwing/web/receive_code/')
+>       # 返回用户信息
+>       scope = 'userinfo'
+>       # 接收8位随机数
+>       state = get_state()
+>       # 设置有效期
+>       cache.set(state, True, 7200)
+>       # 申请授权码的API
+>       apply_code_url = 'https://www.acwing.com/third_party/api/oauth2/web/authorize/'
+>       return JsonResponse({
+>           'result': "success",
+>           # 拼接地址
+>           'apply_code_url': apply_code_url + '?appid=%s&redirect_uri=%s&scope=%s&state=%s' % (appid, redirect_uri, scope, state)
+>       })
+>   ```
+>
 
-    ```python
-    # 注意粘贴的位置，位于# Database的位置，也就是数据库的位置
-    CACHES = { 
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': 'redis://127.0.0.1:6379/1',
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            },  
-        },  
-    }
-    USER_AGENTS_CACHE = 'default'
-    ```
+##### 编写申请用户信息的 `URL`
 
-  + 启动 `redis-server` 服务
+>   修改 `acapp/game/urls/settings/acwing/index.py`
+>
+>   ```python
+>   # 导入include函数
+>   from django.urls import path
+>   # 导入申请授权码的函数apply_code
+>   from game.views.settings.acwing.web.apply_code import apply_code as web_apply_code
+>   
+>   urlpatterns = [
+>       # 添加申请授权码的路由
+>       path('web/apply_code/', web_apply_code, name = 'settings_acwing_web_apply_code')
+>   ]
+>   ```
+>
+>   修改 `acapp/game/urls/settings/index.py`
+>
+>   ```python
+>   # 导入include函数
+>   from django.urls import path, include
+>   
+>   urlpatterns = [
+>       # 添加web的路由
+>       path('acwing/', include('game.urls.settings.acwing.index'))
+>   ]
+>   ```
 
-    ```bash
-    sudo redis-server /etc/redis/redis.conf
-    ```
+##### 前端调用申请用户信息的函数
 
-  + 使用 `top` 命令查看是否含有进程 `redis-server`
+>   ```javascript
+>   class Settings {
+>       constructor(root) {
+>           <!-- 找到AcWing一键登录的按钮 -->
+>           this.$acwing_login = this.$settings.find(".ac_game_settings_acwing img")
+>       }
+>       add_listening_events() {
+>           <!-- 添加外部权柄 -->
+>           let outer = this;
+>           <!-- 点击AcWing一键登录按钮 -->
+>           this.$acwing_login.click(function() {
+>               <!-- 触发一键登录函数 -->
+>               outer.acwing_login();
+>           });
+>       }
+>       <!-- 一键登录函数 -->
+>       acwing_login() {
+>           <!-- 返回ajax信息 -->
+>           $.ajax({
+>               <!-- 请求的url -->
+>               url: 'https://app149.acapp.acwing.com.cn/settings/acwing/web/apply_code',
+>               type: 'GET',
+>               success: function(resp) {
+>                   console.log(resp);
+>                   if (resp.result === 'success') {
+>                       <!-- 如果成功，返回重定向的网址 -->
+>                       window.location.replace(resp.apply_code_url)
+>                   }
+>               }
+>           })
+>       }
+>   }
+>   ```
 
-  + 重启服务 `uwsgi`即可
+#### 接收用户信息
 
-  + `redis` 的基本操作
+##### 编写接收用户信息的 `VIEWS`
 
-    + 执行命令 `python3 manage.py shell`，打开 `django` 后台
+>   修改 `acapp/game/views/settings/acwing/web/receive_code.py`
+>
+>   ```python
+>   import requests
+>   from django.shortcuts import redirect
+>   from django.core.cache import cache
+>   from django.contrib.auth.models import User
+>   from game.models.player.player import Player
+>   from django.contrib.auth import login
+>   from random import randint
+>   
+>   def receive_code(request):
+>       # 获取数据
+>       data = request.GET
+>       # 获取授权码
+>       code = data.get('code')
+>       # 获取状态
+>       state = data.get('state')
+>       # 如果当前请求来源于别的地方，则直接忽略
+>       if not cache.has_key(state):
+>           return redirect('index')
+>       # 将当前状态删掉
+>       cache.delete(state)
+>       # 获取access_token的API地址
+>       apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
+>       # 参数
+>       params = {
+>           'appid': '1164',
+>           'secret': '023a763448e444ae80815e8dc107fa8f',
+>           'code': code
+>       }
+>       # 转成json格式
+>       access_token_res = requests.get(apply_access_token_url, params = params).json()
+>       # 提取access_token
+>       access_token = access_token_res['access_token']
+>       # 提取openid
+>       openid = access_token_res['openid']
+>       # 获取用户
+>       players = Player.objects.filter(openid = openid)
+>       # 如果用户已经存在
+>       if players.exists():
+>           # 直接登录即可
+>           login(request, players[0].user)
+>           # 重定向到首页
+>           return redirect('index')
+>       # 获取userinfo的API接口
+>       get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
+>       # 参数
+>       params = {
+>           'access_token': access_token,
+>           'openid': openid
+>       }
+>       # 转成json格式
+>       userinfo_res = requests.get(get_userinfo_url, params = params).json()
+>       # 提取用户名
+>       username = userinfo_res['username']
+>       # 提取用户头像
+>       photo = userinfo_res['photo']
+>       # 如果用户已经存在【授权的账号的名称和当前网站的用户名重复】，则随机添加某个数，防止冲突
+>       while User.objects.filter(username = username).exists():
+>           username += str(randint(0, 9))
+>     	# 创建用户的基本信息
+>       user = User.objects.create(username = username)
+>       # 创建用户的附加信息
+>       player = Player.objects.create(user = user, photo = photo, openid = openid)
+>       # 使用新创建的用户进行登录
+>       login(request, user)
+>       # 返回重定向的网址
+>       # 'index'对应【acapp/game/urls/index.py】中的路由的第一项，name=index
+>       return redirect('index')
+>   ```
 
-      ```python
-      # 导入缓存包
-      from django.core.cache import cache
-      # 查询所有的键keys，支持正则表达式
-      cache.keys('*')
-      # 设置键值对
-      # 第一个参数：key
-      # 第二个参数：value
-      # 第三个参数：过期时间（单位：秒），None表示永远不会过期
-      cache.set('yxc', 1, 5)
-      # 查询某个键是否存在，存在返回True，否则，返回False
-      cache.has_key('wyp')
-      # 查询某个键对应的值
-      cache.get('wyp')
-      # 删除关键字
-      cache.delete('wyp')
-      ```
+##### 编写接收用户信息的 `URL`
 
-+ 第二步：`OAuth2` 协议执行过程详解
+>   修改 `acapp/game/urls/settings/acwing/index.py`
+>
+>   ```python
+>   # 导入接收授权码的函数receive_code
+>   from game.views.settings.acwing.receive_code import receive_code as web_receive_code
+>   
+>   urlpatterns = [
+>       # 添加接收授权码的路由
+>       path('web/receive_code/', web_receive_code, name = 'settings_acwing_web_receive_code')
+>   ]
+>   ```
 
-  ![2110029](https://gitee.com/peter95535/image-bed/raw/master/img/2110029.png)
-  
-  + 注意事项：`token` 令牌只有需要拿用户名和密码的时候才有用，因为，第一次拿完之后会将信息存储在系统的数据库里面，下次，直接查询数据库即可
-  
-+ 第三步：`OAuth2` 具体逻辑代码，[讲义](https://www.acwing.com/blog/content/12466/)
+### 网站 `Acapp` 的一键登录
 
-  + 第一步：添加 `player` 的 `openid` 属性
+#### [讲义](https://www.acwing.com/blog/content/12467/)
 
-    + 修改 `acapp/game/models/player`
+#### 申请用户信息
 
-      ```python
-      # 添加openid属性
-      # 第一个参数：默认值
-      # 第二个参数：最大长度
-      # 第三个参数：空
-      # 第四个参数：空
-      openid = models.CharField(default = '', max_length = 50, blank = True, null = True)
-      ```
+##### 编写申请用户信息的 `VIEWS`
 
-    + 将修改注册到 `Django` 后台，返回到 `acapp/`，执行如下命令
+>   修改 `acapp/game/views/settings/acwing/acapp/apply_code.py` 函数
+>
+>   ```python
+>   from django.http import JsonResponse
+>   from urllib.parse import quote
+>   from random import randint
+>   from django.core.cache import cache
+>   
+>   def get_state():
+>       res = ''
+>       for i in range(8):
+>           res += str(randint(0, 9))
+>       return res
+>   
+>   def apply_code(request):
+>       appid = '1164'
+>       redirect_uri = quote('https://app1164.acapp.acwing.com.cn/settings/acwing/acapp/receive_code')
+>       scope = 'userinfo'
+>       state = get_state()
+>       cache.set(state, True, 7200)
+>       return JsonResponse({
+>           'result': "success",
+>           'appid': appid,
+>           'redirect_uri': redirect_uri,
+>           'scope': scope,
+>           'state': state
+>       })
+>   ```
 
-      ```bash
-      # 准备做迁移，准备工作
-      python3 manage.py makemigrations
-      # 迁移
-      python3 manage.py migrate
-      ```
+##### 编写申请用户信息的 `URL`
 
-    + 务必记得重启服务器
+>   修改路由 `acapp/game/urls/settings/acwing/index.py`
+>
+>   ```python
+>   from django.urls import path
+>   from game.views.settings.acwing.acapp.apply_code import apply_code as acapp_apply_code
+>   
+>   urlpatterns = [
+>       path('acapp/apply_code/', acapp_apply_code, name = 'settings_acwing_acapp_apply_code')
+>   ]
+>   ```
 
-  + 第二步：申请授权码 `code`
+##### 前端调用申请用户信息的函数
 
-    + 修改 `acapp/game/views/settings/acwing/web/apply_code.py` 并且写入代码
+>   修改 `acapp/game/statis/js/src/settings/zbase.js`
+>
+>   ```javascript
+>   class Settings {
+>       start() {
+>           <!-- 如果是ACAPP端 -->
+>           if (this.platform === 'ACAPP') {
+>               this.getinfo_acapp();
+>           }
+>           else {
+>               <!-- 先获取信息 -->
+>               this.getinfo_web();
+>               this.add_listening_events();
+>           }
+>       }
+>       <!-- acapp_login登录函数 -->
+>       acapp_login(appid, redirect_uri, scope, state) {
+>           let outer = this;
+>          	<!-- 注意写法this.root. -->
+>           this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
+>               console.log(resp);
+>               if (resp.result === "success") {
+>                   outer.username = resp.username;
+>                   outer.photo = resp.photo;
+>                   <!-- 隐藏登录界面 -->
+>                   outer.hide();
+>                   <!-- 显示菜单界面 -->
+>                   outer.root.menu.show();
+>               }
+>           });
+>       }
+>       getinfo_acapp() {
+>           let outer = this;
+>           $.ajax({
+>               url: 'https://app1164.acapp.acwing.com.cn/settings/acwing/acapp/apply_code',
+>               type: 'GET',
+>               success: function(resp) {
+>                   if (resp.result === "success") {
+>                       outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
+>                   }
+>               }
+>           });
+>       }
+>   }
+>   ```
 
-      ```python
-      from django.http import JsonResponse
-      
-      # 申请授权码code的函数
-      def apply_code(request):
-          appid = '149'
-      ```
+#### 接收用户信息
 
-    + 修改 `acapp/game/views/settings/acwing/web/receive_code.py` 并且写入代码
+##### 编写接收用户信息的 `VIEWS`
 
-      ```python
-      from django.shortcuts import redirect
-      
-      def receive_code(request):
-          pass
-      ```
+>   修改 `acapp/game/views/settings/acwing/acapp/receive_code.py`
+>
+>   ```python
+>   import requests
+>   from django.shortcuts import redirect
+>   from django.core.cache import cache
+>   from django.contrib.auth.models import User
+>   from game.models.player.player import Player
+>   from django.contrib.auth import login
+>   from random import randint
+>   from django.http import JsonResponse
+>   
+>   def receive_code(request):
+>       data = request.GET
+>       # 如果授权失败【含有errcode】
+>       if 'errcode' in data:
+>           return JsonResponse({
+>               'result': 'apply failed',
+>               'errcode': data['errcode'],
+>               'errmsg': data['errmsg']
+>           })
+>      	# 获取授权码
+>       code = data.get('code')
+>       # 获取状态
+>       state = data.get('state')
+>       # 如果密钥
+>       if not cache.has_key(state):
+>           return JsonResponse({
+>               'result': 'state not exist'
+>           })
+>       # 删除密钥
+>       cache.delete(state)
+>       # 获取token的url
+>       apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
+>   	# 参数
+>       params = {
+>           'appid': '149',
+>           'secret': '023a763448e444ae80815e8dc107fa8f',
+>           'code': code
+>       }
+>       # access_token结果
+>       access_token_res = requests.get(apply_access_token_url, params = params).json()
+>       # 获取令牌
+>       access_token = access_token_res['access_token']
+>       # 获取openid
+>       openid = access_token_res['openid']
+>       # 筛选用户
+>       players = Player.objects.filter(openid = openid)
+>       # 如果用户存在，以列表的形式返回结果
+>       # 如果用户不存在，返回空列表
+>       if players.exists():
+>           # 取出符合条件的第一个元素
+>           player = players[0]
+>           return JsonResponse({
+>               'result': 'success',
+>               'username': player.user.username,
+>               'photo': player.photo
+>           })
+>       # 获取用户信息的api接口
+>       get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
+>       params = {
+>           'access_token': access_token,
+>           'openid': openid
+>       }
+>       # 请求
+>       userinfo_res = requests.get(get_userinfo_url, params = params).json()
+>       username = userinfo_res['username']
+>       photo = userinfo_res['photo']
+>       # 处理重名的问题
+>       while User.objects.filter(username = username).exists():
+>           username += str(randint(0, 9))
+>     	# 创建新用户的基本信息
+>       user = User.objects.create(username = username)
+>       # 创建新用户的附加信息
+>       player = Player.objects.create(user = user, photo = photo, openid = openid)
+>       # 返回信息
+>       return JsonResponse({
+>           'result': 'success',
+>           'username': player.user.username,
+>           'photo': player.photo
+>       })
+>   ```
 
-    + 修改 `acapp/game/urls/settings/acwing/index.py`
+##### 编写接收用户信息的 `URL`
 
-      ```python
-      from django.urls import path
-      
-      urlpatterns = [
-      ]
-      ```
-
-    + 修改 `acapp/game/urls/settings/index.py`
-
-      ```python
-      # 导入include函数
-      from django.urls import path, include
-      
-      urlpatterns = [
-          # 添加web的路由
-          path('acwing/', include('game.urls.settings.acwing.index'))
-      ]
-      ```
-
-    + 修改 `acapp/game/urls/settings/acwing/index.py`
-
-      ```python
-      # 导入申请授权码的函数apply_code
-      from game.views.settings.acwing.apply_code import apply_code
-      # 导入接收授权码的函数receive_code
-      from game.views.settings.acwing.receive_code import receive_code
-      
-      urlpatterns = [
-          # 添加申请授权码的路由
-          path('web/apply_code/', apply_code, name = 'settings_acwing_apply_code'),
-          # 添加接收授权码的路由
-          path('web/receive_code/', receive_code, name = 'settings_acwing_receive_code')
-      ]
-      ```
-
-    + 修改 `acapp/game/views/settings/acwing/web/apply_code.py`
-
-      ```python
-      from django.http import JsonResponse
-      
-      def apply_code(request):
-          # 返回值
-          return JsonResponse({
-              'result': "success"
-          })
-      ```
-
-    + 修改 `acapp/game/views/settings/acwing/web/receive_code.py`
-
-      ```python
-      from django.shortcuts import redirect
-      
-      def receive_code(request):
-          # 返回重定向的网址
-          # 'index'对应【acapp/game/urls/index.py】中的路由的第一项，name=index
-          return redirect('index')
-      ```
-
-    + 修改 `acapp/game/views/settings/getinfo.py`
-
-      ```python
-      def getinfo_web(request):
-          user = request.user
-          if not user.is_authenticated:
-              return JsonResponse({
-                  'result': "未登录"
-              })
-          else:
-              # 返回当前用户的信息，而不是每次返回管理员信息，不能写死
-              player = Player.objects.get(user = user)
-              return JsonResponse({
-                  'result': "success",
-                  'username': player.user.username,
-                  'photo': player.photo
-              })
-      ```
-
-    + 修改 `acapp/game/views/settings/acwing/web/apply_code.py`
-
-      ```python
-      # 导入编码库
-      from urllib.parse import quote
-      # 导入随机数库
-      from random import randint
-      # 导入redis相关库
-      from django.core.cache import cache
-      
-      # 随机生成8位随机数
-      def get_state():
-          res = ''
-          for i in range(8):
-              res += str(randint(0, 9))
-          return res
-      
-      def apply_code(request):
-          # 重定向地址
-          redirect_uri = quote('https://app149.acapp.acwing.com.cn/settings/acwing/web/receive_code/')
-          # 获取用户信息
-          scope = 'userinfo'
-          # 获取状态，8位的随机数
-          state = get_state()
-          # 设置状态的有效期，单位：秒
-          cache.set(state, True, 7200)
-          # code的申请地址
-          apply_code_url = 'https://www.acwing.com/third_party/api/oauth2/web/authorize/'
-          return JsonResponse({
-              'result': "success",
-              # 返回拼接的url地址
-              'apply_code_url': apply_code_url + '?appid=%s&redirect_uri=%s&scope=%s&state=%s' % (appid, redirect_uri, scope, state)
-          })
-      ```
-
-    + 修改 `acapp/game/static/js/src/settings/zbase.js`
-
-      ```javascript
-      class Settings {
-          constructor(root) {
-              <!-- 找到AcWing一键登录的按钮 -->
-              this.$acwing_login = this.$settings.find(".ac_game_settings_acwing img")
-          }
-          add_listening_events() {
-              <!-- 添加外部权柄 -->
-              let outer = this;
-              <!-- 点击AcWing一键登录按钮 -->
-              this.$acwing_login.click(function() {
-                  <!-- 触发一键登录函数 -->
-                  outer.acwing_login();
-              });
-          }
-          <!-- 一键登录函数 -->
-          acwing_login() {
-              <!-- 返回ajax信息 -->
-              $.ajax({
-                  <!-- 请求的url -->
-                  url: 'https://app149.acapp.acwing.com.cn/settings/acwing/web/apply_code',
-                  type: 'GET',
-                  success: function(resp) {
-                      console.log(resp);
-                      if (resp.result === 'success') {
-                          <!-- 如果成功，返回重定向的网址 -->
-                          window.location.replace(resp.apply_code_url)
-                      }
-                  }
-              })
-          }
-      }
-      ```
-
-    + 修改 `acapp/game/views/settings/acwing/web/receive_code.py`
-    
-      ```python
-      import requests
-      from django.shortcuts import redirect
-      from django.core.cache import cache
-      from django.contrib.auth.models import User
-      from game.models.player.player import Player
-      from django.contrib.auth import login
-      from random import randint
-      
-      def receive_code(request):
-          # 获取数据
-          data = request.GET
-          # 获取授权码
-          code = data.get('code')
-          # 获取状态
-          state = data.get('state')
-          # 如果当前请求来源于别的地方，则直接忽略
-          if not cache.has_key(state):
-              return redirect('index')
-          # 将当前状态删掉
-          cache.delete(state)
-          # 获取access_token的API地址
-          apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
-          # 参数
-          params = {
-              'appid': '149',
-              'secret': '023a763448e444ae80815e8dc107fa8f',
-              'code': code
-          }
-          # 转成json格式
-          access_token_res = requests.get(apply_access_token_url, params = params).json()
-          # 提取access_token
-          access_token = access_token_res['access_token']
-          # 提取openid
-          openid = access_token_res['openid']
-          # 获取用户
-          players = Player.objects.filter(openid = openid)
-          # 如果用户已经存在
-          if players.exists():
-              # 直接登录即可
-              login(request, players[0].user)
-              # 重定向到首页
-              return redirect('index')
-          # 获取userinfo的API接口
-          get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
-          # 参数
-          params = {
-              'access_token': access_token,
-              'openid': openid
-          }
-          # 转成json格式
-          userinfo_res = requests.get(get_userinfo_url, params = params).json()
-          # 提取用户名
-          username = userinfo_res['username']
-          # 提取用户头像
-          photo = userinfo_res['photo']
-          # 如果用户已经存在【授权的账号的名称和当前网站的用户名重复】，则随机添加某个数，防止冲突
-          while User.objects.filter(username = username).exists():
-              username += str(randint(0, 9))
-        	# 创建用户的基本信息
-          user = User.objects.create(username = username)
-          # 创建用户的附加信息
-          player = Player.objects.create(user = user, photo = photo, openid = openid)
-          # 使用新创建的用户进行登录
-          login(request, user)
-          return redirect('index')
-      ```
-      
-
-+ `AcWing` 网站 `Acapp` 的一键登录，[讲义](https://www.acwing.com/blog/content/12467/)
-
-  + 第一步：将网页版写的函数复制到 `acapp/game/views/settings/acwing/acapp`
-
-    > 1. 使用命令 `cp ../web/* .`
-
-  + 第二步：修改 `acapp/game/views/settings/acwing/acapp/apply_code.py` 函数
-
-    ```python
-    from django.http import JsonResponse
-    from urllib.parse import quote
-    from random import randint
-    from django.core.cache import cache
-    
-    def get_state():
-        res = ''
-        for i in range(8):
-            res += str(randint(0, 9))
-        return res
-    
-    def apply_code(request):
-        appid = '149'
-        redirect_uri = quote('https://app149.acapp.acwing.com.cn/settings/acwing/acapp/receive_code/')
-        scope = 'userinfo'
-        state = get_state()
-        cache.set(state, True, 7200)
-        return JsonResponse({
-            'result': "success",
-            'appid': appid,
-            'redirect_uri': redirect_uri,
-            'scope': scope,
-            'state': state
-        })
-    ```
-
-  + 第三步：修改路由 `acapp/game/urls/settings/acwing/index.py`
-
-    ```python
-    from django.urls import path
-    # 防止冲突，因此，起别名
-    from game.views.settings.acwing.web.apply_code import apply_code as web_apply_code
-    from game.views.settings.acwing.web.receive_code import receive_code as web_receive_code
-    from game.views.settings.acwing.acapp.apply_code import apply_code as acapp_apply_code
-    from game.views.settings.acwing.acapp.receive_code import receive_code as acapp_receive_code
-    
-    urlpatterns = [
-        path('web/apply_code/', web_apply_code, name = 'settings_acwing_web_apply_code'),
-        path('web/receive_code/', web_receive_code, name = 'settings_acwing_web_receive_code'),
-        path('acapp/apply_code/', acapp_apply_code, name = 'settings_acwing_acapp_apply_code'),
-        path('acapp/receive_code/', acapp_receive_code, name = 'settings_acwing_acapp_receive_code')
-    ]
-    ```
-
-  + 第四步：修改 `acapp/game/statis/js/src/settings/zbase.js`
-
-    ```javascript
-    class Settings {
-        start() {
-            <!-- 如果是ACAPP端 -->
-            if (this.platform === 'ACAPP') {
-    			this.getinfo_acapp();
-            }
-            else {
-                this.getinfo_web();
-                this.add_listening_events();
-            }
-        }
-        <!-- acapp登录函数 -->
-        acapp_login(appid, redirect_uri, scope, state) {
-            let outer = this;
-           	<!-- 注意写法this.root. -->
-            this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
-                console.log(resp);
-                if (resp.result === 'success') {
-                    outer.username = resp.username;
-                    outer.photo = resp.photo;
-                    <!-- 隐藏登录界面 -->
-                    outer.hide();
-                    <!-- 显示菜单界面 -->
-                    outer.root.menu.show();
-                }
-            });
-        }
-        getinfo_acapp() {
-            let outer = this;
-            $.ajax({
-                url: 'https://app149.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/',
-                type: 'GET',
-                success: function(resp) {
-                    if (resp.result === 'success') {
-                        outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
-                    }
-                }
-            });
-        }
-        <!-- 将名字修改下 -->
-        getinfo_web() {}
-    }
-    ```
-
-  + 第五步：修改 `acapp/game/views/settings/acwing/acapp/receive_code.py`
-
-    ```python
-    import requests
-    from django.shortcuts import redirect
-    from django.core.cache import cache
-    from django.contrib.auth.models import User
-    from game.models.player.player import Player
-    from django.contrib.auth import login
-    from random import randint
-    from django.http import JsonResponse
-    
-    def receive_code(request):
-        data = request.GET
-        # 如果授权失败【含有errcode】
-        if 'errcode' in data:
-            return JsonResponse({
-                'result': 'apply failed',
-                'errcode': data['errcode'],
-                'errmsg': data['errmsg']
-            })
-       	# 获取授权码
-        code = data.get('code')
-        # 获取状态
-        state = data.get('state')
-        # 如果密钥
-        if not cache.has_key(state):
-            return JsonResponse({
-                'result': 'state not exist'
-            })
-        # 删除密钥
-        cache.delete(state)
-        # 获取token的url
-        apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
-    	# 参数
-        params = {
-            'appid': '149',
-            'secret': '023a763448e444ae80815e8dc107fa8f',
-            'code': code
-        }
-        # access_token结果
-        access_token_res = requests.get(apply_access_token_url, params = params).json()
-        # 获取令牌
-        access_token = access_token_res['access_token']
-        # 获取openid
-        openid = access_token_res['openid']
-        # 筛选用户
-        players = Player.objects.filter(openid = openid)
-        # 如果用户存在，以列表的形式返回结果
-        # 如果用户不存在，返回空列表
-        if players.exists():
-            # 取出符合条件的第一个元素
-            player = players[0]
-            return JsonResponse({
-                'result': 'success',
-                'username': player.user.username,
-                'photo': player.photo
-            })
-        # 获取用户信息的api接口
-        get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
-        params = {
-            'access_token': access_token,
-            'openid': openid
-        }
-        # 请求
-        userinfo_res = requests.get(get_userinfo_url, params = params).json()
-        username = userinfo_res['username']
-        photo = userinfo_res['photo']
-        # 处理重名的问题
-        while User.objects.filter(username = username).exists():
-            username += str(randint(0, 9))
-      	# 创建新用户的基本信息
-        user = User.objects.create(username = username)
-        # 创建新用户的附加信息
-        player = Player.objects.create(user = user, photo = photo, openid = openid)
-        # 返回信息
-        return JsonResponse({
-            'result': 'success',
-            'username': player.user.username,
-            'photo': player.photo
-        })
-    ```
-
-
+>   修改路由 `acapp/game/urls/settings/acwing/index.py`
+>
+>   ```python
+>   from django.urls import path
+>   from game.views.settings.acwing.acapp.receive_code import receive_code as acapp_receive_code
+>   
+>   urlpatterns = [
+>       path('acapp/receive_code/', acapp_receive_code, name = 'settings_acwing_acapp_receive_code')
+>   ]
+>   ```
 
 #### end
 
-#### 注意事项
+## 实现联机对战
+
+### 统一单位
+
+#### 原因
+
+
+
+#### 统一界面的比例
+
+
+
+#### 统一玩家的比例
+
+
+
+#### 统一技能的比例
+
+
+
+# 注意事项
 
 > 1. `js css ` 等代码更新时，浏览器不能及时更新的问题
 >    

@@ -1,8 +1,8 @@
-### 动态规划专题
+# 动态规划专题
 
-#### 树形`DP`
+## 树形`DP`
 
-##### 树的直径经典求法
+### 树的直径经典求法
 
 **前提条件**
 
@@ -16,7 +16,7 @@
 
 ![2091538](https://gitee.com/peter95535/image-bed/raw/master/img/2091538.png)
 
-##### [AcWing 1072. 树的最长路径](https://www.acwing.com/problem/content/1074/)
+### [AcWing 1072. 树的最长路径](https://www.acwing.com/problem/content/1074/)
 
 **题目描述**
 
@@ -117,7 +117,7 @@ int main() {
 
 `树形DP`
 
-##### [AcWing 846. 树的重心](https://www.acwing.com/problem/content/description/848/)
+### [AcWing 846. 树的重心](https://www.acwing.com/problem/content/description/848/)
 
 **题目描述**
 
@@ -221,7 +221,7 @@ int main() {
 
 `动态规划`、`树形DP`、`深度优先搜索`
 
-##### [AcWing 1073. 树的中心](https://www.acwing.com/problem/content/1075/)
+### [AcWing 1073. 树的中心](https://www.acwing.com/problem/content/1075/)
 
 **题目描述**
 
@@ -340,7 +340,7 @@ int main() {
 
 `树形DP`、`换根DP`
 
-##### [AcWing 1075. 数字转换](https://www.acwing.com/problem/content/1077/)
+### [AcWing 1075. 数字转换](https://www.acwing.com/problem/content/1077/)
 
 **题目描述**
 
@@ -435,7 +435,7 @@ int main() {
 
 `树形DP`、`深度优先搜索`
 
-##### [AcWing 285. 没有上司的舞会](https://www.acwing.com/problem/content/287/)
+### [AcWing 285. 没有上司的舞会](https://www.acwing.com/problem/content/287/)
 
 **题目描述**
 
@@ -553,7 +553,7 @@ int main() {
 
 `动态规划`、`树形DP`
 
-##### [LeetCode 337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+### [LeetCode 337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 **题目描述**
 
@@ -622,7 +622,7 @@ public:
 
 `树形DP`
 
-##### [AcWing 310. 最小高度树](https://leetcode-cn.com/problems/minimum-height-trees/)
+### [AcWing 310. 最小高度树](https://leetcode-cn.com/problems/minimum-height-trees/)
 
 **题目描述**
 
@@ -724,11 +724,399 @@ public:
 
 `树形DP`、`树的深度优先搜索`
 
-##### end
+### [AcWing 1074. 二叉苹果树](https://www.acwing.com/problem/content/1076/)
 
-#### 状态压缩 `DP`
+**题目描述**
 
-##### [Acwing 1064. 小国王](https://www.acwing.com/problem/content/1066/)
+>   有一棵二叉苹果树，如果树枝有分叉，一定是分两叉，即没有只有一个儿子的节点。
+>
+>   这棵树共 `N` 个节点，编号为 `1` 至 `N`，树根编号一定为 `1`。
+>
+>   我们用一根树枝两端连接的节点编号描述一根树枝的位置。
+>
+>   一棵苹果树的树枝太多了，需要剪枝。但是一些树枝上长有苹果，给定需要保留的树枝数量，求最多能留住多少苹果。
+>
+>   这里的保留是指最终与`1`号点连通。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `Q`，分别表示树的节点数以及要保留的树枝数量。
+>
+>   接下来 `N−1` 行描述树枝信息，每行三个整数，前两个是它连接的节点的编号，第三个数是这根树枝上苹果数量。
+
+**输出格式**
+
+>   输出仅一行，表示最多能留住的苹果的数量。
+
+**数据范围**
+
+>   +   $1≤Q<N≤100.$
+>   +   $N≠1,$
+>   +   $每根树枝上苹果不超过 30000个。$
+
+**输入样例**
+
+```c++
+5 2
+1 3 1
+1 4 10
+2 3 20
+3 5 20
+```
+
+**输出样例**
+
+```c++
+21
+```
+
+**手写稿**
+
+![3140926](https://gitee.com/peter95535/image-bed/raw/master/img/3140926.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110, M = 210;
+int n, m, idx;
+int h[N], w[M], e[M], ne[M];
+int f[N][N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u, int father) {
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        // 如果已经访问过，直接返回
+        if (e[i] == father) continue;
+        dfs(e[i], u);
+        // 枚举【以u为根】的子树所分得的树枝的数量
+        for (int j = m; j >= 0; j -- )
+            // 枚举【u的每棵子树】所分得的树枝的数量
+            for (int k = 0; k < j; k ++ )
+                f[u][j] = max(f[u][j], f[e[i]][k] + f[u][j - k - 1] + w[i]);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < n - 1; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    dfs(1, -1);
+    cout << f[1][m] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`树形DP`
+
+**缝合怪**
+
+[AcWing 10. 有依赖的背包问题](#AcWing 10. 有依赖的背包问题)
+
+### [AcWing 323. 战略游戏](https://www.acwing.com/problem/content/325/)
+
+**题目描述**
+
+>   鲍勃喜欢玩电脑游戏，特别是战略游戏，但有时他找不到解决问题的方法，这让他很伤心。
+>
+>   现在他有以下问题。
+>
+>   他必须保护一座中世纪城市，这条城市的道路构成了一棵树。
+>
+>   每个节点上的士兵可以观察到所有和这个点相连的边。
+>
+>   他必须在节点上放置最少数量的士兵，以便他们可以观察到所有的边。
+>
+>   你能帮助他吗？
+>
+>   例如，下面的树：
+>
+>   ![1463_1.jpg.gif](https://gitee.com/peter95535/image-bed/raw/master/img/19_0f47f44029-1463_1.jpg.gif)
+>
+>   只需要放置 `1` 名士兵（在节点 `1` 处），就可观察到所有的边。
+
+**输入格式**
+
+>   输入包含多组测试数据，每组测试数据用以描述一棵树。
+>
+>   对于每组测试数据，第一行包含整数 `N`，表示树的节点数目。
+>
+>   接下来 `N` 行，每行按如下方法描述一个节点。
+>
+>   节点编号：(子节点数目) 子节点 子节点 …
+>
+>   节点编号从 `0` 到 `N−1`，每个节点的子节点数量均不超过 `10`，每个边在输入数据中只出现一次。
+
+**输出格式**
+
+>   对于每组测试数据，输出一个占据一行的结果，表示最少需要的士兵数。
+
+**数据范围**
+
+>   +   $0<N≤1500,$
+>   +   $一个测试点所有 N 相加之和不超过 300650。$
+
+**输入样例**
+
+```c++
+4
+0:(1) 1
+1:(2) 2 3
+2:(0)
+3:(0)
+5
+3:(3) 1 4 2
+1:(1) 0
+2:(0)
+0:(0)
+4:(0)
+```
+
+**输出样例**
+
+```c++
+1
+2
+```
+
+**手写稿**
+
+![3141121](https://gitee.com/peter95535/image-bed/raw/master/img/3141121.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 1510;
+int n, idx;
+int h[N], e[N], ne[N], st[N];
+int f[N][2];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u) {
+    // 如果选择根节点，士兵数量为1
+    f[u][1] = 1;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        dfs(j);
+        // 选择根节点
+        f[u][0] += f[j][1];
+        // 不选根节点
+        f[u][1] += min(f[j][0], f[j][1]);
+    }
+    return;
+}
+int main() {
+    while (scanf("%d", &n) != -1) {
+        int id, cnt;
+        // 多组输入，故都需要进行初始化
+        memset(h, -1, sizeof h);
+        memset(f, 0, sizeof f);
+        memset(st, 0, sizeof st);
+        idx = 0;
+        for (int i = 0; i < n; i ++ ) {
+            scanf("%d:(%d)", &id, &cnt);
+            for (int j = 0, son; j < cnt; j ++ ) {
+                scanf("%d", &son);
+                st[son] = true;
+                add(id, son);
+            }
+        }
+        // 寻找根节点
+        int root = 0;
+        for (int i = 0; i < n; i ++ )
+            if (!st[i]) {
+                root = i;
+                break;
+            }
+        dfs(root);
+        cout << min(f[root][0], f[root][1]) << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`树形DP`、`状态机`
+
+**缝合怪**
+
+[AcWing 285. 没有上司的舞会](#AcWing 285. 没有上司的舞会)
+
+### [AcWing 1077. 皇宫看守](https://www.acwing.com/problem/content/description/1079/)
+
+>   太平王世子事件后，陆小凤成了皇上特聘的御前一品侍卫。
+>
+>   皇宫各个宫殿的分布，呈一棵树的形状，宫殿可视为树中结点，两个宫殿之间如果存在道路直接相连，则该道路视为树中的一条边。
+>
+>   已知，在一个宫殿镇守的守卫不仅能够观察到本宫殿的状况，还能观察到与该宫殿直接存在道路相连的其他宫殿的状况。
+>
+>   大内保卫森严，三步一岗，五步一哨，每个宫殿都要有人全天候看守，在不同的宫殿安排看守所需的费用不同。
+>
+>   可是陆小凤手上的经费不足，无论如何也没法在每个宫殿都安置留守侍卫。
+>
+>   帮助陆小凤布置侍卫，在看守全部宫殿的前提下，使得花费的经费最少。
+
+**输入格式**
+
+>   输入中数据描述一棵树，描述如下：
+>
+>   第一行 `n`，表示树中结点的数目。
+>
+>   第二行至第 `n+1` 行，每行描述每个宫殿结点信息，依次为：该宫殿结点标号 `i`，在该宫殿安置侍卫所需的经费 `k`，该结点的子结点数 `m`，接下来 `m` 个数，分别是这个结点的 `m` 个子结点的标号 $r_1,r_2,…,r_m$。
+>
+>   对于一个 `n` 个结点的树，结点标号在 `1` 到 `n` 之间，且标号不重复。
+
+**输出格式**
+
+>   输出一个整数，表示最少的经费。
+
+**数据范围**
+
+>   +   $1≤n≤1500$
+
+**输入样例**
+
+```c++
+6
+1 30 3 2 3 4
+2 16 2 5 6
+3 5 0
+4 4 0
+5 11 0
+6 5 0
+```
+
+**输出样例**
+
+```c++
+25
+```
+
+**样例解释**
+
+>   在`2、3、4`结点安排护卫，可以观察到全部宫殿，所需经费最少，为 `16 + 5 + 4 = 25`。
+
+**手写稿**
+
+>   ![3150903](https://gitee.com/peter95535/image-bed/raw/master/img/3150903.png)
+>
+>   本题和 `AcWing 323. 战略游戏` 的区别在于：
+>
+>   +   战略游戏说的是边，对于边来说，能管住的就只有两头的顶点
+>   +   本题说的是点，对于一个点来说，能管住的就只有其本身，父节点和子节点，这就是为啥上一题需要两个状态就可以了，而本题需要三个状态的核心原因所在
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 1510;
+int n, idx;
+int h[N], e[N], w[N], ne[N], st[N];
+int f[N][3];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u) {
+    f[u][2] = w[u];
+    // 记录min(f[j][1], f[j][2])的总和
+    // 便于计算f[u][1]，具体看手写稿
+    int sum = 0;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        dfs(j);
+        f[u][0] += min(f[j][1], f[j][2]);
+        f[u][2] += min(f[j][0], min(f[j][1], f[j][2]));
+        sum += min(f[j][1], f[j][2]);
+    }
+    f[u][1] = 1e9;
+    // 循环查找
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int k = e[i];
+        // sum - min(f[k][1], f[k][2])就是除了k之外的所有的数总和
+        f[u][1] = min(f[u][1], f[k][2] + sum - min(f[k][1], f[k][2]));
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ ) {
+        int id, cost, m;
+        scanf("%d%d%d", &id, &cost, &m);
+        w[id] = cost;
+        for (int j = 1, k; j <= m; j ++ ) {
+            scanf("%d", &k);
+            add(id, k);
+            st[k] = true;
+        }
+    }
+    // 寻找根节点
+    int root = 1;
+    while (st[root]) root ++;
+    dfs(root);
+    cout << min(f[root][1], f[root][2]) << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`状态机`、`树形DP`
+
+**缝合怪**
+
+
+
+****
+
+### end
+
+## 状态压缩 `DP`
+
+### [Acwing 1064. 小国王](https://www.acwing.com/problem/content/1066/)
 
 **题目描述**
 
@@ -817,7 +1205,7 @@ int main() {
 
 `动态规划`
 
-##### [Acwing 327. 玉米田](https://www.acwing.com/problem/content/329/)
+### [Acwing 327. 玉米田](https://www.acwing.com/problem/content/329/)
 
 **题目描述**
 
@@ -915,9 +1303,9 @@ int main() {
 
 `动态规划`
 
-#### 状态机
+## 状态机
 
-##### [LeetCode 213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+### [LeetCode 213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
 
 **题目描述**
 
@@ -990,7 +1378,7 @@ public:
 
 `动态规划`
 
-##### [AcWing 1058. 股票买卖 V](https://www.acwing.com/problem/content/1060/)
+### [AcWing 1058. 股票买卖 V](https://www.acwing.com/problem/content/1060/)
 
 **题目描述**
 
@@ -1064,9 +1452,9 @@ int main() {
 
 `动态规划`、`状态机`
 
-#### 简单 `DP`
+## 简单 `DP`
 
-##### [LeetCode 221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
+### [LeetCode 221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
 
 **题目描述**
 
@@ -1188,9 +1576,9 @@ public:
 
 `动态规划`
 
-#### `LIS`
+## `LIS`
 
-##### [LeetCode 300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+### [LeetCode 300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
 **题目描述**
 
@@ -1326,7 +1714,7 @@ public:
 
 `LIS`、`二分`、`最长上升子序列`
 
-##### [LeetCode 334. 递增的三元子序列](https://leetcode-cn.com/problems/increasing-triplet-subsequence/)
+### [LeetCode 334. 递增的三元子序列](https://leetcode-cn.com/problems/increasing-triplet-subsequence/)
 
 **题目描述**
 
@@ -1389,7 +1777,7 @@ public:
 
 `LIS`、`最长上升子序列`
 
-##### [LeetCode 368. 最大整除子集](https://leetcode-cn.com/problems/largest-divisible-subset/)
+### [LeetCode 368. 最大整除子集](https://leetcode-cn.com/problems/largest-divisible-subset/)
 
 **题目描述**
 
@@ -1458,238 +1846,93 @@ public:
 
 `LIS`、`排序`
 
-#### 背包模型
+## 背包模型
 
-##### 分组背包
+### `01` 背包
 
-###### [AcWing 10. 有依赖的背包问题](https://www.acwing.com/problem/content/description/10/)
+#### [AcWing 12. 背包问题求具体方案](https://www.acwing.com/problem/content/12/)
 
-> 有 `N` 个物品和一个容量是 `V` 的背包。
+>   有 `N` 件物品和一个容量是 `V` 的背包。每件物品只能使用一次。
 >
-> 物品之间具有依赖关系，且依赖关系组成一棵树的形状。如果选择一个物品，则必须选择它的父节点。
+>   第 `i` 件物品的体积是 $v_i$，价值是 $w_i$。
 >
-> 如下图所示：
-> ![QQ图片20181018170337.png](https://gitee.com/peter95535/image-bed/raw/master/img/1_bb51ecbcd2-QQ%E5%9B%BE%E7%89%8720181018170337.png)
+>   求解将哪些物品装入背包，可使这些物品的总体积不超过背包容量，且总价值最大。
 >
-> 如果选择物品 `5`，则必须选择物品 `1` 和 `2`。这是因为 `2` 是 `5` 的父节点，`1` 是 `2` 的父节点。
->
-> 每件物品的编号是 `i`，体积是 $v_i$，价值是 $w_i$，依赖的父节点编号是 $p_i$。物品的下标范围是 $1…N$。
->
-> 求解将哪些物品装入背包，可使物品总体积不超过背包容量，且总价值最大。
->
-> 输出最大价值。
+>   输出 **字典序最小的方案**。这里的字典序是指：所选物品的编号所构成的序列。物品的编号范围是 `1…N`。
 
 **输入格式**
 
-> 第一行有两个整数 `N，V`，用空格隔开，分别表示物品个数和背包容量。
+>   第一行两个整数，`N，V`，用空格隔开，分别表示物品数量和背包容积。
 >
-> 接下来有 `N` 行数据，每行数据表示一个物品。
-> 第 `i` 行有三个整数 $v_i,w_i,p_i$，用空格隔开，分别表示物品的体积、价值和依赖的物品编号。
-> 如果 $p_i=−1$，表示根节点。 **数据保证所有物品构成一棵树。**
+>   接下来有 `N` 行，每行两个整数 $v_i,w_i$，用空格隔开，分别表示第 `i` 件物品的体积和价值。
 
 **输出格式**
 
-> 输出一个整数，表示最大价值。
+>   输出一行，包含若干个用空格隔开的整数，表示最优解中所选物品的编号序列，且该编号序列的字典序最小。
+>
+>   物品编号范围是 `1…N`。
 
 **数据范围**
 
-> + $1≤N,V≤100$
-> + $1≤v_i,w_i≤100$
->
-> 父节点编号范围：
->
-> - 内部结点：$1≤p_i≤N$;
-> - 根节点 $p_i=−1$;
+>   +   $0<N,V≤1000$
+>   +   $0<v_i,w_i≤1000$
 
 **输入样例**
 
 ```c++
-5 7
-2 3 -1
-2 2 1
-3 5 1
-4 7 2
-3 6 2
-```
-
-**输出样例**
-
-```c++
-11
-```
-
-**手写稿**
-
-![2161118](https://gitee.com/peter95535/image-bed/raw/master/img/2161118.png)
-
-**代码**
-
-```c++
-#include <iostream>
-#include <cstring>
-using namespace std;
-const int N = 110;
-int n, m, p, root, idx;
-int v[N], w[N], h[N], e[N], ne[N];
-int f[N][N];
-void add(int a, int b) {
-    e[idx] = b;
-    ne[idx] = h[a];
-    h[a] = idx ++;
-    return;
-}
-void dfs(int u) {
-    for (int i = h[u]; i != -1; i = ne[i]) { // 枚举组
-        int son = e[i];
-        // 递归子树
-        dfs(son);
-        // 分组背包
-        // 逆序的原因，在图解中
-        for (int j = m - v[u]; j >= 0; j -- ) // 枚举组所占用的体积
-            for (int k = 0; k <= j; k ++ ) // 枚举组内物品所占体积
-                f[u][j] = max(f[u][j], f[u][j - k] + f[son][k]);
-    }
-    // 添加根节点的权值
-    for (int i = m; i >= v[u]; i -- ) f[u][i] = f[u][i - v[u]] + w[u];
-    // 如果体积连根节点也不能装下，则重置为0
-    // 重置的原因，在图解中
-    for (int i = 0; i < v[u]; i ++ ) f[u][i] = 0;
-    return;
-}
-int main() {
-    scanf("%d%d", &n, &m);
-    memset(h, -1, sizeof h);
-    for (int i = 1; i <= n; i ++ ) {
-        scanf("%d%d%d", &v[i], &w[i] ,&p);
-        if (p == -1) root = i;
-        else add(p, i);
-    }
-    dfs(root);
-    cout << f[root][m] << endl;
-    return 0;
-}
-```
-
-**标签**
-
-`动态规划`、`分组背包`、`树形DP`
-
-###### [AcWing 9. 分组背包问题](https://www.acwing.com/problem/content/description/9/)
-
-**题目描述**
-
-> 有 `N` 组物品和一个容量是 `V` 的背包。
->
-> 每组物品有若干个，同一组内的物品最多只能选一个。
-> 每件物品的体积是 $v_{ij}$，价值是 $w_{ij}$，其中 $i$ 是组号，$j$ 是组内编号。
->
-> 求解将哪些物品装入背包，可使物品总体积不超过背包容量，且总价值最大。
->
-> 输出最大价值。
-
-**输入格式**
-
-> 第一行有两个整数 `N，V`，用空格隔开，分别表示物品组数和背包容量。
->
-> 接下来有 `N` 组数据：
->
-> - 每组数据第一行有一个整数 $S_i$，表示第 $i$ 个物品组的物品数量；
-> - 每组数据接下来有 $S_i$ 行，每行有两个整数 $v_{ij},w_{ij}$，用空格隔开，分别表示第 $i$ 个物品组的第 $j$ 个物品的体积和价值；
-
-**输出格式**
-
-> 输出一个整数，表示最大价值。
-
-**数据范围**
-
-> + $0<N,V≤100$
-> + $0<S_i≤100$
-> + $0<v_{ij},w_{ij}≤100$
-
-**输入样例**
-
-```c++
-3 5
-2
+4 5
 1 2
 2 4
-1
 3 4
-1
-4 5
+4 6
 ```
 
 **输出样例**
 
 ```c++
-8
+1 4
 ```
 
 **手写稿**
 
-![2142101](https://gitee.com/peter95535/image-bed/raw/master/img/2142101.png)
+![3122020](https://gitee.com/peter95535/image-bed/raw/master/img/3122020.png)
 
 **代码**
 
-**二维数组**
-
 ```c++
 #include <iostream>
 using namespace std;
-const int N = 110;
+const int N = 1010;
 int n, m;
-int s[N], v[N][N], w[N][N], f[N][N];
+int v[N], w[N], way[N];
+int f[N][N];
 int main() {
     scanf("%d%d", &n, &m);
-    for (int i = 1; i <= n; i ++ ) {
-        scanf("%d", &s[i]);
-        for (int j = 1; j <= s[i]; j ++ ) scanf("%d%d", &v[i][j], &w[i][j]);
-    }
-    for (int i = 1; i <= n; i ++ ) // 循环每一组
-        for (int j = 0; j <= m; j ++ ) { // 循环每一组的体积
-            f[i][j] = f[i - 1][j]; // 一件物品都不选
-            for (int k = 1; k <= s[i]; k ++) // 循环每一组内的商品
-                if (j >= v[i][k]) // 注意：体积需要大于等于当前物品体积才可转移
-                    f[i][j] = max(f[i][j], f[i - 1][j - v[i][k]] + w[i][k]);
+    for (int i = 1; i <= n; i ++ )
+        scanf("%d%d", &v[i], &w[i]);
+    // 倒序枚举
+    for (int i = n; i >= 1; i -- )
+        for (int j = 0; j <= m; j ++ ) {
+            f[i][j] = f[i + 1][j];
+            if (j >= v[i]) f[i][j] = max(f[i][j], f[i + 1][j - v[i]] + w[i]);
         }
-    cout << f[n][m] << endl;
-    return 0;
-}
-```
-
-**一维数组优化**
-
-```c++
-#include <iostream>
-using namespace std;
-const int N = 110;
-int n, m;
-int f[N];
-int s[N], v[N][N], w[N][N];
-int main() {
-    scanf("%d%d", &n, &m);
-    for (int i = 1; i <= n; i ++ ) {
-        scanf("%d", &s[i]);
-        for (int j = 1; j <= s[i]; j ++ ) scanf("%d%d", &v[i][j], &w[i][j]);
-    }
-    for (int i = 1; i <= n; i ++ ) // 循环每一组
-        for (int j = m; j >= 0; j -- ) { // 循环每一组的体积
-            for (int k = 1; k <= s[i]; k ++) // 每一件物品最多选择一件
-                if (j >= v[i][k]) // 注意：体积需要大于等于当前物品体积才可转移
-                    f[j] = max(f[j], f[j - v[i][k]] + w[i][k]);
+    int j = m;
+    for (int i = 1; i <= n; i ++ )
+        if (j >= v[i] && f[i][j] == f[i + 1][j - v[i]] + w[i]) {
+            cout << i << " ";
+            j -= v[i];
         }
-    cout << f[m] << endl;
     return 0;
 }
 ```
 
 **标签**
 
-`分组背包`
+`01背包`、`01背包输出具体方案`、`逆序01背包`、`字典序`
 
-##### 完全背包
+### 完全背包
 
-###### [AcWing 3. 完全背包问题](https://www.acwing.com/problem/content/3/)
+#### [AcWing 3. 完全背包问题](https://www.acwing.com/problem/content/3/)
 
 **题目描述**
 
@@ -1805,7 +2048,7 @@ int main() {
 
 `完全背包`
 
-###### [AcWing 1021. 货币系统](https://www.acwing.com/problem/content/description/1023/)
+#### [AcWing 1021. 货币系统](https://www.acwing.com/problem/content/description/1023/)
 
 **题目描述**
 
@@ -1921,7 +2164,7 @@ int main() {
 
 `完全背包`
 
-###### [LeetCode 322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+#### [LeetCode 322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 
 > 给你一个整数数组 `coins` ，表示不同面额的硬币；以及一个整数 `amount` ，表示总金额。
 >
@@ -2028,11 +2271,1107 @@ public:
 
 `完全背包`
 
-#### end
+### 分组背包
 
-### 位运算专题
+#### [AcWing 10. 有依赖的背包问题](https://www.acwing.com/problem/content/description/10/)
 
-#### [LeetCode 260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
+> 有 `N` 个物品和一个容量是 `V` 的背包。
+>
+> 物品之间具有依赖关系，且依赖关系组成一棵树的形状。如果选择一个物品，则必须选择它的父节点。
+>
+> 如下图所示：
+> ![QQ图片20181018170337.png](https://gitee.com/peter95535/image-bed/raw/master/img/1_bb51ecbcd2-QQ%E5%9B%BE%E7%89%8720181018170337.png)
+>
+> 如果选择物品 `5`，则必须选择物品 `1` 和 `2`。这是因为 `2` 是 `5` 的父节点，`1` 是 `2` 的父节点。
+>
+> 每件物品的编号是 `i`，体积是 $v_i$，价值是 $w_i$，依赖的父节点编号是 $p_i$。物品的下标范围是 $1…N$。
+>
+> 求解将哪些物品装入背包，可使物品总体积不超过背包容量，且总价值最大。
+>
+> 输出最大价值。
+
+**输入格式**
+
+> 第一行有两个整数 `N，V`，用空格隔开，分别表示物品个数和背包容量。
+>
+> 接下来有 `N` 行数据，每行数据表示一个物品。
+> 第 `i` 行有三个整数 $v_i,w_i,p_i$，用空格隔开，分别表示物品的体积、价值和依赖的物品编号。
+> 如果 $p_i=−1$，表示根节点。 **数据保证所有物品构成一棵树。**
+
+**输出格式**
+
+> 输出一个整数，表示最大价值。
+
+**数据范围**
+
+> + $1≤N,V≤100$
+> + $1≤v_i,w_i≤100$
+>
+> 父节点编号范围：
+>
+> - 内部结点：$1≤p_i≤N$;
+> - 根节点 $p_i=−1$;
+
+**输入样例**
+
+```c++
+5 7
+2 3 -1
+2 2 1
+3 5 1
+4 7 2
+3 6 2
+```
+
+**输出样例**
+
+```c++
+11
+```
+
+**手写稿**
+
+![2161118](https://gitee.com/peter95535/image-bed/raw/master/img/2161118.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110;
+int n, m, p, root, idx;
+int v[N], w[N], h[N], e[N], ne[N];
+int f[N][N];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u) {
+    for (int i = h[u]; i != -1; i = ne[i]) { // 枚举组
+        int son = e[i];
+        // 递归子树
+        dfs(son);
+        // 分组背包
+        // 逆序的原因，在图解中
+        for (int j = m - v[u]; j >= 0; j -- ) // 枚举组所占用的体积
+            for (int k = 0; k <= j; k ++ ) // 枚举组内物品所占体积
+                f[u][j] = max(f[u][j], f[u][j - k] + f[son][k]);
+    }
+    // 添加根节点的权值
+    for (int i = m; i >= v[u]; i -- ) f[u][i] = f[u][i - v[u]] + w[u];
+    // 如果体积连根节点也不能装下，则重置为0
+    // 重置的原因，在图解中
+    for (int i = 0; i < v[u]; i ++ ) f[u][i] = 0;
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d%d%d", &v[i], &w[i] ,&p);
+        if (p == -1) root = i;
+        else add(p, i);
+    }
+    dfs(root);
+    cout << f[root][m] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`动态规划`、`分组背包`、`树形DP`
+
+#### [AcWing 9. 分组背包问题](https://www.acwing.com/problem/content/description/9/)
+
+**题目描述**
+
+> 有 `N` 组物品和一个容量是 `V` 的背包。
+>
+> 每组物品有若干个，同一组内的物品最多只能选一个。
+> 每件物品的体积是 $v_{ij}$，价值是 $w_{ij}$，其中 $i$ 是组号，$j$ 是组内编号。
+>
+> 求解将哪些物品装入背包，可使物品总体积不超过背包容量，且总价值最大。
+>
+> 输出最大价值。
+
+**输入格式**
+
+> 第一行有两个整数 `N，V`，用空格隔开，分别表示物品组数和背包容量。
+>
+> 接下来有 `N` 组数据：
+>
+> - 每组数据第一行有一个整数 $S_i$，表示第 $i$ 个物品组的物品数量；
+> - 每组数据接下来有 $S_i$ 行，每行有两个整数 $v_{ij},w_{ij}$，用空格隔开，分别表示第 $i$ 个物品组的第 $j$ 个物品的体积和价值；
+
+**输出格式**
+
+> 输出一个整数，表示最大价值。
+
+**数据范围**
+
+> + $0<N,V≤100$
+> + $0<S_i≤100$
+> + $0<v_{ij},w_{ij}≤100$
+
+**输入样例**
+
+```c++
+3 5
+2
+1 2
+2 4
+1
+3 4
+1
+4 5
+```
+
+**输出样例**
+
+```c++
+8
+```
+
+**手写稿**
+
+![2142101](https://gitee.com/peter95535/image-bed/raw/master/img/2142101.png)
+
+**代码**
+
+**二维数组**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n, m;
+int s[N], v[N][N], w[N][N], f[N][N];
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &s[i]);
+        for (int j = 1; j <= s[i]; j ++ ) scanf("%d%d", &v[i][j], &w[i][j]);
+    }
+    for (int i = 1; i <= n; i ++ ) // 循环前i组
+        for (int j = 0; j <= m; j ++ ) { // 循环体积
+            f[i][j] = f[i - 1][j]; // 第i组的物品一个都不选
+            for (int k = 1; k <= s[i]; k ++) // 枚举第i组的所有物品
+                if (j >= v[i][k]) // 注意：体积需要大于等于当前物品体积才可转移
+                    // 第i组的物品的某个物品选择1个
+                    f[i][j] = max(f[i][j], f[i - 1][j - v[i][k]] + w[i][k]);
+        }
+    cout << f[n][m] << endl;
+    return 0;
+}
+```
+
+**一维数组优化**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n, m;
+int f[N];
+int s[N], v[N][N], w[N][N];
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &s[i]);
+        for (int j = 1; j <= s[i]; j ++ ) scanf("%d%d", &v[i][j], &w[i][j]);
+    }
+    for (int i = 1; i <= n; i ++ ) // 循环前i组
+        for (int j = m; j >= 0; j -- ) { // 循环体积
+            for (int k = 1; k <= s[i]; k ++)
+                if (j >= v[i][k]) // 注意：体积需要大于等于当前物品体积才可转移
+                    f[j] = max(f[j], f[j - v[i][k]] + w[i][k]);
+        }
+    cout << f[m] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`分组背包`
+
+#### [AcWing 1013. 机器分配](https://www.acwing.com/problem/content/1015/)
+
+>   总公司拥有 `M` 台 **相同** 的高效设备，准备分给下属的 `N` 个分公司。
+>
+>   各分公司若获得这些设备，可以为国家提供一定的盈利。盈利与分配的设备数量有关。
+>
+>   问：如何分配这 `M` 台设备才能使国家得到的盈利最大？
+>
+>   求出最大盈利值。
+>
+>   分配原则：每个公司有权获得任意数目的设备，但总台数不超过设备数 `M`。
+
+**输入格式**
+
+>   第一行有两个数，第一个数是分公司数 `N`，第二个数是设备台数 `M`；
+>
+>   接下来是一个 `N * M` 的矩阵，矩阵中的第 `i` 行第 `j` 列的整数表示第 `i` 个公司分配 `j` 台机器时的盈利。
+
+**输出格式**
+
+>   第一行输出最大盈利值；
+>
+>   接下 `N` 行，每行有 `2` 个数，即分公司编号和该分公司获得设备台数。
+>
+>   答案不唯一，输出任意合法方案即可。
+
+**数据范围**
+
+>   +   $1≤N≤10,$
+>   +   $1≤M≤15$
+
+**输入样例**
+
+```c++
+3 3
+30 40 50
+20 30 50
+20 25 30
+```
+
+**输出样例**
+
+```c++
+70
+1 1
+2 1
+3 1
+```
+
+**手写稿**
+
+![3112204](https://gitee.com/peter95535/image-bed/raw/master/img/3112204.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 15, M = 20;
+int n, m;
+int way[N];
+int w[N][M], f[N][M];
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= m; j ++ )
+            scanf("%d", &w[i][j]);
+    for (int i = 1; i <= n; i ++ ) // 枚举物品组i
+        for (int j = 1; j <= m; j ++ ) { // 枚举【前i组】分配的机器总数目
+            f[i][j] = f[i - 1][j];
+            for (int k = 1; k <= j; k ++ ) // 枚举【第i组】分配的机器数目
+                f[i][j] = max(f[i][j], f[i - 1][j - k] + w[i][k]);
+        }
+    cout << f[n][m] << endl;
+    for (int i = n; i >= 1; i -- )
+        // 枚举分配的机器数目
+        for (int j = m; j >= 0; j -- )
+            // 状态转移方程逆过来
+            if (f[i - 1][m - j] + w[i][j] == f[i][m]) {
+                way[i] = j;
+                m -= j;
+                break;
+            }
+    for (int i = 1; i <= n; i ++ ) cout << i << " " << way[i] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`分组背包`、`分组背包求方案数`
+
+### 各种背包之间的区别
+
+#### `01`背包和分组背包
+
+>1.   01背包代码
+>
+>     ```c++
+>     // 枚举前i件物品
+>     for (int i = 1; i <= n; i ++ ) {
+>         // 枚举体积
+>         for (int j = 1; j <= m; j ++ ){
+>             f[i][j] = f[i - 1][j];
+>             // 枚举第i件物品，选0件或者选1件
+>             if (j >= v[i]) f[i][j] = max(f[i][j],f[i - 1][j - v[i]] + w[i]);
+>         }
+>     }
+>     ```
+>
+>2.   分组背包代码
+>
+>     ```c++
+>     // 枚举前i件物品
+>     for (int i = 1; i <= n; i ++ ) {
+>         // 枚举体积
+>         for (int j = 1; j <= m; j ++ ) {
+>             // 枚举第i件物品，选择0件，1件，2件，...，k件
+>             f[i][j] = f[i - 1][j]; // 选择0件
+>             for (int k = 1; k <= s[i]; k ++ ) // 选择1件到k件
+>                 f[i][j] = max(f[i][j], f[i - 1][j - k * v[i]] + k * w[i]);
+>         }
+>     }
+>     ```
+>
+>3.   疑难解答
+>
+>     +   为啥 `01` 背包是二维，而分组背包需要写三维？
+>         +   `01` 背包对于每个物品只有两种选择，即选择 `0` 件物品和选择 `1` 件物品，可以不枚举即可完成大小的比较
+>         +   分组背包对于每个物品而言不仅仅只有两种选择，可能有 `k + 1` 种选择，即选择 `0` 件物品，选择 `1` 件物品，`...`，选择 `k` 件物品，不枚举比较不出来，必须枚举
+
+## 区间 `DP`
+
+### 枚举顺序的解释
+
+>   <font style = "color: red">**`AcWing 282` 石子合并的手写稿中有介绍**</font>
+
+### [AcWing 282. 石子合并](https://www.acwing.com/problem/content/description/284/)
+
+**题目描述**
+
+>   设有 `N` 堆石子排成一排，其编号为 `1，2，3，…，N`。
+>
+>   每堆石子有一定的质量，可以用一个整数来描述，现在要将这 `N` 堆石子合并成为一堆。
+>
+>   每次只能合并相邻的两堆，合并的代价为这两堆石子的质量之和，合并后与这两堆石子相邻的石子将和新堆相邻，合并时由于选择的顺序不同，合并的总代价也不相同。
+>
+>   例如有 `4` 堆石子分别为 `1 3 5 2`， 我们可以先合并 `1、2` 堆，代价为 `4`，得到 `4 5 2`， 又合并 `1，2` 堆，代价为 `9`，得到 `9 2` ，再合并得到 `11`，总代价为 `4+9+11=24`；
+>
+>   如果第二步是先合并 `2，3` 堆，则代价为 `7`，得到 `4 7`，最后一次合并代价为 `11`，总代价为 `4+7+11=22`。
+>
+>   问题是：找出一种合理的方法，使总的代价最小，输出最小代价。
+
+**输入格式**
+
+>   第一行一个数 `N` 表示石子的堆数 `N`。
+>
+>   第二行 `N` 个数，表示每堆石子的质量(均不超过 `1000`)。
+
+**输出格式**
+
+>   输出一个整数，表示最小代价。
+
+**数据范围**
+
+>   +   $1≤N≤300$
+
+**输入样例**
+
+```c++
+4
+1 3 5 2
+```
+
+**输出样例**
+
+```c++
+22
+```
+
+**手写稿**
+
+![371121](https://gitee.com/peter95535/image-bed/raw/master/img/371121.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 310, inf = 0x3f3f3f3f;
+int n;
+int g[N], sum[N];
+int f[N][N];
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        sum[i] = sum[i - 1] + g[i];
+    }
+    // 枚举长度
+    // 长度为1没意义，题目要求至少两堆石子合并才有意义
+    for (int len = 2; len <= n; len ++ )
+        // 枚举【当前区间】左端点的【下标】
+        for (int i = 1; i + len - 1 <= n; i ++ ) {
+            // 【当前区间】右端点的【下标】
+            // 【下标】等于【len - 1】
+            int j = i + len - 1;
+            // 初始化为正无穷
+            f[i][j] = inf;
+            // 枚举分界点
+            for (int k = i; k < j; k ++ )
+                f[i][j] = min(f[i][j], f[i][k] + f[k + 1][j] + sum[j] - sum[i - 1]);
+        }
+    cout << f[1][n] << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`区间DP`
+
+### [AcWing 1068. 环形石子合并](https://www.acwing.com/problem/content/1070/)
+
+**题目描述**
+
+>   将 `n` 堆石子绕圆形操场排放，现要将石子有序地合并成一堆。
+>
+>   规定每次只能选相邻的两堆合并成新的一堆，并将新的一堆的石子数记做该次合并的得分。
+>
+>   请编写一个程序，读入堆数 `n` 及每堆的石子数，并进行如下计算：
+>
+>   -   选择一种合并石子的方案，使得做 `n−1` 次合并得分总和最大。
+>   -   选择一种合并石子的方案，使得做 `n−1` 次合并得分总和最小。
+
+**输入格式**
+
+>   第一行包含整数 `n`，表示共有 `n` 堆石子。
+>
+>   第二行包含 `n` 个整数，分别表示每堆石子的数量。
+
+**输出格式**
+
+>   输出共两行：
+>
+>   第一行为合并得分总和最小值，
+>
+>   第二行为合并得分总和最大值。
+
+**数据范围**
+
+>   +   $1≤n≤200$
+
+**输入样例**
+
+```c++
+4
+4 5 9 4
+```
+
+**输出样例**
+
+```c++
+43
+54
+```
+
+**手写稿**
+
+![381151](https://gitee.com/peter95535/image-bed/raw/master/img/381151.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 410, INF = 0x3f3f3f3f;
+int n;
+int h[N], sum[N];
+int f[N][N], g[N][N];
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &h[i]);
+        // 复制一遍数组
+        h[i + n] = h[i];
+    }
+    // 求前缀和
+    for (int i = 1; i <= n * 2; i ++ )
+        sum[i] = sum[i - 1] + h[i];
+    // 区间DP
+    memset(f, INF, sizeof f);
+    memset(g, -INF, sizeof g);
+    for (int len = 1; len <= n; len ++ )
+        for (int i = 1; i + len - 1 <= n * 2; i ++ ) {
+            int j = i + len - 1;
+            // 合并石子，说明至少是两堆
+            // 如果当前区间只有一个数字，说明只有一堆，不可能进行合并
+            // 因此，合并的价值为0
+            if (i == j) f[i][j] = g[i][j] = 0;
+            for (int k = i; k < j; k ++ ) {
+                f[i][j] = min(f[i][j], f[i][k] + f[k + 1][j] + sum[j] - sum[i - 1]);
+                g[i][j] = max(g[i][j], g[i][k] + g[k + 1][j] + sum[j] - sum[i - 1]);
+            }
+        }
+    int Minr = INF, Maxr = -INF;
+    for (int i = 1; i <= n; i ++ ) {
+        // 区间DP是下标
+        // 枚举区间起点，寻找最大值和最小值
+        // 答案可能位于[1, n]或者[2, n + 1]或，因此，需要进行枚举
+        Minr = min(Minr, f[i][i + n - 1]);
+        Maxr = max(Maxr, g[i][i + n - 1]);
+    }
+    cout << Minr << endl << Maxr << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`区间DP`、`环`、`断环成链`
+
+### [AcWing 320. 能量项链](https://www.acwing.com/problem/content/322/)
+
+>   在 `Mars` 星球上，每个 `Mars` 人都随身佩带着一串能量项链，在项链上有 `N` 颗能量珠。
+>
+>   能量珠是一颗有头标记与尾标记的珠子，这些标记对应着某个正整数。
+>
+>   并且，对于相邻的两颗珠子，前一颗珠子的尾标记一定等于后一颗珠子的头标记。
+>
+>   因为只有这样，通过吸盘（吸盘是 `Mars` 人吸收能量的一种器官）的作用，这两颗珠子才能聚合成一颗珠子，同时释放出可以被吸盘吸收的能量。
+>
+>   如果前一颗能量珠的头标记为 `m`，尾标记为 `r`，后一颗能量珠的头标记为 `r`，尾标记为 `n`，则聚合后释放的能量为 `m×r×n`（`Mars` 单位），新产生的珠子的头标记为 `m`，尾标记为 `n`。
+>
+>   需要时，`Mars` 人就用吸盘夹住相邻的两颗珠子，通过聚合得到能量，直到项链上只剩下一颗珠子为止。
+>
+>   显然，不同的聚合顺序得到的总能量是不同的，请你设计一个聚合顺序，使一串项链释放出的总能量最大。
+>
+>   例如：设 `N=4`，`4` 颗珠子的头标记与尾标记依次为 `(2，3)(3，5)(5，10)(10，2)`。
+>
+>   我们用记号 `⊕` 表示两颗珠子的聚合操作，`(j⊕k)` 表示第 `j`，`k` 两颗珠子聚合后所释放的能量。则
+>
+>   第 `4、1` 两颗珠子聚合后释放的能量为：`(4⊕1)=10×2×3=60`。
+>
+>   这一串项链可以得到最优值的一个聚合顺序所释放的总能量为 `((4⊕1)⊕2)⊕3)=10×2×3+10×3×5+10×5×10=710`。
+
+**输入格式**
+
+>   输入的第一行是一个正整数 `N`，表示项链上珠子的个数。
+>
+>   第二行是 `N` 个用空格隔开的正整数，所有的数均不超过 `1000`，第 `i` 个数为第 `i` 颗珠子的头标记，当 `i<N` 时，第 `i` 颗珠子的尾标记应该等于第 `i+1` 颗珠子的头标记，第 `N` 颗珠子的尾标记应该等于第 `1` 颗珠子的头标记。
+>
+>   至于珠子的顺序，你可以这样确定：将项链放到桌面上，不要出现交叉，随意指定第一颗珠子，然后按顺时针方向确定其他珠子的顺序。
+
+**输出格式**
+
+>   输出只有一行，是一个正整数 `E`，为一个最优聚合顺序所释放的总能量。
+
+**数据范围**
+
+>   +   $4≤N≤100,$
+>   +   $1≤E≤2.1×10^9$
+
+**输入样例**
+
+```c++
+4
+2 3 5 10
+```
+
+**输出样例**
+
+```c++
+710
+```
+
+**手写稿**
+
+![381759](https://gitee.com/peter95535/image-bed/raw/master/img/381759.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 210;
+int n;
+int g[N];
+int f[N][N];
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        g[i + n] = g[i];
+    }
+    // 枚举区间长度
+    // 至少需要两个区间，因此，长度最小为3
+    for (int len = 3; len <= n + 1; len ++ )
+        // 枚举左端点
+        // 终点是【n * 2】
+        for (int i = 1; i + len - 1 <= n * 2; i ++ ) {
+            int j = i + len - 1;
+            // 头和尾构成一个数对(x, y)
+            // 树对对应的下标是[i, i + 1]不是[i, i]
+            for (int k = i + 1; k < j; k ++ )
+                f[i][j] = max(f[i][j], f[i][k] + f[k][j] + g[i] * g[k] * g[j]);
+        }
+    int res = 0;
+    // 注意：长度为【n + 1】不是【n】
+    // 原因：从1出发最后还是得回到1，共【n + 1】个数
+    for (int i = 1; i <= n; i ++ ) res = max(res, f[i][i + n]);
+    cout << res << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`区间DP`、`环`、`断环成链`
+
+### [AcWing 1069. 凸多边形的划分](https://www.acwing.com/problem/content/1071/)
+
+**题目描述**
+
+>   给定一个具有 `N` 个顶点的凸多边形，将顶点从 `1` 至 `N` 标号，每个顶点的权值都是一个正整数。
+>
+>   将这个凸多边形划分成 `N−2` 个互不相交的三角形，对于每个三角形，其三个顶点的权值相乘都可得到一个权值乘积，试求所有三角形的顶点权值乘积之和至少为多少。
+
+**输入格式**
+
+>   第一行包含整数 `N`，表示顶点数量。
+>
+>   第二行包含 `N` 个整数，依次为顶点 `1` 至顶点 `N` 的权值。
+
+**输出格式**
+
+>   输出仅一行，为所有三角形的顶点权值乘积之和的最小值。
+
+**数据范围**
+
+>   +   $N≤50$,
+>   +   $数据保证所有顶点的权值都小于10^9$
+
+**输入样例**
+
+```c++
+5
+121 122 123 245 231
+```
+
+**输出样例**
+
+```c++
+12214884
+```
+
+**手写稿**
+
+![3110834](https://gitee.com/peter95535/image-bed/raw/master/img/3110834.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+typedef long long LL;
+const int N = 55, INF = 1e9;
+int n;
+int w[N];
+vector<int> f[N][N];
+// 高精度乘法
+vector<int> mul(vector<int> A, int b) {
+    vector<int> C;
+    LL t = 0;
+    for (int i = 0; i < A.size(); i ++ ) {
+        t += (LL)A[i] * b;
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    while (t) C.push_back(t % 10), t /= 10;
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    return C;
+}
+// 高精度加法
+vector<int> add(vector<int> A, vector<int> B) {
+    vector<int> C;
+    int t = 0;
+    for (int i = 0, j = 0; i < A.size() || j < B.size(); i ++ , j ++ ) {
+        if (i < A.size()) t += A[i];
+        if (j < B.size()) t += B[i];
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    while (t) C.push_back(t % 10), t /= 10;
+    return C;
+}
+// 比较函数
+bool cmp(vector<int>& A, vector<int>& B) {
+    if (A.size() != B.size()) return A.size() > B.size();
+    for (int i = A.size() - 1; i >= 0; i -- )
+        if (A[i] != B[i]) return A[i] > B[i];
+    return false;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &w[i]);
+    for (int len = 3; len <= n; len ++ )
+        for (int i = 1; i + len - 1 <= n; i ++ ) {
+            int j = i + len - 1;
+            for (int k = i + 1; k < j; k ++ ) {
+                // w[i] * w[k] * w[j];
+                auto new_mul = mul(mul({w[i]}, w[k]), w[j]);
+                // f[i][k] + f[k][j] + w[i] * w[k] * w[j];
+                auto new_add = add(add(f[i][k], f[k][j]), new_mul);
+                // f[i][j] = min(f[i][j], f[i][k] + f[k][j] + w[i] * w[k] * w[j]);
+                // 只有算过的才更新，没算过的就不需要更新
+                if (f[i][j].empty() || cmp(f[i][j], new_add)) // 如果f[i][j] > new_add
+                    f[i][j] = new_add;
+            }
+        }
+    auto res = f[1][n];
+    for (int i = res.size() - 1; i >= 0; i -- ) cout << res[i];
+    return 0;
+}
+```
+
+**标签**
+
+`区间DP`、`高精度`
+
+**缝合怪**
+
+[高精度](#高精度)
+
+### [AcWing 479. 加分二叉树](https://www.acwing.com/problem/content/481/)
+
+**题目描述**
+
+>   设一个 `n` 个节点的二叉树 `tree` 的中序遍历为`（1,2,3,…,n）`，其中数字 `1,2,3,…,n` 为节点编号。
+>
+>   每个节点都有一个分数（均为正整数），记第 `i` 个节点的分数为 $d_i$，`tree` 及它的每个子树都有一个加分，任一棵子树 `subtree`（也包含 `tree` 本身）的加分计算方法如下：     
+>
+>   `subtree` 的左子树的加分 `×` `subtree` 的右子树的加分 `＋` `subtree` 的根的分数 
+>
+>   若某个子树为空，规定其加分为 `1`。
+>
+>   叶子的加分就是叶节点本身的分数，不考虑它的空子树。
+>
+>   试求一棵符合中序遍历为`（1,2,3,…,n）`且加分最高的二叉树 `tree`。
+>
+>   要求输出： 
+>
+>   （1）`tree` 的最高加分 
+>
+>   （2）`tree` 的前序遍历
+
+**输入格式**
+
+>   第 `1` 行：一个整数 `n`，为节点个数。 
+>
+>   第 `2` 行：`n` 个用空格隔开的整数，为每个节点的分数`（0<分数<100）`。
+
+**输出格式**
+
+>   第 `1` 行：一个整数，为最高加分（结果不会超过`int`范围）。     
+>
+>   第 `2` 行：`n` 个用空格隔开的整数，为该树的前序遍历。如果存在多种方案，则输出字典序最小的方案。
+
+**数据范围**
+
+>   +   `n < 30`
+
+**输入样例**
+
+```c++
+5
+5 7 1 2 10
+```
+
+**输出样例**
+
+```c++
+145
+3 1 2 4 5
+```
+
+**手写稿**
+
+![3122138](https://gitee.com/peter95535/image-bed/raw/master/img/3122138.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 35;
+int n;
+int w[N];
+int f[N][N], g[N][N];
+void dfs(int l, int r) {
+    if (l > r) return;
+    // [l, r]的根节点是g[l][r]
+    cout << g[l][r] << " ";
+    // 左右子树不包括根节点
+    // 左子树的区间[l, g[l][r] - 1]
+    dfs(l, g[l][r] - 1);
+    // 左子树的区间[g[l][r] + 1, r]
+    dfs(g[l][r] + 1, r);
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &w[i]);
+    for (int len = 1; len <= n; len ++ )
+        for (int i = 1; i + len - 1 <= n; i ++ ) {
+            int j = i + len - 1;
+            if (len == 1) { // 叶节点
+                // 叶节点的价值为叶节点本身的分数
+                f[i][j] = w[i];
+                // 叶节点的根节点为其本身
+                g[i][j] = i;
+            }
+            else { // 非叶节点
+                for (int k = i; k <= j; k ++ ) {
+                    // 说明无左子树，规定其分数为1
+                    if (k == i) f[i][k - 1] = 1;
+                    // 说明无右子树，规定其分数为1
+                    if (k == j) f[k + 1][j] = 1;
+                    // 计算以k为根节点的二叉树的分数
+                    int score = f[i][k - 1] * f[k + 1][j] + w[k];
+                    // 区间[i, j]的分数小于score时，才更新
+                    // 区间[i, j]的分数等于score时，由于字典序的限制，不更新
+                    // 具体看手写稿分析
+                    if (f[i][j] < score) {
+                        f[i][j] = score;
+                        g[i][j] = k;
+                    }
+                }
+            }
+        }
+    cout << f[1][n] << endl;
+    dfs(1, n);
+    return 0;
+}
+```
+
+**标签**
+
+`区间DP`、`区间DP求具体方案`
+
+### [AcWing 321. 棋盘分割](https://www.acwing.com/problem/content/323/)
+
+**题目描述**
+
+>   将一个 `8×8` 的棋盘进行如下分割：将原棋盘割下一块矩形棋盘并使剩下部分也是矩形，再将剩下的部分继续如此分割，这样割了 `(n−1)` 次后，连同最后剩下的矩形棋盘共有 `n` 块矩形棋盘。(每次切割都只能沿着棋盘格子的边进行)
+>
+>   ![1191_1.jpg](https://gitee.com/peter95535/image-bed/raw/master/img/19_32dad08629-1191_1-20220312214449106.jpg)
+>
+>   原棋盘上每一格有一个分值，一块矩形棋盘的总分为其所含各格分值之和。
+>
+>   现在需要把棋盘按上述规则分割成 `n` 块矩形棋盘，并使各矩形棋盘总分的均方差最小。
+>
+>   均方差![formula.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_566d096029-formula.png) ，其中平均值![lala.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_047fe57229-lala-20220312215123355.png) ，$x_i$ 为第 `i` 块矩形棋盘的总分。
+>
+>   请编程对给出的棋盘及 `n`，求出均方差的最小值。
+
+**输入格式**
+
+>   第 `1` 行为一个整数 `n`。
+>
+>   第 `2` 行至第 `9` 行每行为 `8` 个小于 `100` 的非负整数，表示棋盘上相应格子的分值。每行相邻两数之间用一个空格分隔。
+
+**输出格式**
+
+>   输出最小均方差值（四舍五入精确到小数点后三位）。
+
+**数据范围**
+
+>   +   $1<n<15$
+
+**输入样例**
+
+```c++
+3
+1 1 1 1 1 1 1 3
+1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 0
+1 1 1 1 1 1 0 3
+```
+
+**输出样例**
+
+```c++
+1.633
+```
+
+**手写稿**
+
+![3140755](https://gitee.com/peter95535/image-bed/raw/master/img/3140755.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <cmath>
+using namespace std;
+const int N = 10, M = 15;
+int n;
+double X;
+int g[N][N], sum[N][N];
+double f[N][N][N][N][M];
+// 计算方差
+double get(int x1, int y1, int x2, int y2) {
+    double s = sum[x2][y2] - sum[x1 - 1][y2] - sum[x2][y1 - 1] + sum[x1 - 1][y1 - 1] - X;
+    return (double)s * s / n;
+}
+double dfs(int x1, int y1, int x2, int y2, int k) {
+    double &v = f[x1][y1][x2][y2][k];
+    // 如果已经计算过，则直接返回
+    if (v >= 0) return v;
+    // 如果只需要1个矩形，直接计算即可
+    if (k == 1) return v = get(x1, y1, x2, y2);
+    // 初始化为最大值
+    v = 1e9;
+    // 横着切
+    for (int i = x1; i <= x2; i ++ ) {
+        v = min(v, dfs(x1, y1, i, y2, k - 1) + get(i + 1, y1, x2, y2));
+        v = min(v, dfs(i, y1, x2, y2, k - 1) + get(x1, y1, i - 1, y2));
+    }
+    // 竖着切
+    for (int i = y1; i <= y2; i ++ ) {
+        v = min(v, dfs(x1, y1, x2, i, k - 1) + get(x1, i + 1, x2, y2));
+        v = min(v, dfs(x1, i, x2, y2, k - 1) + get(x1, y1, x2, i - 1));
+    }
+    return v;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= 8; i ++ )
+        for (int j = 1; j <= 8; j ++ ) {
+            scanf("%d", &g[i][j]);
+            // 前缀和
+            sum[i][j] = g[i][j] + sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1];
+        }
+    // X拔
+    X = (double)sum[8][8] / n;
+    // 浮点型数组初始化-1，其值为NaN
+    memset(f, -1, sizeof f);
+    printf("%.3lf\n", sqrt(dfs(1, 1, 8, 8, n)));
+    return 0;
+}
+```
+
+**标签**
+
+`区间DP`、`记忆化搜索`、`前缀和`
+
+### [LeetCode 375. 猜数字大小 II](https://leetcode-cn.com/problems/guess-number-higher-or-lower-ii/)
+
+**题目描述**
+
+>   我们正在玩一个猜数游戏，游戏规则如下：
+>
+>   +   我从 `1` 到 `n` 之间选择一个数字。
+>   +   你来猜我选了哪个数字。
+>   +   如果你猜到正确的数字，就会 赢得游戏 。
+>   +   如果你猜错了，那么我会告诉你，我选的数字比你的 更大或者更小 ，并且你需要继续猜数。
+>   +   每当你猜了数字 `x` 并且猜错了的时候，你需要支付金额为 `x` 的现金。如果你花光了钱，就会 输掉游戏 。
+>
+>   给你一个特定的数字 `n` ，返回能够 确保你获胜 的最小现金数，不管我选择那个数字 。
+
+**示例 1**
+
+![img](https://gitee.com/peter95535/image-bed/raw/master/img/graph.png)
+
+>   输入：`n = 10`
+>   输出：`16`
+>   解释：制胜策略如下：
+>
+>   - 数字范围是 `[1,10]` 。你先猜测数字为 `7` 。
+>       - 如果这是我选中的数字，你的总费用为 `0` 。否则，你需要支付 `7` 。
+>       - 如果我的数字更大，则下一步需要猜测的数字范围是 `[8,10]` 。你可以猜测数字为 `9` 。
+>           - 如果这是我选中的数字，你的总费用为 `7` 。否则，你需要支付 `9` 。
+>           - 如果我的数字更大，那么这个数字一定是 `10` 。你猜测数字为 `10` 并赢得游戏，总费用为 `7 + 9 = 16` 。
+>           - 如果我的数字更小，那么这个数字一定是 `8` 。你猜测数字为 `8` 并赢得游戏，总费用为 `7 + 9 = 16` 。
+>       - 如果我的数字更小，则下一步需要猜测的数字范围是 `[1,6]` 。你可以猜测数字为 `3` 。
+>           - 如果这是我选中的数字，你的总费用为 `7` 。否则，你需要支付 `3` 。
+>           - 如果我的数字更大，则下一步需要猜测的数字范围是 `[4,6]` 。你可以猜测数字为 `5` 。
+>               - 如果这是我选中的数字，你的总费用为 `7 + 3 = 10` 。否则，你需要支付 `5` 。
+>               - 如果我的数字更大，那么这个数字一定是 `6` 。你猜测数字为 `6` 并赢得游戏，总费用为 `7 + 3 + 5 = 15` 。
+>               - 如果我的数字更小，那么这个数字一定是 `4` 。你猜测数字为 `4` 并赢得游戏，总费用为 `7 + 3 + 5 = 15` 。
+>           - 如果我的数字更小，则下一步需要猜测的数字范围是 `[1,2]` 。你可以猜测数字为 `1` 。
+>               - 如果这是我选中的数字，你的总费用为 `7 + 3 = 10` 。否则，你需要支付 `1` 。
+>               - 如果我的数字更大，那么这个数字一定是 `2` 。你猜测数字为 `2` 并赢得游戏，总费用为 `7 + 3 + 1 = 11` 。
+>
+>   在最糟糕的情况下，你需要支付 `16` 。因此，你只需要 `16` 就可以确保自己赢得游戏。
+
+**示例 2**
+
+>   输入：`n = 1`
+>   输出：`0`
+>   解释：只有一个可能的数字，所以你可以直接猜 `1` 并赢得游戏，无需支付任何费用。
+
+**示例 3**
+
+>   输入：`n = 2`
+>   输出：`1`
+>   解释：有两个可能的数字 `1` 和 `2` 。
+>
+>   - 你可以先猜 `1` 。
+>       - 如果这是我选中的数字，你的总费用为 `0` 。否则，你需要支付 `1` 。
+>       - 如果我的数字更大，那么这个数字一定是 `2` 。你猜测数字为 `2` 并赢得游戏，总费用为 `1` 。
+>           最糟糕的情况下，你需要支付 `1` 。
+
+**提示**
+
+>   +   $1 <= n <= 200$
+
+**手写稿**
+
+![3162058](https://gitee.com/peter95535/image-bed/raw/master/img/3162058.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int getMoneyAmount(int n) {
+        vector<vector<int>> f(n + 5, vector<int>(n + 5));
+        // 枚举区间长度
+        for (int len = 2; len <= n; len ++ )
+            // 枚举左端点
+            for (int i = 1; i + len - 1 <= n; i ++ ) {
+                // 找到右端点
+                int j = i + len - 1;
+                f[i][j] = 1e9;
+                for (int k = i; k <= j; k ++ ) 
+                    f[i][j] = min(f[i][j], max(f[i][k - 1], f[k + 1][j]) + k);
+            }
+        return f[1][n];
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n^3)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`区间DP`
+
+**缝合怪**
+
+
+
+### end
+
+# 位运算专题
+
+## [LeetCode 260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
 
 **题目描述**
 
@@ -2092,7 +3431,7 @@ public:
 
 `位运算`
 
-#### [LeetCode 338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
+## [LeetCode 338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
 
 **题目描述**
 
@@ -2180,7 +3519,7 @@ public:
 
 ` 动态规划`、`位运算`
 
-#### [AcWing 318. 最大单词长度乘积](https://leetcode-cn.com/problems/maximum-product-of-word-lengths/)
+## [AcWing 318. 最大单词长度乘积](https://leetcode-cn.com/problems/maximum-product-of-word-lengths/)
 
 **题目描述**
 
@@ -2242,7 +3581,7 @@ public:
 
 `位运算`
 
-#### [LeetCode 371. 两整数之和](https://leetcode-cn.com/problems/sum-of-two-integers/)
+## [LeetCode 371. 两整数之和](https://leetcode-cn.com/problems/sum-of-two-integers/)
 
 **题目描述**
 
@@ -2264,23 +3603,32 @@ public:
 
 **手写稿**
 
-
+![361125](https://gitee.com/peter95535/image-bed/raw/master/img/361125.png)
 
 **代码**
 
+```c++
+class Solution {
+public:
+    int getSum(int a, int b) {
+        if (!b) return a;
+        int sum = a ^ b, carry = (unsigned)(a & b) << 1;
+        return getSum(sum, carry);
+    }
+};
+```
 
+**标签**
 
-**题解**
+`位运算`
 
+## end
 
+# 数学相关
 
-#### end
+##  普通数学
 
-### 数学相关
-
-####  普通数学
-
-##### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
+### [LeetCode 223. 矩形面积](https://leetcode-cn.com/problems/rectangle-area/)
 
 **题目描述**
 
@@ -2328,7 +3676,7 @@ public:
 
 `几何`、`数学`
 
-##### [LeetCode 264. 丑数 II](https://leetcode-cn.com/problems/ugly-number-ii/)
+### [LeetCode 264. 丑数 II](https://leetcode-cn.com/problems/ugly-number-ii/)
 
 **题目描述**
 
@@ -2419,7 +3767,7 @@ public:
 
 `三路归并`、`归并排序`
 
-##### [AcWing 313. 超级丑数](https://leetcode-cn.com/problems/super-ugly-number/)
+### [AcWing 313. 超级丑数](https://leetcode-cn.com/problems/super-ugly-number/)
 
 **题目描述**
 
@@ -2494,7 +3842,7 @@ public:
 
 `优先队列`、`K路归并`
 
-##### [LeetCode 279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+### [LeetCode 279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
 **题目描述**
 
@@ -2577,7 +3925,7 @@ public:
 
 `动态规划`、`数学`
 
-##### [LeetCode 233. 数字 1 的个数](https://leetcode-cn.com/problems/number-of-digit-one/)
+### [LeetCode 233. 数字 1 的个数](https://leetcode-cn.com/problems/number-of-digit-one/)
 
 **题目描述**
 
@@ -2638,7 +3986,7 @@ public:
 
 `数学`
 
-##### [LeetCode 231. 2 的幂](https://leetcode-cn.com/problems/power-of-two/)
+### [LeetCode 231. 2 的幂](https://leetcode-cn.com/problems/power-of-two/)
 
 **题目描述**
 
@@ -2739,7 +4087,7 @@ public:
 
 `对数`、`位运算`
 
-##### [LeetCode 326. 3 的幂](https://leetcode-cn.com/problems/power-of-three/)
+### [LeetCode 326. 3 的幂](https://leetcode-cn.com/problems/power-of-three/)
 
 **题目描述**
 
@@ -2824,7 +4172,7 @@ public:
 
 `对数`、`算术基本定理`、`数论`
 
-##### [LeetCode 342. 4的幂](https://leetcode-cn.com/problems/power-of-four/)
+### [LeetCode 342. 4的幂](https://leetcode-cn.com/problems/power-of-four/)
 
 **题目描述**
 
@@ -2897,7 +4245,7 @@ public:
 
 `对数`、`位运算`
 
-##### [LeetCode 343. 整数拆分](https://leetcode-cn.com/problems/integer-break/)
+### [LeetCode 343. 整数拆分](https://leetcode-cn.com/problems/integer-break/)
 
 **题目描述**
 
@@ -2943,7 +4291,7 @@ public:
 
 `数学`
 
-##### [LeetCode 357. 计算各个位数不同的数字个数](https://leetcode-cn.com/problems/count-numbers-with-unique-digits/)
+### [LeetCode 357. 计算各个位数不同的数字个数](https://leetcode-cn.com/problems/count-numbers-with-unique-digits/)
 
 **题目描述**
 
@@ -2984,9 +4332,9 @@ public:
 
 `排列组合`、`数学`、`动态规划`
 
-#### 数论相关
+## 数论相关
 
-##### [AcWing 319. 灯泡开关](https://leetcode-cn.com/problems/bulb-switcher/)
+### [AcWing 319. 灯泡开关](https://leetcode-cn.com/problems/bulb-switcher/)
 
 **题目描述**
 
@@ -3044,7 +4392,7 @@ public:
 
 `完全平方数`、`脑筋急转弯`、`数论`
 
-##### [LeetCode 365. 水壶问题](https://leetcode-cn.com/problems/water-and-jug-problem/)
+### [LeetCode 365. 水壶问题](https://leetcode-cn.com/problems/water-and-jug-problem/)
 
 >   有两个水壶，容量分别为 `jug1Capacity` 和 `jug2Capacity` 升。水的供应是无限的。确定是否有可能使用这两个壶准确得到 `targetCapacity` 升。
 >
@@ -3100,11 +4448,11 @@ public:
 
 `贝祖定理`、`数论`、`欧几里得算法`
 
-#### end
+### end
 
-### 滑动窗口【双端队列】专题
+# 滑动窗口【双端队列】专题
 
-#### [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
+## [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
 
 **题目描述**
 
@@ -3181,7 +4529,7 @@ public:
 
 `滑动窗口`、`双端队列`、`环`
 
-#### [LeetCode 239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+## [LeetCode 239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
 **题目描述**
 
@@ -3258,11 +4606,11 @@ public:
 
 `滑动窗口`
 
-#### end
+## end
 
-### 阅读理解题
+# 阅读理解题
 
-#### [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
+## [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
 
 **题目描述**
 
@@ -3320,15 +4668,15 @@ public:
 
 `阅读理解`
 
-#### end
+## end
 
-### 多指针专题
+# 多指针专题
 
-#### 双指针
+## 双指针
 
-##### 快慢指针
+### 快慢指针
 
-###### [LeetCode 141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+#### [LeetCode 141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 
 **题目描述**
 
@@ -3402,7 +4750,7 @@ public:
 
 `双指针`、`快慢指针`、`环`
 
-###### [LeetCode 142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+#### [LeetCode 142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
 **题目描述**
 
@@ -3498,7 +4846,7 @@ public:
 
 `双指针`、`快慢指针`、`环`
 
-###### [LeetCode 287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
+#### [LeetCode 287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
 
 **题目描述**
 
@@ -3569,9 +4917,9 @@ public:
 
 `双指针`、`快慢指针`、`环`
 
-#### 三指针
+## 三指针
 
-##### [LeetCode 75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/)
+### [LeetCode 75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/)
 
 **题目描述**
 
@@ -3633,13 +4981,13 @@ public:
 
 `三指针`、`荷兰国旗`
 
-#### end
+## end
 
-### 模拟题专题
+# 模拟题专题
 
-#### 模拟
+## 模拟
 
-##### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
+### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
 
 **题目描述**
 
@@ -3724,7 +5072,7 @@ public:
 
 `模拟`
 
-##### [LeetCode 273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
+### [LeetCode 273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
 
 **题目描述**
 
@@ -3811,11 +5159,11 @@ public:
 
 `模拟`、`数字转换`、`中英文`
 
-##### end
+### end
 
-#### 表达式求值
+## 表达式求值
 
-##### [LeetCode 224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
+### [LeetCode 224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
 
 **题目描述**
 
@@ -3905,7 +5253,7 @@ public:
 
 `栈`、`表达式求值`
 
-##### [LeetCode 282. 给表达式添加运算符](https://leetcode-cn.com/problems/expression-add-operators/)
+### [LeetCode 282. 给表达式添加运算符](https://leetcode-cn.com/problems/expression-add-operators/)
 
 **题目描述**
 
@@ -4003,15 +5351,412 @@ public:
 
 `dfs`、`表达式求值`
 
-##### end
+## 高精度
 
-#### end
+### 注意事项【必看】
 
-### 树专题
+>   1.   分析如下代码【以高精度加法为例】
+>
+>        ```c++
+>        vector<int> add(vector<int>& A, vector<int>& B) {
+>            vector<int> C;
+>            // 进位
+>            int t = 0;
+>            for (int i = 0, j = 0; i < A.size() || j < B.size(); i ++, j ++ ) {
+>                if (i < A.size()) t += A[i];
+>                if (j < B.size()) t += B[i];
+>                C.push_back(t % 10);
+>                t /= 10;
+>            }
+>            // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
+>            while (t) {
+>                C.push_back(t % 10);
+>                t /= 10;
+>            }
+>            // 逆序返回
+>            return vector<int>(C.rbegin(), C.rend());
+>        }
+>        ```
+>
+>        +   问题如下
+>
+>            +   产生进位的时候，为啥要使用 `while(t)` 而不是 `if(t)` ?
+>
+>                >   1.   明确目标：`C` 中的<font style = "color: red">**每一个元素**</font>只能是<font style = "color: red">**一位数**</font>
+>                >
+>                >        +   为啥 `C` 中的每一个元素必须只能是一位数？
+>                >
+>                >            >   假设`A` 和 `B` 中的每一个元素有可能不是一位数，例如，`A = {2e9}, B = {2e9}`，调用 `add(A, B)`，此时，答案应为 ` 4e9`，由于，`C` 中的每一个元素都是 `int` 类型，此时就越界了，无法计算出正确答案，因此，`C` 中的每一个元素必须只能是一位数，这样就不会产生越界的问题，`long long` 和 `double` 等其他类型，都是会产生相似的问题
 
-#### 字典树
+### [AcWing 791. 高精度加法](https://www.acwing.com/problem/content/793/)
 
-##### [LeetCode 212. 单词搜索 II](https://leetcode-cn.com/problems/word-search-ii/)
+**题目描述**
+
+>   给定两个正整数（不含前导 `0`），计算它们的和。
+
+**输入格式**
+
+>   共两行，每行包含一个整数。
+
+**输出格式**
+
+>   共一行，包含所求的和。
+
+**数据范围**
+
+>   +   $1≤整数长度≤100000$
+
+**输入样例**
+
+```c++
+12
+23
+```
+
+**输出样例**
+
+```c++
+35
+```
+
+**手写稿**
+
+>   1.   模拟手算即可
+>
+>   2.   注意事项：
+>
+>        +   数字需要<font style = "color: red">**倒着存储**</font>，原因如下
+>
+>            ![392036](https://gitee.com/peter95535/image-bed/raw/master/img/392036.png)
+
+**代码一：`vector` 存储**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a, b;
+vector<int> A, B;
+vector<int> add(vector<int>& A, vector<int>& B) {
+    vector<int> C;
+    // 进位
+    int t = 0;
+    for (int i = 0, j = 0; i < A.size() || j < B.size(); i ++, j ++ ) {
+        if (i < A.size()) t += A[i];
+        if (j < B.size()) t += B[i];
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
+    while (t) {
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    // 逆序返回
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    for (int i = a.size() - 1; i >= 0; i -- ) A.push_back(a[i] - '0');
+    for (int i = b.size() - 1; i >= 0; i -- ) B.push_back(b[i] - '0');
+    vector<int> C = add(A, B);
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**代码二：数组存储**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100005;
+string a, b;
+// 记录A数组长度，B数组长度和C数组长度
+int n, m, idx;
+int A[N], B[N], C[N];
+void add(int A[], int B[]) {
+    // 进位
+    int t = 0;
+    for (int i = 0, j = 0; i < n || j < m; i ++, j ++ ) {
+        if (i < n) t += A[i];
+        if (j < m) t += B[i];
+        C[idx ++ ] = t % 10; 
+        t /= 10;
+    }
+    // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
+    while (t) {
+        C[idx ++ ] = t % 10;
+        t /= 10;
+    }
+    // 逆序
+    for (int i = 0; i < idx / 2; i ++ ) swap(C[i], C[idx - 1 - i]);
+    return;
+}
+int main() {
+    cin >> a >> b;
+    n = a.size(), m = b.size();
+    for (int i = n - 1; i >= 0; i -- ) A[n - 1 - i] = a[i] - '0';
+    for (int i = m - 1; i >= 0; i -- ) B[m - 1 - i] = b[i] - '0';
+    add(A, B);
+    for (int i = 0; i < idx; i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度加法`
+
+### [AcWing 792. 高精度减法](https://www.acwing.com/problem/content/794/)
+
+**题目描述**
+
+>   给定两个正整数（不含前导 `0`），计算它们的差，计算结果可能为负数。
+
+**输入格式**
+
+>   共两行，每行包含一个整数。
+
+**输出格式**
+
+>   共一行，包含所求的差。
+
+**数据范围**
+
+>   +   $1≤整数长度≤10^5$
+
+**输入样例**
+
+```c++
+32
+11
+```
+
+**输出样例**
+
+```c++
+21
+```
+
+**手写稿**
+
+>   <font style = "color: red">**注意事项：**</font>
+>
+>   +   为了使得高精度模板统一，故<font style="color: red">**倒着存储**</font>
+>   +   计算 `A - B` 的时候，为了写代码方便，规定 `A >= B`（手写写个判断函数 `cmp` ）
+>   +   其余细节部分体现在代码中
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a, b;
+vector<int> A, B;
+bool cmp(string &a, string &b) {
+    if (a.size() != b.size()) return a.size() >= b.size();
+    return a >= b;
+}
+vector<int> sub(vector<int>& A, vector<int>& B) {
+    vector<int> C;
+    int t = 0;
+    // 因为A >= B，因此，A的长度一定大于等于B的长度
+    for (int i = 0; i < A.size(); i ++ ) {
+        t = A[i] - t;
+        // 如果当前没有到达B的结尾
+        if (i < B.size()) t -= B[i];
+        C.push_back((t + 10) % 10);
+        if (t >= 0) t = 0;
+        else t = 1;
+    }
+    while (t) C.push_back(t % 10), t /= 10;
+    // 去掉前导0
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    for (int i = a.size() - 1; i >= 0; i -- ) A.push_back(a[i] - '0');
+    for (int i = b.size() - 1; i >= 0; i -- ) B.push_back(b[i] - '0');
+    vector<int> C;
+    if (cmp(a, b)) // 如果 A >= B
+        C = sub(A, B);
+    else { // 如果 A < B
+        cout << "-";
+        C = sub(B, A);
+    }
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度减法`
+
+### [AcWing 793. 高精度乘法](https://www.acwing.com/problem/content/795/)
+
+**题目描述**
+
+>   给定两个非负整数（不含前导 `0`） `A` 和 `B`，请你计算 `A×B` 的值。
+
+**输入格式**
+
+>   共两行，第一行包含整数 `A`，第二行包含整数 `B`。
+
+**输出格式**
+
+>   共一行，包含 `A×B` 的值。
+
+**数据范围**
+
+>   +   $1≤A的长度≤100000,$
+>   +   $0≤B≤10000$
+
+**输入样例**
+
+```c++
+2
+3
+```
+
+**输出样例**
+
+```c++
+6
+```
+
+**手写稿**
+
+>   1.   为了写代码方便以及格式统一<font style = "color: red">**倒着存储**</font>
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a;
+int b;
+vector<int> A;
+vector<int> mul(vector<int>& A, int b) {
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size(); i ++ ) {
+        t += A[i] * b;
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    while (t) C.push_back(t % 10),t /= 10;
+    // 处理类似 1000 * 0 的情况
+    // 如果答案是0，则只保留一个
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    for (int i = a.size() - 1;i >= 0; i -- ) A.push_back(a[i] - '0');
+    vector<int> C = mul(A, b);
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度乘法`
+
+### [AcWing 794. 高精度除法](https://www.acwing.com/problem/content/796/)
+
+**题目描述**
+
+>   给定两个非负整数（不含前导 `0`） `A，B`，请你计算 `A/B` 的商和余数。
+
+**输入格式**
+
+>   共两行，第一行包含整数 `A`，第二行包含整数 `B`。
+
+**输出格式**
+
+>   共两行，第一行输出所求的商，第二行输出所求余数。
+
+**数据范围**
+
+>   +   $1≤A的长度≤100000,$
+>   +   $1≤B≤10000,$
+>   +   $B 一定不为 0$
+
+**输入样例**
+
+```c++
+7
+2
+```
+
+**输出样例**
+
+```c++
+3
+1
+```
+
+**手写稿**
+
+>   1.   <font style = "color: red">**注意事项：**</font>
+>        +   除法是<font style = "color: red">正着存储</font>，因为除法是从<font style = "color: red">最高位</font>开始计算，而加减乘都是从<font style = "color: red">最低位</font>开始计算
+>        +   其余细节在代码中
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a;
+int b, re;
+vector<int> A;
+vector<int> divide(vector<int>& A, int b) {
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size(); i ++ ) {
+        t = t * 10 + A[i];
+        // /b和%b不是/10和%10
+        C.push_back(t / b);
+        t %= b;
+    }
+    re = t;
+    // 反转方便除去千岛0
+    C = vector<int>(C.rbegin(), C.rend());
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    // 再次反转
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    // 正着存储
+    for (int i = 0; i < a.size(); i ++ ) A.push_back(a[i] - '0');
+    vector<int> C = divide(A, b);
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    cout << endl << re << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度除法`
+
+### end
+
+## end
+
+# 树专题
+
+## 字典树
+
+### [LeetCode 212. 单词搜索 II](https://leetcode-cn.com/problems/word-search-ii/)
 
 **题目描述**
 
@@ -4107,13 +5852,13 @@ public:
 
 `dfs`、`字典树`
 
-#### 线段树
+## 线段树
 
-##### 原理
+### 原理
 
 ![1310947](https://gitee.com/peter95535/image-bed/raw/master/img/1310947.png)
 
-##### [AcWing 1275. 最大数](https://www.acwing.com/problem/content/1277/)
+### [AcWing 1275. 最大数](https://www.acwing.com/problem/content/1277/)
 
 **题目描述**
 
@@ -4272,7 +6017,7 @@ int main() {
 
 `线段树`
 
-##### [AcWing 245. 你能回答这些问题吗](https://www.acwing.com/problem/content/246/)
+### [AcWing 245. 你能回答这些问题吗](https://www.acwing.com/problem/content/246/)
 
 **题目描述**
 
@@ -4421,7 +6166,7 @@ int main() {
 
 `线段树`
 
-##### [AcWing 246. 区间最大公约数](https://www.acwing.com/problem/content/247/)
+### [AcWing 246. 区间最大公约数](https://www.acwing.com/problem/content/247/)
 
 **题目描述**
 
@@ -4584,7 +6329,7 @@ int main() {
 
 `差分`、`树状数组`
 
-##### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
+### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
 
 **题目描述**
 
@@ -4752,7 +6497,7 @@ int main() {
 
 `树状数组`、`懒标记`
 
-##### [AcWing 247. 亚特兰蒂斯](https://www.acwing.com/problem/content/249/)
+### [AcWing 247. 亚特兰蒂斯](https://www.acwing.com/problem/content/249/)
 
 **题目描述**
 
@@ -4935,7 +6680,7 @@ int main() {
 
 `树状数组`、`扫描线`
 
-##### [AcWing 1277. 维护序列](https://www.acwing.com/problem/content/1279/)
+### [AcWing 1277. 维护序列](https://www.acwing.com/problem/content/1279/)
 
 **题目描述**
 
@@ -5153,19 +6898,19 @@ int main() {
 
 `线段树`
 
-#### 树状数组
+## 树状数组
 
-##### 原理
+### 原理
 
 **手写稿**
 
 ![1262039](https://gitee.com/peter95535/image-bed/raw/master/img/1262039.png)
 
-##### 注意事项
+### 注意事项
 
 > 1. <font style="color: red">**先搞明白树状数组存的值的意义，此点至关重要！！！**</font>
 
-##### [P3374 【模板】树状数组 1](https://www.luogu.com.cn/problem/P3374)
+### [P3374 【模板】树状数组 1](https://www.luogu.com.cn/problem/P3374)
 
 **题目描述**
 
@@ -5263,7 +7008,7 @@ int main() {
 
 `树状数组`
 
-##### [AcWing 241. 楼兰图腾](https://www.acwing.com/problem/content/243/)
+### [AcWing 241. 楼兰图腾](https://www.acwing.com/problem/content/243/)
 
 **题目描述**
 
@@ -5380,7 +7125,7 @@ int main() {
 
 `树状数组`
 
-##### [AcWing 242. 一个简单的整数问题](https://www.acwing.com/problem/content/description/248/)
+### [AcWing 242. 一个简单的整数问题](https://www.acwing.com/problem/content/description/248/)
 
 **题目描述**
 
@@ -5501,7 +7246,7 @@ int main() {
 }
 ```
 
-##### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
+### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
 
 **题目描述**
 
@@ -5615,7 +7360,7 @@ int main() {
 
 `树状数组`
 
-##### [AcWing 244. 谜一样的牛](https://www.acwing.com/problem/content/245/)
+### [AcWing 244. 谜一样的牛](https://www.acwing.com/problem/content/245/)
 
 **题目描述**
 
@@ -5734,7 +7479,7 @@ int main() {
 
 `树状数组`
 
-##### [LeetCode 307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
+### [LeetCode 307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
 
 **题目描述**
 
@@ -5848,9 +7593,9 @@ public:
 
 `树状数组`
 
-#### 二叉树
+## 二叉树
 
-##### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 **题目描述**
 
@@ -5953,7 +7698,7 @@ public:
 
 `dfs`、`数据结构`
 
-##### [LeetCode 331. 验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
+### [LeetCode 331. 验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
 
 **题目描述**
 
@@ -6030,11 +7775,11 @@ public:
 
 `二叉树`、`dfs`
 
-### 字符串专题
+# 字符串专题
 
-#### KMP
+## KMP
 
-###### [Leetode 214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
+### [Leetode 214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
 
 **题目描述**
 
@@ -6101,9 +7846,528 @@ public:
 
 `字符串`、`回文串`、`KMP`
 
-### 扫描线问题
+# 计算几何
 
-#### [LeetCode 218. 天际线问题](https://leetcode-cn.com/problems/the-skyline-problem/)
+## 基础知识
+
+### 前置知识
+
+#### 三角函数
+
+>   1. $\pi = acos(-1);$
+>       
+>       ![3161550](https://gitee.com/peter95535/image-bed/raw/master/img/3161550.png)
+>       
+>   2. 余弦定理 $c^2 = a^2 + b^2 - 2abcos(t)$
+>
+>       ![image-20220316155853980](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316155853980.png)
+
+#### 浮点数
+
+>   1.   浮点数的比较
+>
+>        ```c++
+>        // 极小数
+>        const double eps = 1e-8;
+>        int sign(double x) { // 符号函数
+>            // 取绝对值
+>            if (fabs(x) < eps) return 0;
+>            if (x < 0) return -1;
+>            return 1;
+>        }
+>        ```
+>
+>        ![image-20220316161149165](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316161149165.png)
+>
+>   2.   浮点数的比较
+>
+>        ```c++
+>        // 极小数
+>        const double eps = 1e-8;
+>        int cmp(double x, double y) { // 比较函数
+>            // 取绝对值
+>            if (fabs(x - y) < eps) return 0;
+>            if (x < y) return -1;
+>            return 1;
+>        }
+>        ```
+>
+>        ![image-20220316162034261](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316162034261.png)
+
+#### 向量
+
+##### 内积（点积）
+
+>   1.   定义：`A·B = |A||B|cos(C)`
+>
+>   2.   几何意义
+>
+>        ![image-20220316164311609](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316164311609.png)
+>
+>   3.   代码实现
+>
+>        ```c++
+>        double dot(Point a, Point b) {
+>        	return a.x * b.x + a.y * b.y;
+>        }
+>        ```
+
+##### 外积（叉积）
+
+>   1.   定义：`AxB = |A||B|sin(C)`
+>
+>   2.   几何意义
+>
+>        
+>
+>   3.   代码实现
+
+```markdown
+
+        
+    3.3 外积（叉积） 
+        (1) 几何意义：向量A与B张成的平行四边形的有向面积。B在A的逆时针方向为正。
+        (2) 代码实现
+        double cross(Point a, Point b)
+        {
+            return a.x * b.y - b.x * a.y;
+        }
+    3.4 常用函数
+        3.4.1 取模
+        double get_length(Point a)
+        {
+            return sqrt(dot(a, a));
+        }
+        3.4.2 计算向量夹角
+        double get_angle(Point a, Point b)
+        {
+            return acos(dot(a, b) / get_length(a) / get_length(b));
+        }
+        3.4.3 计算两个向量构成的平行四边形有向面积
+        double area(Point a, Point b, Point c)
+        {
+            return cross(b - a, c - a);
+        }
+        3.4.5 向量A顺时针旋转C的角度：
+        Point rotate(Point a, double angle)
+        {
+            return Point(a.x * cos(angle) + a.y * sin(angle), -a.x * sin(angle) + a.y * cos(angle));
+        }
+4. 点与线
+    4.1 直线定理
+        (1) 一般式 ax + by + c = 0
+        (2) 点向式 p0 + vt
+        (3) 斜截式 y = kx + b
+    4.2 常用操作
+        (1) 判断点在直线上 A x B = 0
+        (2) 两直线相交
+        // cross(v, w) == 0则两直线平行或者重合
+        Point get_line_intersection(Point p, Vector v, Point q, vector w)
+        {
+            vector u = p - q;
+            double t = cross(w, u) / cross(v, w);
+            return p + v * t;
+        }
+        (3) 点到直线的距离
+        double distance_to_line(Point p, Point a, Point b)
+        {
+            vector v1 = b - a, v2 = p - a;
+            return fabs(cross(v1, v2) / get_length(v1));
+        }
+        (4) 点到线段的距离
+        double distance_to_segment(Point p, Point a, Point b)
+        {
+            if (a == b) return get_length(p - a);
+            Vector v1 = b - a, v2 = p - a, v3 = p - b;
+            if (sign(dot(v1, v2)) < 0) return get_length(v2);
+            if (sign(dot(v1, v3)) > 0) return get_length(v3);
+            return distance_to_line(p, a, b);
+        }
+        (5) 点在直线上的投影
+        double get_line_projection(Point p, Point a, Point b)
+        {
+            Vector v = b - a;
+            return a + v * (dot(v, p - a) / dot(v, v));
+        }
+        (6) 点是否在线段上
+        bool on_segment(Point p, Point a, Point b)
+        {
+            return sign(cross(p - a, p - b)) == 0 && sign(dot(p - a, p - b)) <= 0;
+        }
+        (7) 判断两线段是否相交
+        bool segment_intersection(Point a1, Point a2, Point b1, Point b2)
+        {
+            double c1 = cross(a2 - a1, b1 - a1), c2 = cross(a2 - a1, b2 - a1);
+            double c3 = cross(b2 - b1, a2 - b1), c4 = cross(b2 - b1, a1 - b1);
+            return sign(c1) * sign(c2) <= 0 && sign(c3) * sign(c4) <= 0;
+        }
+5. 多边形
+    5.1 三角形
+    5.1.1 面积
+        (1) 叉积
+        (2) 海伦公式
+            p = (a + b + c) / 2;
+            S = sqrt(p(p - a) * (p - b) * (p - c));
+    5.1.2 三角形四心
+        (1) 外心，外接圆圆心
+            三边中垂线交点。到三角形三个顶点的距离相等
+        (2) 内心，内切圆圆心
+            角平分线交点，到三边距离相等
+        (3) 垂心
+            三条垂线交点
+        (4) 重心
+            三条中线交点（到三角形三顶点距离的平方和最小的点，三角形内到三边距离之积最大的点）
+    5.2 普通多边形
+        通常按逆时针存储所有点
+        5.2.1 定义
+        (1) 多边形
+            由在同一平面且不再同一直线上的多条线段首尾顺次连接且不相交所组成的图形叫多边形
+        (2) 简单多边形
+            简单多边形是除相邻边外其它边不相交的多边形
+        (3) 凸多边形
+            过多边形的任意一边做一条直线，如果其他各个顶点都在这条直线的同侧，则把这个多边形叫做凸多边形
+            任意凸多边形外角和均为360°
+            任意凸多边形内角和为(n−2)180°
+        5.2.2 常用函数
+        (1) 求多边形面积（不一定是凸多边形）
+        我们可以从第一个顶点除法把凸多边形分成n − 2个三角形，然后把面积加起来。
+        double polygon_area(Point p[], int n)
+        {
+            double s = 0;
+            for (int i = 1; i + 1 < n; i ++ )
+                s += cross(p[i] - p[0], p[i + 1] - p[i]);
+            return s / 2;
+        }
+        (2) 判断点是否在多边形内（不一定是凸多边形）
+        a. 射线法，从该点任意做一条和所有边都不平行的射线。交点个数为偶数，则在多边形外，为奇数，则在多边形内。
+        b. 转角法
+        (3) 判断点是否在凸多边形内
+        只需判断点是否在所有边的左边（逆时针存储多边形）。
+    5.3 皮克定理
+        皮克定理是指一个计算点阵中顶点在格点上的多边形面积公式该公式可以表示为:
+            S = a + b/2 - 1
+        其中a表示多边形内部的点数，b表示多边形边界上的点数，S表示多边形的面积。
+6. 圆
+    (1) 圆与直线交点
+    (2) 两圆交点
+    (3) 点到圆的切线
+    (4) 两圆公切线
+    (5) 两圆相交面积
+```
+
+
+
+### [Ac Wing 2983. 玩具](https://www.acwing.com/problem/content/2986/)
+
+**题目描述**
+
+>   计算玩具收纳盒中，每个分区内的玩具数量。
+>
+>   约翰的父母有一个烦恼----约翰每次玩完玩具以后总会将玩具乱扔。
+>
+>   他们为约翰准备了一个长方形的玩具收纳盒，用来放他的玩具。
+>
+>   但是约翰非常调皮，每次都非常随意的将玩具扔进盒子中，使得所有玩具都随意混在一起，这让约翰难以找到他喜欢的玩具。
+>
+>   对此，约翰的父母想出了一个对策，用若干个纸板将收纳盒分隔成若干个分区，这样至少扔到不同分区的玩具之间还是能分开的。
+>
+>   下面是一个收纳盒的俯视图示例。
+>
+>   ![1.jpg](https://gitee.com/peter95535/image-bed/raw/master/img/19_6d93a6ca3b-1.jpg)
+>
+>   你的任务是，每当约翰将玩具扔进收纳盒中时，确定每个分区中有多少个玩具。
+
+**输入格式**
+
+>   本题包含多组测试数据。
+>
+>   对于每组数据，第一行包含 `6` 个整数 $n,m,x_1,y_1,x_2,y_2$，表示共有 `n` 个纸板，`m` 个玩具，收纳盒的左上角坐标为 `(x1,y1)`，右下角坐标为 `(x2,y2)`。
+>
+>   接下来 `n` 行，每行包含两个整数 $U_i,L_i$，表示第 `i` 个纸板的两端点坐标分别为 $(U_i,y_1)$ 和 $(L_i,y_2)$。数据保证纸板之间不相交，且按照从左至右顺序依次给出。
+>
+>   接下来 `m` 行，每行包含两个整数 $X_j,Y_j$，表示第 `j` 个玩具的位置坐标。玩具的给出顺序是随机的。数据保证玩具不会恰好落在纸板上，也不会落在盒子外。
+>
+>   输入由包含单个 `0` 的一行结束。
+
+**输出格式**
+
+>   对于每组数据，输出 `n+1` 行。
+>
+>   `n` 个纸板将收纳盒划分为了 `n+1` 个分区，从左到右编号为 `0∼n`。
+>
+>   按照分区编号从小到大的顺序，每行输出一行信息 `i: j`，其中 `i` 表示分区编号，`j` 表示分区内玩具数量。
+>
+>   每组数据之间，**用空行隔开**。
+
+**数据范围**
+
+>   +   $每个测试点最多包含 10 组数据。$
+>   +   $1≤n,m≤5000,$
+>   +   $所有坐标取值范围 [−10^5,10^5]。$
+
+**输入样例**
+
+```c++
+5 6 0 10 60 0
+3 1
+4 3
+6 8
+10 10
+15 30
+1 5
+2 1
+2 8
+5 5
+40 10
+7 9
+4 10 0 10 100 0
+20 20
+40 40
+60 60
+80 80
+ 5 10
+15 10
+25 10
+35 10
+45 10
+55 10
+65 10
+75 10
+85 10
+95 10
+0
+```
+
+**输出样例**
+
+```c++
+0: 2
+1: 1
+2: 1
+3: 1
+4: 0
+5: 1
+
+0: 2
+1: 2
+2: 2
+3: 2
+4: 2
+```
+
+**注意**
+
+>   如示例所示，落在盒子边缘的玩具也算在盒子内。
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+## 扫描线问题
+
+### [AcWing 3068. 扫描线](https://www.acwing.com/problem/content/3071/)
+
+**题目描述**
+
+>   在二维平面中给定 `n` 个**两条边分别与 x 轴和 y 轴平行**的矩形，请你求出它们的面积并。
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含四个整数 `x1,y1,x2,y2`，表示其中一个矩形的左下角坐标 `(x1,y1)` 和右上角坐标 `(x2,y2)`。
+>
+>   注意，坐标轴 `x` 轴从左向右延伸，`y` 轴从下向上延伸。
+>
+>   ![1.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_d636a12245-1.png)
+
+**输出格式**
+
+>   一个整数，表示矩形的面积并。
+
+**数据范围**
+
+>   +   $1≤n≤1000,$
+>   +   $−10^9≤x1<x2≤10^9,$
+>   +   $−10^9≤y1<y2≤10^9$
+
+**输入样例**
+
+```c++
+2
+10 10 20 20
+15 15 25 25
+```
+
+**输出样例**
+
+```c++
+175
+```
+
+**手写稿**
+
+![3161121](https://gitee.com/peter95535/image-bed/raw/master/img/3161121.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#define x first
+#define y second
+using namespace std;
+typedef long long LL;
+typedef pair<int, int> PII;
+const int N = 1010, INF = 0x3f3f3f3f;
+int n;
+PII l[N], r[N];
+vector<int> points;
+LL merge_segs(int a, int b) {
+    vector<PII> segs;
+    // 遍历每个矩形
+    for (int i = 1; i <= n; i ++ )
+        // 如果当前矩形将分割成的长条完全包裹在内
+        if (l[i].x <= a && r[i].x >= b)
+            // 记录此区间【y轴方向】
+            segs.push_back({l[i].y, r[i].y});
+    // 区间合并模板
+    // 排序
+    sort(segs.begin(), segs.end());
+    LL height = 0;
+    int L = -INF, R = -INF;
+    for (auto& [l, r] : segs)
+        if (R < l) {
+            height += ((LL)R - L);
+            L = l, R = r;
+        }
+        else R = max(R, r);
+    // 记得将最后一段的长度添加上
+    height += (R - L);
+    // 计算答案即可
+    return height * (b - a);
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        // 记录矩形左边的x坐标和y坐标
+        // 记录矩形右边的x坐标和y坐标
+        scanf("%d%d%d%d", &l[i].x, &l[i].y, &r[i].x, &r[i].y);
+        // 统计所有的横坐标
+        points.push_back(l[i].x);
+        points.push_back(r[i].x);
+    }
+    // 排序
+    sort(points.begin(), points.end());
+    // 去重
+    points.erase(unique(points.begin(), points.end()), points.end());
+    // 可能会越界，使用LL
+    LL res = 0;
+    // 遍历每个区间
+    for (int i = 1; i < points.size(); i ++ )
+        // 统计总和
+        res += merge_segs(points[i - 1], points[i]);
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`扫描线`
+
+**缝合怪**
+
+[AcWing 803. 区间合并](#AcWing 803. 区间合并)
+
+### [AcWing 2801. 三角形面积并](https://www.acwing.com/problem/content/2803/)
+
+>   给出 `n` 个三角形，求它们并的面积。
+
+**输入格式**
+
+>   第一行为 `n`，即三角形的个数。
+>
+>   以下 `n` 行，每行 `6` 个实数 $x_1,y_1,x_2,y_2,x_3,y_3$，代表三角形的顶点坐标。
+>
+>   坐标均为不超过 $10^6$ 的实数，输入数据保留 `1` 位小数。
+
+**输出格式**
+
+>   输出并的面积 `u`，保留两位小数。
+
+**数据范围**
+
+>   +   $1≤n≤100$
+
+**输入样例**
+
+```c++
+2
+0.0 0.0 2.0 0.0 1.0 1.0
+1.0 0.0 3.0 0.0 2.0 1.0
+```
+
+**输出样例**
+
+```c++
+1.75
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [LeetCode 218. 天际线问题](https://leetcode-cn.com/problems/the-skyline-problem/)
 
 **问题描述**
 
@@ -6211,9 +8475,11 @@ public:
 
 `扫描线`
 
-### 对顶堆
+# 堆专题
 
-#### [LeetCode 295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
+## 对顶堆
+
+### [LeetCode 295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
 
 **题目描述**
 
@@ -6304,9 +8570,240 @@ public:
 
 `优先队列`、`对顶堆`
 
-### 深度优先搜索
+## 二叉堆
 
-#### [LeetCode 306. 累加数](https://leetcode-cn.com/problems/additive-number/)
+### [AcWing 148. 合并果子](https://www.acwing.com/problem/content/150/)
+
+**题目描述**
+
+>   在一个果园里，达达已经将所有的果子打了下来，而且按果子的不同种类分成了不同的堆。
+>
+>   达达决定把所有的果子合成一堆。
+>
+>   每一次合并，达达可以把两堆果子合并到一起，消耗的体力等于两堆果子的重量之和。
+>
+>   可以看出，所有的果子经过 `n−1` 次合并之后，就只剩下一堆了。
+>
+>   达达在合并果子时总共消耗的体力等于每次合并所耗体力之和。
+>
+>   因为还要花大力气把这些果子搬回家，所以达达在合并果子时要尽可能地节省体力。
+>
+>   假定每个果子重量都为 `1`，并且已知果子的种类数和每种果子的数目，你的任务是设计出合并的次序方案，使达达耗费的体力最少，并输出这个最小的体力耗费值。
+>
+>   例如有 `3` 种果子，数目依次为 `1，2，9`。
+>
+>   可以先将 `1、2` 堆合并，新堆数目为 `3`，耗费体力为 `3`。
+>
+>   接着，将新堆与原先的第三堆合并，又得到新的堆，数目为 `12`，耗费体力为 `12`。
+>
+>   所以达达总共耗费体力`=3+12=15`。
+>
+>   可以证明 `15` 为最小的体力耗费值。
+
+**输入格式**
+
+>   输入包括两行，第一行是一个整数 `n`，表示果子的种类数。
+>
+>   第二行包含 `n` 个整数，用空格分隔，第 `i` 个整数 $a_i$ 是第 `i` 种果子的数目。
+
+**输出格式**
+
+>   输出包括一行，这一行只包含一个整数，也就是最小的体力耗费值。
+>
+>   输入数据保证这个值小于 $2^{31}$。
+
+**数据范围**
+
+>   +   $1≤n≤10000$,
+>   +   $1≤a_i≤20000$
+
+**输入样例**
+
+```c++
+3 
+1 2 9 
+```
+
+**输出样例**
+
+```c++
+15
+```
+
+**手写稿**
+
+>   1.   每次选择耗费体力最小的两个果子进行合并即可，使用 `res` 计算总的耗费体力之和
+>        +   选择耗费体力最小的两个果子使用堆（优先队列）即可
+>        +   每次将合并完的果子再次放进堆里即可
+
+**代码**
+
+```c++
+#include <iostream>
+#include <queue>
+using namespace std;
+int n;
+priority_queue<int, vector<int>, greater<int>> heap;
+int main() {
+    scanf("%d", &n);
+    for (int i = 0, x; i < n; i ++ ) {
+        scanf("%d", &x);
+        heap.push(x);
+    }
+    int res = 0;
+    while (heap.size() > 1) {
+        // 选择耗费体力最小的两个果子a和b
+        int a = heap.top(); heap.pop();
+        int b = heap.top(); heap.pop();
+        // 将新的果子放进堆里面
+        heap.push(a + b);
+        res += a + b;
+    }
+    cout << res << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`二叉堆`、`哈夫曼树`、`优先队列`
+
+## `n` 叉堆
+
+### [AcWing 149. 荷马史诗](https://www.acwing.com/problem/content/description/151/)
+
+>   追逐影子的人，自己就是影子。 ——荷马
+>
+>   达达最近迷上了文学。
+>
+>   她喜欢在一个慵懒的午后，细细地品上一杯卡布奇诺，静静地阅读她爱不释手的《荷马史诗》。
+>
+>   但是由《奥德赛》和《伊利亚特》组成的鸿篇巨制《荷马史诗》实在是太长了，达达想通过一种编码方式使得它变得短一些。
+>
+>   一部《荷马史诗》中有 `n` 种不同的单词，从 `1` 到 `n` 进行编号。其中第 `i` 种单词出现的总次数为 $w_i$。
+>
+>   达达想要用 `k` 进制串 $s_i$ 来替换第 `i` 种单词，使得其满足如下要求:
+>
+>   对于任意的 $1≤i,j≤n，i≠j$，都有：$s_i$ 不是 $s_j$ 的前缀。
+>
+>   现在达达想要知道，如何选择 $s_i$，才能使替换以后得到的新的《荷马史诗》长度最小。
+>
+>   在确保总长度最小的情况下，达达还想知道最长的 $s_i$ 的最短长度是多少？
+>
+>   一个字符串被称为 `k` 进制字符串，当且仅当它的每个字符是 `0` 到 `k−1` 之间（包括 `0` 和 `k−1`）的整数。
+>
+>   字符串 `Str1` 被称为字符串 `Str2` 的前缀，当且仅当：存在 `1≤t≤m`，使得 `Str1=Str2[1..t]`。
+>
+>   其中，`m` 是字符串 `Str2` 的长度，`Str2[1..t]` 表示 `Str2` 的前 `t` 个字符组成的字符串。
+>
+>   **注意**:请使用 `64` 位整数进行输入输出、储存和计算。
+
+**输入格式**
+
+>   输入文件的第 `1` 行包含 `2` 个正整数 `n,k`，中间用单个空格隔开，表示共有 `n` 种单词，需要使用 `k` 进制字符串进行替换。
+>
+>   第 `2∼n+1` 行：第 `i+1` 行包含 `1` 个非负整数 $w_i$，表示第 $i$ 种单词的出现次数。
+
+**输出格式**
+
+>   输出文件包括 `2` 行。
+>
+>   第 `1` 行输出 `1` 个整数，为《荷马史诗》经过重新编码以后的最短长度。
+>
+>   第 `2` 行输出 `1` 个整数，为保证最短总长度的情况下，最长字符串 $s_i$ 的最短长度。
+
+**数据范围**
+
+>   +   $2≤n≤100000,$
+>   +   $2≤k≤9$
+>   +   $1≤wi≤10^{12}$
+
+**输入样例**
+
+```c++
+4 2
+1
+1
+2
+2
+```
+
+**输出样例**
+
+```c++
+12
+2
+```
+
+**手写稿**
+
+>   1.   优先级队列的元素类型是复合类型，如 `pair`
+>
+>        默认情况下，排序规则是先按照 `pair` 的 `first` 的属性降序排列，如果 `first` 相等，则按照 `second`属性降序排序
+>
+>        同理，传入`std::greator` 后，排序规则是先按照 `pair` 的 `first` 的属性升序排列，如果 `first` 相等，则按照 `second` 属性升序排列
+>
+>   2.   哈夫曼编码前置知识
+>
+>        ![381011](https://gitee.com/peter95535/image-bed/raw/master/img/381011.png)
+>
+>   3.   本题步骤分析
+>
+>        ![381015](https://gitee.com/peter95535/image-bed/raw/master/img/381015.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <queue>
+using namespace std;
+typedef long long LL;
+typedef pair<LL, int> PLI;
+const int N = 100010;
+int n, k;
+// 小根堆
+priority_queue<PLI, vector<PLI>, greater<PLI>> heap;
+int main() {
+    scanf("%d%d", &n, &k);
+    for (int i = 0; i < n; i ++ ) {
+        LL x;
+        scanf("%lld", &x);
+        // 第一个参数存值
+        // 第二个参数存高度【深度】
+        heap.push({x, 0});
+    }
+    // 如果不满足n叉树，则将其补满n叉树
+    while ((n - k) % (k - 1)) heap.push({0, 0}), n ++;
+    // 记录答案
+    LL res = 0;
+    while (heap.size() > 1) {
+        // 记录k叉树合并之后的和
+        LL sum = 0;
+        // 记录最大深度
+        int depth = 0;
+        for (int i = 0; i < k; i ++ ) {
+            auto t = heap.top(); heap.pop();
+            sum += t.first;
+            // 记录最大深度
+            depth = max(depth, t.second);
+        }
+        // 加上答案
+        res += sum;
+        // 深度+1，因为父节点深度等于子节点深度+1
+        heap.push({sum, depth + 1});
+    }
+    cout << res << endl << heap.top().second << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`n叉堆`、`小根堆`、`哈夫曼树`、`哈夫曼编码`
+
+# 深度优先搜索
+
+## [LeetCode 306. 累加数](https://leetcode-cn.com/problems/additive-number/)
 
 **题目描述**
 
@@ -6412,9 +8909,11 @@ public:
 
 `dfs`、`高精度`
 
-### 贪心
+# 贪心
 
-#### [LeetCode 316. 去除重复字母](https://leetcode-cn.com/problems/remove-duplicate-letters/)
+## 字符串贪心
+
+### [LeetCode 316. 去除重复字母](https://leetcode-cn.com/problems/remove-duplicate-letters/)
 
 **问题描述**
 
@@ -6471,9 +8970,106 @@ public:
 
 `贪心`
 
-### 链表专题
+## 区间合并
 
-#### [LeetCode 328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+### [AcWing 803. 区间合并](https://www.acwing.com/problem/content/805/)
+
+**题目描述**
+
+>   给定 `n` 个区间 $[l_i,r_i]$，要求合并所有有交集的区间。
+>
+>   注意如果在端点处相交，也算有交集。
+>
+>   输出合并完成后的区间个数。
+>
+>   例如：`[1,3]` 和 `[2,6]` 可以合并为一个区间 `[1,6]`。
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含两个整数 `l` 和 `r`。
+
+**输出格式**
+
+>   共一行，包含一个整数，表示合并区间完成后的区间个数。
+
+**数据范围**
+
+>   +   $1≤n≤100000,$
+>   +   $−10^9≤l_i≤r_i≤10^9$
+
+**输入样例**
+
+```c++
+5
+1 2
+2 4
+5 6
+7 8
+7 9
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+![3160836](https://gitee.com/peter95535/image-bed/raw/master/img/3160836.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+typedef pair<int, int> PII;
+const int INF = 0x3f3f3f3f;
+vector<PII> segs;
+int n;
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ ) {
+        int l, r;
+        scanf("%d%d", &l, &r);
+        segs.push_back({l, r});
+    }
+    sort(segs.begin(), segs.end());
+    int res = 0;
+    int L = -INF, R = -INF;
+    for (auto& [l, r] : segs)
+        if (R < l) {
+            res ++;
+            L = l, R = r;
+        }
+        else R = max(R, r);
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`贪心`、`排序`
+
+**缝合怪**
+
+
+
+# 链表专题
+
+## [LeetCode 328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
 
 **题目描述**
 
@@ -6548,9 +9144,9 @@ public:
 
 `链表`
 
-### 迭代器专题
+# 迭代器专题
 
-#### [LeetCode 341. 扁平化嵌套列表迭代器](https://leetcode-cn.com/problems/flatten-nested-list-iterator/)
+## [LeetCode 341. 扁平化嵌套列表迭代器](https://leetcode-cn.com/problems/flatten-nested-list-iterator/)
 
 **题目描述**
 
@@ -6704,11 +9300,11 @@ public:
 
 `设计数据结构`、`递归`、`迭代器`
 
-### 排序专题
+# 排序专题
 
-#### 快排
+## 快排
 
-##### [AcWing 786. 第k个数](https://www.acwing.com/problem/content/description/788/)
+### [AcWing 786. 第k个数](https://www.acwing.com/problem/content/description/788/)
 
 **题目描述**
 
@@ -6783,7 +9379,7 @@ int main() {
 
 `快速排序`、`快速选择算法`
 
-##### [LeetCode 324. 摆动排序 II](https://leetcode-cn.com/problems/wiggle-sort-ii/)
+### [LeetCode 324. 摆动排序 II](https://leetcode-cn.com/problems/wiggle-sort-ii/)
 
 **题目描述**
 
@@ -6853,9 +9449,9 @@ public:
 
 `快速选择排序`
 
-#### 计数排序
+## 计数排序
 
-##### 原理
+### 原理
 
 **简介**
 
@@ -6865,7 +9461,7 @@ public:
 
 ![v2-3c7ddb59df2d21b287e42a7b908409cb_b](https://gitee.com/peter95535/image-bed/raw/master/img/v2-3c7ddb59df2d21b287e42a7b908409cb_b.gif)
 
-##### [LeetCode 347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
+### [LeetCode 347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
 
 **题目描述**
 
@@ -6921,11 +9517,11 @@ public:
 
 `计数排序`
 
-#### 归并排序
+## 归并排序
 
-##### 多路归并
+### 多路归并
 
-###### [LeetCode 355. 设计推特](https://leetcode-cn.com/problems/design-twitter/)
+#### [LeetCode 355. 设计推特](https://leetcode-cn.com/problems/design-twitter/)
 
 **题目描述**
 
@@ -7055,7 +9651,614 @@ public:
 
 `多路归并`
 
+#### [LeetCode 373. 查找和最小的 K 对数字](https://leetcode-cn.com/problems/find-k-pairs-with-smallest-sums/)
+
+**题目描述**
+
+>   给定两个以 升序排列 的整数数组 `nums1` 和 `nums2` , 以及一个整数 `k` 。
+>
+>   定义一对值 `(u,v)`，其中第一个元素来自 `nums1`，第二个元素来自 `nums2` 。
+>
+>   请找到和最小的 `k` 个数对 $(u_1,v_1),  (u_2,v_2)  ...  (u_k,v_k)$ 。
+
+**示例 1**
+
+>   输入: `nums1 = [1,7,11], nums2 = [2,4,6], k = 3`
+>   输出: `[1,2],[1,4],[1,6]`
+>   解释: 返回序列中的前 `3` 对数：
+>        `[1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]`
+
+**示例 2**
+
+>   输入: `nums1 = [1,1,2], nums2 = [1,2,3], k = 2`
+>   输出: `[1,1],[1,1]`
+>   解释: 返回序列中的前 `2` 对数：
+>        `[1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]`
+
+**示例 3**
+
+>   输入: `nums1 = [1,2], nums2 = [3], k = 3`
+>   输出: `[1,3],[2,3]`
+>   解释: 也可能序列中所有的数对都被返回:`[1,3],[2,3]`
+
+**提示**
+
+>   +   $1 <= nums1.length, nums2.length <= 10^5$
+>   +   $-10^9 <= nums1[i], nums2[i] <= 10^9$
+>   +   $nums1 和 nums2 均为升序排列$
+>   +   $1 <= k <= 1000$
+
+**手写稿**
+
+![361957](https://gitee.com/peter95535/image-bed/raw/master/img/361957.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> kSmallestPairs(vector<int>& a, vector<int>& b, int k) {
+        if (a.empty() || b.empty()) return {};
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> heap;
+        int n = a.size(), m = b.size();
+        for (int i = 0; i < n; i ++ ) heap.push({a[i] + b[0], i, 0});
+        vector<vector<int>> res;
+        // k路归并
+        while (k -- && heap.size()) {
+            auto t = heap.top(); heap.pop();
+            res.push_back({a[t[1]], b[t[2]]});
+            // 如果其中的某个数组已经到达末尾，则【该数组】不需要继续后移
+            // 但是，可不能【退出】，原因在【手写稿】中
+            if (t[2] + 1 < m)
+                heap.push({a[t[1]] + b[t[2] + 1], t[1], t[2] + 1});
+        }
+        return res;
+    }
+};
+```
+
+**标签**
+
+`优先队列`、`K路归并`
+
+# 分治
+
+## [LeetCode 372. 超级次方](https://leetcode-cn.com/problems/super-pow/)
+
+**题目描述**
+
+>   你的任务是计算 $a^b$ 对 `1337` 取模，`a` 是一个正整数，`b` 是一个非常大的正整数且会以数组形式给出。
+
+**示例 1**
+
+>   输入：`a = 2, b = [3]`
+>   输出：`8`
+
+**示例 2**
+
+>   输入：`a = 2, b = [1,0]`
+>   输出：`1024`
+
+**示例 3**
+
+>   输入：`a = 1, b = [4,3,3,8,5,2]`
+>   输出：`1`
+
+**示例 4**
+
+>   输入：`a = 2147483647, b = [2,0,0]`
+>   输出：`1198`
+
+**提示**
+
+>   +   $1 <= a <= 2^{31} - 1$
+>   +   $1 <= b.length <= 2000$
+>   +   $0 <= b[i] <= 9$
+>   +   $b 不含前导 0$
+
+**手写稿**
+
+![361811](https://gitee.com/peter95535/image-bed/raw/master/img/361811.png)
+
+**代码**
+
+```c++
+const int p = 1337;
+class Solution {
+public:
+    int qmi(int a, int b) {
+        // a先模p，如果不先模p，第10行a * a会越界
+        // 记住先模p【模板！！！】
+        a %= p;
+        int res = 1;
+        while (b) {
+            if (b & 1) res = res * a % p;
+            a = a * a % p;
+            b >>= 1;
+        }
+        return res;
+    }
+    int superPow(int a, vector<int>& b) {
+        if (b.empty()) return 1;
+        // 把最后一个数剔除，化归为分治的子问题
+        int t = b.back(); b.pop_back();
+        return qmi(superPow(a, b), 10) * qmi(a, t) % p;
+    }
+};
+```
+
+**标签**
+
+`快速幂`、`分治`
+
+# 前缀和
+
+## 一维前缀和
+
+### [AcWing 795. 前缀和](https://www.acwing.com/problem/content/797/)
+
+>   输入一个长度为 `n` 的整数序列。
+>
+>   接下来再输入 `m` 个询问，每个询问输入一对 `l,r`。
+>
+>   对于每个询问，输出原序列中从第 `l` 个数到第 `r` 个数的和。
+
+**输入格式**
+
+>   第一行包含两个整数 `n` 和 `m`。
+>
+>   第二行包含 `n` 个整数，表示整数数列。
+>
+>   接下来 `m` 行，每行包含两个整数 `l` 和 `r`，表示一个询问的区间范围。
+
+**输出格式**
+
+>   共 `m` 行，每行输出一个询问的结果。
+
+**数据范围**
+
+>   +   $1≤l≤r≤n,$
+>   +   $1≤n,m≤100000,$
+>   +   $−1000≤数列中元素的值≤1000$
+
+**输入样例**
+
+```c++
+5 3
+2 1 3 6 4
+1 2
+1 3
+2 4
+```
+
+**输出样例**
+
+```c++
+3
+6
+10
+```
+
+**手写稿**
+
+>   1.   `sum[i]` 表示区间 `[1, i]` 的和
+>   2.   如果要计算区间 `[l, r]` 的和，首先需要明确
+>        +   $sum[r] = a_1 + a_2 + ... + a_{r - 1} + a_r$
+>        +   $sum[l] = a_1 + a_2 + ... + a_{l - 1} + a_l$
+>        +   两者相减即可
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n, m;
+int sum[N];
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1, x; i <= n; i ++ ) {
+        scanf("%d", &x);
+        sum[i] = x + sum[i - 1];
+    }
+    while (m -- ) {
+        int l, r;
+        scanf("%d%d", &l, &r);
+        printf("%d\n", sum[r] - sum[l - 1]);
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`前缀和`
+
+## 二维前缀和
+
+### [AcWing 796. 子矩阵的和](https://www.acwing.com/problem/content/798/)
+
+>   输入一个 `n` 行 `m` 列的整数矩阵，再输入 `q` 个询问，每个询问包含四个整数 `x1,y1,x2,y2`，表示一个子矩阵的左上角坐标和右下角坐标。
+>
+>   对于每个询问输出子矩阵中所有数的和。
+
+**输入格式**
+
+>   第一行包含三个整数 `n，m，q`。
+>
+>   接下来 `n` 行，每行包含 `m` 个整数，表示整数矩阵。
+>
+>   接下来 `q` 行，每行包含四个整数 `x1,y1,x2,y2`，表示一组询问。
+
+**输出格式**
+
+>   共 `q` 行，每行输出一个询问的结果。
+
+**数据范围**
+
+>   +   $1≤n,m≤1000,$
+>   +   $1≤q≤200000,$
+>   +   $1≤x1≤x2≤n,$
+>   +   $1≤y1≤y2≤m,$
+>   +   $−1000≤矩阵内元素的值≤1000$
+
+**输入样例**
+
+```c++
+3 4 3
+1 7 2 4
+3 6 2 8
+2 1 2 3
+1 1 2 2
+2 1 3 4
+1 3 3 4
+```
+
+**输出样例**
+
+```c++
+17
+27
+21
+```
+
+**手写稿**
+
+>   ![20201217174700577](https://gitee.com/peter95535/image-bed/raw/master/img/20201217174700577.png)
+>
+>   紫色面积是指 `(1,1)` 左上角到 `(i,j-1)` 右下角的矩形面积, 绿色面积是指 `(1,1)` 左上角到 `(i-1, j )` 右下角的矩形面积。每一个颜色的矩形面积都代表了它所包围元素的和。
+>
+>   ![20201216215336857](https://gitee.com/peter95535/image-bed/raw/master/img/20201216215336857.png)
+>
+>   从图中我们很容易看出，整个外围蓝色矩形面积`s[i][j]` = 绿色面积`s[i-1][j]` + 紫色面积`s[i][j-1]` - 重复加的红色的面积`s[i-1][j-1]` `+`小方块的面积`a[i][j]`;
+>
+>   因此得出二维前缀和预处理公式
+>
+>   `s[i] [j] = s[i-1][j] + s[i][j-1 ] + a[i] [j] - s[i-1][ j-1]`
+>
+>   接下来回归问题去求以 `(x1,y1)` 为左上角和以 `(x2,y2)` 为右下角的矩阵的元素的和。
+>
+>   同样的道理【<font style= "color: red">**你这题目一次一次换了多少个，改过不啦，换汤不换药啊**</font>】
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1010;
+int n, m, q;
+int g[N][N], sum[N][N];
+int main() {
+    scanf("%d%d%d", &n, &m, &q);
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= m; j ++ ) {
+            scanf("%d", &g[i][j]);
+            sum[i][j] = g[i][j] + sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1];
+        }
+    while (q -- ) {
+        int x1, y1, x2, y2;
+        scanf("%d%d%d%d", &x1, &y1, &x2, &y2);
+        cout << sum[x2][y2] - sum[x2][y1 - 1] - sum[x1 - 1][y2] + sum[x1 - 1][y1 - 1] << endl;
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`前缀和`、`二维前缀和`
+
+# 差分
+
+## 一维差分
+
+### [AcWing 797. 差分](https://www.acwing.com/problem/content/799/)
+
+>   输入一个长度为 `n` 的整数序列。
+>
+>   接下来输入 `m` 个操作，每个操作包含三个整数 `l,r,c`，表示将序列中 `[l,r]` 之间的每个数加上 `c`。
+>
+>   请你输出进行完所有操作后的序列。
+
+**输入格式**
+
+>   第一行包含两个整数 `n` 和 `m`。
+>
+>   第二行包含 `n` 个整数，表示整数序列。
+>
+>   接下来 `m` 行，每行包含三个整数 `l，r，c`，表示一个操作。
+
+**输出格式**
+
+>   共一行，包含 `n` 个整数，表示最终序列。
+
+**数据范围**
+
+>   +   $1≤n,m≤100000,$
+>   +   $1≤l≤r≤n,$
+>   +   $−1000≤c≤1000,$
+>   +   $−1000≤整数序列中元素的值≤1000$
+
+**输入样例**
+
+```c++
+6 3
+1 2 2 1 2 1
+1 3 1
+3 5 1
+1 6 1
+```
+
+**输出样例**
+
+```c++
+3 4 5 3 4 2
+```
+
+**手写稿**
+
+![3131310](https://gitee.com/peter95535/image-bed/raw/master/img/3131310.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n, m;
+int g[N];
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1, a = 0, b = 0; i <= n; i ++ ) {
+        scanf("%d", &a);
+        g[i] = a - b;
+        b = a;
+    }
+    while (m -- ) {
+        int l, r, c;
+        scanf("%d%d%d", &l, &r, &c);
+        g[l] += c;
+        g[r + 1] -= c;
+    }
+    for (int i = 1, x; i <= n; i ++ ) {
+        x += g[i];
+        cout << x << " ";
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`差分`、`一维差分`
+
+### [AcWing 4195. 线段覆盖](https://www.acwing.com/problem/content/4198/)
+
+>   在一个坐标轴上有 `n` 条线段。
+>
+>   每条线段的每个端点的坐标都为整数。
+>
+>   可能存在退化成点的线段。
+>
+>   线段之间可以相互交叉、嵌套甚至重合。
+>
+>   请你计算，对于每个 `k∈{1,2,…,n}`，坐标轴中共有多少个**整数坐标**的点满足恰好被 `k` 条线段覆盖。
+>
+>   注意，左右端点分别为 $l_i,r_i$ 的线段覆盖点 `x` 当且仅当 $l_i≤x≤r_i$。
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含两个整数 $l_i,r_i$，表示一条线段的左右端点。
+
+**输出格式**
+
+>   一行 `n` 个整数，其中第 `i` 个整数表示坐标轴中满足恰好被 `i` 条线段覆盖的**整数坐标**的点的数量。
+
+**数据范围**
+
+>   +   $前三个测试点满足 1≤n≤3。$
+>   +   $所有测试点满足 1≤n≤2×10^5，0≤li≤ri≤10^{18}。$
+
+**输入样例1**
+
+```c++
+3
+0 3
+1 3
+3 8
+```
+
+**输出样例1**
+
+```c++
+6 2 1
+```
+
+**输入样例2**
+
+```c++
+3
+1 3
+2 4
+5 7
+```
+
+**输出样例2**
+
+```c++
+5 2 0
+```
+
+**手写稿**
+
+![3131829](https://gitee.com/peter95535/image-bed/raw/master/img/3131829.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <map>
+using namespace std;
+typedef long long LL;
+const int N = 200010;
+int n;
+LL ans[N];
+// 差分数组
+map<LL, LL> q;
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        LL l, r;
+        scanf("%lld%lld", &l, &r);
+        q[l] += 1;
+        q[r + 1] -= 1;
+    }
+    // last表示上一个位置，sum表示前缀和
+    LL last = -1, sum = 0;
+    for (auto& [x, c] : q) {
+        ans[sum] += x - last;
+        last = x;
+        sum += c;
+    }
+    for (int i = 1; i <= n; i ++ ) cout << ans[i] << " ";
+    return 0;
+}
+```
+
+**标签**
+
+`离散化`、`差分`
+
+## 二维差分
+
+### [AcWing 798. 差分矩阵](https://www.acwing.com/problem/content/800/)
+
+>   输入一个 `n` 行 `m` 列的整数矩阵，再输入 `q` 个操作，每个操作包含五个整数 `x1,y1,x2,y2,c`，其中 `(x1,y1)` 和 `(x2,y2)` 表示一个子矩阵的左上角坐标和右下角坐标。
+>
+>   每个操作都要将选中的子矩阵中的每个元素的值加上 `c`。
+>
+>   请你将进行完所有操作后的矩阵输出。
+
+**输入格式**
+
+>   第一行包含整数 `n,m,q`。
+>
+>   接下来 `n` 行，每行包含 `m` 个整数，表示整数矩阵。
+>
+>   接下来 `q` 行，每行包含 `5` 个整数 `x1,y1,x2,y2,c`，表示一个操作。
+
+**输出格式**
+
+>   共 `n` 行，每行 `m` 个整数，表示所有操作进行完毕后的最终矩阵。
+
+**数据范围**
+
+>   +   $1≤n,m≤1000,$
+>   +   $1≤q≤100000,$
+>   +   $1≤x1≤x2≤n,$
+>   +   $1≤y1≤y2≤m,$
+>   +   $−1000≤c≤1000,$
+>   +   $−1000≤矩阵内元素的值≤1000$
+
+**输入样例**
+
+```c++
+3 4 3
+1 2 2 1
+3 2 2 1
+1 1 1 1
+1 1 2 2 1
+1 3 2 3 2
+3 1 3 4 1
+```
+
+**输出样例**
+
+```c++
+2 3 4 1
+4 3 4 1
+2 2 2 2
+```
+
+**手写稿**
+
+![3131937](https://gitee.com/peter95535/image-bed/raw/master/img/3131937.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1010;
+int n, m, q;
+int g[N][N], b[N][N];
+int main() {
+    scanf("%d%d%d",&n, &m, &q);
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= m; j ++ ) {
+            scanf("%d", &g[i][j]);
+            // 构建差分矩阵
+            b[i][j] = g[i][j] - g[i - 1][j] - g[i][j - 1] + g[i - 1][j - 1];
+            
+        }
+    while (q -- ) {
+        int x1, y1, x2, y2, c;
+        scanf("%d%d%d%d%d", &x1, &y1, &x2, &y2, &c);
+        // 差分矩阵公式
+        b[x1][y1] += c;
+        b[x2 + 1][y1] -= c;
+        b[x1][y2 + 1] -= c;
+        b[x2 + 1][y2 + 1] += c;
+    }
+    for (int i = 1; i <= n; i ++ ) {
+        for (int j = 1; j <= m; j ++ ) {
+            // 求前缀和
+            b[i][j] = b[i][j] + b[i - 1][j] + b[i][j - 1] - b[i - 1][j - 1];
+            cout << b[i][j] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+**标签**
+
+`差分`、`二维差分`
+
+# 附录
+
+## 运算符优先级
+
+### `C++` 运算符优先级
+
+![361108](https://gitee.com/peter95535/image-bed/raw/master/img/361108.png)
+
 ### End
+
+
 
 
 
