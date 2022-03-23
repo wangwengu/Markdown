@@ -64,3 +64,8 @@ $$
 \wedge
 $$
 
+$$
+\sigma=\sqrt{\frac{\sum\nolimits_{i = 1}^{n}(x_i - \bar x)^2}{n}}, 
+\bar x = \frac{\sum\nolimits_{i = 1}^{n}x_i}{n}
+$$
+

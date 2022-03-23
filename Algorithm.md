@@ -2271,6 +2271,126 @@ public:
 
 `完全背包`
 
+#### [LeetCode 377. 组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
+
+**题目描述**
+
+>   给你一个由 不同 整数组成的数组 `nums` ，和一个目标整数 `target` 。请你从 `nums` 中找出并返回总和为 `target` 的元素组合的个数。
+>
+>   题目数据保证答案符合 `32` 位整数范围。
+
+**示例 1**
+
+>   输入：`nums = [1,2,3], target = 4`
+>   输出：`7`
+>   解释：
+>   所有可能的组合为：
+>   `(1, 1, 1, 1)`
+>   `(1, 1, 2)`
+>   `(1, 2, 1)`
+>   `(1, 3)`
+>   `(2, 1, 1)`
+>   `(2, 2)`
+>   `(3, 1)`
+>   请注意，顺序不同的序列被视作不同的组合。
+
+**示例 2**
+
+>   输入：`nums = [9], target = 3`
+>   输出：`0`
+
+**提示**
+
+>   +   $1 <= nums.length <= 200$
+>   +   $1 <= nums[i] <= 1000$
+>   +   $nums 中的所有元素 互不相同$
+>   +   $1 <= target <= 1000$
+
+**进阶**
+
+>   如果给定的数组中含有负数会发生什么？问题会产生何种变化？如果允许负数出现，需要向题目中添加哪些限制条件？
+
+**手写稿**
+
+![3171040](https://gitee.com/peter95535/image-bed/raw/master/img/3171040.png)
+
+**代码一：二维数组**
+
+```c++
+typedef long long LL;
+class Solution {
+public:
+    int combinationSum4(vector<int>& a, int n) {
+        vector<vector<LL>> f(n + 5, vector<LL>(n + 5));
+        f[0][0] = 1;
+        // 统计答案
+        int res = 0;
+        // 枚举前i个位置
+        for (int i = 1; i <= n; i ++ ) {
+            // 枚举前i个位置构成的总和
+            for (int j = 0; j <= n; j ++ )
+                // 枚举最后一个位置选择的数字
+                for (auto& num : a)
+                    if (j >= num)
+                        // 可能会越界，取模即可，因为，答案位于int范围内
+                        // 如果超出int的话，随便余无所谓
+                        f[i][j] = (f[i][j] + f[i - 1][j - num]) % INT_MAX;
+            // 记录答案，因为
+            // 可能前1个位置的和已经是n了
+            // 可能前2个位置的和已经是n了
+            // 以此类推
+            res += f[i][n];
+        }
+        return res;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n^3)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**代码二：一维数组**
+
+```c++
+typedef long long LL;
+class Solution {
+public:
+    int combinationSum4(vector<int>& a, int n) {
+        vector<LL> f(n + 5);
+        f[0] = 1;
+        for (int j = 0; j <= n; j ++ )
+            // 枚举最后一个位置选择的数字
+            for (auto& num : a)
+                if (j >= num)
+                    // 可能会越界，取模即可，因为，答案位于int范围内
+                    // 如果超出int的话，随便余无所谓
+                    f[j] = (f[j] + f[j - num]) % INT_MAX;
+        return f[n];
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`有顺序的完全背包问题`
+
+**缝合怪**
+
+
+
 ### 分组背包
 
 #### [AcWing 10. 有依赖的背包问题](https://www.acwing.com/problem/content/description/10/)
@@ -4450,6 +4570,510 @@ public:
 
 ### end
 
+## 高斯消元
+
+### [AcWing 883. 高斯消元解线性方程组](https://www.acwing.com/problem/content/885/)
+
+**题目描述**
+
+>   输入一个包含 `n` 个方程 `n` 个未知数的线性方程组。
+>
+>   方程组中的系数为实数。
+>
+>   求解这个方程组。
+>
+>   下图为一个包含 `m` 个方程 `n` 个未知数的线性方程组示例：
+>
+>   ![9a504fc2d5628535be9dcb5f90ef76c6a7ef634a.gif](https://gitee.com/peter95535/image-bed/raw/master/img/19_b30080c698-9a504fc2d5628535be9dcb5f90ef76c6a7ef634a.gif)
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含 `n + 1` 个实数，表示一个方程的 `n` 个系数以及等号右侧的常数。
+
+**输出格式**
+
+>   如果给定线性方程组存在唯一解，则输出共 `n` 行，其中第 `i` 行输出第 `i` 个未知数的解，结果保留两位小数。
+>
+>   如果给定线性方程组存在无数解，则输出 `Infinite group solutions`。
+>
+>   如果给定线性方程组无解，则输出 `No solution`。
+
+**数据范围**
+
+>   +   $1≤n≤100,$
+>   +   $所有输入系数以及常数均保留两位小数，绝对值均不超过 100。$
+
+**输入样例**
+
+```c++
+3
+1.00 2.00 -1.00 -6.00
+2.00 1.00 -3.00 -9.00
+-1.00 -1.00 2.00 7.00
+```
+
+**输出样例**
+
+```c++
+1.00
+-2.00
+3.00
+```
+
+**手写稿**
+
+![3201224](https://gitee.com/peter95535/image-bed/raw/master/img/3201224.jpg)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cmath>
+using namespace std;
+const int N = 110;
+const double eps = 1e-6;
+int n;
+double a[N][N];
+int guass() {
+    // 化成上三角矩阵
+    int r, c;
+    // 枚举每一列
+    for (r = 1, c = 1; c <= n; c ++ ) {
+        // 1. 找主元
+        int t = r;
+        for (int i = r; i <= n; i ++ )
+            if (fabs(a[i][c]) > fabs(a[t][c])) t = i;
+        // 如果当前列的最大值已经是0，则不需要再进行2，3，4步骤
+        if (fabs(a[t][c]) < eps) continue;
+        // 2. 交换两行
+        if (t != r) // 如果当前列的最大值所在的行不是本行，则交换两行
+            for (int i = c; i <= n + 1; i ++ ) swap(a[r][i], a[t][i]);
+        // 3. 归一化
+        // 倒序枚举
+        for (int i = n + 1; i >= c; i -- ) a[r][i] /= a[r][c];
+        // 4. 将当前列的其他值消成0
+        for (int i = r + 1; i <= n; i ++ )
+            for (int j = n + 1; j >= c; j -- ) {
+                // 如果已经是0，则不需要再进行
+                if (fabs(a[i][c]) < eps) continue;
+                a[i][j] -= a[r][j] * a[i][c];
+            }
+        r ++;
+    }
+    if (r <= n)
+        for (int i = r; i <= n; i ++ ) {
+            if (fabs(a[i][n + 1])) return -1;
+        return 0;
+    }
+    // 化成对角矩阵
+    for (int i = n - 1; i >= 1; i -- )
+        for (int j = i + 1; j <= n; j ++ )
+            a[i][n + 1] -= a[i][j] * a[j][n + 1];
+    return 1;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= n + 1; j ++ )
+            scanf("%lf", &a[i][j]);
+    int t = guass();
+    if (t == -1) printf("No solution");
+    else if (t == 0) printf("Infinite group solutions");
+    else
+        for (int i = 1; i <= n; i ++ ) {
+            if (fabs(a[i][n + 1]) < eps) cout << "0.00" << endl;
+            else printf("%.2lf\n", a[i][n + 1]);
+        }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^3)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`高斯消元`
+
+**缝合怪**
+
+### [AcWing 884. 高斯消元解异或线性方程组](https://www.acwing.com/problem/content/886/)
+
+**题目描述**
+
+>   输入一个包含 `n` 个方程 `n` 个未知数的异或线性方程组。
+>
+>   方程组中的系数和常数为 `0` 或 `1`，每个未知数的取值也为 `0` 或 `1`。
+>
+>   求解这个方程组。
+>
+>   异或线性方程组示例如下：
+>
+>   ```c++
+>   M[1][1]x[1] ^ M[1][2]x[2] ^ … ^ M[1][n]x[n] = B[1]
+>   M[2][1]x[1] ^ M[2][2]x[2] ^ … ^ M[2][n]x[n] = B[2]
+>   …
+>   M[n][1]x[1] ^ M[n][2]x[2] ^ … ^ M[n][n]x[n] = B[n]
+>   ```
+>
+>   其中 `^` 表示异或`(XOR)`，`M[i][j]` 表示第 `i` 个式子中 `x[j]` 的系数，`B[i]` 是第 `i` 个方程右端的常数，取值均为 `0` 或 `1`。
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含 `n + 1` 个整数 `0` 或 `1`，表示一个方程的 `n` 个系数以及等号右侧的常数。
+
+**输出格式**
+
+>   如果给定线性方程组存在唯一解，则输出共 `n` 行，其中第 `i` 行输出第 `i` 个未知数的解。
+>
+>   如果给定线性方程组存在多组解，则输出 `Multiple sets of solutions`。
+>
+>   如果给定线性方程组无解，则输出 `No solution`。
+
+**数据范围**
+
+>   +   $1≤n≤100$
+
+**输入样例**
+
+```c++
+3
+1 1 0 1
+0 1 1 0
+1 0 0 1
+```
+
+**输出样例**
+
+```c++
+1
+0
+0
+```
+
+**手写稿**
+
+>   1.   同 `AcWing 883. 高斯消元解线性方程组`
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n;
+int a[N][N];
+int guass() {
+    int r, c;
+    // 转化成上三角矩阵
+    for (r = 1, c = 1; c <= n; c ++ ) {
+        // 找到当前列绝对值最大的行
+        int t = r;
+        for (int i = r; i <= n; i ++ )
+            if (a[i][c]) {
+                t = i;
+                break;
+            }
+        // 如果当前最大值是0，则此行不需要再进行额外的处理
+        if (!a[t][c]) continue;
+        // 如果当前行不是最大值所在的行，则交换两行
+        if (t != r) 
+            for (int i = c; i <= n + 1; i ++ ) swap(a[t][i], a[r][i]);
+        // 使用当前行去消其它行
+        for (int i = r + 1; i <= n; i ++ )
+            for (int j = n + 1; j >= c; j -- ) {
+                if (a[i][c] == 0) break;
+                a[i][j] ^= a[r][j] & a[i][c];
+            }
+        r ++;
+    }
+    if (r <= n) {
+        for (int i = r; i <= n; i ++ )
+            if (a[i][n + 1]) return -1;
+        return 0;
+    }
+    for (int i = n - 1; i >= 1; i -- )
+        for (int j = i + 1; j <= n; j ++ ) 
+            a[i][n + 1] ^= a[i][j] & a[j][n + 1];
+    return 1;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= n + 1; j ++ )
+            scanf("%d", &a[i][j]);
+    int t = guass();
+    if (t == -1) puts("No solution");
+    else if (t == 0) puts("Multiple sets of solutions");
+    else 
+        for (int i = 1; i <= n; i ++ ) cout << a[i][n + 1] << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^3)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`高斯消元`
+
+**缝合怪**
+
+### [AcWing 207. 球形空间产生器](https://www.acwing.com/problem/content/209/)
+
+**问题描述**
+
+>   有一个球形空间产生器能够在 `n` 维空间中产生一个坚硬的球体。
+>
+>   现在，你被困在了这个 `n` 维球体中，你只知道球面上 `n + 1` 个点的坐标，你需要以最快的速度确定这个 `n` 维球体的球心坐标，以便于摧毁这个球形空间产生器。
+>
+>   **注意：** 数据保证有唯一解。
+
+**输入格式**
+
+>   第一行是一个整数 `n`。
+>
+>   接下来的 `n + 1` 行，每行有 `n` 个实数，表示球面上一点的 `n` 维坐标。
+>
+>   每一个实数精确到小数点后 `6` 位，且其绝对值都不超过 `20000`。
+
+**输出格式**
+
+>   有且只有一行，依次给出球心的 `n` 维坐标（`n` 个实数），两个实数之间用一个空格隔开。
+>
+>   每个实数精确到小数点后 `3` 位。
+
+**数据范围**
+
+>   +   $1≤n≤10$
+
+**输入样例**
+
+```c++
+2
+0.0 0.0
+-1.0 1.0
+1.0 0.0
+```
+
+**输出样例**
+
+```c++
+0.500 1.500
+```
+
+**手写稿**
+
+![3201626](https://gitee.com/peter95535/image-bed/raw/master/img/3201626.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cmath>
+using namespace std;
+const int N = 15;
+const double eps = 1e-6;
+int n;
+double a[N][N], b[N][N];
+// 高斯消元模板
+void guass() {
+    int r, c;
+    for (r = 1, c = 1; c <= n; c ++ ) {
+        int t = r;
+        for (int i = r; i <= n; i ++ )
+            if (fabs(b[i][c]) > fabs(b[t][c])) t = i;
+        if (fabs(b[t][c]) < eps) continue;
+        if (t != r)
+            for (int i = c; i <= n + 1; i ++ ) swap(b[t][i], b[r][i]);
+        for (int i = n + 1; i >= c; i -- )
+            b[r][i] /= b[r][c];
+        for (int i = r + 1; i <= n; i ++ )
+            for (int j = n + 1; j >= c; j -- ) {
+                if (fabs(b[i][c]) < eps) break;
+                b[i][j] -= b[r][j] * b[i][c];
+            }
+        r ++;
+    }
+    for (int i = n - 1; i >= 1; i -- )
+        for (int j = i + 1; j <= n; j ++ )
+            b[i][n + 1] -= b[i][j] * b[j][n + 1];
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n + 1; i ++ )
+        for (int j = 1; j <= n; j ++ )
+            scanf("%lf", &a[i][j]);
+    // 构造b数组
+    for (int i = 2; i <= n + 1; i ++ )
+        for (int j = 1; j <= n; j ++ ) {
+            b[i - 1][j] = 2 * (a[1][j] - a[i][j]);
+            b[i - 1][n + 1] += (a[1][j] * a[1][j]) - a[i][j] * a[i][j];
+        }
+    guass();
+    for (int i = 1; i <= n; i ++ )
+        printf("%.3lf ", b[i][n + 1]);
+    return 0;
+
+```
+
+**时间复杂度**
+
+$O(n^3)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`解方程`、`高斯消元`
+
+**缝合怪**
+
+[AcWing 883. 高斯消元解线性方程组](#AcWing 883. 高斯消元解线性方程组)
+
+## 约瑟夫环
+
+### 原理介绍
+
+![3221150](https://gitee.com/peter95535/image-bed/raw/master/img/3221150.png)
+
+### [PTA 7-28 猴子选大王](https://pintia.cn/problem-sets/14/problems/808)
+
+**题目描述**
+
+>   一群猴子要选新猴王。新猴王的选择方法是：让 `N `只候选猴子围成一圈，从某位置起顺序编号为 `1~N` 号。从第 `1` 号开始报数，每轮从 `1` 报到 `3`，凡报到 `3` 的猴子即退出圈子，接着又从紧邻的下一只猴子开始同样的报数。如此不断循环，最后剩下的一只猴子就选为猴王。请问是原来第几号猴子当选猴王？
+
+**输入格式**
+
+>   输入在一行中给一个正整数`N（≤1000）`。
+
+**输出格式**
+
+>   在一行中输出当选猴王的编号。
+
+**输入样例**
+
+```c++
+11
+```
+
+**输出样例**
+
+```c++
+7
+```
+
+**手写稿**
+
+>   原理已经说明
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1010;
+int n, k = 3;
+int f[N][5];
+int main() {
+    scanf("%d", &n);
+    f[1][k] = 0;
+    for (int i = 2; i <= n; i ++ )
+        f[i][k] = (f[i - 1][k] + k) % i;
+    // 计算的是下标，故答案【编号】需要再+1
+    cout << f[n][k] + 1 << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`约瑟夫环`
+
+**缝合怪**
+
+
+
+### [LeetCode 390. 消除游戏](https://leetcode-cn.com/problems/elimination-game/)
+
+**题目描述**
+
+>   列表 `arr` 由在范围 `[1, n]` 中的所有整数组成，并按严格递增排序。请你对 `arr` 应用下述算法：
+>
+>   从左到右，删除第一个数字，然后每隔一个数字删除一个，直到到达列表末尾。
+>   重复上面的步骤，但这次是从右到左。也就是，删除最右侧的数字，然后剩下的数字每隔一个删除一个。
+>   不断重复这两步，从左到右和从右到左交替进行，直到只剩下一个数字。
+>   给你整数 `n` ，返回 `arr` 最后剩下的数字。
+
+**示例 1**
+
+>   输入：`n = 9`
+>   输出：`6`
+>   解释：
+>   `arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]`
+>   `arr = [2, 4, 6, 8]`
+>   `arr = [2, 6]`
+>   `arr = [6]`
+
+**示例 2**
+
+>   输入：`n = 1`
+>   输出：`1`
+
+**提示**
+
+>   +   $1 <= n <= 10^9$
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
 # 滑动窗口【双端队列】专题
 
 ## [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
@@ -5159,7 +5783,86 @@ public:
 
 `模拟`、`数字转换`、`中英文`
 
-### end
+### [AcWing 1473. A + B 格式](https://www.acwing.com/problem/content/1475/)
+
+**题目描述**
+
+>   计算 `a + b` 并以标准格式输出总和----也就是说，从最低位开始每隔三位数加进一个逗号（千位分隔符），如果结果少于四位则不需添加。
+
+**输入格式**
+
+>   共一行，包含两个整数 `a` 和 `b`。
+
+**输出格式**
+
+>   共一行，以标准格式输出 `a + b` 的和。
+
+**数据范围**
+
+>   +   $−10^6≤a,b≤10^6$
+
+**输入样例**
+
+```c++
+-1000000 9
+```
+
+**输出样例**
+
+```c++
+-999,991
+```
+
+**手写稿**
+
+>   1.   对 `a + b` 形成的字符串 `s`，进行遍历，使用 `t` 作为答案，分以下情况：
+>        +   如果当前遍历的字符数量 `k` 已经达到 `3` 个，则判断是否还有下一个字符并且下一个字符是否是 `'-'`
+>            +   如果条件成立，`t += ,` 并且，将 `k` 置 `0`
+>            +   如果条件不成立，退出循环
+>        +   反转 `t`，如果字符串 `s` 的第一个字符是 `'-'`，将其加入到答案即可
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int a, b;
+int main() {
+    cin >> a >> b;
+    string s = to_string(a + b);
+    string t;
+    for (int i = s.size() - 1, k = 0; i >= 0 && s[i] != '-'; i -- ) {
+        t += s[i];
+        k ++;
+        // 如果数量已经达到3个，并且，还有下一个字符或者下一个字符不是'-'
+        // 将其加入到答案，将k置0
+        if (k == 3 && i - 1 >= 0 && s[i - 1] != '-') t += ',', k = 0; 
+    }
+    // 反转t
+    reverse(t.begin(), t.end());
+    // 如果s的第一个字符是'-'，将其加入到答案
+    if (s[0] == '-') t = '-' + t;
+    cout << t << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`模拟`
+
+**缝合怪**
+
+
 
 ## 表达式求值
 
@@ -8801,9 +9504,337 @@ int main() {
 
 `n叉堆`、`小根堆`、`哈夫曼树`、`哈夫曼编码`
 
-# 深度优先搜索
+# 图论
 
-## [LeetCode 306. 累加数](https://leetcode-cn.com/problems/additive-number/)
+## `Dijkstra`
+
+### [AcWing 849. Dijkstra求最短路 I](https://www.acwing.com/problem/content/851/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的有向图，图中可能存在重边和自环，所有边权均为正值。
+>
+>   请你求出 `1` 号点到 `n` 号点的最短距离，如果无法从 `1` 号点走到 `n` 号点，则输出 `−1`。
+
+**输入格式**
+
+>   第一行包含整数 `n` 和 `m`。
+>
+>   接下来 `m` 行每行包含三个整数 `x,y,z`，表示存在一条从点 `x` 到点 `y` 的有向边，边长为 `z`。
+
+**输出格式**
+
+>   输出一个整数，表示 `1` 号点到 `n` 号点的最短距离。
+>
+>   如果路径不存在，则输出 `−1`。
+
+**数据范围**
+
+>   +   $1≤n≤500,$
+>   +   $1≤m≤10^5,$
+>   +   $图中涉及边长均不超过10000。$
+
+**输入样例**
+
+```c++
+3 3
+1 2 2
+2 3 1
+1 3 4
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+### [AcWing 850. Dijkstra求最短路 II](https://www.acwing.com/problem/content/852/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的有向图，图中可能存在重边和自环，所有边权均为非负值。
+>
+>   请你求出 `1` 号点到 `n` 号点的最短距离，如果无法从 `1` 号点走到 `n` 号点，则输出 `−1`。
+
+**输入格式**
+
+>   第一行包含整数 `n` 和 `m`。
+>
+>   接下来 `m` 行每行包含三个整数 `x,y,z`，表示存在一条从点 `x` 到点 `y` 的有向边，边长为 `z`。
+
+**输出格式**
+
+>   输出一个整数，表示 `1` 号点到 `n` 号点的最短距离。
+>
+>   如果路径不存在，则输出 `−1`。
+
+**数据范围**
+
+>   +   $1≤n,m≤1.5×10^5,$
+>   +   $图中涉及边长均不小于 0，且不超过 10000。$
+>   +   $数据保证：如果最短路存在，则最短路的长度不超过 10^9。$
+
+**输入样例**
+
+```c++
+3 3
+1 2 2
+2 3 1
+1 3 4
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+## `Bellman-Ford`
+
+### [AcWing 853. 有边数限制的最短路](https://www.acwing.com/problem/content/855/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的有向图，图中可能存在重边和自环， **边权可能为负数**。
+>
+>   请你求出从 `1` 号点到 `n` 号点的最多经过 `k` 条边的最短距离，如果无法从 `1` 号点走到 `n` 号点，输出 `impossible`。
+>
+>   注意：图中可能 **存在负权回路** 。
+
+**输入格式**
+
+>   第一行包含三个整数 `n,m,k`。
+>
+>   接下来 `m` 行，每行包含三个整数 `x,y,z`，表示存在一条从点 `x` 到点 `y` 的有向边，边长为 `z`。
+
+**输出格式**
+
+>   输出一个整数，表示从 `1` 号点到 `n` 号点的最多经过 `k` 条边的最短距离。
+>
+>   如果不存在满足条件的路径，则输出 `impossible`。
+
+**数据范围**
+
+>   +   $1≤n,k≤500,$
+>   +   $1≤m≤10000,$
+>   +   $任意边长的绝对值不超过 10000。$
+
+**输入样例**
+
+```c++
+3 3 1
+1 2 1
+2 3 1
+1 3 3
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+## `SPFA`【优化版 `Bellman-Ford`】
+
+### [AcWing 851. spfa求最短路](https://www.acwing.com/problem/content/853/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的有向图，图中可能存在重边和自环， **边权可能为负数**。
+>
+>   请你求出 `1` 号点到 `n` 号点的最短距离，如果无法从 `1` 号点走到 `n` 号点，则输出 `impossible`。
+>
+>   数据保证不存在负权回路。
+
+**输入格式**
+
+>   第一行包含整数 `n` 和 `m`。
+>
+>   接下来 `m` 行每行包含三个整数 `x,y,z`，表示存在一条从点 `x` 到点 `y` 的有向边，边长为 `z`。
+
+**输出格式**
+
+>   输出一个整数，表示 `1` 号点到 `n` 号点的最短距离。
+>
+>   如果路径不存在，则输出 `impossible`。
+
+**数据范围**
+
+>   +   $1≤n,m≤10^5,$
+>   +   $图中涉及边长绝对值均不超过 10000。$
+
+**输入样例**
+
+```c++
+3 3
+1 2 5
+2 3 -3
+1 3 4
+```
+
+**输出样例**
+
+```c++
+2
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+### [AcWing 852. spfa判断负环](https://www.acwing.com/problem/content/854/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的有向图，图中可能存在重边和自环， **边权可能为负数**。
+>
+>   请你判断图中是否存在负权回路。
+
+**输入格式**
+
+>   第一行包含整数 `n` 和 `m`。
+>
+>   接下来 `m` 行每行包含三个整数 `x,y,z`，表示存在一条从点 `x` 到点 `y` 的有向边，边长为 `z`。
+
+**输出格式**
+
+>   如果图中**存在**负权回路，则输出 `Yes`，否则输出 `No`。
+
+**数据范围**
+
+>   +   $1≤n≤2000,$
+>   +   $1≤m≤10000,$
+>   +   $图中涉及边长绝对值均不超过 10000。$
+
+**输入样例**
+
+```c++
+3 3
+1 2 -1
+2 3 4
+3 1 -4
+```
+
+**输出样例**
+
+```c++
+Yes
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+# 搜索
+
+## 深度优先搜索
+
+### [LeetCode 306. 累加数](https://leetcode-cn.com/problems/additive-number/)
 
 **题目描述**
 
@@ -8908,6 +9939,2254 @@ public:
 **标签**
 
 `dfs`、`高精度`
+
+### [LeetCode 385. 迷你语法分析器](https://leetcode-cn.com/problems/mini-parser/)
+
+**题目描述**
+
+>   给定一个字符串 `s` 表示一个整数嵌套列表，实现一个解析它的语法分析器并返回解析的结果 `NestedInteger` 。
+>
+>   列表中的每个元素只可能是整数或整数嵌套列表
+
+**示例 1**
+
+>   输入：`s = "324",`
+>   输出：`324`
+>   解释：你应该返回一个 `NestedInteger` 对象，其中只包含整数值 `324`。
+
+**示例 2**
+
+>   输入：`s = "[123,[456,[789]]]",`
+>   输出：`[123,[456,[789]]]`
+>   解释：返回一个 `NestedInteger` 对象包含一个有两个元素的嵌套列表：
+>
+>   1. 一个 `integer` 包含值 `123`
+>   2. 一个包含两个元素的嵌套列表：
+>       i.  一个 `integer` 包含值 `456`
+>       ii. 一个包含一个元素的嵌套列表
+>            a. 一个 `integer` 包含值 `789`
+
+**提示**
+
+>   +   $1 <= s.length <= 5 * 10^4$
+>   +   $s 由数字、方括号 "[]"、负号 '-' 、逗号 ','组成$
+>   +   $用例保证 s 是可解析的 NestedInteger$
+>   +   $输入中的所有值的范围是 [-10^6, 10^6]$
+
+**手写稿**
+
+![3172147](https://gitee.com/peter95535/image-bed/raw/master/img/3172147.png)
+
+**代码**
+
+```c++
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * class NestedInteger {
+ *   public:
+ *     // Constructor initializes an empty nested list.
+ *     NestedInteger();
+ *
+ *     // Constructor initializes a single integer.
+ *     NestedInteger(int value);
+ *
+ *     // Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     bool isInteger() const;
+ *
+ *     // Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // The result is undefined if this NestedInteger holds a nested list
+ *     int getInteger() const;
+ *
+ *     // Set this NestedInteger to hold a single integer.
+ *     void setInteger(int value);
+ *
+ *     // Set this NestedInteger to hold a nested list and adds a nested integer to it.
+ *     void add(const NestedInteger &ni);
+ *
+ *     // Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // The result is undefined if this NestedInteger holds a single integer
+ *     const vector<NestedInteger> &getList() const;
+ * };
+ */
+class Solution {
+public:
+    NestedInteger dfs(string& s, int& u) {
+        NestedInteger res;
+        if (s[u] == '[') {
+            u ++; // 跳过左括号
+            while (s[u] != ']') res.add(dfs(s, u));
+            u ++; // 跳过右括号
+            if (u < s.size() && s[u] == ',') u ++; // 跳过逗号
+        }
+        else {
+            int k = u;
+            // 将数字部分找出来
+            // 注意不能使用isdigit()，因为，数字可能是负数，有'-'
+            while (k < s.size() && s[k] != ',' && s[k] != ']') k ++;
+            // 将数字转化成int类型
+            res.setInteger(stoi(s.substr(u, k - u)));
+            // 跳过逗号
+            if (k < s.size() && s[k] == ',') k ++;
+            u = k;
+        }
+        return res;
+    }
+    NestedInteger deserialize(string s) {
+        int u = 0;
+        // 注意这里使用的是引用
+        // 其原因是不需要回溯操作，沿着字符串一条路走到黑即可
+        return dfs(s, u);
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`深度优先搜索`
+
+**缝合怪**
+
+[LeetCode 341. 扁平化嵌套列表迭代器](#LeetCode 341. 扁平化嵌套列表迭代器)
+
+### [LeetCode 386. 字典序排数](https://leetcode-cn.com/problems/lexicographical-numbers/)
+
+**题目描述**
+
+>   给你一个整数 `n` ，按字典序返回范围 `[1, n]` 内所有整数。
+>
+>   你必须设计一个时间复杂度为 `O(n)` 且使用 `O(1)` 额外空间的算法。
+
+**示例 1**
+
+>   输入：`n = 13`
+>   输出：`[1,10,11,12,13,2,3,4,5,6,7,8,9]`
+
+**示例 2**
+
+>   输入：`n = 2`
+>   输出：`[1,2]`
+
+**提示**
+
+>   +   $1 <= n <= 5 * 10^4$
+
+**手写稿**
+
+![3181401](https://gitee.com/peter95535/image-bed/raw/master/img/3181401.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<int> res;
+    void dfs(int cur, int n) {
+        // 如果当前的数字大于n，则直接返回
+        if (cur > n) return;
+        // 如果当前的数字小于等于n，说明符合条件，加入答案数组即可
+        if (cur <= n) res.push_back(cur);
+        // 枚举下一位数字，注意：除第一位数字之外的每一位上的数字可填的范围为[0, 9]
+        for (int i = 0; i <= 9; i ++ ) dfs(cur * 10 + i, n);
+        return;
+    }
+    vector<int> lexicalOrder(int n) {
+        // 枚举第一位数字
+        for (int i = 1; i <= 9; i ++ ) dfs(i, n);
+        return res;
+    }
+};
+```
+
+**时间复杂度**
+
+$递归复杂度不好分析$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`深度优先搜索`
+
+**缝合怪**
+
+### [LeetCode 388. 文件的最长绝对路径](https://leetcode-cn.com/problems/longest-absolute-file-path/)
+
+**题目描述**
+
+>   假设有一个同时存储文件和目录的文件系统。下图展示了文件系统的一个示例：
+>
+>   ![mdir](https://gitee.com/peter95535/image-bed/raw/master/img/mdir.jpg)
+>
+>   这里将 `dir` 作为根目录中的唯一目录。`dir` 包含两个子目录 `subdir1` 和 `subdir2` 。`subdir1` 包含文件 `file1.ext` 和子目录 `subsubdir1`；`subdir2` 包含子目录 `subsubdir2`，该子目录下包含文件 `file2.ext` 。
+>
+>   在文本格式中，如下所示(⟶表示制表符)：
+>
+>   >   dir
+>   >   ⟶ subdir1
+>   >   ⟶ ⟶ file1.ext
+>   >   ⟶ ⟶ subsubdir1
+>   >   ⟶ subdir2
+>   >   ⟶ ⟶ subsubdir2
+>   >   ⟶ ⟶ ⟶ file2.ext
+>
+>
+>   如果是代码表示，上面的文件系统可以写为 `"dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"` 。`'\n'` 和 `'\t'` 分别是换行符和制表符。
+>
+>   文件系统中的每个文件和文件夹都有一个唯一的 绝对路径 ，即必须打开才能到达文件/目录所在位置的目录顺序，所有路径用 `'/'` 连接。上面例子中，指向 `file2.ext` 的 绝对路径 是 `"dir/subdir2/subsubdir2/file2.ext"` 。每个目录名由字母、数字和/或空格组成，每个文件名遵循 `name.extension` 的格式，其中 `name` 和 `extension`由字母、数字和/或空格组成。
+>
+>   给定一个以上述格式表示文件系统的字符串 `input` ，返回文件系统中 指向 文件 的 最长绝对路径 的长度 。 如果系统中没有文件，返回 `0`。
+
+**示例 1**
+
+>   输入：`input = "dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext"`
+>   输出：`20`
+>   解释：只有一个文件，绝对路径为 `"dir/subdir2/file.ext"` ，路径长度 `20`
+
+**示例 2**
+
+>   输入：`input = "dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"`
+>   输出：`32`
+>   解释：存在两个文件：
+>   `"dir/subdir1/file1.ext"` ，路径长度 `21`
+>   `"dir/subdir2/subsubdir2/file2.ext"` ，路径长度 `32`
+>   返回 `32` ，因为这是最长的路径
+
+**示例 3**
+
+>   输入：`input = "a"`
+>   输出：`0`
+>   解释：不存在任何文件
+
+**示例 4**
+
+>   输入：`input = "file1.txt\nfile2.txt\nlongfile.txt"`
+>   输出：`12`
+>   解释：根目录下有 `3` 个文件。
+>   因为根目录中任何东西的绝对路径只是名称本身，所以答案是 `"longfile.txt"` ，路径长度为 `12`
+
+**提示**
+
+>   +   $1 <= input.length <= 10^4$
+>   +   $input 可能包含小写或大写的英文字母，一个换行符 '\n'，一个制表符 '\t'，一个点 '.'，一个空格 ' '，和数字。$
+
+**手写稿**
+
+![3211446](https://gitee.com/peter95535/image-bed/raw/master/img/3211446.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int lengthLongestPath(string s) {
+        int ans = 0;
+        stack<string> stk;
+        // 【sum始终记录【栈中】保存的单词的【长度】】
+        for (int i = 0, sum = 0; i < s.size(); i ++ ) {
+            int k = 0;
+            // 判断下一个单词位于第几层
+            while (i < s.size() && s[i] == '\t') k ++, i ++;
+            // 判断当前处于第几层
+            // 如果层数不对，需要进行回溯
+            // 更新sum的值，注意sum值的含义
+            while (stk.size() > k) sum -= stk.top().size(), stk.pop();
+            // 找出当前的单词
+            int j = i;
+            while (j < s.size() && s[j] != '\n') j ++;
+            // 将当前的单词扣出来
+            string t = s.substr(i, j - i);
+            // 将当前【单词的长度】压入栈中
+            stk.push(t);
+            // 更新sum的值
+            sum += t.size();
+            if (t.find('.') != -1) // 还需要加'/'，n个单词需要n - 1个/
+                ans = max(ans, sum + (int)stk.size() - 1);
+            i = j;
+        }
+        return ans;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`模拟`
+
+**缝合怪**
+
+
+
+## 宽度优先搜索
+
+### 概述
+
+>   1.   宽搜解决的一般是最短、最少等类似问题
+>   2.   宽搜相比较于深搜，不会存在爆栈等问题
+
+### `Flood Fill`
+
+#### [AcWing 1097. 池塘计数](https://www.acwing.com/problem/content/1099/)
+
+**题目描述**
+
+>   农夫约翰有一片 `N ∗ M` 的矩形土地。
+>
+>   最近，由于降雨的原因，部分土地被水淹没了。
+>
+>   现在用一个字符矩阵来表示他的土地。
+>
+>   每个单元格内，如果包含雨水，则用”`W`”表示，如果不含雨水，则用”`.`”表示。
+>
+>   现在，约翰想知道他的土地中形成了多少片池塘。
+>
+>   每组相连的积水单元格集合可以看作是一片池塘。
+>
+>   每个单元格视为与其上、下、左、右、左上、右上、左下、右下八个邻近单元格相连。
+>
+>   请你输出共有多少片池塘，即矩阵中共有多少片相连的”`W`”块。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `M`。
+>
+>   接下来 `N` 行，每行包含 `M` 个字符，字符为”`W`”或”`.`”，用以表示矩形土地的积水状况，字符之间没有空格。
+
+**输出格式**
+
+>   输出一个整数，表示池塘数目。
+
+**数据范围**
+
+>   +   `1≤N,M≤1000`
+
+**输入样例**
+
+```c++
+10 12
+W........WW.
+.WWW.....WWW
+....WW...WW.
+.........WW.
+.........W..
+..W......W..
+.W.W.....WW.
+W.W.W.....W.
+.W.W......W.
+..W.......W.
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+![3180942](https://gitee.com/peter95535/image-bed/raw/master/img/3180942.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 1010, M = N * N;
+int n, m;
+// 存储每一个点
+PII q[M];
+// 存储x的八个方向
+int dx[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+// 存储y的八个方向
+int dy[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+char g[N][N];
+// st数组保证每个点都只被遍历一次
+int st[N][N];
+void bfs(int sx, int sy) {
+    int hh = 0, tt = -1;
+    q[++ tt] = {sx, sy};
+    // 一开始当前水洼已经被访问过
+    st[sx][sy] = true;
+    while (hh <= tt) {
+        PII t = q[hh ++ ];
+        for (int i = 0; i < 8; i ++ ) {
+            int tx = t.x + dx[i];
+            int ty = t.y + dy[i];
+            // 如果没有越界，并且当前田地是水洼，并且当前田地没有被访问过
+            if (tx < 0 || tx >= n || ty < 0 || ty >= m || g[tx][ty] == '.' || st[tx][ty])
+                continue;
+            // 当前田地已经被访问过
+            // 保证每个点都只被遍历一次
+            st[tx][ty] = true;
+            // 入队
+            q[++ tt] = {tx, ty};
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < n; i ++ ) scanf("%s", g[i]);
+    int cnt = 0;
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < m; j ++ )
+            // 如果当前位置为'W'并且当前位置没有被访问过
+            if (g[i][j] == 'W' && !st[i][j]) {
+                bfs(i, j);
+                // 池塘数量++
+                cnt ++;
+            }
+    cout << cnt << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`宽搜`、`Flood Fill`
+
+**缝合怪**
+
+#### [AcWing 1098. 城堡问题](https://www.acwing.com/problem/content/1100/)
+
+**题目描述**
+
+>   ```c++
+>      1   2   3   4   5   6   7  
+>      #############################
+>    1 #   |   #   |   #   |   |   #
+>      #####---#####---#---#####---#
+>    2 #   #   |   #   #   #   #   #
+>      #---#####---#####---#####---#
+>    3 #   |   |   #   #   #   #   #
+>      #---#########---#####---#---#
+>    4 #   #   |   |   |   |   #   #
+>      #############################
+>              (图 1)
+>   
+>      #  = Wall   
+>      |  = No wall
+>      -  = No wall
+>   
+>      方向：上北下南左西右东。
+>   ```
+>
+>   图 `1` 是一个城堡的地形图。
+>
+>   请你编写一个程序，计算城堡一共有多少房间，最大的房间有多大。
+>
+>   城堡被分割成 `m ∗ n`个方格区域，每个方格区域可以有 `0 ~ 4` 面墙。
+>
+>   注意：墙体厚度忽略不计。
+
+**输入格式**
+
+>   第一行包含两个整数 `m` 和 `n`，分别表示城堡南北方向的长度和东西方向的长度。
+>
+>   接下来 `m` 行，每行包含 `n` 个整数，每个整数都表示平面图对应位置的方块的墙的特征。
+>
+>   每个方块中墙的特征由数字 `P` 来描述，我们用 `1` 表示西墙，`2` 表示北墙，`4` 表示东墙，`8` 表示南墙，`P` 为该方块包含墙的数字之和。
+>
+>   例如，如果一个方块的 `P` 为 `3`，则 `3 = 1 + 2`，该方块包含西墙和北墙。
+>
+>   城堡的内墙被计算两次，方块`(1,1)`的南墙同时也是方块`(2,1)`的北墙。
+>
+>   输入的数据保证城堡至少有两个房间。
+
+**输出格式**
+
+>   共两行，第一行输出房间总数，第二行输出最大房间的面积（方块数）。
+
+**数据范围**
+
+>   +   $1≤m,n≤50,$
+>   +   $0≤P≤15$
+
+**输入样例**
+
+```c++
+4 7 
+11 6 11 6 3 10 6 
+7 9 6 13 5 15 5 
+1 10 12 7 13 7 5 
+13 11 10 8 10 12 13 
+```
+
+**输出样例**
+
+```c++
+5
+9
+```
+
+**手写稿**
+
+![3181225](https://gitee.com/peter95535/image-bed/raw/master/img/3181225.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 55, M = N * N;
+int n, m;
+// 注意：此处设置的方向要和题目中的一致【手写稿有说明】
+int dx[4] = {0, -1, 0, 1};
+int dy[4] = {-1, 0, 1, 0};
+PII q[M];
+int g[N][N], st[N][N];
+int bfs(int sx, int sy) {
+    // 方块的数量
+    int area = 0;
+    int hh = 0, tt = -1;
+    q[++ tt] = {sx, sy};
+    st[sx][sy] = true;
+    while (hh <= tt) {
+        PII t = q[hh ++];
+        area ++;
+        // 枚举四个方向
+        for (int i = 0; i < 4; i ++ ) {
+            int tx = t.x + dx[i];
+            int ty = t.y + dy[i];
+            // 判断是否越界以及是否已经被访问过
+            if (tx < 0 || tx >= n || ty < 0 || ty >= m || st[tx][ty]) continue;
+            // 判断是否有墙
+            if (g[t.x][t.y] >> i & 1) continue;
+            q[++ tt] = {tx, ty};
+            // 放置某个点被重复加入
+            // 保证每个点只被遍历一次
+            st[tx][ty] = true;
+        }
+    }
+    return area;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < m; j ++ )
+            scanf("%d", &g[i][j]);
+    int cnt = 0, area = 0;
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < m; j ++ )
+            if (!st[i][j]) {
+                area = max(area, bfs(i, j));
+                cnt ++;
+            }
+    cout << cnt << endl << area << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(nm)$
+
+**标签**
+
+`Flood Fill`
+
+**缝合怪**
+
+#### [AcWing 1106. 山峰和山谷](https://www.acwing.com/problem/content/1108/)
+
+**题目描述**
+
+>   `FGD`小朋友特别喜欢爬山，在爬山的时候他就在研究山峰和山谷。
+>
+>   为了能够对旅程有一个安排，他想知道山峰和山谷的数量。
+>
+>   给定一个地图，为 `FGD` 想要旅行的区域，地图被分为 `n × n` 的网格，每个格子 `(i,j)` 的高度 `w(i,j)` 是给定的。
+>
+>   若两个格子有公共顶点，那么它们就是相邻的格子，如与 `(i,j)` 相邻的格子有`(i−1,j−1),(i−1,j),(i−1,j+1),(i,j−1),(i,j+1),(i+1,j−1),(i+1,j),(i+1,j+1)`。
+>
+>   我们定义一个格子的集合 `S` 为山峰（山谷）当且仅当：
+>
+>   1.  `S` 的所有格子都有相同的高度。
+>   2.  `S` 的所有格子都连通。
+>   3.  对于 `s` 属于 `S`，与 `s` 相邻的 `s′` 不属于 `S`，都有 $w_s>w_{s′}$（山峰），或者 $w_s<w_{s′}$（山谷）。
+>   4.  如果周围不存在相邻区域，则同时将其视为山峰和山谷。
+>
+>   你的任务是，对于给定的地图，求出山峰和山谷的数量，如果所有格子都有相同的高度，那么整个地图即是山峰，又是山谷。
+
+**输入格式**
+
+>   第一行包含一个正整数 `n`，表示地图的大小。
+>
+>   接下来一个 `n × n` 的矩阵，表示地图上每个格子的高度 `w`。
+
+**输出格式**
+
+>   共一行，包含两个整数，表示山峰和山谷的数量。
+
+**数据范围**
+
+>   +   $1≤n≤1000,$
+>   +   $0≤w≤10^9$
+
+**输入样例1**
+
+```c++
+5
+8 8 8 7 7
+7 7 8 8 7
+7 7 7 7 7
+7 8 8 7 8
+7 8 8 8 8
+```
+
+**输出样例1**
+
+```c++
+2 1
+```
+
+**输入样例2**
+
+```c++
+5
+5 7 8 3 1
+5 5 7 6 6
+6 6 6 2 8
+5 7 2 5 8
+7 1 0 1 7
+```
+
+**输出样例2**
+
+```c++
+3 3
+```
+
+**样例解释**
+
+>   样例1：
+>
+>   ![1——1.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_0250799aef-1-20220318165849164.png)
+>
+>   样例2：
+>
+>   ![2.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_08db5e60ef-2.png)
+
+**手写稿**
+
+![3182025](https://gitee.com/peter95535/image-bed/raw/master/img/3182025.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 1010, M = N * N;
+int n;
+int dx[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+int dy[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+PII q[M];
+int g[N][N], st[N][N];
+void bfs(int sx, int sy, bool &is_peak, bool &is_valley) {
+    int hh = 0, tt = -1;
+    q[++ tt] = {sx, sy};
+    st[sx][sy] = true;
+    while (hh <= tt) {
+        PII t = q[hh ++ ];
+        // 遍历8个方向
+        for (int i = 0; i < 8; i ++ ) {
+            int tx = t.x + dx[i];
+            int ty = t.y + dy[i];
+            // 注意：这里不能添加此条件st[tx][ty]
+            // 原因：需要判断当前点与周围点的高度，用以判断是否是山峰还是山谷
+            if (tx < 0 || tx >= n || ty < 0 || ty >= n) continue;
+            // 如果当前点和周围点高度不相等
+            if (g[t.x][t.y] != g[tx][ty]) {
+                // 如果当前点比周围点高，则当前点一定不是山谷
+                if (g[t.x][t.y] > g[tx][ty]) is_valley = false;
+                // 如果当前点比周围点低，则当前点一定不是山峰
+                else is_peak = false;
+            }
+            // 在此处进行判断st[tx][ty]这个条件
+            // 如果当前点没有被访问过，则加入当前点，并标记为已访问过
+            else if (!st[tx][ty]) {
+                q[++ tt] = {tx, ty};
+                st[tx][ty] = true;
+            }
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < n; j ++ )
+            scanf("%d", &g[i][j]);
+    // 定义山峰和山谷的数量
+    int peak = 0, valley = 0;
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < n; j ++ )
+            if (!st[i][j]) {
+                // 初始假设即是山峰又是山谷
+                bool is_peak = true, is_valley = true;
+                bfs(i, j, is_peak, is_valley);
+                // 如果是山峰
+                if (is_peak) peak ++;
+                // 如果是山谷
+                if (is_valley) valley ++;
+            }
+    cout << peak << " " << valley << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`Flood Fill`
+
+**缝合怪**
+
+### 最短路模型
+
+#### [AcWing 1076. 迷宫问题](https://www.acwing.com/problem/content/1078/)
+
+**题目描述**
+
+>   给定一个 `n × n` 的二维数组，如下所示：
+>
+>   ```c++
+>   int maze[5][5] = {
+>   
+>   0, 1, 0, 0, 0,
+>   
+>   0, 1, 0, 1, 0,
+>   
+>   0, 0, 0, 0, 0,
+>   
+>   0, 1, 1, 1, 0,
+>   
+>   0, 0, 0, 1, 0,
+>   
+>   };
+>   ```
+>
+>   它表示一个迷宫，其中的`1`表示墙壁，`0`表示可以走的路，只能横着走或竖着走，不能斜着走，要求编程序找出从左上角到右下角的最短路线。
+>
+>   数据保证至少存在一条从左上角走到右下角的路径。
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含 `n` 个整数 `0` 或 `1`，表示迷宫。
+
+**输出格式**
+
+>   输出从左上角到右下角的最短路线，如果答案不唯一，输出任意一条路径均可。
+>
+>   按顺序，每行输出一个路径中经过的单元格的坐标，左上角坐标为 `(0,0)`，右下角坐标为 `(n−1,n−1)`。
+
+**数据范围**
+
+>   +   $0≤n≤1000$
+
+**输入样例**
+
+```c++
+5
+0 1 0 0 0
+0 1 0 1 0
+0 0 0 0 0
+0 1 1 1 0
+0 0 0 1 0
+```
+
+**输出样例**
+
+```c++
+0 0
+1 0
+2 0
+2 1
+2 2
+2 3
+2 4
+3 4
+4 4
+```
+
+**手写稿**
+
+![3211047](https://gitee.com/peter95535/image-bed/raw/master/img/3211047.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 1010, M = N * N;
+int n;
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, -1, 1};
+PII q[M];
+// st判重数组，保证宽搜的时候每个数据只进一次队列
+int g[N][N], st[N][N];
+// 记录某个点从哪个点转移过来的，使用pair数组记录
+PII pre[N][N];
+// 宽搜模板
+void bfs(int sx, int sy) {
+    int hh = 0, tt = -1;
+    q[++ tt] = {sx, sy};
+    st[sx][sy] = true;
+    pre[sx][sy] = {0, 0};
+    while (hh <= tt) {
+        PII t = q[hh ++ ];
+        for (int i = 0; i < 4; i ++ ) {
+            int tx = t.x + dx[i];
+            int ty = t.y + dy[i];
+            if (tx < 0 || tx >= n || ty < 0 || ty >= n || g[tx][ty] || st[tx][ty])
+                continue;
+            q[++ tt] = {tx, ty};
+            st[tx][ty] = true;
+            pre[tx][ty] = {t.x, t.y};
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < n; j ++ )
+            scanf("%d", &g[i][j]);
+    bfs(n - 1, n - 1);
+    // 初始值
+    PII end(0, 0);
+    while (true) {
+        cout << end.x << " " << end.y << endl;
+        // 如果已经到达终点，则结束
+        if (end.x == n - 1 && end.y == n - 1) break;
+        // 否则，记录前驱值
+        end = pre[end.x][end.y];
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`宽度优先搜索`
+
+**缝合怪**
+
+#### [AcWing 188. 武士风度的牛](https://www.acwing.com/problem/content/190/)
+
+**题目描述**
+
+>   农民 `John` 有很多牛，他想交易其中一头被 `Don` 称为 `The Knight` 的牛。
+>
+>   这头牛有一个独一无二的超能力，在农场里像 `Knight` 一样地跳（就是我们熟悉的象棋中马的走法）。
+>
+>   虽然这头神奇的牛不能跳到树上和石头上，但是它可以在牧场上随意跳，我们把牧场用一个 `x，y` 的坐标图来表示。
+>
+>   这头神奇的牛像其它牛一样喜欢吃草，给你一张地图，上面标注了 `The Knight` 的开始位置，树、灌木、石头以及其它障碍的位置，除此之外还有一捆草。
+>
+>   现在你的任务是，确定 `The Knight` 要想吃到草，至少需要跳多少次。
+>
+>   `The Knight` 的位置用 `K` 来标记，障碍的位置用 `*` 来标记，草的位置用 `H` 来标记。
+>
+>   这里有一个地图的例子：
+>
+>   ```c++
+>                11 | . . . . . . . . . .
+>                10 | . . . . * . . . . . 
+>                 9 | . . . . . . . . . . 
+>                 8 | . . . * . * . . . . 
+>                 7 | . . . . . . . * . . 
+>                 6 | . . * . . * . . . H 
+>                 5 | * . . . . . . . . . 
+>                 4 | . . . * . . . * . . 
+>                 3 | . K . . . . . . . . 
+>                 2 | . . . * . . . . . * 
+>                 1 | . . * . . . . * . . 
+>                 0 ----------------------
+>                                       1 
+>                   0 1 2 3 4 5 6 7 8 9 0 
+>   ```
+>
+>   `The Knight` 可以按照下图中的 `A,B,C,D…` 这条路径用 `5` 次跳到草的地方（有可能其它路线的长度也是 `5`）：
+>
+>   ```c++
+>                11 | . . . . . . . . . .
+>                10 | . . . . * . . . . .
+>                 9 | . . . . . . . . . .
+>                 8 | . . . * . * . . . .
+>                 7 | . . . . . . . * . .
+>                 6 | . . * . . * . . . F<
+>                 5 | * . B . . . . . . .
+>                 4 | . . . * C . . * E .
+>                 3 | .>A . . . . D . . .
+>                 2 | . . . * . . . . . *
+>                 1 | . . * . . . . * . .
+>                 0 ----------------------
+>                                       1
+>                   0 1 2 3 4 5 6 7 8 9 0
+>   ```
+>
+>   **注意：** 数据保证一定有解。
+
+**输入格式**
+
+>   第 `1` 行： 两个数，表示农场的列数 `C` 和行数 `R`。
+>
+>   第 `2..R+1` 行: 每行一个由 `C` 个字符组成的字符串，共同描绘出牧场地图。
+
+**输出格式**
+
+>   一个整数，表示跳跃的最小次数。
+
+**数据范围**
+
+>   +   $1≤R,C≤150$
+
+**输入样例**
+
+```c++
+10 11
+..........
+....*.....
+..........
+...*.*....
+.......*..
+..*..*...H
+*.........
+...*...*..
+.K........
+...*.....*
+..*....*..
+```
+
+**输出样例**
+
+```c++
+5
+```
+
+**手写稿**
+
+![3211127](https://gitee.com/peter95535/image-bed/raw/master/img/3211127.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#define x first
+#define y second
+using namespace std;
+const int N = 155, M = N * N;
+typedef pair<int, int> PII;
+int n, m;
+int dx[8] = {-2, -1, 1, 2, 2, 1, -1, -2};
+int dy[8] = {1, 2, 2, 1, -1, -2, -2, -1};
+PII q[M];
+int st[N][N], dist[N][N];
+char g[N][N];
+// bfs模板
+int bfs() {
+    int sx = -1, sy = -1;
+    // 找起始点
+    for (int i = 0; i < n; i ++ ) {
+        for (int j = 0; j < m; j ++ )
+            if (g[i][j] == 'K') {
+                sx = i, sy = j;
+                break;
+            }
+        if (sx != -1 && sy != -1) break;
+    }
+    int hh = 0, tt = -1;
+    q[++ tt] = {sx, sy};
+    st[sx][sy] = true;
+    while (hh <= tt) {
+        auto t = q[hh ++ ];
+        for (int i = 0; i < 8; i ++ ) {
+            int tx = t.x + dx[i];
+            int ty = t.y + dy[i];
+            if (tx < 0 || tx >= n || ty < 0 || ty >= m || st[tx][ty] || g[tx][ty] == '*')
+                continue;
+            q[++ tt] = {tx, ty};
+            // 将当前点标记为已经被访问过
+            st[tx][ty] = true;
+            // 距离 ➕ 1 
+            dist[tx][ty] = dist[t.x][t.y] + 1;
+            // 如果到达终点，则直接返回
+            if (g[tx][ty] == 'H') return dist[tx][ty];
+        }
+    }
+    return -1;
+}
+int main() {
+    scanf("%d%d", &m, &n);
+    for (int i = 0; i < n; i ++ ) scanf("%s", g[i]);
+    cout << bfs() << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`宽度优先搜索`
+
+**缝合怪**
+
+#### [AcWing 1100. 抓住那头牛](https://www.acwing.com/problem/content/1102/)
+
+>   农夫知道一头牛的位置，想要抓住它。
+>
+>   农夫和牛都位于数轴上，农夫起始位于点 `N`，牛位于点 `K`。
+>
+>   农夫有两种移动方式：
+>
+>   1.  从 `X` 移动到 `X−1` 或 `X+1`，每次移动花费一分钟
+>   2.  从 `X` 移动到 `2∗X`，每次移动花费一分钟
+>
+>   假设牛没有意识到农夫的行动，站在原地不动。
+>
+>   农夫最少要花多少时间才能抓住牛？
+
+**输入格式**
+
+>   共一行，包含两个整数`N`和`K`。
+
+**输出格式**
+
+>   输出一个整数，表示抓到牛所花费的最少时间。
+
+**数据范围**
+
+>   +   $0≤N,K≤10^5$
+
+**输入样例**
+
+```c++
+5 17
+```
+
+**输出样例**
+
+```c++
+4
+```
+
+**手写稿**
+
+>   1.   裸的广搜
+>   2.   遍历三种走路的方式即可
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1e5 + 10;
+int n, m;
+int q[N], st[N], dist[N];
+int bfs() {
+    int hh = 0, tt = -1;
+    q[++ tt] = n;
+    st[n] = true;
+    while (hh <= tt) {
+        int t = q[hh ++ ];
+        if (t == m) return dist[t];
+        // 遍历三种方式
+        if (t - 1 >= 0 && !st[t - 1]) {
+            st[t - 1] = true;
+            dist[t - 1] = dist[t] + 1;
+            q[++ tt] = t - 1;
+        }
+        // 注意小于等于N
+        if (t + 1 <= N && !st[t + 1]) {
+            st[t + 1] = true;
+            dist[t + 1] = dist[t] + 1;
+            q[++ tt ] = t + 1;
+        }
+        // 注意小于等于N
+        if (t * 2 <= N && !st[t * 2]) {
+            st[t * 2] = true;
+            dist[t * 2] = dist[t] + 1;
+            q[++ tt ] = t * 2;
+        }
+    }
+    return -1;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    cout << bfs() << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`宽度优先搜索`
+
+**缝合怪**
+
+### 多源 `BFS` 模型
+
+#### [AcWing 173. 矩阵距离](https://www.acwing.com/problem/content/175/)
+
+>   给定一个 `N` 行 `M` 列的 `01` 矩阵 `A`，`A[i][j]` 与 `A[k][l]` 之间的曼哈顿距离定义为：
+>
+>   $dist(A[i][j],A[k][l])=|i−k|+|j−l|$
+>
+>   输出一个 `N` 行 `M` 列的整数矩阵 `B`，其中：
+>
+>   $B[i][j]=min_{1≤x≤N,1≤y≤M,A[x][y]=1}dist(A[i][j],A[x][y])$
+
+**输入格式**
+
+>   第一行两个整数 `N,M`。
+>
+>   接下来一个 `N` 行 `M` 列的 `01` 矩阵，数字之间没有空格。
+
+**输出格式**
+
+>   一个 `N` 行 `M` 列的矩阵 `B`，相邻两个整数之间用一个空格隔开。
+
+**数据范围**
+
+>   +   $1≤N,M≤1000$
+
+**输入样例**
+
+```c++
+3 4
+0001
+0011
+0110
+```
+
+**输出样例**
+
+```c++
+3 2 1 0
+2 1 0 0
+1 0 0 1
+```
+
+**手写稿**
+
+![3221422](https://gitee.com/peter95535/image-bed/raw/master/img/3221422.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 1010, M = N * N;
+int n, m;
+int dx[] = {1, -1, 0, 0};
+int dy[] = {0, 0, -1, 1};
+PII q[M];
+char g[N][N];
+int dist[N][N];
+bool st[N][N];
+void bfs() {
+    memset(dist, -1, sizeof dist);
+    int hh = 0, tt = -1;
+    // 找出所有源点，找出所有初始化的最短距离
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < m; j ++ )
+            if (g[i][j] == '1') {
+                // 最短距离为0
+                dist[i][j] = 0;
+                // 状态为true
+                st[i][j] = true;
+                // 将当前点入队
+                q[++ tt] = {i, j};
+            }
+    while (hh <= tt) {
+        auto t = q[hh ++];
+        // 枚举四个方向
+        for (int i = 0; i < 4; i ++ ) {
+            int tx = t.x + dx[i];
+            int ty = t.y + dy[i];
+            if (tx < 0 || tx >= n || ty < 0 || ty >= m || st[tx][ty]) continue;
+            st[tx][ty] = true;
+            // 距离 ➕ 1
+            dist[tx][ty] = dist[t.x][t.y] + 1;
+            q[++ tt] = {tx, ty};
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < n; i ++ ) scanf("%s", g[i]);
+    bfs();
+    for (int i = 0; i < n; i ++ ) {
+        for (int j = 0; j < m; j ++ ) 
+            printf("%d ", dist[i][j]);
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`多源BFS`
+
+**缝合怪**
+
+
+
+### 最小步数模型
+
+#### [AcWing 845. 八数码](https://www.acwing.com/problem/content/847/)
+
+**题目描述**
+
+>   在一个 `3 × 3` 的网格中，`1 ∼ 8` 这 `8` 个数字和一个 `x` 恰好不重不漏地分布在这 `3 × 3` 的网格中。
+>
+>   例如：
+>
+>   ```c++
+>   1 2 3
+>   x 4 6
+>   7 5 8
+>   ```
+>
+>   在游戏过程中，可以把 `x` 与其上、下、左、右四个方向之一的数字交换（如果存在）。
+>
+>   我们的目的是通过交换，使得网格变为如下排列（称为正确排列）：
+>
+>   ```c++
+>   1 2 3
+>   4 5 6
+>   7 8 x
+>   ```
+>
+>   例如，示例中图形就可以通过让 `x` 先后与右、下、右三个方向的数字交换成功得到正确排列。
+>
+>   交换过程如下：
+>
+>   ```c++
+>   1 2 3   1 2 3   1 2 3   1 2 3
+>   x 4 6   4 x 6   4 5 6   4 5 6
+>   7 5 8   7 5 8   7 x 8   7 8 x
+>   ```
+>
+>   现在，给你一个初始网格，请你求出得到正确排列至少需要进行多少次交换。
+
+**输入格式**
+
+>   输入占一行，将 `3 × 3` 的初始网格描绘出来。
+>
+>   例如，如果初始网格如下所示：
+>
+>   ```c++
+>   1 2 3
+>   x 4 6
+>   7 5 8
+>   ```
+>
+>   则输入为：`1 2 3 x 4 6 7 5 8`
+
+**输出格式**
+
+>   输出占一行，包含一个整数，表示最少交换次数。
+>
+>   如果不存在解决方案，则输出 `−1`。
+
+**输入样例**
+
+```c++
+2  3  4  1  5  x  7  6  8
+```
+
+**输出样例**
+
+```c++
+19
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+#### [AcWing 1107. 魔板](https://www.acwing.com/problem/content/1109/)
+
+**题目描述**
+
+>   `Rubik` 先生在发明了风靡全球的魔方之后，又发明了它的二维版本——魔板。
+>
+>   这是一张有 `8` 个大小相同的格子的魔板：
+>
+>   ```c++
+>   1 2 3 4
+>   8 7 6 5
+>   ```
+>
+>   我们知道魔板的每一个方格都有一种颜色。
+>
+>   这 `8` 种颜色用前 `8` 个正整数来表示。
+>
+>   可以用颜色的序列来表示一种魔板状态，规定从魔板的左上角开始，沿顺时针方向依次取出整数，构成一个颜色序列。
+>
+>   对于上图的魔板状态，我们用序列 `(1,2,3,4,5,6,7,8)` 来表示，这是基本状态。
+>
+>   这里提供三种基本操作，分别用大写字母 `A`，`B`，`C` 来表示（可以通过这些操作改变魔板的状态）：
+>
+>   `A`：交换上下两行；
+>   `B`：将最右边的一列插入到最左边；
+>   `C`：魔板中央对的4个数作顺时针旋转。
+>
+>   下面是对基本状态进行操作的示范：
+>
+>   `A`：
+>
+>   ```c++
+>   8 7 6 5
+>   1 2 3 4
+>   ```
+>
+>   `B`：
+>
+>   ```c++
+>   4 1 2 3
+>   5 8 7 6
+>   ```
+>
+>   `C`：
+>
+>   ```c++
+>   1 7 2 4
+>   8 6 3 5
+>   ```
+>
+>   对于每种可能的状态，这三种基本操作都可以使用。
+>
+>   你要编程计算用最少的基本操作完成基本状态到特殊状态的转换，输出基本操作序列。
+>
+>   **注意**：数据保证一定有解。
+
+**输入格式**
+
+>   输入仅一行，包括 `8` 个整数，用空格分开，表示目标状态。
+
+**输出格式**
+
+>   输出文件的第一行包括一个整数，表示最短操作序列的长度。
+>
+>   如果操作序列的长度大于`0`，则在第二行输出字典序最小的操作序列。
+
+**数据范围**
+
+>   输入数据中的所有数字均为 `1` 到 `8` 之间的整数。
+
+**输入样例**
+
+```c++
+2 6 8 4 5 7 3 1
+```
+
+**输出样例**
+
+```c++
+7
+BCABCCB
+```
+
+**手写稿**
+
+![3221913](https://gitee.com/peter95535/image-bed/raw/master/img/3221913.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <unordered_map>
+#include <algorithm>
+#include <queue>
+using namespace std;
+char g[2][4];
+queue<string> q;
+unordered_map<string, int> dist;
+unordered_map<string, bool> st;
+unordered_map<string, pair<string, char>> pre;
+void set(string state) { // 将字符串变成字符矩阵
+    for (int i = 0; i < 4; i ++ ) g[0][i] = state[i];
+    for (int i = 0; i < 4; i ++ ) g[1][i] = state[7 - i];
+    return;
+}
+string get() { // 将字符矩阵变成字符串
+    string res = "";
+    for (int i = 0; i < 4; i ++ ) res += g[0][i];
+    for (int i = 3; i >= 0; i -- ) res += g[1][i];
+    return res;
+}
+string move0(string state) {
+    set(state);
+    for (int i = 0; i < 4; i ++ ) swap(g[0][i], g[1][i]);
+    return get();
+}
+string move1(string state) {
+    set(state);
+    char c0 = g[0][3], c1 = g[1][3];
+    for (int j = 2; j >= 0; j -- )
+        for (int i = 0; i < 2; i ++ )
+            g[i][j + 1] = g[i][j];
+    g[0][0] = c0;
+    g[1][0] = c1;
+    return get();
+}
+string move2(string state) {
+    set(state);
+    char t = g[0][1];
+    g[0][1] = g[1][1];
+    g[1][1] = g[1][2];
+    g[1][2] = g[0][2];
+    g[0][2] = t;
+    return get();
+}
+void bfs(string start, string end) {
+    if (start == end) return;
+    q.push(start);
+    st[start] = true;
+    while (q.size()) {
+        auto t = q.front(); q.pop();
+        string m0 = move0(t);
+        string m1 = move1(t);
+        string m2 = move2(t);
+        // 三种操作
+        for (int i = 0; i < 3; i ++ ) {
+            if (i == 0) {
+                if (!st.count(m0)) {
+                    st[m0] = true;
+                    dist[m0] = dist[t] + 1;
+                    q.push(m0);
+                    // 记录从哪个状态转移过来的，并且记录下是哪个操作
+                    pre[m0] = {t, 'A'};
+                }
+                if (m0 == end) return;
+            }
+            else if (i == 1) {
+                if (!st.count(m1)) {
+                    st[m1] = true;
+                    dist[m1] = dist[t] + 1;
+                    q.push(m1);
+                    // 记录从哪个状态转移过来的，并且记录下是哪个操作
+                    pre[m1] = {t, 'B'};
+                }
+                if (m1 == end) return;
+            }
+            else {
+                if (!st.count(m2)) {
+                    st[m2] = true;
+                    dist[m2] = dist[t] + 1;
+                    q.push(m2);
+                    // 记录从哪个状态转移过来的，并且记录下是哪个操作
+                    pre[m2] = {t, 'C'};
+                }
+                if (m2 == end) return;
+            }
+        }
+    }
+    return;
+}
+int main() {
+    string start, end;
+    for (int i = 0, x; i < 8; i ++ ) {
+        scanf("%d", &x);
+        end += char(x + '0');
+    }
+    for (int i = 1; i <= 8; i ++ ) start += char(i + '0');
+    bfs(start, end);
+    // 记录下步数
+    // 因为while循环之后，end == start
+    int step = dist[end];
+    cout << step << endl;
+    string res;
+    while (end != start) {
+        // while(true) 中的 if判断应该位于这里
+        // 否则，res就会多执行一次+=，就会出错，原因不明
+        res += pre[end].second;
+        end = pre[end].first;
+    }
+    // 反转
+    reverse(res.begin(), res.end());
+    if (step) cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`BFS`
+
+**缝合怪**
+
+
+
+### 双端队列广搜
+
+#### [AcWing 175. 电路维修](https://www.acwing.com/problem/content/177/)
+
+**题目描述**
+
+>   达达是来自异世界的魔女，她在漫无目的地四处漂流的时候，遇到了善良的少女翰翰，从而被收留在地球上。
+>
+>   翰翰的家里有一辆飞行车。
+>
+>   有一天飞行车的电路板突然出现了故障，导致无法启动。
+>
+>   电路板的整体结构是一个 `R` 行 `C` 列的网格（`R,C≤500`），如下图所示。
+>
+>   ![电路.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_be6ff7a219-%E7%94%B5%E8%B7%AF.png)
+>
+>   每个格点都是电线的接点，每个格子都包含一个电子元件。
+>
+>   电子元件的主要部分是一个可旋转的、连接一条对角线上的两个接点的短电缆。
+>
+>   在旋转之后，它就可以连接另一条对角线的两个接点。
+>
+>   电路板左上角的接点接入直流电源，右下角的接点接入飞行车的发动装置。
+>
+>   达达发现因为某些元件的方向不小心发生了改变，电路板可能处于断路的状态。
+>
+>   她准备通过计算，旋转最少数量的元件，使电源与发动装置通过若干条短缆相连。
+>
+>   不过，电路的规模实在是太大了，达达并不擅长编程，希望你能够帮她解决这个问题。
+>
+>   **注意**：只能走斜向的线段，水平和竖直线段不能走。
+
+**输入格式**
+
+>   输入文件包含多组测试数据。
+>
+>   第一行包含一个整数 `T`，表示测试数据的数目。
+>
+>   对于每组测试数据，第一行包含正整数 `R` 和 `C`，表示电路板的行数和列数。
+>
+>   之后 `R` 行，每行 `C` 个字符，字符是`"/"`和`"\"`中的一个，表示标准件的方向。
+
+**输出格式**
+
+>   对于每组测试数据，在单独的一行输出一个正整数，表示所需的最小旋转次数。
+>
+>   如果无论怎样都不能使得电源和发动机之间连通，输出 `NO SOLUTION`。
+
+**数据范围**
+
+>   +   $1≤R,C≤500,$
+>   +   $1≤T≤5$
+
+**输入样例**
+
+```c++
+1
+3 5
+\\/\\
+\\///
+/\\\\
+```
+
+**输出样例**
+
+```c++
+1
+```
+
+**样例解释**
+
+>   样例的输入对应于题目描述中的情况。
+>
+>   只需要按照下面的方式旋转标准件，就可以使得电源和发动机之间连通。
+>
+>   ![电路2.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_a0e8e80a19-%E7%94%B5%E8%B7%AF2.png)
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+## 模拟退火
+
+### 原理概述
+
+>   1.   手写稿
+>
+>        ![3191112](https://gitee.com/peter95535/image-bed/raw/master/img/3191112.jpg)
+>
+>   2.   动画演示
+>
+>        ![img3191633](https://gitee.com/peter95535/image-bed/raw/master/img/simulated-annealing-20220319163337913.gif)
+
+
+
+### [AcWing 3167. 星星还是树](https://www.acwing.com/problem/content/3170/)
+
+**题目描述**
+
+>   在二维平面上有 `n` 个点，第 `i` 个点的坐标为 $(x_i,y_i)$。
+>
+>   请你找出一个点，使得该点到这 `n` 个点的距离之和最小。
+>
+>   该点可以选择在平面中的任意位置，甚至与这 `n` 个点的位置重合。
+
+**输入格式**
+
+>   第一行包含一个整数 `n`。
+>
+>   接下来 `n` 行，每行包含两个整数 $x_i,y_i$，表示其中一个点的位置坐标。
+
+**输出格式**
+
+>   输出最小距离和，答案四舍五入取整。
+
+**数据范围**
+
+>   +   $1≤n≤100,$
+>   +   $0≤x_i,y_i≤10000$
+
+**输入样例**
+
+```c++
+4
+0 0
+0 10000
+10000 10000
+10000 0
+```
+
+**输出样例**
+
+```c++
+28284
+```
+
+**手写稿**
+
+>   1.   原理概述
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cmath>
+#define x first
+#define y second
+using namespace std;
+typedef pair<double, double> PDD;
+const int N = 110, INF = 0x3f3f3f3f;
+int n;
+double ans = INF;
+PDD q[N];
+// 等概率生成区间[l, r]内的一个随机点
+double rand(int l, int r) {
+    return (double)rand() / RAND_MAX * (r - l) + l;
+}
+double get_dist(PDD a, PDD b) {
+    double dx = a.x - b.x;
+    double dy = a.y - b.y;
+    return sqrt(dx * dx + dy * dy);
+}
+double calc(PDD p) {
+    double res = 0;
+    for (int i = 0; i < n; i ++ )
+        res += get_dist(p, q[i]);
+    // 更新答案
+    ans = min(ans, res);
+    return res;
+}
+void simulate_anneal() {
+    // 随机生成当前点
+    PDD cur(rand(0, 10000), rand(0, 10000));
+    // 遍历温度[步长]
+    for (double t = 1e4; t > 1e-4; t *= 0.99) {
+        // 随机生成当前点的领域内的点
+        PDD np(rand(cur.x - t, cur.x + t), rand(cur.y - t, cur.y + t));
+        double dt = calc(np) - calc(cur);
+        // 如果dt < 0,则-dt / t > 0, e^{-dt / t} > 1，则一定会通过此条件
+        // 如果dt > 0,则-dt / t < 0, 0 < e^{-dt / t} < 1,则有一定概率可以过去
+        // 差的越大越不容易过去
+        if (exp(-dt / t) > rand(0, 1)) cur = np;
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ ) 
+        scanf("%lf%lf", &q[i].x, &q[i].y);
+    // 迭代一百次
+    for (int i = 0; i < 100; i ++ ) 
+        simulate_anneal();
+    printf("%.0lf\n", ans);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(log_t)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`启发式算法`、`模拟退火`
+
+**缝合怪**
+
+### [AcWing 2424. 保龄球](https://www.acwing.com/problem/content/2426/)
+
+**题目描述**
+
+>   `JYY` 很喜欢打保龄球，虽然技术不高，但是还是总想着的高分。
+>
+>   这里 `JYY` 将向你介绍他所参加的特殊保龄球比赛的规则，然后请你帮他得到尽量多的分数。
+>
+>   一场保龄球比赛一共有 `N` 个轮次，每一轮都会有 `10` 个木瓶放置在木板道的另一端。
+>
+>   每一轮中，选手都有两次投球的机会来尝试击倒全部的 `10` 个木瓶。
+>
+>   对于每一次投球机会，选手投球的得分等于这一次投球所击倒的木瓶数量。
+>
+>   选手每一轮的得分是他两次机会击倒全部木瓶的数量。
+>
+>   对于每一个轮次，有如下三种情况：
+>
+>   1.  “全中”：如果选手第一次尝试就击倒了全部 `10` 个木瓶，那么这一轮就称为“全中”。在一个“全中”轮中，由于所有木瓶在第一次尝试中都已经被击倒，所以选手不需要再进行第二次投球尝试。同时，在计算总分时，选手在下一轮的得分将会被乘 `2` 计入总分。
+>   2.  “补中”：如果选手使用两次尝试击倒了 `10` 个木瓶，那么这一轮就称为“补中”。同时，在计算总分时，选手在下一轮中的第一次尝试的得分将会被乘以 `2` 计入总分。
+>   3.  “失误”：如果选手未能通过两次尝试击倒全部的木瓶，那么这一轮就被称为“失误”。同时，在计算总分时，选手在下一轮的得分会被计入总分，没有分数被翻倍。
+>
+>   此外，如果第 `N` 轮是“全中”，那么选手可以进行一次附加轮：也就是，如果第 `N` 轮是“全中”，那么选手将一共进行 `N + 1` 轮比赛。
+>
+>   显然，在这种情况下，第 `N + 1` 轮的分数一定会被加倍。
+>
+>   附加轮的规则只执行一次。
+>
+>   也就是说，即使第 `N + 1` 轮选手又打出了“全中”，也不会进行第 `N + 2` 轮比赛。
+>
+>   因而，附加轮的成绩不会使得其他轮的分数翻番。
+>
+>   最后，选手的总得分就是附加轮规则执行过，并且分数按上述规则加倍后的每一轮分数之和。
+>
+>   `JYY` 刚刚进行了一场 `N` 个轮次的保龄球比赛，但是，`JYY` 非常不满意他的得分。
+>
+>   `JYY` 想出了一个办法：他可以把记分表上，他所打出的所有轮次的顺序重新排列，这样重新排列之后，由于翻倍规则的存在，`JYY` 就可以得到更高的分数了！
+>
+>   当然了，`JYY` 不希望做的太假，他希望保证重新排列之后，所需要进行的轮数和重排前所进行的轮数是一致的：
+>
+>   比如如果重排前 `JYY` 在第 `N` 轮打出了“全中”，那么重排之后，第 `N` 轮还得是“全中”以保证比赛一共进行 `N+1` 轮；同样的，如果 `JYY` 第 `N` 轮没有打出“全中”，那么重排过后第 `N` 轮也不能是全中。
+>
+>   请你帮助 `JYY` 计算一下，他可以得到的最高的分数。
+
+**输入格式**
+
+>   第一行包含一个整数 `N`，表示保龄球比赛所需要进行的轮数。
+>
+>   接下来包含 `N` 或者 `N+1` 行，第 `i` 行包含两个非负整数 $X_i$ 和 $Y_i$，表示 `JYY` 在这一轮两次投球尝试所得到的分数，$X_i$ 表示第一次尝试，$Y_i$ 表示第二次尝试。
+>
+>   我们用 `10 0` 表示一个“全中”轮。
+>
+>   输入数据保证合法，当且仅当 $X_n=10,Y_n=0$ 时，存在 `N+1` 行 $X_i$ 和 $Y_i$。
+
+**输出格式**
+
+>   输出一行一个整数，表示 `JYY` 最大可能得到的分数。
+
+**数据范围**
+
+>   +   $1≤N≤50$
+
+**输入样例**
+
+```c++
+2
+5 2
+10 0
+3 7
+```
+
+**输出样例**
+
+```c++
+44
+```
+
+**样例**
+
+>   按照输入顺序，`JYY` 将得到 $37$ 分。
+>
+>   最佳方案是将 `3` 个轮次排列成如下顺序：
+>
+>   ```c++
+>   3 7
+>   10 0
+>   5 2
+>   ```
+
+**手写稿**
+
+![3191646](https://gitee.com/peter95535/image-bed/raw/master/img/3191646.jpg)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cmath>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 55;
+int n, m, ans;
+PII q[N];
+int calc() {
+    int res = 0;
+    for (int i = 0; i < m; i ++ ) {
+        res += q[i].x + q[i].y;
+        if (q[i].x == 10) res += q[i + 1].x + q[i + 1].y;
+        else if (q[i].x + q[i].y == 10) res += q[i + 1].x;
+    }
+    ans = max(ans, res);
+    return res;
+}
+void simulate_anneal() {
+    // 温度
+    for (double t = 1e4; t > 1e-6; t *= 0.98) {
+        // 生成随机排列
+        int x = calc();
+        // 随机生成两个下标
+        int a = rand() % m, b = rand() % m;
+        // 交换
+        swap(q[a], q[b]);
+        // 如果交换之前和交换之后的轮数一样，则是合法的交换
+        if (n + (q[n - 1].x == 10) == m) {
+            // 计算交换之后的值
+            int y = calc();
+            // 计算差值
+            int dt = y - x;
+            // 如果新的值比当前值小，则以一定概率跳过去
+            // 如果以当前的概率跳不过去，则记得恢复现场
+            if (exp(dt / t) < (double)rand() / RAND_MAX) swap(q[a], q[b]);
+        }
+        // 如果当前交换不合法，记得恢复现场
+        else swap(q[a], q[b]);
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    m = n;
+    for (int i = 0; i < n; i ++ )
+        scanf("%d%d", &q[i].x, &q[i].y);
+    if (q[n - 1].x == 10) scanf("%d%d", &q[n].x, &q[n].y), m ++ ;
+    // 模拟退火
+    for (int i = 0; i < 100; i ++ ) simulate_anneal();
+    cout << ans << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_t)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`启发式算法`、`模拟退火`
+
+**缝合怪**
+
+### [AcWing 2680. 均分数据](https://www.acwing.com/problem/content/2682/)
+
+**题目描述**
+
+>   已知 `N` 个正整数：$A_1、A_2、……、A_n$。
+>
+>   今要将它们分成 `M` 组，使得各组数据的数值和最平均，即各组的均方差最小。
+>
+>   均方差公式如下：
+>   $$
+>   \sigma=\sqrt{\frac{\sum\nolimits_{i = 1}^{n}(x_i - \bar x)^2}{n}}, 
+>   \bar x = \frac{\sum\nolimits_{i = 1}^{n}x_i}{n}
+>   $$
+>   其中 `σ` 为均方差，$\bar x$ 为各组数据和的平均值，$x_i$ 为第 `i` 组数据的数值和。
+
+**输入格式**
+
+>   第一行是两个整数，表示 `N,M` 的值（`N` 是整数个数，`M` 是要分成的组数）。
+>
+>   第二行有 `N` 个整数，表示 $A_1、A_2、……、A_n$。（同一行的整数间用空格分开）
+
+**输出格式**
+
+>   包括一行，这一行只包含一个数，表示最小均方差的值(保留小数点后两位数字)。
+
+**数据范围**
+
+>   +   $M≤N≤20,$
+>   +   $2≤M≤6,$
+>   +   $1≤A_i≤50$
+
+**输入样例**
+
+```c++
+6 3
+1 2 3 4 5 6
+```
+
+**输出样例**
+
+```c++
+0.00
+```
+
+**手写稿**
+
+![3191855](https://gitee.com/peter95535/image-bed/raw/master/img/3191855.jpg)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <cmath>
+using namespace std;
+const int N = 25, INF = 0x3f3f3f3f;
+int n, m;
+// 注意是double类型
+double ans = INF;
+int q[N], sum[N];
+int calc() {
+    // 每次清空总和
+    memset(sum, 0, sizeof sum);
+    // 贪心的枚举当前数应该放置于哪个组中
+    for (int i = 0; i < n; i ++ ) {
+        // 默认组k = 0
+        int k = 0;
+        for (int j = 0; j < m; j ++ )
+            // 如果当前组的总和更小，则更新组的编号
+            if (sum[j] < sum[k]) k = j;
+        // 将当前树插入到组k中
+        sum[k] += q[i];
+    }
+    // 计算平均值
+    double avg = 0;
+    for (int i = 0; i < m; i ++ ) avg += (double)sum[i] / m;
+    double res = 0;
+    for (int i = 0; i < m; i ++ )
+        // 均方差的公式
+        res += (sum[i] - avg) * (sum[i] - avg);
+    // 别忘记除m，不是除n，好好理解下题意
+    res = sqrt(res / m);
+    // 更新答案
+    ans = min(ans, res);
+    return res;
+}
+void simulate_anneal() {
+    // 随机生成序列
+    random_shuffle(q, q + n);
+    for (double t = 1e6; t > 1e-6; t *= 0.99) {
+        // 随机生成两个下标
+        int a = rand() % n, b = rand() % n;
+        double x = calc();
+        swap(q[a], q[b]);
+        double y = calc();
+        double dt = y - x;
+        if (exp(-dt / t) < (double)rand() / RAND_MAX) swap(q[a], q[b]);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < n; i ++ ) scanf("%d", &q[i]);
+    // 迭代100次
+    for (int i = 0; i < 100; i ++ )
+        simulate_anneal();
+    printf("%.2lf\n", ans);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`贪心`、`模拟退火`
+
+**缝合怪**
+
+
+
+## 爬山法
+
+### [AcWing 207. 球形空间产生器](https://www.acwing.com/problem/content/209/)
+
+**题目描述**
+
+>   有一个球形空间产生器能够在 `n` 维空间中产生一个坚硬的球体。
+>
+>   现在，你被困在了这个 `n` 维球体中，你只知道球面上 `n+1` 个点的坐标，你需要以最快的速度确定这个 `n` 维球体的球心坐标，以便于摧毁这个球形空间产生器。
+>
+>   **注意：** 数据保证有唯一解。
+
+**输入格式**
+
+>   第一行是一个整数 `n`。
+>
+>   接下来的 `n + 1` 行，每行有 `n` 个实数，表示球面上一点的 `n` 维坐标。
+>
+>   每一个实数精确到小数点后 `6` 位，且其绝对值都不超过 `20000`。
+
+**输出格式**
+
+>   有且只有一行，依次给出球心的 `n` 维坐标（`n` 个实数），两个实数之间用一个空格隔开。
+>
+>   每个实数精确到小数点后 `3` 位。
+
+**数据范围**
+
+>   +   $1≤n≤10$
+
+**输入样例**
+
+```c++
+2
+0.0 0.0
+-1.0 1.0
+1.0 0.0
+```
+
+**输出样例**
+
+```c++
+0.500 1.500
+```
+
+**手写稿**
+
+![3202158](https://gitee.com/peter95535/image-bed/raw/master/img/3202158.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cmath>
+#include <cstring>
+using namespace std;
+const int N = 15;
+int n;
+// dist[N]表示圆心的n维坐标
+// delta[N]表示每个点在当前方向上的偏移量
+// d[N]表示每个点距离圆心的欧式距离
+double dist[N], delta[N], d[N];
+double a[N][N];
+void calc() {
+    double avg = 0;
+    memset(d, 0, sizeof d);
+    memset(delta, 0, sizeof delta);
+    // 枚举每个点
+    for (int i = 1; i <= n + 1; i ++ ) {
+        // 计算欧式距离
+        for (int j = 1; j <= n; j ++ )
+            d[i] += (a[i][j] - dist[j]) * (a[i][j] - dist[j]);
+        // 距离要开根号
+        d[i] = sqrt(d[i]);
+        // 计算平均值
+        avg += d[i] / (n + 1);
+    }
+    // 枚举每个点
+    for (int i = 1; i <= n + 1; i ++ )
+        // 枚举每个点的每一维向量
+        for (int j = 1; j <= n; j ++ )
+            // 将所有点在当前维的方向上的偏移量累加
+            delta[j] += (d[i] - avg) / avg * (a[i][j] - dist[j]);
+    return;
+}
+
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n + 1; i ++ )
+        for (int j = 1; j <= n; j ++ ) {
+            scanf("%lf", &a[i][j]);
+            // n个点的质心
+            // 质心距离原点比较近
+            dist[j] += a[i][j] / (n + 1);
+        }
+    for (double t = 1e4; t > 1e-6; t *= 0.99997) {
+        calc();
+        for (int i = 1; i <= n; i ++ )
+            // 乘温度的目的，是让偏移量趋于稳定
+            // delta带正负，所以，直接加即可
+            dist[i] += t * delta[i];
+    }
+    for (int i = 1; i <= n; i ++ )
+        printf("%.3lf ", dist[i]);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_t)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`爬山法`
+
+**缝合怪**
+
+
+
+****
 
 # 贪心
 
@@ -9065,6 +12344,88 @@ $O(n)$
 
 **缝合怪**
 
+## 普通贪心
+
+### [LeetCode 376. 摆动序列](https://leetcode-cn.com/problems/wiggle-subsequence/)
+
+**题目描述**
+
+>   如果连续数字之间的差严格地在正数和负数之间交替，则数字序列称为 摆动序列 。第一个差（如果存在的话）可能是正数或负数。仅有一个元素或者含两个不等元素的序列也视作摆动序列。
+>
+>   例如， `[1, 7, 4, 9, 2, 5]` 是一个 摆动序列 ，因为差值 `(6, -3, 5, -7, 3)` 是正负交替出现的。
+>
+>   相反，`[1, 4, 7, 2, 5]` 和 `[1, 7, 4, 5, 5]` 不是摆动序列，第一个序列是因为它的前两个差值都是正数，第二个序列是因为它的最后一个差值为零。
+>   子序列 可以通过从原始序列中删除一些（也可以不删除）元素来获得，剩下的元素保持其原始顺序。
+>
+>   给你一个整数数组 `nums` ，返回 `nums` 中作为 摆动序列 的 最长子序列的长度 。
+
+**示例 1**
+
+>   输入：`nums = [1,7,4,9,2,5]`
+>   输出：`6`
+>   解释：整个序列均为摆动序列，各元素之间的差值为 `(6, -3, 5, -7, 3)` 。
+
+**示例 2**
+
+>   输入：`nums = [1,17,5,10,13,15,10,5,16,8]`
+>   输出：`7`
+>   解释：这个序列包含几个长度为 `7` 摆动序列。
+>   其中一个是 `[1, 17, 10, 13, 10, 16, 8]` ，各元素之间的差值为 `(16, -7, 3, -3, 6, -8)` 。
+
+**示例 3**
+
+>   输入：`nums = [1,2,3,4,5,6,7,8,9]`
+>   输出：`2`
+
+**提示**
+
+>   +   $1 <= nums.length <= 1000$
+>   +   $0 <= nums[i] <= 1000$
+
+**进阶**
+
+>   你能否用 $O(n)$ 时间复杂度完成此题?
+
+**手写稿**
+
+![3162220](https://gitee.com/peter95535/image-bed/raw/master/img/3162220.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int wiggleMaxLength(vector<int>& nums) {
+        // 删除【连续重复】元素
+        nums.erase(unique(nums.begin(), nums.end()), nums.end());
+        if (nums.size() <= 2) return nums.size();
+        // 将首尾元素添加
+        int res = 2;
+        for (int i = 1; i + 1 < nums.size(); i ++ ) {
+            // 如果当前元素是局部最大值或者局部最小值
+            // 序列的长度++
+            if (nums[i - 1] < nums[i] && nums[i + 1] < nums[i] || nums[i - 1] > nums[i] && nums[i + 1] > nums[i])
+                res ++;
+        }
+        return res;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`贪心`
+
+**缝合怪**
+
 
 
 # 链表专题
@@ -9144,7 +12505,7 @@ public:
 
 `链表`
 
-# 迭代器专题
+# 设计类专题
 
 ## [LeetCode 341. 扁平化嵌套列表迭代器](https://leetcode-cn.com/problems/flatten-nested-list-iterator/)
 
@@ -9299,6 +12660,296 @@ public:
 **标签**
 
 `设计数据结构`、`递归`、`迭代器`
+
+**缝合怪**
+
+[LeetCode 385. 迷你语法分析器](#LeetCode 385. 迷你语法分析器)
+
+## [LeetCode 380. O(1) 时间插入、删除和获取随机元素](https://leetcode-cn.com/problems/insert-delete-getrandom-o1/)
+
+**题目描述**
+
+>   实现 `RandomizedSet` 类：
+>
+>   +   `RandomizedSet()` 初始化 `RandomizedSet` 对象
+>   +   `bool insert(int val)` 当元素 `val` 不存在时，向集合中插入该项，并返回 `true` ；否则，返回 `false` 。
+>   +   `bool remove(int val)` 当元素 `val` 存在时，从集合中移除该项，并返回 `true` ；否则，返回 `false` 。
+>   +   `int getRandom()` 随机返回现有集合中的一项（测试用例保证调用此方法时集合中至少存在一个元素）。每个元素应该有 相同的概率 被返回。
+>
+>   你必须实现类的所有函数，并满足每个函数的 平均 时间复杂度为 `O(1)` 。
+
+**示例**
+
+>   输入
+>   `["RandomizedSet", "insert", "remove", "insert", "getRandom", "remove", "insert", "getRandom"]
+>   [[], [1], [2], [2], [], [1], [2], []]`
+>   输出
+>   `[null, true, false, true, 2, true, false, 2]`
+>
+>   解释
+>   `RandomizedSet randomizedSet = new RandomizedSet();`
+>   `randomizedSet.insert(1);` // 向集合中插入 `1` 。返回 `true` 表示 `1` 被成功地插入。
+>   `randomizedSet.remove(2);` // 返回 `false` ，表示集合中不存在 `2` 。
+>   `randomizedSet.insert(2);` // 向集合中插入 `2` 。返回 `true` 。集合现在包含 `[1,2]` 。
+>   `randomizedSet.getRandom();` // `getRandom` 应随机返回 `1` 或 `2` 。
+>   `randomizedSet.remove(1);` // 从集合中移除 `1` ，返回 `true` 。集合现在包含 `[2]` 。
+>   `randomizedSet.insert(2);` // `2` 已在集合中，所以返回 `false` 。
+>   `randomizedSet.getRandom();` // 由于 `2` 是集合中唯一的数字，`getRandom` 总是返回 `2` 。
+
+**提示**
+
+>   +   $-2^{31} <= val <= 2^{31} - 1$
+>   +   $最多调用 insert、remove 和 getRandom 函数 2 * 10^5 次$
+>   +   $在调用 getRandom 方法时，数据结构中 至少存在一个 元素。$
+
+**手写稿**
+
+![3171612](https://gitee.com/peter95535/image-bed/raw/master/img/3171612.png)
+
+**代码**
+
+```c++
+class RandomizedSet {
+public:
+    vector<int> g;
+    unordered_map<int, int> hash;
+    RandomizedSet() {}
+    
+    bool insert(int x) {
+        if (hash.count(x) == 0) {
+            hash[x] = g.size();
+            g.push_back(x);
+            return true;
+        }
+        return false;
+    }
+    
+    bool remove(int x) {
+        if (hash.count(x)) {
+            // 获取当前元素x的下标
+            int idx = hash[x];
+            // 在哈希表中交换数组中当前元素的下标和最后一个元素的下标
+            swap(hash[x], hash[g.back()]);
+            // 在数组中交换当前元素和最后一个元素
+            swap(g[idx], g.back());
+            // 在数组中将最后一个元素删除
+            g.pop_back();
+            // 在哈希表中将最后一个元素对应的下标删除
+            hash.erase(x);
+            return true;
+        }
+        return false;
+    }
+    
+    int getRandom() {
+        // 返回随机值即可
+        return g[rand() % g.size()];
+    }
+};
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet* obj = new RandomizedSet();
+ * bool param_1 = obj->insert(val);
+ * bool param_2 = obj->remove(val);
+ * int param_3 = obj->getRandom();
+ */
+```
+
+**时间复杂度**
+
+$O(1)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`哈希表`
+
+**缝合怪**
+
+## [LeetCode 382. 链表随机节点](https://leetcode-cn.com/problems/linked-list-random-node/)
+
+**题目描述**
+
+>   给你一个单链表，随机选择链表的一个节点，并返回相应的节点值。每个节点 被选中的概率一样 。
+>
+>   实现 `Solution` 类：
+>
+>   +   `Solution(ListNode head)` 使用整数数组初始化对象。
+>   +   `int getRandom()` 从链表中随机选择一个节点并返回该节点的值。链表中所有节点被选中的概率相等。
+
+**示例**
+
+>   输入
+>   `["Solution", "getRandom", "getRandom", "getRandom", "getRandom", "getRandom"]
+>   [[[1, 2, 3]], [], [], [], [], []]`
+>   输出
+>   `[null, 1, 3, 2, 2, 3]`
+>
+>   解释
+>   `Solution solution = new Solution([1, 2, 3]);`
+>   `solution.getRandom();` // 返回 `1`
+>   `solution.getRandom();` // 返回 `3`
+>   `solution.getRandom();` // 返回 `2`
+>   `solution.getRandom();` // 返回 `2`
+>   `solution.getRandom();` // 返回 `3`
+>   // `getRandom()` 方法应随机返回 `1`、`2`、`3`中的一个，每个元素被返回的概率相等。
+
+**提示**
+
+>   +   $链表中的节点数在范围 [1, 10^4] 内$
+>   +   $-10^4 <= Node.val <= 10^4$
+>   +   $至多调用 getRandom 方法 10^4 次$
+
+**进阶**
+
+>   如果链表非常大且长度未知，该怎么处理？
+>   你能否在不使用额外空间的情况下解决此问题？
+
+**手写稿**
+
+![3171956](https://gitee.com/peter95535/image-bed/raw/master/img/3171956.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* h;
+    Solution(ListNode* head) {
+        h = head;
+    }
+    
+    int getRandom() {
+        int c = -1, n = 0;
+        for (auto p = h; p; p = p -> next) {
+            // 元素的个数
+            n ++;
+            // 随机选择某个元素1/n
+            if (rand() % n == 0) c = p -> val;
+        }
+        return c;
+    }
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(head);
+ * int param_1 = obj->getRandom();
+ */
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`蓄水池抽样算法`
+
+**缝合怪**
+
+## [LeetCode 384. 打乱数组](https://leetcode-cn.com/problems/shuffle-an-array/)
+
+**题目描述**
+
+>   给你一个整数数组 `nums` ，设计算法来打乱一个没有重复元素的数组。打乱后，数组的所有排列应该是 等可能 的。
+>
+>   实现 `Solution class`:
+>
+>   +   `Solution(int[] nums)` 使用整数数组 `nums` 初始化对象
+>   +   `int[] reset()` 重设数组到它的初始状态并返回
+>   +   `int[] shuffle()` 返回数组随机打乱后的结果
+
+**示例 1**
+
+>   输入
+>   `["Solution", "shuffle", "reset", "shuffle"]
+>   [[[1, 2, 3]], [], [], []]`
+>   输出
+>   `[null, [3, 1, 2], [1, 2, 3], [1, 3, 2]]`
+>
+>   解释
+>   `Solution solution = new Solution([1, 2, 3]);`
+>   `solution.shuffle();`    // 打乱数组 `[1,2,3]` 并返回结果。任何 `[1,2,3]`的排列返回的概率应该相同。例如，返回 `[3, 1, 2]`
+>   `solution.reset();`      // 重设数组到它的初始状态 `[1, 2, 3]` 。返回 `[1, 2, 3]`
+>   `solution.shuffle();`    // 随机返回数组 `[1, 2, 3]` 打乱后的结果。例如，返回 `[1, 3, 2]`
+
+**提示**
+
+>   +   $1 <= nums.length <= 200$
+>   +   $-10^6 <= nums[i] <= 10^6$
+>   +   $nums 中的所有元素都是 唯一的$
+>   +   $最多可以调用 5 * 10^4 次 reset 和 shuffle$
+
+**手写稿**
+
+![3172043](https://gitee.com/peter95535/image-bed/raw/master/img/3172043.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<int> a, b;
+    Solution(vector<int>& nums) {
+        a = nums;
+    }
+    
+    vector<int> reset() {
+        return a;
+    }
+    
+    vector<int> shuffle() {
+        b = a;
+        int n = a.size();
+        for (int i = 0; i < n; i ++ )
+            // 交换第i张和第i~n张
+            swap(b[i], b[i + rand() % (n - i)]);
+        return b;
+    }
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(nums);
+ * vector<int> param_1 = obj->reset();
+ * vector<int> param_2 = obj->shuffle();
+ */
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`洗牌算法`
+
+**缝合怪**
+
+
 
 # 排序专题
 
@@ -10248,6 +13899,322 @@ int main() {
 
 `差分`、`二维差分`
 
+# 二分
+
+## 整数二分
+
+### 模板
+
+>   ```c++
+>   bool check(int x) {/* ... */} // 检查x是否满足某种性质
+>   
+>   // 注意！！【区间的划分】！！
+>   // 区间[l, r]被划分成[l, mid]和[mid + 1, r]时使用：
+>   int bsearch_1(int l, int r) {
+>       while (l < r) {
+>           int mid = l + r >> 1;
+>           if (check(mid)) r = mid;    // check()判断mid是否满足性质
+>           else l = mid + 1;
+>       }
+>       return l;
+>   }
+>   
+>   // 区间[l, r]被划分成[l, mid - 1]和[mid, r]时使用：
+>   int bsearch_2(int l, int r) {
+>       while (l < r) {
+>           int mid = l + r + 1 >> 1;
+>           if (check(mid)) l = mid;
+>           else r = mid - 1;
+>       }
+>       return l;
+>   }
+>   ```
+
+### [AcWing 789. 数的范围](https://www.acwing.com/problem/content/791/)
+
+**题目描述**
+
+>   给定一个按照升序排列的长度为 `n` 的整数数组，以及 `q` 个查询。
+>
+>   对于每个查询，返回一个元素 `k` 的起始位置和终止位置（位置从 `0` 开始计数）。
+>
+>   如果数组中不存在该元素，则返回 `-1 -1`。
+
+**输入格式**
+
+>   第一行包含整数 `n` 和 `q`，表示数组长度和询问个数。
+>
+>   第二行包含 `n` 个整数（均在 `1∼10000` 范围内），表示完整数组。
+>
+>   接下来 `q` 行，每行包含一个整数 `k`，表示一个询问元素。
+
+**输出格式**
+
+>   共 `q` 行，每行包含两个整数，表示所求元素的起始位置和终止位置。
+>
+>   如果数组中不存在该元素，则返回 `-1 -1`。
+
+**数据范围**
+
+>   +   $1≤n≤100000$
+>   +   $1≤q≤10000$
+>   +   $1≤k≤10000$
+
+**输入样例**
+
+```c++
+6 3
+1 2 2 3 3 4
+3
+4
+5
+```
+
+**输出样例**
+
+```c++
+3 4
+5 5
+-1 -1
+```
+
+**手写稿**
+
+![3171148](https://gitee.com/peter95535/image-bed/raw/master/img/3171148.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n, m;
+int g[N];
+int main(){
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < n; i ++ ) scanf("%d", &g[i]);
+    while (m -- ) {
+        int x;
+        scanf("%d", &x);
+        // 寻找左端点
+        int l = 0, r = n - 1;
+        int L, R;
+        while (l < r) {
+            int mid = l + r >> 1;
+            // 寻找大于等于x的最小值
+            if (g[mid] >= x) r = mid;
+            else l = mid + 1;
+        }
+        if (g[l] != x) cout << -1 << " " << -1 << endl;
+        else {
+            // 寻找右端点
+            L = l;
+            l = 0, r = n - 1;
+            while (l < r) {
+                int mid = l + r + 1 >> 1;
+                // 寻找小于等于x的最大值
+                if (g[mid] <= x) l = mid;
+                else r = mid - 1;
+            }
+            R = r;
+            cout << L << " " << R << endl;
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`二分`、`整数二分`
+
+**缝合怪**
+
+
+
+### [LeetCode 378. 有序矩阵中第 K 小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/)
+
+**题目描述**
+
+>   给你一个 `n x n` 矩阵 `matrix` ，其中每行和每列元素均按升序排序，找到矩阵中第 `k` 小的元素。
+>   请注意，它是 排序后 的第 `k` 小元素，而不是第 `k` 个 不同 的元素。
+>
+>   你必须找到一个内存复杂度优于 $O(n^2)$ 的解决方案。
+
+**示例 1**
+
+>   输入：`matrix = [[1,5,9],[10,11,13],[12,13,15]], k = 8`
+>   输出：`13`
+>   解释：矩阵中的元素为 `[1,5,9,10,11,12,13,13,15]`，第 `8` 小元素是 `13`
+
+**示例 2**
+
+>   输入：`matrix = [[-5]], k = 1`
+>   输出：`-5`
+
+**提示**
+
+>   +   $n == matrix.length$
+>   +   $n == matrix[i].length$
+>   +   $1 <= n <= 300$
+>   +   $-10^9 <= matrix[i][j] <= 10^9$
+>   +   $题目数据 保证 matrix 中的所有行和列都按 非递减顺序 排列$
+>   +   $1 <= k <= n^2$
+
+**进阶**
+
+>   你能否用一个恒定的内存(即 `O(1)` 内存复杂度)来解决这个问题?
+>   你能在 `O(n)` 的时间复杂度下解决这个问题吗?这个方法对于面试来说可能太超前了，但是你会发现阅读这篇文章（ [this paper](http://www.cse.yorku.ca/~andy/pubs/X+Y.pdf) ）很有趣。
+
+**手写稿**
+
+![3171341](https://gitee.com/peter95535/image-bed/raw/master/img/3171341.png)
+
+**代码**
+
+```c++
+typedef long long LL;
+class Solution {
+public:
+    int kthSmallest(vector<vector<int>>& g, int k) {
+        // 二分的不是下标，而是答案
+        int l = INT_MIN, r = INT_MAX;
+        while (l < r) {
+            int mid = (LL)l + r >> 1;
+            // j从最后一个数开始枚举
+            // cnt表示小于等于mid的个数
+            int j = g[0].size() - 1, cnt = 0;
+            // 枚举每一行
+            for (int i = 0; i < g.size(); i ++ ) {
+                // 如果当前值大于mid，则j--
+                while (j >= 0 && g[i][j] > mid) j --;
+                // 小于等于mid的个数为j + 1个
+                cnt += j + 1;
+            }
+            if (cnt >= k) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`二分`
+
+**缝合怪**
+
+
+
+## 实数二分
+
+### 模板
+
+>   ```c++
+>   bool check(double x) {/* ... */} // 检查x是否满足某种性质
+>   
+>   double bsearch_3(double l, double r) {
+>       const double eps = 1e-6;   // eps 表示精度，取决于题目对精度的要求
+>       while (r - l > eps) {
+>           double mid = (l + r) / 2;
+>           if (check(mid)) r = mid;
+>           else l = mid;
+>       }
+>       return l;
+>   }
+>   ```
+
+### [AcWing 790. 数的三次方根](https://www.acwing.com/problem/content/792/)
+
+**题目描述**
+
+>   给定一个浮点数 `n`，求它的三次方根。
+
+**输入格式**
+
+>   共一行，包含一个浮点数 `n`。
+
+**输出格式**
+
+>   共一行，包含一个浮点数，表示问题的解。
+>
+>   注意，结果保留 `6` 位小数。
+
+**数据范围**
+
+>   +   $−10000≤n≤10000$
+
+**输入样例**
+
+```c++
+1000.00
+```
+
+**输出样例**
+
+```c++
+10.000000
+```
+
+**手写稿**
+
+>   1.   [实数二分](#实数二分)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cmath>
+using namespace std;
+const double eps = 1e-8;
+double n;
+int main() {
+    scanf("%lf", &n);
+    // 注意：不能写成l = 0, r = n
+    // 如果设置成l = 0, r = n，则无论如何也找不到其三次方根
+    // 原因：0.001，其三次方根0.1是比本身大的
+    double l = -100, r = 100;
+    while (fabs(l - r) > eps) {
+        double mid = (l + r) / 2;
+        if (mid * mid * mid >= n) r = mid;
+        else l = mid;
+    }
+    printf("%.6lf\n", l);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(log_n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`实数二分`
+
+**缝合怪**
+
 # 附录
 
 ## 运算符优先级
@@ -10257,12 +14224,3 @@ int main() {
 ![361108](https://gitee.com/peter95535/image-bed/raw/master/img/361108.png)
 
 ### End
-
-
-
-
-
-
-
-
-
