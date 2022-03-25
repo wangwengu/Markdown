@@ -6,7 +6,7 @@
 
 **前提条件**
 
-![2091531](https://gitee.com/peter95535/image-bed/raw/master/img/2091531.png)
+![2091531](img/Algorithm/2091531.png)
 
 **定理**
 
@@ -14,7 +14,7 @@
 
 **证明**
 
-![2091538](https://gitee.com/peter95535/image-bed/raw/master/img/2091538.png)
+![2091538](img/Algorithm/2091538.png)
 
 ### [AcWing 1072. 树的最长路径](https://www.acwing.com/problem/content/1074/)
 
@@ -63,7 +63,7 @@
 
 **手写稿**
 
-![2101347](https://gitee.com/peter95535/image-bed/raw/master/img/2101347.png)
+![2101347](img/Algorithm/2101347.png)
 
 **代码**
 
@@ -163,13 +163,13 @@ int main() {
 
 **手写稿**
 
-![2092103](https://gitee.com/peter95535/image-bed/raw/master/img/2092103.png)
+![2092103](img/Algorithm/2092103.png)
 
 **注意事项**
 
 > 1. 为啥 `dfs(int u, int father)` 要定义一个 `father` 变量，以防止 `圈2` 操作，从而导致无限循环
 >
->    ![2092107](https://gitee.com/peter95535/image-bed/raw/master/img/2092107.png)
+>    ![2092107](img/Algorithm/2092107.png)
 >
 
 **代码**
@@ -263,7 +263,7 @@ int main() {
 
 **手写稿**
 
-![2171435](https://gitee.com/peter95535/image-bed/raw/master/img/2171435.png)
+![2171435](img/Algorithm/2171435.png)
 
 **代码**
 
@@ -380,7 +380,7 @@ int main() {
 
 **手写稿**
 
-![2111129](https://gitee.com/peter95535/image-bed/raw/master/img/2111129.png)
+![2111129](img/Algorithm/2111129.png)
 
 **代码**
 
@@ -493,7 +493,7 @@ int main() {
 
 **手写稿**
 
-![2150818](https://gitee.com/peter95535/image-bed/raw/master/img/2150818.png)
+![2150818](img/Algorithm/2150818.png)
 
 **代码**
 
@@ -565,7 +565,7 @@ int main() {
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/rob1-tree.jpg)
+![img](img/Algorithm/rob1-tree.jpg)
 
 >   输入: `root = [3,2,3,null,3,null,1]`
 >   输出: `7` 
@@ -573,7 +573,7 @@ int main() {
 
 **示例 2**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/rob2-tree.jpg)
+![img](img/Algorithm/rob2-tree.jpg)
 
 >   输入: `root = [3,4,5,1,3,null,1]`
 >   输出: `9`
@@ -586,7 +586,7 @@ int main() {
 
 **手写稿**
 
-![321848](https://gitee.com/peter95535/image-bed/raw/master/img/321848.png)
+![321848](img/Algorithm/321848.png)
 
 **代码**
 
@@ -638,7 +638,7 @@ public:
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/e1.jpg)
+![img](img/Algorithm/e1.jpg)
 
 > 输入：`n = 4, edges = [[1,0],[1,2],[1,3]]`
 > 输出：`[1]`
@@ -646,7 +646,7 @@ public:
 
 **示例 2**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/e2.jpg)
+![img](img/Algorithm/e2.jpg)
 
 > 输入：`n = 6, edges = [[3,0],[3,1],[3,2],[3,4],[5,4]]`
 > 输出：`[3,4]`
@@ -666,7 +666,7 @@ public:
 >
 > 2. 计算树的高度，使用树形 `DP` 来计算
 >
->    ![2171514](https://gitee.com/peter95535/image-bed/raw/master/img/2171514.png)
+>    ![2171514](img/Algorithm/2171514.png)
 
 **代码**
 
@@ -772,7 +772,7 @@ public:
 
 **手写稿**
 
-![3140926](https://gitee.com/peter95535/image-bed/raw/master/img/3140926.png)
+![3140926](img/Algorithm/3140926.png)
 
 **代码**
 
@@ -845,7 +845,7 @@ int main() {
 >
 >   例如，下面的树：
 >
->   ![1463_1.jpg.gif](https://gitee.com/peter95535/image-bed/raw/master/img/19_0f47f44029-1463_1.jpg.gif)
+>   ![1463_1.jpg.gif](img/Algorithm/19_0f47f44029-1463_1.jpg.gif)
 >
 >   只需要放置 `1` 名士兵（在节点 `1` 处），就可观察到所有的边。
 
@@ -895,7 +895,7 @@ int main() {
 
 **手写稿**
 
-![3141121](https://gitee.com/peter95535/image-bed/raw/master/img/3141121.png)
+![3141121](img/Algorithm/3141121.png)
 
 **代码**
 
@@ -1028,7 +1028,7 @@ $O(n)$
 
 **手写稿**
 
->   ![3150903](https://gitee.com/peter95535/image-bed/raw/master/img/3150903.png)
+>   ![3150903](img/Algorithm/3150903.png)
 >
 >   本题和 `AcWing 323. 战略游戏` 的区别在于：
 >
@@ -1150,7 +1150,7 @@ $O(n)$
 
 **手写稿**
 
-![小国王](https://gitee.com/peter95535/image-bed/raw/master/img/%E5%B0%8F%E5%9B%BD%E7%8E%8B.png)
+![小国王](img/Algorithm/%E5%B0%8F%E5%9B%BD%E7%8E%8B.png)
 
 **代码**
 
@@ -1249,7 +1249,7 @@ int main() {
 
 **手写稿**
 
-![玉米田](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%8E%89%E7%B1%B3%E7%94%B0.jpg)
+![玉米田](img/Algorithm/%E7%8E%89%E7%B1%B3%E7%94%B0.jpg)
 
 **代码**
 
@@ -1347,7 +1347,7 @@ int main() {
 
 **手写稿**
 
-![打家劫舍 II](https://gitee.com/peter95535/image-bed/raw/master/img/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D%20II.png)
+![打家劫舍 II](img/Algorithm/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D%20II.png)
 
 **代码**
 
@@ -1422,7 +1422,7 @@ public:
 
 **手写稿**
 
-![2091151](https://gitee.com/peter95535/image-bed/raw/master/img/2091151.png)
+![2091151](img/Algorithm/2091151.png)
 
 **代码**
 
@@ -1462,14 +1462,14 @@ int main() {
 
 **示例 1**
 
-![最大正方形 图1](https://gitee.com/peter95535/image-bed/raw/master/img/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%9B%BE1.jpeg)
+![最大正方形 图1](img/Algorithm/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%9B%BE1.jpeg)
 
 > 输入：`matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]`
 > 输出：`4`
 
 **示例 2**
 
-![最大正方形 图2](https://gitee.com/peter95535/image-bed/raw/master/img/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%9B%BE2.jpeg)
+![最大正方形 图2](img/Algorithm/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%9B%BE2.jpeg)
 
 > 输入：`matrix = [["0","1"],["1","0"]]`
 > 输出：`1`
@@ -1488,7 +1488,7 @@ int main() {
 
 **法一：动态规划**
 
-![最大正方形 动态规划](https://gitee.com/peter95535/image-bed/raw/master/img/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92.png)
+![最大正方形 动态规划](img/Algorithm/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92.png)
 
 **代码一：二维数组**
 
@@ -1532,7 +1532,7 @@ public:
 
 **法二：单调栈**
 
-![最大正方形 单调栈](https://gitee.com/peter95535/image-bed/raw/master/img/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%8D%95%E8%B0%83%E6%A0%88.png)
+![最大正方形 单调栈](img/Algorithm/%E6%9C%80%E5%A4%A7%E6%AD%A3%E6%96%B9%E5%BD%A2%20%E5%8D%95%E8%B0%83%E6%A0%88.png)
 
 **代码**
 
@@ -1616,7 +1616,7 @@ public:
 
 **手写稿**
 
-![最长递增子序列](https://gitee.com/peter95535/image-bed/raw/master/img/%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97.png)
+![最长递增子序列](img/Algorithm/%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97.png)
 
 **代码**
 
@@ -1751,7 +1751,7 @@ public:
 
 **手写稿**
 
-![321734](https://gitee.com/peter95535/image-bed/raw/master/img/321734.png)
+![321734](img/Algorithm/321734.png)
 
 **代码**
 
@@ -1806,7 +1806,7 @@ public:
 
 **手写稿**
 
-![352205](https://gitee.com/peter95535/image-bed/raw/master/img/352205.png)
+![352205](img/Algorithm/352205.png)
 
 **代码**
 
@@ -1895,7 +1895,7 @@ public:
 
 **手写稿**
 
-![3122020](https://gitee.com/peter95535/image-bed/raw/master/img/3122020.png)
+![3122020](img/Algorithm/3122020.png)
 
 **代码**
 
@@ -1976,7 +1976,7 @@ int main() {
 
 **手写稿**
 
-![2211255](https://gitee.com/peter95535/image-bed/raw/master/img/2211255.png)
+![2211255](img/Algorithm/2211255.png)
 
 **代码**
 
@@ -2085,7 +2085,7 @@ int main() {
 
 **手写稿**
 
-![2211418](https://gitee.com/peter95535/image-bed/raw/master/img/2211418.png)
+![2211418](img/Algorithm/2211418.png)
 
 **代码**
 
@@ -2196,7 +2196,7 @@ int main() {
 
 **手写稿**
 
-![2211833](https://gitee.com/peter95535/image-bed/raw/master/img/2211833.png)
+![2211833](img/Algorithm/2211833.png)
 
 **代码**
 
@@ -2312,7 +2312,7 @@ public:
 
 **手写稿**
 
-![3171040](https://gitee.com/peter95535/image-bed/raw/master/img/3171040.png)
+![3171040](img/Algorithm/3171040.png)
 
 **代码一：二维数组**
 
@@ -2400,7 +2400,7 @@ $O(n)$
 > 物品之间具有依赖关系，且依赖关系组成一棵树的形状。如果选择一个物品，则必须选择它的父节点。
 >
 > 如下图所示：
-> ![QQ图片20181018170337.png](https://gitee.com/peter95535/image-bed/raw/master/img/1_bb51ecbcd2-QQ%E5%9B%BE%E7%89%8720181018170337.png)
+> ![QQ图片20181018170337.png](img/Algorithm/1_bb51ecbcd2-QQ%E5%9B%BE%E7%89%8720181018170337.png)
 >
 > 如果选择物品 `5`，则必须选择物品 `1` 和 `2`。这是因为 `2` 是 `5` 的父节点，`1` 是 `2` 的父节点。
 >
@@ -2451,7 +2451,7 @@ $O(n)$
 
 **手写稿**
 
-![2161118](https://gitee.com/peter95535/image-bed/raw/master/img/2161118.png)
+![2161118](img/Algorithm/2161118.png)
 
 **代码**
 
@@ -2558,7 +2558,7 @@ int main() {
 
 **手写稿**
 
-![2142101](https://gitee.com/peter95535/image-bed/raw/master/img/2142101.png)
+![2142101](img/Algorithm/2142101.png)
 
 **代码**
 
@@ -2670,7 +2670,7 @@ int main() {
 
 **手写稿**
 
-![3112204](https://gitee.com/peter95535/image-bed/raw/master/img/3112204.png)
+![3112204](img/Algorithm/3112204.png)
 
 **代码**
 
@@ -2801,7 +2801,7 @@ int main() {
 
 **手写稿**
 
-![371121](https://gitee.com/peter95535/image-bed/raw/master/img/371121.png)
+![371121](img/Algorithm/371121.png)
 
 **代码**
 
@@ -2889,7 +2889,7 @@ int main() {
 
 **手写稿**
 
-![381151](https://gitee.com/peter95535/image-bed/raw/master/img/381151.png)
+![381151](img/Algorithm/381151.png)
 
 **代码**
 
@@ -2999,7 +2999,7 @@ int main() {
 
 **手写稿**
 
-![381759](https://gitee.com/peter95535/image-bed/raw/master/img/381759.png)
+![381759](img/Algorithm/381759.png)
 
 **代码**
 
@@ -3079,7 +3079,7 @@ int main() {
 
 **手写稿**
 
-![3110834](https://gitee.com/peter95535/image-bed/raw/master/img/3110834.png)
+![3110834](img/Algorithm/3110834.png)
 
 **代码**
 
@@ -3210,7 +3210,7 @@ int main() {
 
 **手写稿**
 
-![3122138](https://gitee.com/peter95535/image-bed/raw/master/img/3122138.png)
+![3122138](img/Algorithm/3122138.png)
 
 **代码**
 
@@ -3278,13 +3278,13 @@ int main() {
 
 >   将一个 `8×8` 的棋盘进行如下分割：将原棋盘割下一块矩形棋盘并使剩下部分也是矩形，再将剩下的部分继续如此分割，这样割了 `(n−1)` 次后，连同最后剩下的矩形棋盘共有 `n` 块矩形棋盘。(每次切割都只能沿着棋盘格子的边进行)
 >
->   ![1191_1.jpg](https://gitee.com/peter95535/image-bed/raw/master/img/19_32dad08629-1191_1-20220312214449106.jpg)
+>   ![1191_1.jpg](img/Algorithm/19_32dad08629-1191_1-20220312214449106.jpg)
 >
 >   原棋盘上每一格有一个分值，一块矩形棋盘的总分为其所含各格分值之和。
 >
 >   现在需要把棋盘按上述规则分割成 `n` 块矩形棋盘，并使各矩形棋盘总分的均方差最小。
 >
->   均方差![formula.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_566d096029-formula.png) ，其中平均值![lala.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_047fe57229-lala-20220312215123355.png) ，$x_i$ 为第 `i` 块矩形棋盘的总分。
+>   均方差![formula.png](img/Algorithm/19_566d096029-formula.png) ，其中平均值![lala.png](img/Algorithm/19_047fe57229-lala-20220312215123355.png) ，$x_i$ 为第 `i` 块矩形棋盘的总分。
 >
 >   请编程对给出的棋盘及 `n`，求出均方差的最小值。
 
@@ -3324,7 +3324,7 @@ int main() {
 
 **手写稿**
 
-![3140755](https://gitee.com/peter95535/image-bed/raw/master/img/3140755.png)
+![3140755](img/Algorithm/3140755.png)
 
 **代码**
 
@@ -3400,7 +3400,7 @@ int main() {
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/graph.png)
+![img](img/Algorithm/graph.png)
 
 >   输入：`n = 10`
 >   输出：`16`
@@ -3447,7 +3447,7 @@ int main() {
 
 **手写稿**
 
-![3162058](https://gitee.com/peter95535/image-bed/raw/master/img/3162058.png)
+![3162058](img/Algorithm/3162058.png)
 
 **代码**
 
@@ -3620,7 +3620,7 @@ public:
 
 **手写稿**
 
-![WX20220122-134731@2x](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220122-134731@2x.png)
+![WX20220122-134731@2x](img/Algorithm/WX20220122-134731@2x.png)
 
 **代码**
 
@@ -3671,7 +3671,7 @@ public:
 
 **手写稿**
 
-![2181145](https://gitee.com/peter95535/image-bed/raw/master/img/2181145.png)
+![2181145](img/Algorithm/2181145.png)
 
 **代码**
 
@@ -3723,7 +3723,7 @@ public:
 
 **手写稿**
 
-![361125](https://gitee.com/peter95535/image-bed/raw/master/img/361125.png)
+![361125](img/Algorithm/361125.png)
 
 **代码**
 
@@ -3761,7 +3761,7 @@ public:
 
 **示例 1**
 
-![矩形面积 图1](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%9F%A9%E5%BD%A2%E9%9D%A2%E7%A7%AF%20%E5%9B%BE1.png)
+![矩形面积 图1](img/Algorithm/%E7%9F%A9%E5%BD%A2%E9%9D%A2%E7%A7%AF%20%E5%9B%BE1.png)
 
 > 输入：`ax1 = -3, ay1 = 0, ax2 = 3, ay2 = 4, bx1 = 0, by1 = -1, bx2 = 9, by2 = 2`
 > 输出：`45`
@@ -3777,7 +3777,7 @@ public:
 
 **手写稿**
 
-![矩形面积](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%9F%A9%E5%BD%A2%E9%9D%A2%E7%A7%AF.png)
+![矩形面积](img/Algorithm/%E7%9F%A9%E5%BD%A2%E9%9D%A2%E7%A7%AF.png)
 
 **代码**
 
@@ -3835,7 +3835,7 @@ public:
 
 **手写稿**
 
-![2172025](https://gitee.com/peter95535/image-bed/raw/master/img/2172025.png)
+![2172025](img/Algorithm/2172025.png)
 
 **解题步骤**
 
@@ -3925,7 +3925,7 @@ public:
 >
 > 3. 具体实现的细节
 >
->    ![2180807](https://gitee.com/peter95535/image-bed/raw/master/img/2180807.png)
+>    ![2180807](img/Algorithm/2180807.png)
 >
 >    > 1. 三指针有一个寻找最小值的操作 `min(q[i] * 2, min(q[j] * 3, q[k] * 5))`，在本题中，将寻找 `k` 个指针的最小值操作，换成堆（优先队列来实现）
 >    > 2. 优先队列中维护两个变量，分别为 `k` 个指针对应的值以及下标
@@ -3992,7 +3992,7 @@ public:
 
 **手写稿**
 
-![完全平方数](https://gitee.com/peter95535/image-bed/raw/master/img/%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0.png)
+![完全平方数](img/Algorithm/%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0.png)
 
 **代码**
 
@@ -4072,7 +4072,7 @@ public:
 
 **手写稿**
 
-![WX20220119-100611@2x (1)](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220119-100611@2x%20(1).png)
+![WX20220119-100611@2x (1)](img/Algorithm/WX20220119-100611@2x%20(1).png)
 
 **代码**
 
@@ -4391,7 +4391,7 @@ public:
 
 **手写稿**
 
-![332159](https://gitee.com/peter95535/image-bed/raw/master/img/332159.png)
+![332159](img/Algorithm/332159.png)
 
 **代码**
 
@@ -4425,7 +4425,7 @@ public:
 
 **手写稿**
 
-![350904](https://gitee.com/peter95535/image-bed/raw/master/img/350904.png)
+![350904](img/Algorithm/350904.png)
 
 **代码**
 
@@ -4466,7 +4466,7 @@ public:
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/bulb.jpg)
+![img](img/Algorithm/bulb.jpg)
 
 > 输入：`n = 3`
 > 输出：`1 `
@@ -4494,7 +4494,7 @@ public:
 
 **手写稿**
 
-![2181929](https://gitee.com/peter95535/image-bed/raw/master/img/2181929.png)
+![2181929](img/Algorithm/2181929.png)
 
 **代码**
 
@@ -4546,7 +4546,7 @@ public:
 
 **手写稿**
 
-![351607](https://gitee.com/peter95535/image-bed/raw/master/img/351607.png)
+![351607](img/Algorithm/351607.png)
 
 **代码**
 
@@ -4584,7 +4584,7 @@ public:
 >
 >   下图为一个包含 `m` 个方程 `n` 个未知数的线性方程组示例：
 >
->   ![9a504fc2d5628535be9dcb5f90ef76c6a7ef634a.gif](https://gitee.com/peter95535/image-bed/raw/master/img/19_b30080c698-9a504fc2d5628535be9dcb5f90ef76c6a7ef634a.gif)
+>   ![9a504fc2d5628535be9dcb5f90ef76c6a7ef634a.gif](img/Algorithm/19_b30080c698-9a504fc2d5628535be9dcb5f90ef76c6a7ef634a.gif)
 
 **输入格式**
 
@@ -4624,7 +4624,7 @@ public:
 
 **手写稿**
 
-![3201224](https://gitee.com/peter95535/image-bed/raw/master/img/3201224.jpg)
+![3201224](img/Algorithm/3201224.jpg)
 
 **代码**
 
@@ -4879,7 +4879,7 @@ $O(n^2)$
 
 **手写稿**
 
-![3201626](https://gitee.com/peter95535/image-bed/raw/master/img/3201626.png)
+![3201626](img/Algorithm/3201626.png)
 
 **代码**
 
@@ -4953,7 +4953,7 @@ $O(n^2)$
 
 ### 原理介绍
 
-![3221150](https://gitee.com/peter95535/image-bed/raw/master/img/3221150.png)
+![3221150](img/Algorithm/3221150.png)
 
 ### [PTA 7-28 猴子选大王](https://pintia.cn/problem-sets/14/problems/808)
 
@@ -5312,7 +5312,7 @@ public:
 
 **示例 1**
 
-![环状链表 图1](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%8E%AF%E7%8A%B6%E9%93%BE%E8%A1%A8%20%E5%9B%BE1.png)
+![环状链表 图1](img/Algorithm/%E7%8E%AF%E7%8A%B6%E9%93%BE%E8%A1%A8%20%E5%9B%BE1.png)
 
 > 输入：`head = [3,2,0,-4], pos = 1`
 > 输出：`true`
@@ -5320,7 +5320,7 @@ public:
 
 **示例 2**
 
-![环形链表 图2](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20%E5%9B%BE2.png)
+![环形链表 图2](img/Algorithm/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20%E5%9B%BE2.png)
 
 > 输入：`head = [1,2], pos = 0`
 > 输出：`true`
@@ -5328,7 +5328,7 @@ public:
 
 **示例 3**
 
-![环形链表 图3](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20%E5%9B%BE3.png)
+![环形链表 图3](img/Algorithm/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20%E5%9B%BE3.png)
 
 > 输入：`head = [1], pos = -1`
 > 输出：`false`
@@ -5386,7 +5386,7 @@ public:
 
 **示例 1**
 
-![环形链表 II 图1](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20II%20%E5%9B%BE1.png)
+![环形链表 II 图1](img/Algorithm/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20II%20%E5%9B%BE1.png)
 
 > 输入：`head = [3,2,0,-4], pos = 1`
 > 输出：返回索引为 `1` 的链表节点
@@ -5394,7 +5394,7 @@ public:
 
 **示例 2**
 
-![环形链表 II 图 2](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20II%20%E5%9B%BE%202.png)
+![环形链表 II 图 2](img/Algorithm/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20II%20%E5%9B%BE%202.png)
 
 > 输入：`head = [1,2], pos = 0`
 > 输出：返回索引为 `0` 的链表节点
@@ -5402,7 +5402,7 @@ public:
 
 **示例 3**
 
-![环形链表 II 图3](https://gitee.com/peter95535/image-bed/raw/master/img/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20II%20%E5%9B%BE3.png)
+![环形链表 II 图3](img/Algorithm/%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%20II%20%E5%9B%BE3.png)
 
 > 输入：`head = [1], pos = -1`
 > 输出：返回 `null`
@@ -5576,7 +5576,7 @@ public:
 
 **手写稿**
 
-> ![2260822](https://gitee.com/peter95535/image-bed/raw/master/img/2260822.png)
+> ![2260822](img/Algorithm/2260822.png)
 >
 > 1. `0 ~ j - 1` 是红色，`j ~ i - 1` 是白色，`k +1 ~ n` 是蓝色，`i ~ k` 是待分配区域
 > 2. 针对 `nums[i]` 的取值分三种情况：
@@ -5728,7 +5728,7 @@ public:
 
 **手写稿**
 
-![1](https://gitee.com/peter95535/image-bed/raw/master/img/1.png)
+![1](img/Algorithm/1.png)
 
 **代码**
 
@@ -5995,7 +5995,7 @@ public:
 
 **手写稿**
 
-![w](https://gitee.com/peter95535/image-bed/raw/master/img/w.png)
+![w](img/Algorithm/w.png)
 
 **代码**
 
@@ -6130,7 +6130,7 @@ public:
 >
 >        +   数字需要<font style = "color: red">**倒着存储**</font>，原因如下
 >
->            ![392036](https://gitee.com/peter95535/image-bed/raw/master/img/392036.png)
+>            ![392036](img/Algorithm/392036.png)
 
 **代码一：`vector` 存储**
 
@@ -6559,7 +6559,7 @@ public:
 
 ### 原理
 
-![1310947](https://gitee.com/peter95535/image-bed/raw/master/img/1310947.png)
+![1310947](img/Algorithm/1310947.png)
 
 ### [AcWing 1275. 最大数](https://www.acwing.com/problem/content/1277/)
 
@@ -6633,7 +6633,7 @@ A 99
 
 **备注**
 
-![2111618](https://gitee.com/peter95535/image-bed/raw/master/img/2111618.png)
+![2111618](img/Algorithm/2111618.png)
 
 **代码**
 
@@ -6769,7 +6769,7 @@ int main() {
 
 **手写稿**
 
-![2111320](https://gitee.com/peter95535/image-bed/raw/master/img/2111320.jpg)
+![2111320](img/Algorithm/2111320.jpg)
 
 **代码**
 
@@ -6922,7 +6922,7 @@ Q 2 4
 
 **手写稿**
 
-![2012309](https://gitee.com/peter95535/image-bed/raw/master/img/2012309.jpg)
+![2012309](img/Algorithm/2012309.jpg)
 
 **代码**
 
@@ -7263,17 +7263,17 @@ Total explored area: 180.00
 
 > 样例所示地图覆盖区域如下图所示，两个矩形区域所覆盖的总面积，即为样例的解。
 
-![2051745.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_4acba44c27-%E6%97%A0%E6%A0%87%E9%A2%98-20220205174554149.png)
+![2051745.png](img/Algorithm/19_4acba44c27-%E6%97%A0%E6%A0%87%E9%A2%98-20220205174554149.png)
 
 **手写稿**
 
-![2071347](https://gitee.com/peter95535/image-bed/raw/master/img/2071347.png)
+![2071347](img/Algorithm/2071347.png)
 
 **疑点详解**
 
 > 1. 线段树中存储的节点是线段不是点，注意两者之间的对应关系
 >
->     ![2071518](https://gitee.com/peter95535/image-bed/raw/master/img/2071518.png)
+>     ![2071518](img/Algorithm/2071518.png)
 >
 > 1. 离散化的原因
 >
@@ -7285,7 +7285,7 @@ Total explored area: 180.00
 >
 > 1. 树状数组中的节点的属性值 cnt 分类讨论的原因
 >
->     ![2071546](https://gitee.com/peter95535/image-bed/raw/master/img/2071546.png)
+>     ![2071546](img/Algorithm/2071546.png)
 
 **代码**
 
@@ -7473,17 +7473,17 @@ int main() {
 >
 >         + 第一种情况：先 `add` 再 `mul`
 >
->             ![2081729](https://gitee.com/peter95535/image-bed/raw/master/img/2081729.png)
+>             ![2081729](img/Algorithm/2081729.png)
 >
 >         + 第二种情况：先 `mul` 再 `add`
 >
->             ![2081730](https://gitee.com/peter95535/image-bed/raw/master/img/2081730.png)
+>             ![2081730](img/Algorithm/2081730.png)
 >
 >         + 综上所述，顺序应该为先 `mul` 再 `add` 即可
 >
 >     + 确定完顺序之后，按照顺序先 `mul` 再 `add` 的操作，进行分析，查看值的变化
 >
->         ![2082022](https://gitee.com/peter95535/image-bed/raw/master/img/2082022.png)
+>         ![2082022](img/Algorithm/2082022.png)
 >
 >         + 备注
 >             + `x ✖️ mul + add` 是原来的数，也就是区间和 `sum`
@@ -7607,7 +7607,7 @@ int main() {
 
 **手写稿**
 
-![1262039](https://gitee.com/peter95535/image-bed/raw/master/img/1262039.png)
+![1262039](img/Algorithm/1262039.png)
 
 ### 注意事项
 
@@ -7664,7 +7664,7 @@ int main() {
 
 **样例说明**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/2256.png)
+![img](img/Algorithm/2256.png)
 
 故输出结果`14、16`
 
@@ -8003,7 +8003,7 @@ Q 2 4
 
 **手写稿**
 
-![1292230](https://gitee.com/peter95535/image-bed/raw/master/img/1292230.png)
+![1292230](img/Algorithm/1292230.png)
 
 **代码**
 
@@ -8110,7 +8110,7 @@ int main() {
 
 **手写稿**
 
-![1301406](https://gitee.com/peter95535/image-bed/raw/master/img/1301406.png)
+![1301406](img/Algorithm/1301406.png)
 
 **步骤**
 
@@ -8310,7 +8310,7 @@ public:
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/serdeser.jpg)
+![img](img/Algorithm/serdeser.jpg)
 
 > 输入：`root = [1,2,3,null,null,4,5]`
 > 输出：`[1,2,3,null,null,4,5]`
@@ -8337,7 +8337,7 @@ public:
 
 **手写稿**
 
-![WX20220121-142021@2x](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220121-142021@2x.png)
+![WX20220121-142021@2x](img/Algorithm/WX20220121-142021@2x.png)
 
 **代码**
 
@@ -8442,7 +8442,7 @@ public:
 
 **手写稿**
 
->   ![321113](https://gitee.com/peter95535/image-bed/raw/master/img/321113-20220302123253489.png)
+>   ![321113](img/Algorithm/321113-20220302123253489.png)
 >
 >   若代码不理解，建议模拟样例
 
@@ -8505,7 +8505,7 @@ public:
 
 **手写稿**
 
-![WechatIMG95](https://gitee.com/peter95535/image-bed/raw/master/img/WechatIMG95.jpeg)
+![WechatIMG95](img/Algorithm/WechatIMG95.jpeg)
 
 **思路**
 
@@ -8517,7 +8517,7 @@ public:
 >
 >    + 将原串逆序复制一遍，用 `#` 连接，放在原串的后面
 >    
->      ![image-20220118072649711](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220118072649711.png)
+>      ![image-20220118072649711](img/Algorithm/image-20220118072649711.png)
 >    
 >    + 寻找新串 `a + b + b + a` 的最长回文前缀即可，即 `KMP` 的 `next` 数组的含义
 >    
@@ -8559,11 +8559,11 @@ public:
 
 >   1. $\pi = acos(-1);$
 >       
->       ![3161550](https://gitee.com/peter95535/image-bed/raw/master/img/3161550.png)
+>       ![3161550](img/Algorithm/3161550.png)
 >       
 >   2. 余弦定理 $c^2 = a^2 + b^2 - 2abcos(t)$
 >
->       ![image-20220316155853980](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316155853980.png)
+>       ![image-20220316155853980](img/Algorithm/image-20220316155853980.png)
 
 #### 浮点数
 
@@ -8580,7 +8580,7 @@ public:
 >        }
 >        ```
 >
->        ![image-20220316161149165](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316161149165.png)
+>        ![image-20220316161149165](img/Algorithm/image-20220316161149165.png)
 >
 >   2.   浮点数的比较
 >
@@ -8595,7 +8595,7 @@ public:
 >        }
 >        ```
 >
->        ![image-20220316162034261](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316162034261.png)
+>        ![image-20220316162034261](img/Algorithm/image-20220316162034261.png)
 
 #### 向量
 
@@ -8605,7 +8605,7 @@ public:
 >
 >   2.   几何意义
 >
->        ![image-20220316164311609](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220316164311609.png)
+>        ![image-20220316164311609](img/Algorithm/image-20220316164311609.png)
 >
 >   3.   代码实现
 >
@@ -8776,7 +8776,7 @@ public:
 >
 >   下面是一个收纳盒的俯视图示例。
 >
->   ![1.jpg](https://gitee.com/peter95535/image-bed/raw/master/img/19_6d93a6ca3b-1.jpg)
+>   ![1.jpg](img/Algorithm/19_6d93a6ca3b-1.jpg)
 >
 >   你的任务是，每当约翰将玩具扔进收纳盒中时，确定每个分区中有多少个玩具。
 
@@ -8902,7 +8902,7 @@ public:
 >
 >   注意，坐标轴 `x` 轴从左向右延伸，`y` 轴从下向上延伸。
 >
->   ![1.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_d636a12245-1.png)
+>   ![1.png](img/Algorithm/19_d636a12245-1.png)
 
 **输出格式**
 
@@ -8930,7 +8930,7 @@ public:
 
 **手写稿**
 
-![3161121](https://gitee.com/peter95535/image-bed/raw/master/img/3161121.png)
+![3161121](img/Algorithm/3161121.png)
 
 **代码**
 
@@ -9088,7 +9088,7 @@ $O(n)$
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/merged.jpg)
+![img](img/Algorithm/merged.jpg)
 
 > 输入：`buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]`
 > 输出：`[[2,10],[3,15],[7,12],[12,0],[15,10],[20,8],[24,0]]`
@@ -9114,15 +9114,15 @@ $O(n)$
 >
 >    + 如果是左端点，则按照从大到小排序
 >
->      ![1](https://gitee.com/peter95535/image-bed/raw/master/img/1.jpg)
+>      ![1](img/Algorithm/1.jpg)
 >
 >    + 如果是右端点，则按照从小到大排序
 >
->      ![2](https://gitee.com/peter95535/image-bed/raw/master/img/2.jpg)
+>      ![2](img/Algorithm/2.jpg)
 >
 >    + 如果是左右端点重合，则按照先处理左端点，再处理右端点
 >
->      ![3](https://gitee.com/peter95535/image-bed/raw/master/img/3.jpg)
+>      ![3](img/Algorithm/3.jpg)
 >
 > 2. 使用 `pair` （默认升序）数组 `point` 来存储每一个点，排序，由于第三种情况的存在，所以，将左端点的值存储为负数，作用有二：
 >
@@ -9138,7 +9138,7 @@ $O(n)$
 >
 >    + 为啥要分左端点和右端点处理，题目不是说水平线段的左端点？
 >
->      ![image-20220118134627011](https://gitee.com/peter95535/image-bed/raw/master/img/image-20220118134627011.png)
+>      ![image-20220118134627011](img/Algorithm/image-20220118134627011.png)
 >
 >      + 如图，答案并不都是在左端点，其中一个答案在红色矩形的右端点
 
@@ -9214,7 +9214,7 @@ public:
 
 **手写稿**
 
-![WX20220120-215203@2x](https://gitee.com/peter95535/image-bed/raw/master/img/WX20220120-215203@2x.png)
+![WX20220120-215203@2x](img/Algorithm/WX20220120-215203@2x.png)
 
 **记忆技巧**
 
@@ -9448,11 +9448,11 @@ int main() {
 >
 >   2.   哈夫曼编码前置知识
 >
->        ![381011](https://gitee.com/peter95535/image-bed/raw/master/img/381011.png)
+>        ![381011](img/Algorithm/381011.png)
 >
 >   3.   本题步骤分析
 >
->        ![381015](https://gitee.com/peter95535/image-bed/raw/master/img/381015.png)
+>        ![381015](img/Algorithm/381015.png)
 
 **代码**
 
@@ -9508,6 +9508,10 @@ int main() {
 
 ## `Dijkstra`
 
+### 原理以及与 `SPFA` 的区别
+
+![3240836](img/Algorithm/3240836.png)
+
 ### [AcWing 849. Dijkstra求最短路 I](https://www.acwing.com/problem/content/851/)
 
 **题目描述**
@@ -9551,23 +9555,66 @@ int main() {
 
 **手写稿**
 
-
+![3231707](img/Algorithm/3231707.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 510, INF = 0x3f3f3f3f;
+int n, m;
+int st[N], dist[N];
+int g[N][N];
+int dijkstra() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    // 初始化距离
+    dist[1] = 0;
+    for (int i = 0; i < n; i ++ ) {
+        // 找到【未被选择】的最小的点
+        int t = -1;
+        for (int j = 1; j <= n; j ++ )
+            if (!st[j] && (t == -1 || dist[j] < dist[t])) t = j;
+        // 标记当前点已经被选择
+        st[t] = true;
+        // 使用最小点t去更新【未被选择】的点
+        for (int j = 1; j <= n; j ++ )
+            if (!st[j] && dist[j] > dist[t] + g[t][j])
+                dist[j] = dist[t] + g[t][j];
+    }
+    if (dist[n] == INF) return -1;
+    return dist[n];
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    // 初始化为正无穷
+    memset(g, 0x3f, sizeof g);
+    // 初始化对角线的距离
+    for (int i = 1; i <= n; i ++ ) g[i][i] = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        // 注意：有【重边】，取重边的最小值
+        g[u][v] = min(g[u][v], w);
+    }
+    cout << dijkstra() << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n^2)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`最短路`、`Dijkstra`
 
 **缝合怪**
 
@@ -9614,23 +9661,81 @@ int main() {
 
 **手写稿**
 
-
+![3231936](img/Algorithm/3231936.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+#include <queue>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 1.5e5 + 10, INF = 0x3f3f3f3f;
+int n, m, idx;
+int h[N], e[N], w[N], ne[N], dist[N], st[N];
+priority_queue<PII, vector<PII>, greater<PII>> q;
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+int dijkstra() {
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    q.push({0, 1});
+    while (q.size()) {
+        auto t = q.top(); q.pop();
+        int v = t.y;
+        // 如果v已经被访问过，则直接进行下一次访问【原因在手写稿中已经说明】
+        if (st[v]) continue;
+        // 如果已经访问到终点
+        if (v == n) break;
+        // 将当前点标记为已经选择
+        st[v] = true;
+        // 遍历v的邻接点
+        for (int i = h[v]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 如果当前点没有被访问过并且当前点有更优的路径
+            // 那就干它
+            if (!st[j] && dist[j] > dist[v] + w[i]) {
+                dist[j] = dist[v] + w[i];
+                q.push({dist[j], j});
+            }
+        }
+    }
+    if (dist[n] == INF) return -1;
+    return dist[n];
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        // 领接表不需要考虑重边的问题
+        add(u, v, w);
+    }
+    cout << dijkstra() << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(log_n)$
 
 **空间复杂度**
 
-
+$O(m)$
 
 **标签**
 
-
+`堆优化版Dijkstra`
 
 **缝合怪**
 
@@ -9681,23 +9786,62 @@ int main() {
 
 **手写稿**
 
-
+![3240954](img/Algorithm/3240954.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 1e4 + 10, INF = 0x3f3f3f3f;
+struct Node {
+    int u, v, w;
+}edges[N];
+int n, m, k;
+int backup[N], dist[N];
+int Bellman_Ford() {
+    // 初始化距离
+    memset(dist, 0x3f, sizeof dist);
+    // 距离源点的距离为0
+    dist[1] = 0;
+    for (int i = 0; i < k; i ++ ) { // 限制走k条路
+        // 将上一层的数据备份
+        memcpy(backup, dist, sizeof dist);
+        for (int j = 0; j < m; j ++ ) { // 遍历每条边
+            int u = edges[j].u, v = edges[j].v, w = edges[j].w;
+            // 记得使用上一层的数据
+            dist[v] = min(dist[v], backup[u] + w);
+        }
+    }
+    if (dist[n] > INF / 2) return INF;
+    return dist[n];
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &k);
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        edges[i] = {u, v, w};
+    }
+    int t = Bellman_Ford();
+    if (t == INF) puts("impossible");
+    else cout << t << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(mk)$
 
 **空间复杂度**
 
-
+$O(m)$
 
 **标签**
 
-
+`Bellman_Ford`
 
 **缝合怪**
 
@@ -9747,23 +9891,83 @@ int main() {
 
 **手写稿**
 
-
+![3241140](img/Algorithm/3241140.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+const int N = 1e5 + 10, INF = 0x3f3f3f3f;
+int n, m, idx;
+queue<int> q;
+int h[N], e[N], w[N], ne[N], dist[N], st[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+int spfa() {
+    // 初始化距离
+    memset(dist, 0x3f, sizeof dist);
+    // 源点距离为0
+    dist[1] = 0;
+    // 将源点入队
+    q.push(1);
+    // 标记1号点已经在队列中
+    st[1] = true;
+    while (q.size()) {
+        int t = q.front(); q.pop();
+        // 标记1号点已经出队列
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 不断更新最小距离
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                // 如果当前点j不在队列中
+                // 入队
+                // 标记其在队列中
+                if (!st[j]) {
+                    st[j] = true;
+                    q.push(j);
+                }
+            }
+        }
+    }
+    if (dist[n] > INF / 2) return INF;
+    return dist[n];
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        add(u, v, w);
+    }
+    int t = spfa();
+    if (t == INF) puts("impossible");
+    else cout << t << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$最坏时间复杂度O(n^2)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`spfa`
 
 **缝合怪**
 
@@ -9808,23 +10012,76 @@ Yes
 
 **手写稿**
 
-
+>   1.   如果某个点被更新的次数大于等于 `n`，说明一定存在负环
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+const int N = 2010, M = 10010;
+int n, m, idx;
+int h[N], dist[N], cnt[N], st[N], e[M], w[M], ne[M];
+queue<int> q;
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+bool spfa() {
+    for (int i = 1; i <= n; i ++ ) {
+        q.push(i);
+        st[i] = true;
+    }
+    while (q.size()) {
+        int t = q.front(); q.pop();
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                // 记录每个点被更新的次数
+                cnt[j] = cnt[t] + 1;
+                // 如果被更新的次数大于等于n，说明存在环
+        		if (cnt[j] >= n) return true;
+                if (!st[j]) {
+                    st[j] = true;
+                    q.push(j);
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        add(u, v, w);
+    }
+    if(spfa()) puts("Yes");
+    else puts("No");
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(nm)$
 
 **空间复杂度**
 
-
+$O(m)$
 
 **标签**
 
-
+`SPFA判负环`
 
 **缝合怪**
 
@@ -9975,7 +10232,7 @@ public:
 
 **手写稿**
 
-![3172147](https://gitee.com/peter95535/image-bed/raw/master/img/3172147.png)
+![3172147](img/Algorithm/3172147.png)
 
 **代码**
 
@@ -10081,7 +10338,7 @@ $O(n)$
 
 **手写稿**
 
-![3181401](https://gitee.com/peter95535/image-bed/raw/master/img/3181401.png)
+![3181401](img/Algorithm/3181401.png)
 
 **代码**
 
@@ -10126,7 +10383,7 @@ $O(n)$
 
 >   假设有一个同时存储文件和目录的文件系统。下图展示了文件系统的一个示例：
 >
->   ![mdir](https://gitee.com/peter95535/image-bed/raw/master/img/mdir.jpg)
+>   ![mdir](img/Algorithm/mdir.jpg)
 >
 >   这里将 `dir` 作为根目录中的唯一目录。`dir` 包含两个子目录 `subdir1` 和 `subdir2` 。`subdir1` 包含文件 `file1.ext` 和子目录 `subsubdir1`；`subdir2` 包含子目录 `subsubdir2`，该子目录下包含文件 `file2.ext` 。
 >
@@ -10182,7 +10439,7 @@ $O(n)$
 
 **手写稿**
 
-![3211446](https://gitee.com/peter95535/image-bed/raw/master/img/3211446.png)
+![3211446](img/Algorithm/3211446.png)
 
 **代码**
 
@@ -10302,7 +10559,7 @@ W.W.W.....W.
 
 **手写稿**
 
-![3180942](https://gitee.com/peter95535/image-bed/raw/master/img/3180942.png)
+![3180942](img/Algorithm/3180942.png)
 
 **代码**
 
@@ -10450,7 +10707,7 @@ $O(n^2)$
 
 **手写稿**
 
-![3181225](https://gitee.com/peter95535/image-bed/raw/master/img/3181225.png)
+![3181225](img/Algorithm/3181225.png)
 
 **代码**
 
@@ -10597,15 +10854,15 @@ $O(nm)$
 
 >   样例1：
 >
->   ![1——1.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_0250799aef-1-20220318165849164.png)
+>   ![1——1.png](img/Algorithm/19_0250799aef-1-20220318165849164.png)
 >
 >   样例2：
 >
->   ![2.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_08db5e60ef-2.png)
+>   ![2.png](img/Algorithm/19_08db5e60ef-2.png)
 
 **手写稿**
 
-![3182025](https://gitee.com/peter95535/image-bed/raw/master/img/3182025.png)
+![3182025](img/Algorithm/3182025.png)
 
 **代码**
 
@@ -10759,7 +11016,7 @@ $O(n^2)$
 
 **手写稿**
 
-![3211047](https://gitee.com/peter95535/image-bed/raw/master/img/3211047.png)
+![3211047](img/Algorithm/3211047.png)
 
 **代码**
 
@@ -10926,7 +11183,7 @@ $O(n^2)$
 
 **手写稿**
 
-![3211127](https://gitee.com/peter95535/image-bed/raw/master/img/3211127.png)
+![3211127](img/Algorithm/3211127.png)
 
 **代码**
 
@@ -11144,7 +11401,7 @@ $O(n^2)$
 
 **手写稿**
 
-![3221422](https://gitee.com/peter95535/image-bed/raw/master/img/3221422.png)
+![3221422](img/Algorithm/3221422.png)
 
 **代码**
 
@@ -11400,7 +11657,7 @@ BCABCCB
 
 **手写稿**
 
-![3221913](https://gitee.com/peter95535/image-bed/raw/master/img/3221913.png)
+![3221913](img/Algorithm/3221913.png)
 
 **代码**
 
@@ -11551,7 +11808,7 @@ $O(n^2)$
 >
 >   电路板的整体结构是一个 `R` 行 `C` 列的网格（`R,C≤500`），如下图所示。
 >
->   ![电路.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_be6ff7a219-%E7%94%B5%E8%B7%AF.png)
+>   ![电路.png](img/Algorithm/19_be6ff7a219-%E7%94%B5%E8%B7%AF.png)
 >
 >   每个格点都是电线的接点，每个格子都包含一个电子元件。
 >
@@ -11612,7 +11869,162 @@ $O(n^2)$
 >
 >   只需要按照下面的方式旋转标准件，就可以使得电源和发动机之间连通。
 >
->   ![电路2.png](https://gitee.com/peter95535/image-bed/raw/master/img/19_a0e8e80a19-%E7%94%B5%E8%B7%AF2.png)
+>   ![电路2.png](img/Algorithm/19_a0e8e80a19-%E7%94%B5%E8%B7%AF2.png)
+
+**手写稿**
+
+![3251225](img/Algorithm/3251225.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <deque>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 510, M = N * N;
+int T, n, m;
+int dx[4] = {-1, -1, 1, 1};
+int dy[4] = {-1, 1, 1, -1};
+int ix[4] = {-1, -1, 0, 0};
+int iy[4] = {-1, 0, 0, -1};
+// 合法序列的解释【手写稿】
+char cs[] = "\\/\\/";
+char g[N][N];
+int dist[N][N], st[N][N];
+int bfs() {
+    // 多组数据
+    // 每次进行初始化
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    // 双端队列
+    deque<PII> q;
+    q.push_front({0, 0});
+    // 初始化距离
+    dist[0][0] = 0;
+    while (q.size()) {
+        auto t = q.front(); q.pop_front();
+        // 若已被访问过
+        if (st[t.x][t.y]) continue;
+        // 将当前点标记为已被访问
+        st[t.x][t.y] = true;
+        // 遍历四个方向上的点
+        for (int i = 0; i < 4; i ++ ) {
+            int tx = t.x + dx[i];
+            int ty = t.y + dy[i];
+            // 处理越界的问题
+            if (tx < 0 || tx > n || ty < 0 || ty > m || st[tx][ty]) continue;
+            // 由点的坐标得到线的坐标
+            int ga = t.x + ix[i];
+            int gb = t.y + iy[i];
+            if (g[ga][gb] != cs[i]) {
+                // 取min的原因在【手写稿】
+                dist[tx][ty] = min(dist[tx][ty], dist[t.x][t.y] + 1);
+                q.push_back({tx, ty});
+            }
+            else {
+                dist[tx][ty] = dist[t.x][t.y];
+                q.push_front({tx, ty});
+            }
+            if (tx == n && ty == m) return dist[tx][ty];
+        }
+    }
+    return -1;
+}
+int main() {
+    scanf("%d", &T);
+    while (T -- ) {
+        scanf("%d%d", &n, &m);
+        for (int i = 0; i < n; i ++ ) scanf("%s", g[i]);
+        if (n + m & 1) puts("NO SOLUTION");
+        else cout << bfs() << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`双端队列广搜`
+
+**缝合怪**
+
+### 双向广搜
+
+#### [AcWing 190. 字串变换](https://www.acwing.com/problem/content/192/)
+
+**题目描述**
+
+>   已知有两个字串 `A`, `B` 及一组字串变换的规则（至多 `6` 个规则）:
+>
+>   $A_1→B_1$
+>
+>   $A_2→B_2$
+>
+>   $…$
+>
+>   规则的含义为：在 `A` 中的子串 $A_1$ 可以变换为 $B_1$、$A_2$ 可以变换为 $B_2…$。
+>
+>   例如：`A` `＝` `abcd` `B` `＝` `xyz`
+>
+>   变换规则为：
+>
+>   ```c++
+>   abc` →→ `xu` `ud` →→ `y` `y` →→ `yz
+>   ```
+>
+>   则此时，AA 可以经过一系列的变换变为 BB，其变换的过程为：
+>
+>   ```c++
+>   abcd` →→ `xud` →→ `xy` →→ `xyz
+>   ```
+>
+>   共进行了三次变换，使得 `A` 变换为 `B`。
+
+**输入格式**
+
+>   输入格式如下：
+>   $$
+>   A B \\
+>   A_1 B_1 \\
+>   A_2 B_2 \\
+>   … …
+>   $$
+>   第一行是两个给定的字符串 `A` 和 `B`。
+>
+>   接下来若干行，每行描述一组字串变换的规则。
+>
+>   所有字符串长度的上限为 `20`。
+
+**输出格式**
+
+>   若在 `10` 步（包含 `10` 步）以内能将 `A` 变换为 `B` ，则输出最少的变换步数；否则输出 `NO ANSWER!`。
+
+**输入样例**
+
+```c++
+abcd xyz
+abc xu
+ud y
+y yz
+```
+
+**输出样例**
+
+```c++
+3
+```
 
 **手写稿**
 
@@ -11638,17 +12050,89 @@ $O(n^2)$
 
 
 
+### `A*`
+
+#### [AcWing 178. 第K短路](https://www.acwing.com/problem/content/180/)
+
+**题目描述**
+
+>   给定一张 `N` 个点（编号 `1,2…N`），`M` 条边的有向图，求从起点 `S` 到终点 `T` 的第 `K` 短路的长度，路径允许重复经过点或边。
+>
+>   **注意：** 每条最短路中至少要包含一条边。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `M`。
+>
+>   接下来 `M` 行，每行包含三个整数 `A,B` 和 `L`，表示点 `A` 与点 `B` 之间存在有向边，且边长为 `L`。
+>
+>   最后一行包含三个整数 `S,T` 和 `K`，分别表示起点 `S`，终点 `T` 和第 `K` 短路。
+
+**输出格式**
+
+>   输出占一行，包含一个整数，表示第 `K` 短路的长度，如果第 `K` 短路不存在，则输出 `−1`。
+
+**数据范围**
+
+>   +   $1≤S,T≤N≤1000,$
+>   +   $0≤M≤10^4,$
+>   +   $1≤K≤1000,$
+>   +   $1≤L≤100$
+
+**输入样例**
+
+```c++
+2 2
+1 2 5
+2 1 4
+1 2 2
+```
+
+**输出样例**
+
+```c++
+14
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### DFS之连通性模型
+
+
+
 ## 模拟退火
 
 ### 原理概述
 
 >   1.   手写稿
 >
->        ![3191112](https://gitee.com/peter95535/image-bed/raw/master/img/3191112.jpg)
+>        ![3191112](img/Algorithm/3191112.jpg)
 >
 >   2.   动画演示
 >
->        ![img3191633](https://gitee.com/peter95535/image-bed/raw/master/img/simulated-annealing-20220319163337913.gif)
+>        ![img3191633](img/Algorithm/simulated-annealing-20220319163337913.gif)
 
 
 
@@ -11859,7 +12343,7 @@ $O(n)$
 
 **手写稿**
 
-![3191646](https://gitee.com/peter95535/image-bed/raw/master/img/3191646.jpg)
+![3191646](img/Algorithm/3191646.jpg)
 
 **代码**
 
@@ -11980,7 +12464,7 @@ $O(n)$
 
 **手写稿**
 
-![3191855](https://gitee.com/peter95535/image-bed/raw/master/img/3191855.jpg)
+![3191855](img/Algorithm/3191855.jpg)
 
 **代码**
 
@@ -12109,7 +12593,7 @@ $O(n)$
 
 **手写稿**
 
-![3202158](https://gitee.com/peter95535/image-bed/raw/master/img/3202158.png)
+![3202158](img/Algorithm/3202158.png)
 
 **代码**
 
@@ -12216,7 +12700,7 @@ $O(n^2)$
 
 **手写稿**
 
-![2181044](https://gitee.com/peter95535/image-bed/raw/master/img/2181044.png)
+![2181044](img/Algorithm/2181044.png)
 
 **代码**
 
@@ -12297,7 +12781,7 @@ public:
 
 **手写稿**
 
-![3160836](https://gitee.com/peter95535/image-bed/raw/master/img/3160836.png)
+![3160836](img/Algorithm/3160836.png)
 
 **代码**
 
@@ -12388,7 +12872,7 @@ $O(n)$
 
 **手写稿**
 
-![3162220](https://gitee.com/peter95535/image-bed/raw/master/img/3162220.png)
+![3162220](img/Algorithm/3162220.png)
 
 **代码**
 
@@ -12444,14 +12928,14 @@ $O(1)$
 
 **示例 1**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/oddeven-linked-list.jpg)
+![img](img/Algorithm/oddeven-linked-list.jpg)
 
 > 输入: `head = [1,2,3,4,5]`
 > 输出: `[1,3,5,2,4]`
 
 **示例 2**
 
-![img](https://gitee.com/peter95535/image-bed/raw/master/img/oddeven2-linked-list.jpg)
+![img](img/Algorithm/oddeven2-linked-list.jpg)
 
 > 输入: `head = [2,1,3,5,6,4,7]`
 > 输出: `[2,3,6,7,1,5,4]`
@@ -12464,7 +12948,7 @@ $O(1)$
 
 **手写稿**
 
-![312202](https://gitee.com/peter95535/image-bed/raw/master/img/312202.png)
+![312202](img/Algorithm/312202.png)
 
 **代码**
 
@@ -12550,7 +13034,7 @@ public:
 
 **手写稿**
 
-![331157](https://gitee.com/peter95535/image-bed/raw/master/img/331157.png)
+![331157](img/Algorithm/331157.png)
 
 **代码一：树的遍历【递归写法】**
 
@@ -12704,7 +13188,7 @@ public:
 
 **手写稿**
 
-![3171612](https://gitee.com/peter95535/image-bed/raw/master/img/3171612.png)
+![3171612](img/Algorithm/3171612.png)
 
 **代码**
 
@@ -12811,7 +13295,7 @@ $O(n)$
 
 **手写稿**
 
-![3171956](https://gitee.com/peter95535/image-bed/raw/master/img/3171956.png)
+![3171956](img/Algorithm/3171956.png)
 
 **代码**
 
@@ -12901,7 +13385,7 @@ $O(1)$
 
 **手写稿**
 
-![3172043](https://gitee.com/peter95535/image-bed/raw/master/img/3172043.png)
+![3172043](img/Algorithm/3172043.png)
 
 **代码**
 
@@ -12991,7 +13475,7 @@ $O(n)$
 
 **手写稿**
 
-![2220937](https://gitee.com/peter95535/image-bed/raw/master/img/2220937.png)
+![2220937](img/Algorithm/2220937.png)
 
 **代码**
 
@@ -13061,7 +13545,7 @@ int main() {
 
 **手写稿**
 
-![311119](https://gitee.com/peter95535/image-bed/raw/master/img/311119.png)
+![311119](img/Algorithm/311119.png)
 
 **代码**
 
@@ -13110,7 +13594,7 @@ public:
 
 **动图演示**
 
-![v2-3c7ddb59df2d21b287e42a7b908409cb_b](https://gitee.com/peter95535/image-bed/raw/master/img/v2-3c7ddb59df2d21b287e42a7b908409cb_b.gif)
+![v2-3c7ddb59df2d21b287e42a7b908409cb_b](img/Algorithm/v2-3c7ddb59df2d21b287e42a7b908409cb_b.gif)
 
 ### [LeetCode 347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
 
@@ -13140,7 +13624,7 @@ public:
 
 **手写稿**
 
-![340943](https://gitee.com/peter95535/image-bed/raw/master/img/340943.png)
+![340943](img/Algorithm/340943.png)
 
 **代码**
 
@@ -13213,7 +13697,7 @@ public:
 
 **手写稿**
 
-![342158](https://gitee.com/peter95535/image-bed/raw/master/img/342158.png)
+![342158](img/Algorithm/342158.png)
 
 **代码**
 
@@ -13341,7 +13825,7 @@ public:
 
 **手写稿**
 
-![361957](https://gitee.com/peter95535/image-bed/raw/master/img/361957.png)
+![361957](img/Algorithm/361957.png)
 
 **代码**
 
@@ -13409,7 +13893,7 @@ public:
 
 **手写稿**
 
-![361811](https://gitee.com/peter95535/image-bed/raw/master/img/361811.png)
+![361811](img/Algorithm/361811.png)
 
 **代码**
 
@@ -13575,11 +14059,11 @@ int main() {
 
 **手写稿**
 
->   ![20201217174700577](https://gitee.com/peter95535/image-bed/raw/master/img/20201217174700577.png)
+>   ![20201217174700577](img/Algorithm/20201217174700577.png)
 >
 >   紫色面积是指 `(1,1)` 左上角到 `(i,j-1)` 右下角的矩形面积, 绿色面积是指 `(1,1)` 左上角到 `(i-1, j )` 右下角的矩形面积。每一个颜色的矩形面积都代表了它所包围元素的和。
 >
->   ![20201216215336857](https://gitee.com/peter95535/image-bed/raw/master/img/20201216215336857.png)
+>   ![20201216215336857](img/Algorithm/20201216215336857.png)
 >
 >   从图中我们很容易看出，整个外围蓝色矩形面积`s[i][j]` = 绿色面积`s[i-1][j]` + 紫色面积`s[i][j-1]` - 重复加的红色的面积`s[i-1][j-1]` `+`小方块的面积`a[i][j]`;
 >
@@ -13668,7 +14152,7 @@ int main() {
 
 **手写稿**
 
-![3131310](https://gitee.com/peter95535/image-bed/raw/master/img/3131310.png)
+![3131310](img/Algorithm/3131310.png)
 
 **代码**
 
@@ -13764,7 +14248,7 @@ int main() {
 
 **手写稿**
 
-![3131829](https://gitee.com/peter95535/image-bed/raw/master/img/3131829.png)
+![3131829](img/Algorithm/3131829.png)
 
 **代码**
 
@@ -13855,7 +14339,7 @@ int main() {
 
 **手写稿**
 
-![3131937](https://gitee.com/peter95535/image-bed/raw/master/img/3131937.png)
+![3131937](img/Algorithm/3131937.png)
 
 **代码**
 
@@ -13980,7 +14464,7 @@ int main() {
 
 **手写稿**
 
-![3171148](https://gitee.com/peter95535/image-bed/raw/master/img/3171148.png)
+![3171148](img/Algorithm/3171148.png)
 
 **代码**
 
@@ -14076,7 +14560,7 @@ $O(n)$
 
 **手写稿**
 
-![3171341](https://gitee.com/peter95535/image-bed/raw/master/img/3171341.png)
+![3171341](img/Algorithm/3171341.png)
 
 **代码**
 
@@ -14221,6 +14705,6 @@ $O(1)$
 
 ### `C++` 运算符优先级
 
-![361108](https://gitee.com/peter95535/image-bed/raw/master/img/361108.png)
+![361108](img/Algorithm/361108.png)
 
 ### End

@@ -29,7 +29,7 @@
 >
 >   ```python
 >   from django.shortcuts import render
->                                 
+>                                     
 >   def index(request):
 >       # render的作用就是加载模板或者渲染模板
 >       return render(request, 'multiends/web.html')
@@ -2645,15 +2645,343 @@
 
 #### 统一界面的比例
 
-
+>   1.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            constructor(root) {
+>                <!-- 添加此行 -->
+>                this.root.$ac_game.append(this.$playground);
+>                this.$playground.show();
+>                <!-- 添加 start 函数 -->
+>                this.start();
+>            }
+>            start() {
+>                let outer = this;
+>                <!-- 当页面大小发生变动的时候，触发此函数 -->
+>                $(window).resize(function() {
+>                    outer.resize();
+>                });
+>            }
+>            resize() {
+>                console.log("resize");
+>                <!-- 获取宽度 -->
+>                this.width = this.$playground.width();
+>                <!-- 获取高度 -->
+>                this.height = this.$playground.height();
+>                <!-- 获取单位 -->
+>                let unit = Math.min(this.width / 16, this.height / 9);
+>                <!-- 宽度占16个单位 -->
+>                this.width = unit * 16;
+>                <!-- 高度占9个单位 -->
+>                this.height = unit * 9;
+>                <!-- 记录下规模 -->
+>                this.scale = this.height;
+>            }
+>            show() {
+>                this.resize();
+>                <!-- 删除此行 -->
+>                <!-- this.root.$ac_game.append(this.$playground); -->
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/game_map/zbase.js`
+>
+>        ```javascript
+>        class GameMap extends AcGameObject {
+>            <!-- 添加 resize 函数-->
+>            resize() {
+>                this.ctx.canvas.width = this.playground.width;
+>                this.ctx.canvas.height = this.playground.height;
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            resize() {
+>                <!-- 如果有地图，则更新下地图的大小 -->
+>                if (this.game_map) this.game_map.resize();
+>            }
+>        }
+>        ```
+>
+>   4.   修改 `acapp/game/static/css/game.css`
+>
+>        ```css
+>        /* 修改 playground 的背景颜色 */
+>        .ac_game_playground {
+>            background-color: gray;
+>        }
+>        
+>        /* 画布居中 */
+>        .ac_game_playground > canvas {
+>            position: relative;
+>            top: 50%;
+>            left: 50%;
+>            transform: translate(-50%, -50%);
+>        }
+>        ```
+>
+>   5.   修改 `acapp/game/static/js/src/playground/game_map/zbase.js`
+>
+>        ```javascript
+>        class GameMap extends AcGameObject {
+>            resize() {
+>                <!-- 涂一层黑色的蒙版，防止出现渐变色 -->
+>                this.ctx.fillStyle = "rgba(0, 0, 0, 1)";
+>                this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+>            }
+>        }
+>        ```
 
 #### 统一玩家的比例
 
-
+>   1.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show() {
+>                <!-- 将玩家比例修改成相对比例，➗ scale -->
+>                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.2, true));
+>                for (let i = 0; i < 10; i ++ ) {
+>                    this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.2, false));
+>                }
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/`
+>
+>        ````javascript
+>        class Player extends AcGameObject {
+>            constructor(playground, x, y, radius, color, speed, is_me) {
+>                <!-- 将绝对值设置为相对值的1% -->
+>                this.eps = 0.01;
+>            }
+>            start() {
+>                if (this.is_me) {
+>                    this.add_listening_events();
+>                }
+>                else {
+>                    <!-- 将绝对值修改成相对值 -->
+>                    let tx = Math.random() * this.playground.width / this.playground.scale;
+>                    let ty = Math.random() * this.playground.height / this.playground.scale;
+>                    this.move_to(tx, ty);
+>                }
+>            }
+>            add_listening_events() {
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    if (e.which == 3) {
+>                        <!-- 将绝对值修改成相对值 -->
+>                        outer.move_to((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale);
+>                    }
+>                    else if (e.which == 1) {
+>                        if (outer.cur_skill === "fireball") {
+>                            <!-- 将绝对值修改成相对值 -->
+>                            outer.shoot_fireball((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale);
+>                        }
+>                    }
+>                });
+>            }
+>            <!-- 将 update 函数进行拆分 -->
+>            update() {
+>                this.update_move();
+>                this.render();
+>            }
+>            update_move() { // 只更新玩家移动
+>                this.spent_time += this.timedelta / 1000;
+>                if (!this.is_me && this.spent_time > 5 && Math.random() < 1 / 180.0) {
+>                    let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
+>                    let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 2;
+>                    let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 2;
+>                    this.shoot_fireball(tx, ty);
+>                }
+>                <!-- 大于 this.eps -->
+>                if (this.damage_speed > this.eps) {
+>                    this.vx = this.vy = this.move_length = 0;
+>                    this.x += this.damage_x + this.damage_speed * this.timedelta / 1000;
+>                    this.y += this.damage_y + this.damage_speed * this.timedelta / 1000;
+>                    this.damage_speed *= this.friction;
+>                }
+>                else {
+>                    <!-- 移动的长度小于this.eps -->
+>                    if (this.move_length < this.eps) {
+>                        this.move_length = this.vx = this.vy = 0;
+>                        if (!this.is_me) {
+>                            <!-- 将绝对值修改成相对值 -->
+>                            let tx = Math.random() * this.playground.width / this.playground.scale;
+>                            let ty = Math.random() * this.playground.height / this.playground.scale;
+>                            this.move_to(tx, ty);
+>                        }
+>                    }
+>                    else {
+>                        let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+>                        this.x += this.vx * moved;
+>                        this.y += this.vy * moved;
+>                        this.move_length -= moved;
+>                    }
+>                }
+>            }
+>            render() {
+>                <!-- 记录比例 -->
+>                let scale = this.playground.scale;
+>                if (this.is_me) {
+>                    <!-- 将相对值修改成绝对值 -->
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                    <!-- 将相对值修改成绝对值 -->
+>                    this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+>                }
+>                else {
+>                    <!-- 将相对值修改成绝对值 -->
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                }
+>            }
+>        }
+>        ````
 
 #### 统一技能的比例
 
+>   1.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
+>
+>        ```javascript
+>        class FireBall extends AcGameObject {
+>            constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) {
+>                <!-- 将极限值修改为原来的1% -->
+>                this.eps = 0.01;
+>            }
+>            render() {
+>                <!-- 记录下规模 -->
+>                let scale = this.playground.scale;
+>                <!-- 将相对位置修改为绝对位置 -->
+>                this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/particle/zbase.js`
+>
+>        ```javascript
+>        class Particle extends AcGameObject {
+>            constructor(playground, x, y, radius, vx, vy, color, speed, move_length) {
+>                <!-- 值修改为相对值的1% -->
+>                this.eps = 0.01;
+>            }
+>            render() {
+>                <!-- 将相对值修改为绝对值 -->
+>                let scale = this.playground.scale;
+>                this.ctx.beginPath();
+>                <!-- 将相对值修改为绝对值 -->
+>                this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>            }
+>        }
+>        ```
 
+### 添加多人模式
+
+>   1.   修改 `acapp/game/static/js/src/menu/zbase.js`
+>
+>        ```javascript
+>        class AcGameMenu {
+>            constructor(root) {
+>                this.$multi_mode = this.$menu.find(".ac_game_menu_field_item_multi_mode");
+>            }
+>            add_listening_events() {
+>                let outer = this;
+>                this.$single_mode.click(function() {
+>                    outer.hide();
+>                    <!-- 添加单人模式参数 -->
+>                    outer.root.playground.show("signle mode");
+>                });
+>                this.$multi_mode.click(function() {
+>                    outer.hide();
+>                    <!-- 添加多人模式参数 -->
+>                    outer.root.playground.show("multi mode");
+>                });
+>                this.$settings.click(function() {
+>                    outer.root.settings.logout_on_remote();
+>                });
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            <!-- 添加模式识别 -->
+>            show(mode) {
+>                this.width = this.$playground.width();
+>                this.height = this.$playground.height();
+>                this.game_map = new GameMap(this);
+>                <!-- resize要将地图map一起resize -->
+>                this.resize();
+>                this.players = [];
+>                <!-- 如果角色是本人，则显示"me" -->
+>                <!-- 传入用户名和密码 -->
+>                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
+>                if (mode === "signle mode") {
+>                    for (let i = 0; i < 10; i ++ ) {
+>                        <!-- 如果角色是机器人，则显示"robot" -->
+>                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
+>                    }
+>                }
+>                else if (mode === "multi mode") {
+>                    
+>                }
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            constructor(playground, x, y, radius, color, speed, character, username, photo) {
+>                this.character = character;
+>                this.username = username;
+>                this.photo = photo;
+>                if (this.character !== "robot") {
+>                    this.img = new Image();
+>                    this.img.src = this.photo;
+>                }
+>            }
+>            start() {
+>                if (this.character === "me") {
+>                    this.add_listening_events();
+>                }
+>                else {
+>                    let tx = Math.random() * this.playground.width / this.playground.scale;
+>                    let ty = Math.random() * this.playground.height / this.playground.scale;
+>                    this.move_to(tx, ty);
+>                }
+>            }
+>            render() {
+>                let scale = this.playground.scale;
+>                <!-- 如果不是机器人 -->
+>                if (this.character !== "robot") {
+>                    this.ctx.save();
+>                    this.ctx.beginPath();
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                    this.ctx.stroke();
+>                    this.ctx.clip();
+>                    this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+>                    this.ctx.restore();
+>                }
+>                else {
+>                    this.ctx.beginPath();
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                    this.ctx.fillStyle = this.color;
+>                    this.ctx.fill();
+>                }
+>            }
+>        }
+>        ```
+
+### 到49分钟
 
 # 注意事项
 

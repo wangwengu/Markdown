@@ -69,3 +69,7 @@ $$
 \bar x = \frac{\sum\nolimits_{i = 1}^{n}x_i}{n}
 $$
 
+$$
+\Delta E \geq 0
+$$
+
