@@ -29,7 +29,7 @@
 >
 >   ```python
 >   from django.shortcuts import render
->                                     
+>                                         
 >   def index(request):
 >       # render的作用就是加载模板或者渲染模板
 >       return render(request, 'multiends/web.html')
@@ -2981,7 +2981,226 @@
 >        }
 >        ```
 
-### 到49分钟
+### 联机
+
+#### 准备工作
+
+>   1.   [讲义](https://www.acwing.com/blog/content/12692/)
+>
+>   2.   具体步骤
+>
+>        +   安装 `channels_redis`
+>
+>            +   `pip install channels_redis`
+>
+>        +   配置 `acapp/acapp/asgi.py`
+>
+>            ```python
+>            import os
+>
+>            from channels.auth import AuthMiddlewareStack
+>            from channels.routing import ProtocolTypeRouter, URLRouter
+>            from django.core.asgi import get_asgi_application
+>            from game.routing import websocket_urlpatterns
+>
+>            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'acapp.settings')
+>
+>            application = ProtocolTypeRouter({
+>                "http": get_asgi_application(),
+>                "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+>            })
+>            ```
+>
+>        +   配置 `acapp/acapp/settings.py`
+>
+>            +   在 `INSTALLED_APPS` 中添加 `channels`，添加后如下所示：
+>
+>                ```python
+>                INSTALLED_APPS = [ 
+>                    'channels',
+>                    'game.apps.GameConfig',
+>                    'django.contrib.admin',
+>                    'django.contrib.auth',
+>                    'django.contrib.contenttypes',
+>                    'django.contrib.sessions',
+>                    'django.contrib.messages',
+>                    'django.contrib.staticfiles',
+>                ]
+>                ```
+>
+>            +   然后在文件末尾添加：
+>
+>                ```python
+>                ASGI_APPLICATION = 'acapp.asgi.application'
+>                CHANNEL_LAYERS = {
+>                    "default": {
+>                        "BACKEND": "channels_redis.core.RedisChannelLayer",
+>                        "CONFIG": {
+>                            "hosts": [("127.0.0.1", 6379)],
+>                        },
+>                    },
+>                }
+>                ```
+>
+>        +   配置 `acapp/game/routing.py`
+>
+>            这一部分的作用相当于 `http` 的 `urls` 
+>            内容如下：
+>
+>            ```python
+>            from django.urls import path
+>
+>            websocket_urlpatterns = [
+>            ]
+>            ```
+>
+>        +   编写 `acapp/game/consumers`
+>
+>            这一部分的作用相当于 `http` 的 `views`
+>
+>            参考示例：
+>
+>            ```python
+>            from channels.generic.websocket import AsyncWebsocketConsumer
+>            import json
+>            
+>            class MultiPlayer(AsyncWebsocketConsumer):
+>                async def connect(self):
+>                    await self.accept()
+>                    print('accept')
+>            
+>                    self.room_name = "room"
+>                    await self.channel_layer.group_add(self.room_name, self.channel_name)
+>            
+>                async def disconnect(self, close_code):
+>                    print('disconnect')
+>                    await self.channel_layer.group_discard(self.room_name, self.channel_name);
+>            
+>            
+>                async def receive(self, text_data):
+>                    data = json.loads(text_data)
+>                    print(data)
+>            ```
+>            
+>        +   启动 `django_channels`
+>        
+>            在 `~/acapp` 目录下执行：
+>        
+>            ```bash
+>            daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
+>            ```
+>
+
+#### `websockt` 交互
+
+>   1.   创建 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            constructor(playground) {
+>                this.playground = playground;
+>                <!-- 创建 websocket 连接 -->
+>                this.ws = new WebSocket("wss://app1164.acapp.acwing.com.cn/wss/multiplayer/");
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/routing.py`
+>
+>        ```python
+>        from django.urls import path
+>        from game.consumers.multiplayer.index import MultiPlayer
+>        
+>        # 添加路由
+>        websocket_urlpatterns = [
+>            path("wss/multiplayer/", MultiPlayer.as_asgi(), name = "wss_multiplayer")
+>        ]
+>        ```
+>
+>   3.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            async def connect(self):
+>                await self.accept()
+>                print('accept')
+>        
+>                self.room_name = "room"
+>                await self.channel_layer.group_add(self.room_name, self.channel_name)
+>        	# 注意此函数的用法
+>            async def disconnect(self, close_code):
+>                print('disconnect')
+>                await self.channel_layer.group_discard(self.room_name, self.channel_name);
+>        
+>        
+>            async def receive(self, text_data):
+>                data = json.loads(text_data)
+>                print(data)
+>        ```
+>
+>   4.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                if (mode === "signle mode") {
+>                    for (let i = 0; i < 10; i ++ ) {
+>                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
+>                    }
+>                }
+>                else if (mode === "multi mode") {
+>                    <!-- 点击多人模式，创建 websocket 连接 -->
+>                    this.mps = new MultiPlayerSocket(this);
+>                }
+>            }
+>            hide() {
+>                this.$playground.hide();
+>            }
+>        }
+>        ```
+>
+>   5.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            <!-- 创建用户的函数 -->
+>            send_create_player() {
+>                this.ws.send(JSON.stringify({
+>                    'message': "Hello acapp server"
+>                }));
+>            }
+>        }
+>        ```
+>
+>   6.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                let outer = this;
+>                if (mode === "signle mode") {
+>                    for (let i = 0; i < 10; i ++ ) {
+>                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
+>                    }
+>                }
+>                else if (mode === "multi mode") {
+>                    this.mps = new MultiPlayerSocket(this);
+>                   	<!-- 判断是否连接 -->
+>                    this.mps.ws.onopen = function() {
+>                        <!-- 如果已经连接，则调用创建玩家的函数 -->
+>                        outer.mps.send_create_player();
+>                    };
+>                }
+>            }
+>        }
+>        ```
+
+#### 编写同步函数
+
+到1时24分钟
 
 # 注意事项
 
