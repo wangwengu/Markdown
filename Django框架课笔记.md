@@ -29,7 +29,7 @@
 >
 >   ```python
 >   from django.shortcuts import render
->                                         
+>                                               
 >   def index(request):
 >       # render的作用就是加载模板或者渲染模板
 >       return render(request, 'multiends/web.html')
@@ -3063,15 +3063,15 @@
 >            ```python
 >            from channels.generic.websocket import AsyncWebsocketConsumer
 >            import json
->            
+>                                       
 >            class MultiPlayer(AsyncWebsocketConsumer):
 >                async def connect(self):
 >                    await self.accept()
 >                    print('accept')
->            
+>                                       
 >                    self.room_name = "room"
 >                    await self.channel_layer.group_add(self.room_name, self.channel_name)
->            
+>                                       
 >                async def disconnect(self, close_code):
 >                    print('disconnect')
 >                    await self.channel_layer.group_discard(self.room_name, self.channel_name);
@@ -3081,11 +3081,11 @@
 >                    data = json.loads(text_data)
 >                    print(data)
 >            ```
->            
+>                        
 >        +   启动 `django_channels`
->        
+>                    
 >            在 `~/acapp` 目录下执行：
->        
+>                    
 >            ```bash
 >            daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
 >            ```
@@ -3122,30 +3122,27 @@
 >        ```python
 >        import json
 >        from channels.generic.websocket import AsyncWebsocketConsumer
->        
+>                       
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            async def connect(self):
 >                await self.accept()
 >                print('accept')
->        
+>                       
 >                self.room_name = "room"
 >                await self.channel_layer.group_add(self.room_name, self.channel_name)
 >        	# 注意此函数的用法
 >            async def disconnect(self, close_code):
 >                print('disconnect')
->                await self.channel_layer.group_discard(self.room_name, self.channel_name);
->        
->        
->            async def receive(self, text_data):
->                data = json.loads(text_data)
->                print(data)
->        ```
->
+>                await self.channel_layer.group_discard(self.room_name, self.channel_name)
+>               	async def receive(self, text_data):
+>                      data = json.loads(text_data)
+>                 print(data)
+>   
 >   4.   修改 `acapp/game/static/js/src/playground/zbase.js`
->
->        ```javascript
+>   
+>     ```javascript
 >        class AcGamePlayground {
->            show(mode) {
+>         show(mode) {
 >                if (mode === "signle mode") {
 >                    for (let i = 0; i < 10; i ++ ) {
 >                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
@@ -3161,12 +3158,12 @@
 >            }
 >        }
 >        ```
->
+>   
 >   5.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->        ```javascript
+>   
+>     ```javascript
 >        class MultiPlayerSocket {
->            <!-- 创建用户的函数 -->
+>         <!-- 创建用户的函数 -->
 >            send_create_player() {
 >                this.ws.send(JSON.stringify({
 >                    'message': "Hello acapp server"
@@ -3174,12 +3171,12 @@
 >            }
 >        }
 >        ```
->
+>   
 >   6.   修改 `acapp/game/static/js/src/playground/zbase.js`
->
->        ```javascript
+>   
+>     ```javascript
 >        class AcGamePlayground {
->            show(mode) {
+>         show(mode) {
 >                let outer = this;
 >                if (mode === "signle mode") {
 >                    for (let i = 0; i < 10; i ++ ) {
@@ -3200,7 +3197,172 @@
 
 #### 编写同步函数
 
-到1时24分钟
+##### 给每个用户进行唯一编号
+
+修改 `acapp/game/static/js/src/playground/ac_game_object/zbase.js`
+
+```javascript
+class AcGameObject {
+    constructor() {
+        this.uuid = this.create_uuid();
+    }
+    create_uuid() { // 创建唯一ID
+        let res = "";
+        for (let i = 0; i < 8; i ++ ) {
+          	// random()返回0~1之间的数
+          	// 相同的概率是10的八次方分之一, 可以忽略不计
+            let x = parseInt(Math.floor(Math.random() * 10)); 
+            res += x;
+        }
+        return res;
+    }
+}
+```
+
+修改 `acapp/game/static/js/src/playground/zbase.js`
+
+```javascript
+show(mode) {
+  	if (mode === "signle mode") {
+      	for (let i = 0; i < 10; i ++ ) {}
+ 		}
+		else if (mode === "multi mode") {
+      	// 当前用户总是第一个被➕的, 下标为0
+				this.mps.uuid = this.players[0].uuid; // 配置uuid
+		}
+}
+```
+
+修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+
+```javascript
+class MultiPlayerSocket {
+    send_create_player() {
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            // 测试uuid是否传输正确
+            'event': "create_player",
+            'uuid': this.uuid
+        }));
+    }
+}
+```
+
+##### 让当前玩家出现在其他玩家的页面
+
+设定每个房间的人数上限
+
+>   1.   通用性的设置一般在全局的 `settings.py` 里设置, 修改 `acapp/acapp/settings.py`
+>
+>        ```python
+>        # 最后一行添加
+>        # 每个房间限制3个人
+>        ROOT_CAPACITY = 3
+>        ```
+>
+>   2.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        from django.conf import settings # 导入全局设置
+>        from django.core.cache import cache # 导入redis数据库
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            async def connect(self):
+>                self.room_name = None
+>                # 最多准许开1000个房间
+>                for i in range(1000):
+>                    # 获取房间名
+>                    name = 'room-%d' % (i)
+>                    # 如果没有此房间或者房间人数小于3人
+>                    if not cache.has_key(name) or len(cache.get(name)) < settings.ROOM_CAPACITY:
+>                        self.room_name = name
+>                        break
+>                # 如果房间名为空, 说明不存在此房间, 直接返回即可
+>                if not self.room_name:
+>                    return
+>                await self.accept()
+>                # 如果没有此房间, 则创建此房间
+>                if not cache.has_key(self.room_name):
+>                    cache.set(self.room_name, [], 3600) # 有效期1个小时
+>                # 向当前房间的其他人进行广播
+>                for player in cache.get(self.room_name):
+>                    # 发送消息
+>                    await self.send(text_data = json.dumps({
+>                        'event': "create_player",
+>                        'uuid': player['uuid']
+>                        'photo': player['photo']
+>                    }))
+>                await self.channel_layer.group_add(self.room_name, self.channel_name)
+>        ```
+
+**创建玩家**
+
+>   1.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        from django.conf import settings # 导入全局设置
+>        from django.core.cache import cache # 导入redis数据库
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            async def create_player(self, data): # 创建玩家
+>                # 获取当前房间内的所有玩家
+>                players = cache.get(self.room_name)
+>                # 添加当前玩家的信息
+>                players.append({
+>                    'uuid': data['uuid'],
+>                    'username': data['username'],
+>                    'photo': data['photo']
+>                })
+>                # 更新当前房间的信息
+>                cache.set(self.room_name, players, 3600) # 有效期1个小时
+>                # 广播, 将更新的信息发送给其他人
+>                await self.channel_layer.group_send(
+>                    self.room_name, # 房间号
+>                    { # 发送其他信息
+>                        'type': "group_create_player", # [‼type的值就是接收信息的函数名‼️]
+>                        'event': "create_player", # 表明事件是创建用户
+>                        'uuid': data['uuid'], # 发送唯一ID
+>                        'username': data['username'], # 发送用户名
+>                        'photo': data['photo'] # 发送头像
+>                    }
+>                )
+>            
+>            async def group_create_player(self, data): # 函数名就是type的值, 必须一一对应
+>                await self.send(text_data = json.dumps(data)) # 将信息发送给前端
+>        
+>            async def receive(self, text_data):
+>                # 接收数据
+>                data = json.loads(text_data)
+>                # 获取事件名称
+>                event = data['event']
+>                # 如果是创建玩家的事件
+>                if event == "create_player":
+>                    # 创建玩家即可
+>                    await self.create_player(data)
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            constructor(playground) {
+>                this.start(); // 添加启动函数
+>            }
+>            start() {
+>                this.receive(); // 接收后端发送的信息
+>            }
+>            receive() { // 接收后端发送的信息
+>                this.ws.onmessage = function(e) {
+>                    let data = JSON.parse(e.data); // 解析JSON数据
+>                    console.log(data);
+>                };
+>            }
+>        }
+>        ```
+>
+>        到2时0分
 
 # 注意事项
 
