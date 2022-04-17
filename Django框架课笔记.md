@@ -29,7 +29,7 @@
 >
 >   ```python
 >   from django.shortcuts import render
->                                               
+>                                                                       
 >   def index(request):
 >       # render的作用就是加载模板或者渲染模板
 >       return render(request, 'multiends/web.html')
@@ -3063,15 +3063,15 @@
 >            ```python
 >            from channels.generic.websocket import AsyncWebsocketConsumer
 >            import json
->                                       
+>                                                                                                                                                   
 >            class MultiPlayer(AsyncWebsocketConsumer):
 >                async def connect(self):
 >                    await self.accept()
 >                    print('accept')
->                                       
+>                                                                                                                                                   
 >                    self.room_name = "room"
 >                    await self.channel_layer.group_add(self.room_name, self.channel_name)
->                                       
+>                                                                                                                                                   
 >                async def disconnect(self, close_code):
 >                    print('disconnect')
 >                    await self.channel_layer.group_discard(self.room_name, self.channel_name);
@@ -3081,11 +3081,11 @@
 >                    data = json.loads(text_data)
 >                    print(data)
 >            ```
->                        
+>                                                                        
 >        +   启动 `django_channels`
->                    
+>                                                                    
 >            在 `~/acapp` 目录下执行：
->                    
+>                                                                    
 >            ```bash
 >            daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
 >            ```
@@ -3157,7 +3157,7 @@
 >                this.$playground.hide();
 >            }
 >        }
->        ```
+>     ```
 >   
 >   5.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
 >   
@@ -3170,7 +3170,7 @@
 >                }));
 >            }
 >        }
->        ```
+>     ```
 >   
 >   6.   修改 `acapp/game/static/js/src/playground/zbase.js`
 >   
@@ -3193,7 +3193,7 @@
 >                }
 >            }
 >        }
->        ```
+>     ```
 
 #### 编写同步函数
 
@@ -3265,7 +3265,7 @@ class MultiPlayerSocket {
 >        ```python
 >        from django.conf import settings # 导入全局设置
 >        from django.core.cache import cache # 导入redis数据库
->        
+>                                                                    
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            async def connect(self):
 >                self.room_name = None
@@ -3304,7 +3304,7 @@ class MultiPlayerSocket {
 >        from channels.generic.websocket import AsyncWebsocketConsumer
 >        from django.conf import settings # 导入全局设置
 >        from django.core.cache import cache # 导入redis数据库
->        
+>
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            async def create_player(self, data): # 创建玩家
 >                # 获取当前房间内的所有玩家
@@ -3328,10 +3328,10 @@ class MultiPlayerSocket {
 >                        'photo': data['photo'] # 发送头像
 >                    }
 >                )
->            
+>
 >            async def group_create_player(self, data): # 函数名就是type的值, 必须一一对应
 >                await self.send(text_data = json.dumps(data)) # 将信息发送给前端
->        
+>
 >            async def receive(self, text_data):
 >                # 接收数据
 >                data = json.loads(text_data)
@@ -3354,31 +3354,1504 @@ class MultiPlayerSocket {
 >                this.receive(); // 接收后端发送的信息
 >            }
 >            receive() { // 接收后端发送的信息
+>                let outer = this;
 >                this.ws.onmessage = function(e) {
 >                    let data = JSON.parse(e.data); // 解析JSON数据
->                    console.log(data);
+>                    let uuid = data.uuid; // 获取uuid
+>                    if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
+>                    let event = data.event; // 获取事件
+>                    if (event === 'create_player') { // 创建玩家
+>                        outer.receive_create_player(uuid, data.username, data.photo);
+>                    }
+>                };
+>            }
+>            receive_create_player(uuid, username, photo) { // 创建玩家
+>                let player = new Player( // 创建新玩家, 输入相关参数
+>                    this.playground,
+>                    this.playground.width / 2 / this.playground.scale,
+>                    0.5,
+>                    0.05,
+>                    'white',
+>                    0.15,
+>                    'enemy',
+>                    username,
+>                    photo
+>                );
+>                player.uuid = uuid;
+>                this.playground.players.push(player); // 将新玩家加入
+>            }
+>        }
+>        ```
+>        
+>        修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>        
+>        ```javascript
+>        start() {
+>                if (this.character === "me") {
+>                    this.add_listening_events();
+>                }
+>                else if (this.character === "robot"){ // 只有机器人会随机移动
+>                    let tx = Math.random() * this.playground.width / this.playground.scale;
+>                    let ty = Math.random() * this.playground.height / this.playground.scale;
+>                    this.move_to(tx, ty);
+>                }
+>            }
+>        ```
+>        
+
+##### 同步移动
+
+>   1.   修改 `acapp/game/static/js/src/settings/zbase.js`
+>
+>        ```javascript
+>        class Settings {
+>            logout_on_remote() {
+>                if (this.platform === 'ACAPP') {
+>                    this.root.AcWingOS.api.window.close(); // 点击退出按钮, 关闭窗口
+>                }
+>                else {
+>                    $.ajax({
+>                        url: 'https://app1164.acapp.acwing.com.cn/settings/logout/',
+>                        type: 'GET',
+>                        success: function(resp) {
+>                            console.log(resp);
+>                            if (resp.result === 'success') {
+>                                location.reload();
+>                            }
+>                        }
+>                    });
+>                }
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            receive() { // 接收后端发送的信息
+>                    if (event === "create_player") { // 创建玩家
+>                        outer.receive_create_player(uuid, data.username, data.photo);
+>                    }
+>                    else if (event === "move_to") { // 如果需要移动, 则调用移动函数
+>                        outer.receive_move_to(uuid, data.tx, data.ty);
+>                    }
+>                };
+>            }
+>            get_player(uuid) { // 根据uuid找到对应玩家
+>                let players = this.playground.players;
+>                for (let i = 0; i < players.length; i ++ ) {
+>                    let player = players[i];
+>                    if (player.uuid === uuid) {
+>                        return player;
+>                    }
+>                }
+>                return null;
+>            }
+>            send_move_to(tx, ty) { // 发送移动指令
+>                let outer = this;
+>                this.ws.send(JSON.stringify({
+>                    'event': "move_to",
+>                    'uuid': outer.uuid,
+>                    'tx': tx,
+>                    'ty': ty
+>                }));
+>            }
+>            receive_move_to(uuid, tx, ty) { // 接收移动指令
+>                let player = this.get_player(uuid); // 根据uuid找到相对应的玩家
+>                if (player) { // 如果玩家还活着, 则调用此函数
+>                    player.move_to(tx, ty);
+>                }
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        from django.conf import settings # 导入全局设置
+>        from django.core.cache import cache # 导入redis数据库
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            async def create_player(self, data): # 创建玩家
+>                # 获取当前房间内的所有玩家
+>                players = cache.get(self.room_name)
+>                # 添加当前玩家的信息
+>                players.append({
+>                    'uuid': data['uuid'],
+>                    'username': data['username'],
+>                    'photo': data['photo']
+>                })
+>                # 更新当前房间的信息
+>                cache.set(self.room_name, players, 3600) # 有效期1个小时
+>                # 广播, 将更新的信息发送给其他人
+>                await self.channel_layer.group_send(
+>                    self.room_name, # 房间号
+>                    { # 发送其他信息
+>                        # 修改名称
+>                        'type': "group_send_event", # [‼type的值就是接收信息的函数名‼️]
+>                        'event': "create_player", # 表明事件是创建用户
+>                        'uuid': data['uuid'], # 发送唯一ID
+>                        'username': data['username'], # 发送用户名
+>                        'photo': data['photo'] # 发送头像
+>                    }
+>                )
+>            # 修改名称
+>            async def group_send_event(self, data): # 函数名就是type的值, 必须一一对应
+>                await self.send(text_data = json.dumps(data)) # 将信息发送给前端
+>        
+>            async def move_to(self, data): # 创建move_to函数
+>                await self.channel_layer.group_send( # 群发消息
+>                    self.room_name, # 发送房间名
+>                    { # 发送具体信息
+>                        'type': "group_send_event",
+>                        'event': "move_to",
+>                        'uuid': data['uuid'],
+>                        'tx': data['tx'],
+>                        'ty': data['ty']
+>                    }
+>                )
+>        
+>            async def receive(self, text_data): # 创建接收函数
+>                # 接收数据
+>                data = json.loads(text_data)
+>                # 获取事件名称
+>                event = data['event']
+>                # 如果是创建玩家的事件
+>                if event == "create_player":
+>                    # 创建玩家即可
+>                    await self.create_player(data)
+>                elif event == "move_to": # 如果是移动事件
+>                    await self.move_to(data)
+>        ```
+>
+>   4.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                // 记录模式
+>                this.mode = mode;
+>            }
+>        }
+>        ```
+>
+>   5.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            add_listening_events() {
+>                let outer = this;
+>                this.playground.game_map.$canvas.on("contextmenu", function() {
+>                    return false;
+>                });
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    const rect = outer.ctx.canvas.getBoundingClientRect();
+>                    if (e.which == 3) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        outer.move_to(tx, ty);
+>                        // 如果监测到当前的模式是多人模式, 则广播移动即可
+>                        if (outer.playground.mode === "multi mode") {
+>                            outer.playground.mps.send_move_to(tx, ty);
+>                        }
+>                    }
+>                    else if (e.which == 1) {
+>                        if (outer.cur_skill === "fireball") {
+>                            outer.shoot_fireball((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale);
+>                        }
+>                        outer.cur_skill = null;
+>                    }
+>                });
+>                $(window).keydown(function(e) {
+>                    if (e.which == 81) {
+>                        outer.cur_skill = "fireball";
+>                        return true;
+>                    }
+>                });
+>            }
+>        }
+>        ```
+
+##### 同步攻击
+
+>   1.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            constructor(playground, x, y, radius, color, speed, character, username, photo) {
+>                this.fireballs = []; // 存下每个人发射的子弹
+>            }
+>            shoot_fireball(tx, ty) {
+>                // 记录下来发射的子弹
+>                let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
+>                return fireball; // 将子弹返回
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            send_shoot_fireball(tx, ty, ball_uuid) { // 发送火球的信息
+>                let outer = this;
+>                this.ws.send(JSON.stringify({ // 传入各种信息
+>                    'event': "shoot_fireball",
+>                    'uuid': outer.uuid,
+>                    'tx': tx,
+>                    'ty': ty,
+>                    'ball_uuid': ball_uuid
+>                }));
+>            }
+>            receive_shoot_fireball(uuid, tx, ty, ball_uuid) { // 接收火球的信息
+>                let player = this.get_player(uuid); // 根据uuid找到玩家
+>                if (player) { // 如果玩家还活着
+>                    let fireball = player.shoot_fireball(tx, ty); // 发送火球
+>                    fireball.uuid = ball_uuid; // 统一uuid
+>                }
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `acapp/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            destory_fireball(uuid) { // 根据uuid删除火球
+>                for (let i = 0; i < this.fireballs.length; i ++ ) { // 遍历所有火球
+>                    let fireball = this.fireballs[i];
+>                    if (fireball.uuid === uuid) { // 如果uuid相等, 则删除当前火球
+>                        fireball.destory();
+>                        break;
+>                    }
+>                }
+>            }
+>        }
+>        ```
+>
+>   4.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
+>
+>        ```javascript
+>        class FireBall extends AcGameObject {
+>            update() {
+>                if (this.move_length < this.eps) {
+>                    this.destory();
+>                    return false;
+>                }
+>                this.update_move(); // 进行拆分, 拆分成update_move();
+>                this.update_attack(); // 进行拆分, 拆分成update_attack();
+>                this.render();
+>            }
+>            update_move() {
+>                let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+>                this.x += this.vx * moved;
+>                this.y += this.vy * moved;
+>                this.move_length -= moved;
+>            }
+>            update_attack() {
+>                for (let i = 0; i < this.playground.players.length; i ++ ) {
+>                    let player = this.playground.players[i];
+>                    if (this.player !== player && this.is_collision(player)) {
+>                        this.attack(player);
+>                        break;
+>                    }
+>                }
+>            }
+>            on_destory() { // 在火球类中将火球删掉
+>                let fireballs = this.player.fireballs;
+>                for (let i = 0; i < fireballs.length; i ++ ) {
+>                    if (fireballs[i] === this) { // 如果相等, 则删掉即可
+>                        fireballs.splice(i, 1);
+>                        break;
+>                    }
+>                }
+>            }
+>        }
+>        ```
+>
+>   5.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            receive() { // 接收后端发送的信息
+>                let outer = this;
+>                this.ws.onmessage = function(e) {
+>                    let data = JSON.parse(e.data); // 解析JSON数据
+>                    let uuid = data.uuid; // 获取uuid
+>                    if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
+>                    let event = data.event; // 获取事件
+>                    if (event === "create_player") { // 创建玩家
+>                        outer.receive_create_player(uuid, data.username, data.photo);
+>                    }
+>                    else if (event === "move_to") { // 如果需要移动, 则调用移动函数
+>                        outer.receive_move_to(uuid, data.tx, data.ty);
+>                    }
+>                    else if (ev ent === "shoot_fireball") { // 如果是发射炮弹, 则调用发射炮弹函数
+>                        outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
+>                    }
 >                };
 >            }
 >        }
 >        ```
 >
->        到2时0分
+>   6.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        from django.conf import settings # 导入全局设置
+>        from django.core.cache import cache # 导入redis数据库
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            async def shoot_fireball(self, data): # 发射火球函数
+>                await self.channel_layer.group_send(
+>                    self.room_name,
+>                    {
+>                        'type': "group_send_event",
+>                        'event': "shoot_fireball",
+>                        'uuid': data['uuid'],
+>                        'tx': data['tx'],
+>                        'ty': data['ty'],
+>                        'ball_uuid': data['ball_uuid']
+>                    }
+>                )
+>        
+>            async def receive(self, text_data):
+>                # 接收数据
+>                data = json.loads(text_data)
+>                # 获取事件名称
+>                event = data['event']
+>                # 如果是创建玩家的事件
+>                if event == "create_player":
+>                    # 创建玩家即可
+>                    await self.create_player(data)
+>                elif event == "move_to": # 如果是移动事件
+>                    await self.move_to(data)
+>                elif event == "shoot_fireball": # 如果是发射火球
+>                    await self.shoot_fireball(data)
+>        ```
+>
+>   7.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            add_listening_events() {
+>                let outer = this;
+>                this.playground.game_map.$canvas.on("contextmenu", function() {
+>                    return false;
+>                });
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    const rect = outer.ctx.canvas.getBoundingClientRect();
+>                    if (e.which == 3) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        outer.move_to(tx, ty);
+>                        if (outer.playground.mode === "multi mode") {
+>                            outer.playground.mps.send_move_to(tx, ty);
+>                        }
+>                    }
+>                    else if (e.which == 1) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        if (outer.cur_skill === "fireball") {
+>                            let fireball = outer.shoot_fireball(tx, ty);
+>                            // 如果是多人模式, 则调用广播发射炮弹函数
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
+>                            }
+>                        }
+>                        outer.cur_skill = null;
+>                    }
+>                });
+>                $(window).keydown(function(e) {
+>                    if (e.which == 81) {
+>                        outer.cur_skill = "fireball";
+>                        return true;
+>                    }
+>                });
+>            }
+>        }
+>        ```
+>
+>   8.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
+>
+>        ```javascript
+>        class FireBall extends AcGameObject {
+>            update() {
+>                if (this.move_length < this.eps) {
+>                    this.destory();
+>                    return false;
+>                }
+>                this.update_move();
+>               	// 在本窗口中, 如果是本人发出的攻击, 则造成伤害, 否则, 不造成任何伤害
+>                if (this.player.character !== "enemy") {
+>                    this.update_attack();
+>                }
+>                this.render();
+>            }
+>        }
+>        ```
+>
+>   9.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            // 接收被攻击的信息
+>            receive_attack(x, y, angle, damage, ball_uuid, attacker) {
+>                attacker.destory_fireball(ball_uuid);
+>                this.x = x;
+>                this.y = y;
+>                this.is_attacked(angle, damage);
+>            }
+>        }
+>        ```
+>
+>   10.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>         ```javascript
+>         class MultiPlayerSocket {
+>             receive() { // 接收后端发送的信息
+>                 let outer = this;
+>                 this.ws.onmessage = function(e) {
+>                     let data = JSON.parse(e.data); // 解析JSON数据
+>                     let uuid = data.uuid; // 获取uuid
+>                     if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
+>                     let event = data.event; // 获取事件
+>                     if (event === "create_player") { // 创建玩家
+>                         outer.receive_create_player(uuid, data.username, data.photo);
+>                     }
+>                     else if (event === "move_to") { // 如果需要移动, 则调用移动函数
+>                         outer.receive_move_to(uuid, data.tx, data.ty);
+>                     }
+>                     else if (event === "shoot_fireball") { // 如果是发射炮弹, 则调用发射炮弹函数
+>                         outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
+>                     }
+>                     else if (event === "attack") { // 如果是攻击, 则调用接收攻击函数
+>                         outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
+>                     }
+>                 };
+>             }
+>             send_attack(attackee_uuid, x, y, angle, damage, ball_uuid) { // 发送攻击信息
+>                 let outer = this;
+>                 this.ws.send(JSON.stringify({ // 发送各类信息
+>                     'event': "attack",
+>                     'uuid': outer.uuid,
+>                     'attackee_uuid': attackee_uuid,
+>                     'x': x,
+>                     'y': y,
+>                     'angle': angle,
+>                     'damage': damage,
+>                     'ball_uuid': ball_uuid
+>                 }));
+>             }
+>             // 接收攻击信息
+>             receive_attack(uuid, attackee_uuid, x, y, angle, damage, ball_uuid) {
+>                 // 根据uuid找到攻击者
+>                 let attacker = this.get_player(uuid);
+>                	// 根据attackee_uuid找到被攻击者
+>                 let attackee = this.get_player(attackee_uuid);
+>                	// 如果攻击者和被攻击者都活着
+>                 if (attacker && attackee) {
+>                   	// 接收信息
+>                     attackee.receive_attack(x, y, angle, damage, ball_uuid, attacker);
+>                 }
+>             }
+>         }
+>         ```
+>
+>   11.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>         ```python
+>         import json
+>         from channels.generic.websocket import AsyncWebsocketConsumer
+>         from django.conf import settings # 导入全局设置
+>         from django.core.cache import cache # 导入redis数据库
+>         
+>         class MultiPlayer(AsyncWebsocketConsumer):
+>             async def attack(self, data): # 攻击函数
+>                 await self.channel_layer.group_send( # 广播攻击函数
+>                     self.room_name, # 传输具体信息
+>                     {
+>                         'type': "group_send_event",
+>                         'event': "attack",
+>                         'uuid': data['uuid'],
+>                         'attackee_uuid': data['attackee_uuid'],
+>                         'x': data['x'],
+>                         'y': data['y'],
+>                         'angle': data['angle'],
+>                         'damage': data['damage'],
+>                         'ball_uuid': data['ball_uuid']
+>                     }
+>                 )
+>         
+>             async def receive(self, text_data):
+>                 # 接收数据
+>                 data = json.loads(text_data)
+>                 # 获取事件名称
+>                 event = data['event']
+>                 # 如果是创建玩家的事件
+>                 if event == "create_player":
+>                     # 创建玩家即可
+>                     await self.create_player(data)
+>                 elif event == "move_to": # 如果是移动事件
+>                     await self.move_to(data)
+>                 elif event == "shoot_fireball": # 如果是发射火球
+>                     await self.shoot_fireball(data)
+>                 elif event == "attack": # 如果是攻击
+>                     await self.attack(data)
+>         ```
+>
+>   12.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
+>
+>         ```javascript
+>         class FireBall extends AcGameObject {
+>             attack(player) {
+>                 let angle = Math.atan2(player.y - this.y, player.x - this.x);
+>                 player.is_attacked(angle, this.damage);
+>                 // 如果是多人模式, 则发送攻击
+>                 if (this.playground.mode === "multi mode") {
+>                     this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
+>                 }
+>                 this.destory();
+>             }
+>         }
+>         ```
+
+#### 小 `bug` 修复
+
+>   1.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                // waiting => fighting => over
+>                // 一开始的模式是等待模式
+>                this.state = "waiting";
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/notice_board/zbase.js`
+>
+>        ```javascript
+>        class NoticeBoard extends AcGameObject {
+>            constructor(playground) {
+>                super(); // 继承负类的函数
+>                this.playground = playground;
+>                this.ctx = this.playground.game_map.ctx;
+>                this.text = "已就绪: 0人";
+>            }
+>            start() {
+>
+>            }
+>            write(text) {
+>                this.text = text;
+>            }
+>            update() {
+>                this.render(); // 每秒渲染一次
+>            }
+>            render() {
+>                this.ctx.font = "20px serif"; // 大小和字体
+>                this.ctx.fillStyle = "white"; // 颜色
+>                this.ctx.textAlign = "center"; // 格式
+>                this.ctx.fillText(this.text, this.playground.width / 2, 20); // 填充文本
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                // 创建文字板
+>                this.notice_board = new NoticeBoard(this);
+>            }
+>        }
+>        ```
+>
+>   4.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            constructor(playground, x, y, radius, color, speed, character, username, photo) {
+>                if (this.character === "me") {
+>                    this.fireball_coldtime = 3; // 单位: 秒
+>                    this.fireball_img = new Image(); // 创建火球图标
+>                    // 火球图片
+>                    this.fireball_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_9340c86053-fireball.png";
+>                    this.blink_coldtime = 5; // 单位: 秒
+>                    this.blink_img = new Image(); // 创建闪现图标
+>                    // 闪现图片
+>                    this.blink_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_daccabdc53-blink.png";
+>                }
+>            }
+>            start() {
+>                this.playground.player_count ++; // 每添加一个玩家, 人数 ++
+>                // 更新就绪人数
+>                this.playground.notice_board.write("已就绪" + this.playground.player_count + "人");
+>                if (this.playground.player_count >= 3) { // 如果大于等于3个人, 说明人数已满, 可以fighting
+>                    this.playground.state = "fighting";
+>                    this.playground.notice_board.write("Fighting");
+>                }
+>                if (this.character === "me") {
+>                    this.add_listening_events();
+>                }
+>                else if (this.character === "robot"){ // 只有机器人会随机移动
+>                    let tx = Math.random() * this.playground.width / this.playground.scale;
+>                    let ty = Math.random() * this.playground.height / this.playground.scale;
+>                    this.move_to(tx, ty);
+>                }
+>            }
+>            add_listening_events() {
+>                let outer = this;
+>                this.playground.game_map.$canvas.on("contextmenu", function() {
+>                    return false;
+>                });
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    if (outer.playground.state !== "fighting") { // 如果不是战斗模式, 则直接返回false
+>                        return false;
+>                    }
+>                    const rect = outer.ctx.canvas.getBoundingClientRect();
+>                    if (e.which == 3) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        outer.move_to(tx, ty);
+>                        if (outer.playground.mode === "multi mode") {
+>                            outer.playground.mps.send_move_to(tx, ty);
+>                        }
+>                    }
+>                    else if (e.which == 1) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        if (outer.cur_skill === "fireball") {
+>                            if (outer.fireball_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            let fireball = outer.shoot_fireball(tx, ty);
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
+>                            }
+>                        }
+>                        else if (outer.cur_skill === "blink") { // 如果是闪现技能
+>                            if (outer.blink_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            outer.blink(tx, ty); // 调用闪现技能
+>                        }
+>                        outer.cur_skill = null;
+>                    }
+>                });
+>                $(window).keydown(function(e) {
+>                    if (outer.playground.state !== "fighting") { // 如果不是战斗模式, 则直接返回true
+>                        return true;
+>                    }
+>                    if (e.which === 81) {
+>                        if (outer.fireball_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回true
+>                            return true;
+>                        }
+>                        outer.cur_skill = "fireball";
+>                        return false;
+>                    }
+>                    else if (e.which === 70) {
+>                        if (outer.blink_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回true
+>                            return true;
+>                        }
+>                        outer.cur_skill = "blink";
+>                        return false;
+>                    }
+>                });
+>            }
+>            shoot_fireball(tx, ty) {
+>                let x = this.x;
+>                let y = this.y;
+>                let radius = 0.01;
+>                let angle = Math.atan2(ty - this.y, tx - this.x);
+>                let vx = Math.cos(angle);
+>                let vy = Math.sin(angle);
+>                let color = "orange";
+>                let speed = 0.5;
+>                let move_length = 0.8;
+>                let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
+>                this.fireballs.push(fireball); // 将当前火球加入火球队列
+>                this.fireball_coldtime = 3; // 重置冷却时间
+>                return fireball;
+>            }
+>            blink(tx, ty) { // 闪现技能
+>                let d = this.get_dist(this.x, this.y, tx, ty); // 获取距离
+>                d = Math.min(d, 0.8); // 和最大距离之间取一个最小值
+>                let angle = Math.atan2(ty - this.y, tx - this.x); // 获取角度
+>                this.x += d * Math.cos(angle); // 获取x方向的位移
+>                this.y += d * Math.sin(angle); // 获取y方向的位移
+>                this.blink_coldtime = 5; // 重置冷却时间
+>                this.move_length = 0; // 防止闪现之后继续移动
+>            }
+>            update() {
+>                this.spent_time += this.timedelta / 1000; // 移动到此处位置
+>                // 只有当前的角色为自己并且当前对局的状态为fighting, 才更新冷却时间
+>                if (this.character === "me" && this.playground.state === "fighting") {
+>                    this.update_coldtime(); // 更新冷却时间
+>                }
+>                this.update_move();
+>                this.render();
+>            }
+>            update_coldtime() {
+>                // 火球冷却时间减去当前帧与上一帧的时间间隔
+>                this.fireball_coldtime -= this.timedelta / 1000;
+>                // 记得冷却时间不能小于0, 故, 需要和0取最大值
+>                this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
+>                // 闪现冷却时间减去当前帧与上一帧的时间间隔
+>                this.blink_coldtime -= this.timedelta / 1000;
+>                // 记得冷却时间不能小于0, 故, 需要和0取最大值
+>                this.blink_coldtime = Math.max(this.blink_coldtime, 0);
+>            }
+>            render() {
+>                let scale = this.playground.scale;
+>                if (this.character !== "robot") {
+>                    this.ctx.save();
+>                    this.ctx.beginPath();
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                    this.ctx.stroke();
+>                    this.ctx.clip();
+>                    this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+>                    this.ctx.restore();
+>                }
+>                else {
+>                    this.ctx.beginPath();
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                    this.ctx.fillStyle = this.color;
+>                    this.ctx.fill();
+>                }
+>                // 如果当前角色为自己并且游戏还处于进行之中, 则渲染冷却时间
+>                if (this.character === "me" && this.playground.state === "fighting") {
+>                    this.render_skill_coldtime();
+>                }
+>            }
+>            render_skill_coldtime() { // 渲染冷却时间
+>                // 画技能图片
+>                let scale = this.playground.scale;
+>                let x = 1.5, y = 0.9, r = 0.04;
+>                this.ctx.save();
+>                this.ctx.beginPath();
+>                this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, false);
+>                this.ctx.stroke();
+>                this.ctx.clip();
+>                this.ctx.drawImage(this.fireball_img, (x - r) * scale, (y - r) * scale, r * 2 * scale, r * 2 * scale);
+>                this.ctx.restore();
+>                // 技能冷却cd
+>                if (this.fireball_coldtime > 0) { // 如果技能冷却时间大于0, 才画图形
+>                    this.ctx.beginPath();
+>                    this.ctx.moveTo(x * scale, y * scale);
+>                    this.ctx.arc(x * scale, y * scale, r * scale, 0 - Math.PI / 2, Math.PI * 2 * (1 - this.fireball_coldtime / 3) - Math.PI / 2, true);
+>                    this.ctx.lineTo(x * scale, y * scale);
+>                    this.ctx.fillStyle = "rgba(0, 0, 255, 0.6)";
+>                    this.ctx.fill();
+>                }
+>                // 渲染闪现技能
+>                x = 1.62, y = 0.9, r = 0.04;
+>                this.ctx.save();
+>                this.ctx.beginPath();
+>                this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, false);
+>                this.ctx.stroke();
+>                this.ctx.clip();
+>                this.ctx.drawImage(this.blink_img, (x - r) * scale, (y - r) * scale, r * 2 * scale, r * 2 * scale);
+>                this.ctx.restore();
+>                // 技能冷却cd
+>                if (this.blink_coldtime > 0) { // 如果技能冷却时间大于0, 才画图形
+>                    this.ctx.beginPath();
+>                    this.ctx.moveTo(x * scale, y * scale);
+>                    this.ctx.arc(x * scale, y * scale, r * scale, 0 - Math.PI / 2, Math.PI * 2 * (1 - this.blink_coldtime / 3) - Math.PI / 2, true);
+>                    this.ctx.lineTo(x * scale, y * scale);
+>                    this.ctx.fillStyle = "rgba(0, 0, 255, 0.6)";
+>                    this.ctx.fill();
+>                }
+>            }
+>            on_destory() {
+>                if (this.character === "me") { // 如果当前角色为自己本身
+>                    this.playground.state = "over"; // 去世之后, 则更新状态为over, 表示已结束
+>                }
+>                for (let i = 0; i < this.playground.players.length; i ++ ) {
+>                    if (this.playground.players[i] === this) {
+>                        this.playground.players.splice(i, 1);
+>                        break;
+>                    }
+>                }
+>            }
+>        }
+>        ```
+>        
+
+#### 同步闪现
+
+>   1.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            receive() { // 接收后端发送的信息
+>                let outer = this;
+>                this.ws.onmessage = function(e) {
+>                    let data = JSON.parse(e.data); // 解析JSON数据
+>                    let uuid = data.uuid; // 获取uuid
+>                    if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
+>                    let event = data.event; // 获取事件
+>                    if (event === "create_player") { // 创建玩家
+>                        outer.receive_create_player(uuid, data.username, data.photo);
+>                    }
+>                    else if (event === "move_to") { // 如果需要移动, 则调用移动函数
+>                        outer.receive_move_to(uuid, data.tx, data.ty);
+>                    }
+>                    else if (event === "shoot_fireball") { // 如果是发射炮弹, 则调用发射炮弹函数
+>                        outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
+>                    }
+>                    else if (event === "attack") { // 如果是攻击, 则调用接收攻击函数
+>                        outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
+>                    }
+>                    else if (event === "blink") { // 如果是闪现, 则调用闪现函数
+>                        outer.receive_blink(uuid, data.tx, data.ty);
+>                    }
+>                };
+>            }
+>            send_blink(tx, ty) { // 广播闪现函数
+>                let outer = this;
+>                this.ws.send(JSON.stringify({ // 发送具体信息
+>                    'event': "blink",
+>                    'uuid': outer.uuid,
+>                    'tx': tx,
+>                    'ty': ty
+>                }));
+>            }
+>            receive_blink(uuid, tx, ty) { // 接收闪现函数
+>                let player = this.get_player(uuid); // 根据uuid找到玩家
+>                if (player) { // 如果玩家还存在, 则广播闪现
+>                    player.blink(tx, ty);
+>                }
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        from django.conf import settings # 导入全局设置
+>        from django.core.cache import cache # 导入redis数据库
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            async def blink(self, data): # 闪现函数
+>                await self.channel_layer.group_send(
+>                    self.room_name,
+>                    {
+>                        'type': "group_send_event",
+>                        'event': "blink",
+>                        'uuid': data['uuid'],
+>                        'tx': data['tx'],
+>                        'ty': data['ty']
+>                    }
+>                )
+>        
+>            async def receive(self, text_data):
+>                # 接收数据
+>                data = json.loads(text_data)
+>                # 获取事件名称
+>                event = data['event']
+>                # 如果是创建玩家的事件
+>                if event == "create_player":
+>                    # 创建玩家即可
+>                    await self.create_player(data)
+>                elif event == "move_to": # 如果是移动事件
+>                    await self.move_to(data)
+>                elif event == "shoot_fireball": # 如果是发射火球
+>                    await self.shoot_fireball(data)
+>                elif event == "attack": # 如果是攻击
+>                    await self.attack(data)
+>                elif event == "blink": # 如果是闪现
+>                    await self.blink(data)
+>        ```
+>
+>   3.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            add_listening_events() {
+>                let outer = this;
+>                this.playground.game_map.$canvas.on("contextmenu", function() {
+>                    return false;
+>                });
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    if (outer.playground.state !== "fighting") { // 如果不是战斗模式, 则直接返回false
+>                        return false;
+>                    }
+>                    const rect = outer.ctx.canvas.getBoundingClientRect();
+>                    if (e.which == 3) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        outer.move_to(tx, ty);
+>                        if (outer.playground.mode === "multi mode") {
+>                            outer.playground.mps.send_move_to(tx, ty);
+>                        }
+>                    }
+>                    else if (e.which == 1) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        if (outer.cur_skill === "fireball") {
+>                            if (outer.fireball_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            let fireball = outer.shoot_fireball(tx, ty);
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
+>                            }
+>                        }
+>                        else if (outer.cur_skill === "blink") { // 如果是闪现技能
+>                            if (outer.blink_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            outer.blink(tx, ty); // 调用闪现技能
+>                            // 前端调用闪现函数
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_blink(tx, ty);
+>                            }
+>                        }
+>                        outer.cur_skill = null;
+>                    }
+>                });
+>            }
+>        }
+>        ```
+
+## 创建聊天系统
+
+### 修改窗口属性
+
+>   1.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            add_listening_events() {
+>                let outer = this;
+>                this.playground.game_map.$canvas.on("contextmenu", function() {
+>                    return false;
+>                });
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    if (outer.playground.state !== "fighting") { // 如果不是战斗模式, 则直接返回false
+>                        return false;
+>                    }
+>                    const rect = outer.ctx.canvas.getBoundingClientRect();
+>                    if (e.which == 3) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        outer.move_to(tx, ty);
+>                        if (outer.playground.mode === "multi mode") {
+>                            outer.playground.mps.send_move_to(tx, ty);
+>                        }
+>                    }
+>                    else if (e.which == 1) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        if (outer.cur_skill === "fireball") {
+>                            if (outer.fireball_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            let fireball = outer.shoot_fireball(tx, ty);
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
+>                            }
+>                        }
+>                        else if (outer.cur_skill === "blink") { // 如果是闪现技能
+>                            if (outer.blink_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            outer.blink(tx, ty); // 调用闪现技能
+>                            // 前端调用闪现函数
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_blink(tx, ty);
+>                            }
+>                        }
+>                        outer.cur_skill = null;
+>                    }
+>                });
+>                // 绑定窗口事件
+>                this.playground.game_map.$canvas.keydown(function(e) {
+>                    if (outer.playground.state !== "fighting") { // 如果不是战斗模式, 则直接返回true
+>                        return true;
+>                    }
+>                    if (e.which === 81) {
+>                        if (outer.fireball_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回true
+>                            return true;
+>                        }
+>                        outer.cur_skill = "fireball";
+>                        return false;
+>                    }
+>                    else if (e.which === 70) {
+>                        if (outer.blink_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回true
+>                            return true;
+>                        }
+>                        outer.cur_skill = "blink";
+>                        return false;
+>                    }
+>                });
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/game_map/zbase.js`
+>
+>        ```javascript
+>        class GameMap extends AcGameObject {
+>            constructor(playground) {
+>                this.$canvas = $(`
+>                	<!-- 添加tabindex属性, 因此, 可被窗口捕获到 -->
+>                    <canvas tabindex = 0></canvas>
+>                `);
+>            }
+>            start() {
+>                // 对此窗口进行聚焦
+>                // 简而言之, 出现光标
+>                this.$canvas.focus();
+>            }
+>        }
+>        ```
+
+### 创建输入框
+
+>   1.   修改 `acapp/game/static/js/src/playground/chat_field/zbase.js`
+>
+>        ```javascript
+>        class ChatField {
+>            constructor(playground) {
+>                this.playground = playground;
+>                // 创建历史记录框
+>                this.$history = $(`<div class = "ac_game_chat_field_history"></div>`);
+>                // 创建输入框
+>                this.$input = $(`<input type = "text" class = "ac_game_chat_field_input">`);
+>                // 隐藏历史记录框
+>                this.$history.hide();
+>                // 隐藏输入框
+>                this.$input.hide();
+>                // 将历史记录框加入玩家界面
+>                this.playground.$playground.append(this.$history);
+>                // 将输入框加入玩家界面
+>                this.playground.$playground.append(this.$input);
+>                this.start();
+>            }
+>            start() {
+>        
+>            }
+>            show_input() {
+>                // 显示输入框
+>                this.$input.show();
+>                // 光标聚焦于输入框
+>                this.$input.focus();
+>            }
+>            hide_input() {
+>                // 隐藏输入框
+>                this.$input.hide();
+>                // 光标聚焦于地图上
+>                this.playground.game_map.$canvas.focus(); 
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```c++
+>        class AcGamePlayground {
+>            show(mode) {
+>                let outer = this;
+>                this.width = this.$playground.width();
+>                this.height = this.$playground.height();
+>                this.game_map = new GameMap(this);
+>                this.mode = mode;
+>                // waiting => fighting => over
+>                // 一开始的模式是等待模式
+>                this.state = "waiting";
+>                // 创建文字板
+>                this.notice_board = new NoticeBoard(this);
+>                this.player_count = 0; // 一开始是0人 
+>                this.resize();
+>                this.players = [];
+>                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
+>                if (mode === "signle mode") {
+>                    for (let i = 0; i < 10; i ++ ) {
+>                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
+>                    }
+>                }
+>                else if (mode === "multi mode") {
+>                    // 创建chat_field类
+>                    this.chat_field = new ChatField(this);
+>                    this.mps = new MultiPlayerSocket(this);
+>                    this.mps.uuid = this.players[0].uuid; // 配置uuid
+>                    this.mps.ws.onopen = function() {
+>                        outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
+>                    };
+>                }
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            add_listening_events() {
+>                let outer = this;
+>                this.playground.game_map.$canvas.on("contextmenu", function() {
+>                    return false;
+>                });
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    if (outer.playground.state !== "fighting") { // 如果不是战斗模式, 则直接返回false
+>                        return true ;
+>                    }
+>                    const rect = outer.ctx.canvas.getBoundingClientRect();
+>                    if (e.which == 3) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        outer.move_to(tx, ty);
+>                        if (outer.playground.mode === "multi mode") {
+>                            outer.playground.mps.send_move_to(tx, ty);
+>                        }
+>                    }
+>                    else if (e.which == 1) {
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        if (outer.cur_skill === "fireball") {
+>                            if (outer.fireball_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            let fireball = outer.shoot_fireball(tx, ty);
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
+>                            }
+>                        }
+>                        else if (outer.cur_skill === "blink") { // 如果是闪现技能
+>                            if (outer.blink_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回false
+>                                return false;
+>                            }
+>                            outer.blink(tx, ty); // 调用闪现技能
+>                            // 前端调用闪现函数
+>                            if (outer.playground.mode === "multi mode") {
+>                                outer.playground.mps.send_blink(tx, ty);
+>                            }
+>                        }
+>                        outer.cur_skill = null;
+>                    }
+>                });
+>                this.playground.game_map.$canvas.keydown(function(e) {
+>                    if (e.which === 13) { // 回车键
+>                        if (outer.playground.mode === "multi mode") { // 如果是多人模式, 则打开聊天框
+>                            outer.playground.chat_field.show_input();
+>                            return false;
+>                        }
+>                    }
+>                    else if (e.which === 27) { // 退出键
+>                        if (outer.playground.mode === "multi mode") { // 如果是多人模式, 则关闭聊天框
+>                            outer.playground.chat_field.hide_input();
+>                        }
+>                    }
+>                    if (outer.playground.state !== "fighting") { // 如果不是战斗模式, 则直接返回true
+>                        return true;
+>                    }
+>                    if (e.which === 81) {
+>                        if (outer.fireball_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回true
+>                            return true;
+>                        }
+>                        outer.cur_skill = "fireball";
+>                        return false;
+>                    }
+>                    else if (e.which === 70) {
+>                        if (outer.blink_coldtime > outer.eps) { // 如果技能还处于冷却时间内, 返回true
+>                            return true;
+>                        }
+>                        outer.cur_skill = "blink";
+>                        return false;
+>                    }
+>                });
+>            }
+>        }
+>        ```
+>
+>   4.   修改 `acapp/game/static/css/game.css`
+>
+>        ```css
+>        .ac_game_chat_field_history {
+>            /* 绝对定位 */
+>            position: absolute;
+>            top: 66%;
+>            left: 20%;
+>            /* 居中 */
+>            transform: translate(-50%, -50%);
+>            width: 20%;
+>            height: 32%;
+>            color: white;
+>            /* 字体大小 */
+>            font-size: 2vh;
+>            padding: 5px;
+>            /* 自动隐藏滚动条 */
+>            overflow: auto;
+>        }
+>        
+>        .ac_game_chat_field_history::-webkit-scrollbar {
+>            /* 将侧边栏宽度置为0 */
+>            width: 0;
+>        }
+>        
+>        .ac_game_chat_field_input {
+>            /* 绝对定位 */
+>            position: absolute;
+>            top: 86%;
+>            left: 20%;
+>            /* 居中 */
+>            transform: translate(-50%, -50%);
+>            width: 20%;
+>            height: 3vh;
+>            color: white;
+>            font-size: 2vh;
+>            background-color: rgba(222, 225, 230, 0.2);
+>        }
+>        ```
+>
+>   5.   修改 `acapp/game/static/js/src/playground/chat_field/zbase.js`
+>
+>        ```javascript
+>        class ChatField {
+>            start() {
+>                // 监听函数
+>                this.add_listening_events();
+>            }
+>            add_listening_events() {
+>                let outer = this;
+>                this.$input.keydown(function(e) {
+>                    if (e.which === 27) { // 退出键
+>                        outer.hide_input();
+>                        return false;
+>                    }
+>                });
+>            }
+>        }
+>        ```
+>
+>   6.   修改 `acapp/game/static/js/src/playground/chat_field/zbase.js`
+>
+>        ```javascript
+>        class ChatField {
+>            constructor(playground) {
+>                // 记录函数编号
+>                this.func_id = null;
+>                // 启动函数
+>                this.start();
+>            }
+>            start() {
+>                // 监听函数
+>                this.add_listening_events();
+>            }
+>            add_listening_events() {
+>                let outer = this;
+>                this.$input.keydown(function(e) {
+>                    if (e.which === 27) { // 退出键
+>                        outer.hide_input(); // 隐藏输入框
+>                        return false;
+>                    }
+>                    else if (e.which === 13) { // 回车键
+>                        // 获取用户名
+>                        let username = outer.playground.root.settings.username;
+>                        // 获取内容文本
+>                        let text = outer.$input.val();
+>                        // 如果内容文本不为空
+>                        if (text) {
+>                            // 将文本内容清空
+>                            outer.$input.val("");
+>                            // 传入用户名和输入的内容
+>                            outer.add_message(username, text);
+>                        }
+>                        return false;
+>                    }
+>                });
+>            }
+>            render_message(message) {
+>                // 将信息渲染到div当中
+>                return $(`<div>${message}</div>`);
+>            }
+>            add_message(username, text) {
+>                // 展示历史信息
+>                this.show_history();
+>                // 信息的格式
+>                let message = `[${username}]${text}`;
+>                // 将信息添加到历史记录中
+>                this.$history.append(this.render_message(message));
+>                // 始终显示最新信息
+>                this.$history.scrollTop(this.$history[0].scrollHeight);
+>            }
+>            show_history() {
+>                let outer = this;
+>                // 缓慢的出现
+>                this.$history.fadeIn();
+>                // 如果当前函数没有消失, 则强制其消失
+>                if (this.func_id) clearTimeout(this.func_id);
+>                // 设置存活的时间3000ms
+>                this.func_id =  setTimeout(function() {
+>                    // 历史记录缓慢的消失
+>                    outer.$history.fadeOut();
+>                    // 函数id清空
+>                    this.func_id = null;
+>                }, 3000);
+>            }
+>        }
+>        ```
+>
+>   7.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            receive() { // 接收后端发送的信息
+>                let outer = this;
+>                this.ws.onmessage = function(e) {
+>                    let data = JSON.parse(e.data); // 解析JSON数据
+>                    let uuid = data.uuid; // 获取uuid
+>                    if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
+>                    let event = data.event; // 获取事件
+>                    if (event === "create_player") { // 创建玩家
+>                        outer.receive_create_player(uuid, data.username, data.photo);
+>                    }
+>                    else if (event === "move_to") { // 如果需要移动, 则调用移动函数
+>                        outer.receive_move_to(uuid, data.tx, data.ty);
+>                    }
+>                    else if (event === "shoot_fireball") { // 如果是发射炮弹, 则调用发射炮弹函数
+>                        outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
+>                    }
+>                    else if (event === "attack") { // 如果是攻击, 则调用接收攻击函数
+>                        outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
+>                    }
+>                    else if (event === "blink") { // 如果是闪现, 则调用闪现函数
+>                        outer.receive_blink(uuid, data.tx, data.ty);
+>                    }
+>                    else if (event === "message") { // 如果是信息, 则调用接收信息的函数
+>                        outer.receive_message(uuid, data.text);
+>                    }
+>                };
+>            }
+>            send_message(text) { // 发送信息
+>                let outer = this;
+>                this.ws.send(JSON.stringify({ // 具体信息
+>                    'event': "message",
+>                    'uuid': outer.uuid,
+>                    'text': text
+>                }));
+>            }
+>            receive_message(uuid, text) { // 接收信息
+>                let player = this.get_player(uuid); // 根据uuid获取玩家信息
+>                if (player) { // 如果当前玩家还存在, 则添加信息
+>                    player.playground.chat_field.add_message(player.username, text);
+>                }
+>            }
+>        }
+>        ```
+>
+>   8.   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        from django.conf import settings # 导入全局设置
+>        from django.core.cache import cache # 导入redis数据库
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            async def message(self, data): # 信息
+>                await self.channel_layer.group_send( # 广播信息
+>                    self.room_name,
+>                    {
+>                        'type': "group_send_event",
+>                        'event': "message",
+>                        'uuid': data['uuid'],
+>                        'text': data['text']
+>                    }
+>                )
+>        
+>            async def receive(self, text_data):
+>                elif event == "message": # 如果是信息
+>                    await self.message(data)
+>        ```
+>
+>   9.   修改 `acapp/game/static/js/src/playground/chat_field/zbase.js`
+>
+>        ```javascript
+>        class ChatField {
+>            add_listening_events() {
+>                let outer = this;
+>                this.$input.keydown(function(e) {
+>                    if (e.which === 27) { // 退出键
+>                        outer.hide_input(); // 隐藏输入框
+>                        return false;
+>                    }
+>                    else if (e.which === 13) { // 回车键
+>                        // 获取用户名
+>                        let username = outer.playground.root.settings.username;
+>                        // 获取内容文本
+>                        let text = outer.$input.val();
+>                        // 如果内容文本不为空
+>                        if (text) {
+>                            // 将文本内容清空
+>                            outer.$input.val("");
+>                            // 传入用户名和输入的内容
+>                            outer.add_message(username, text);
+>                            // 调用后端函数
+>                            outer.playground.mps.send_message(text);
+>                        }
+>                        return false;
+>                    }
+>                });
+>            }
+>        }
+>        ```
 
 # 注意事项
 
+## 问题汇总
+
 > 1. `js css ` 等代码更新时，浏览器不能及时更新的问题
+>       + 方案一
 >    
->    + 方案一
+>         + 打开谷歌浏览器 点开 `Network` 选项卡
 >    
->      + 打开谷歌浏览器 点开 `Network` 选项卡
+>         + 禁用缓存即可 ☑️`Disable cache`
 >    
->      + 禁用缓存即可 ☑️`Disable cache`
+>         + <font style="color:red">**千万不要清除浏览器的所有数据**</font>
 >    
->      + <font style="color:red">**千万不要清除浏览器的所有数据**</font>
+>       + 方案二
 >    
->    + 方案二
->    
->      + 选择需要刷新的网页
+>         + 选择需要刷新的网页
+>      + `F12` 打开开发者工具
 >      + 【<font style = "color: red">**右键**</font>】点击标签栏的刷新按钮
 >      + 点击第三项"清空缓存并硬性重新加载"
+
+## 运行项目
+
+### 服务器重启
+
+>   1.   启动 `nginx` 服务器
+>
+>        ```bash
+>        sudo /etc/init.d/nginx start
+>        ```
+>
+>   2.   启动 `redis-server` 服务
+>
+>        ```bash
+>        sudo redis-server /etc/redis/redis.conf
+>        ```
+>
+>   3.   启动 `uwsgi` 服务
+>
+>        ```ini
+>        uwsgi --ini scripts/uwsgi.ini
+>        ```
+>
+>   4.   启动 `django_channels` 服务
+>
+>        ```django
+>        daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
+>        ```
 

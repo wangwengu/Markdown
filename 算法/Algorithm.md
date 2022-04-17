@@ -128,6 +128,88 @@ public:
 
 `动态规划`
 
+## 线性 `DP`
+
+### [AcWing 897. 最长公共子序列](https://www.acwing.com/problem/content/899/)
+
+**题目描述**
+
+>   给定两个长度分别为 `N` 和 `M` 的字符串 `A` 和 `B`，求既是 `A` 的子序列又是 `B` 的子序列的字符串长度最长是多少。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `M`。
+>
+>   第二行包含一个长度为 `N` 的字符串，表示字符串 `A`。
+>
+>   第三行包含一个长度为 `M` 的字符串，表示字符串 `B`。
+>
+>   字符串均由小写字母构成。
+
+**输出格式**
+
+>   输出一个整数，表示最大长度。
+
+**数据范围**
+
+>   +   $1 ≤ N, M ≤ 1000$
+
+**输入样例**
+
+```c++
+4 5
+acbd
+abedc
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+![4132130](img/4132130.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1010;
+int n, m;
+char A[N], B[N];
+int f[N][N];
+int main() {
+    scanf("%d%d%s%s", &n, &m, A + 1, B + 1);
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= m; j ++ )
+            if (A[i] == B[j])
+                f[i][j] = max(f[i][j], f[i - 1][j - 1] + 1);
+            else
+                f[i][j] = max(f[i][j], max(f[i - 1][j], f[i][j - 1]));
+    cout << f[n][m] << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(nm)$
+
+**标签**
+
+`线性DP`
+
+**缝合怪**
+
+
+
 ## 树形`DP`
 
 ### 树的直径经典求法
@@ -8628,7 +8710,13 @@ $O(n^2)$
 
 **手写稿**
 
-![3231936](img/3231936.png)
+>   原理
+>
+>   ![3231936](img/3231936.png)
+>
+>   补充说明
+>
+>   ![4121018](img/4121018.png)
 
 **代码**
 
@@ -8672,6 +8760,7 @@ int dijkstra() {
             if (!st[j] && dist[j] > dist[v] + w[i]) {
                 dist[j] = dist[v] + w[i];
                 q.push({dist[j], j});
+                // 注意: 这里不能填写st[j] = true[手写稿补充说明]
             }
         }
     }
@@ -8812,7 +8901,7 @@ $O(m)$
 
 **缝合怪**
 
-## `SPFA`【优化版 `Bellman-Ford`】
+## `SPFA`【堆优化版 `BF`】
 
 ### [AcWing 851. spfa求最短路](https://www.acwing.com/problem/content/853/)
 
@@ -9052,6 +9141,8 @@ $O(m)$
 
 **缝合怪**
 
+
+
 ## 单源最短路的建图方式
 
 ### [AcWing 1129. 热浪](https://www.acwing.com/problem/content/1131/)
@@ -9122,27 +9213,88 @@ $O(m)$
 
 **手写稿**
 
-
+>   1.   缝合怪 ==> `spfa`
+>   2.   缝合怪 ==> 循环队列
+>
+>   ![491255](img/491255.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 2510, M = 6200 * 2 + 10;
+int n, m, S, T, idx;
+int h[N], e[M], w[M], ne[M], st[N], dist[N], q[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void spfa() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, false, sizeof st);
+    // 循环队列队头队尾初始化为0
+    int hh = 0, tt = 0;
+    dist[S] = 0;
+    // 队尾指针永远指向[最后一个位置]的[下一个位置]
+    q[tt ++ ] = S;
+    st[S] = true;
+    // 循环队列判空条件 hh == tt
+    // 循环队列判满条件 (tt + 1) % 长度 == hh
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        // 队头越界, 则重置为0
+        if (hh >= N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                if (!st[j]) {
+                    st[j] = true;
+                    // 队尾越界, 则重置为0
+                    if (tt >= N) tt = 0;
+                    q[tt ++ ] = j;
+                }
+            }
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d%d%d%d", &n, &m, &S, &T);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        add(u, v, w);
+        add(v, u, w);
+    }
+    spfa();
+    cout << dist[T] << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$平均时间复杂度O(log_n), 最坏时间复杂度O(nm)$
 
 **空间复杂度**
 
-
+$O(m)$
 
 **标签**
 
-
+`最短路`、`SPFA`
 
 **缝合怪**
 
-
+[AcWing 851. spfa求最短路](#AcWing 851. spfa求最短路)、[LeetCode 622. 设计循环队列](#LeetCode 622. 设计循环队列)
 
 ### [AcWing 1128. 信使](https://www.acwing.com/problem/content/1130/)
 
@@ -9200,23 +9352,55 @@ $O(m)$
 
 **手写稿**
 
-
+![491315](img/491315.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110, INF = 0x3f3f3f3f;
+int n, m;
+int g[N][N];
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(g, 0x3f, sizeof g);
+    for (int i = 1; i <= n; i ++ ) g[i][i] = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        // 防止出现重边, 重边取最小值
+        g[u][v] = g[v][u] = min(g[u][v], w);
+    }
+    // Floyd模板
+    for (int k = 1; k <= n; k ++ )
+        for (int i = 1; i <= n; i ++ )
+            for (int j = 1; j <= n; j ++ )
+                g[i][j] = min(g[i][j], g[i][k] + g[k][j]);
+    // 记录答案
+    int res = -1;
+    for (int i = 1; i <= n; i ++ )
+        // 取所有[最小值]中的[最大值], 即最小最大值
+        res = max(res, g[1][i]);
+    // 不连通, 输出-1
+    if (res == INF) res = -1;
+    cout << res << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n^3)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`最短路`、`Floyd`
 
 **缝合怪**
 
@@ -9283,23 +9467,99 @@ $O(m)$
 
 **手写稿**
 
-
+![4100916](img/4100916.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 810, M = 3000, INF = 0x3f3f3f3f;
+int n, p, m, idx;
+int id[N], h[N], e[M], w[M], ne[M], st[N], dist[N], q[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+int spfa(int start) {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, false, sizeof st);
+    int hh = 0, tt = 0;
+    // 起点到起点的距离为0
+    dist[start] = 0;
+    // 将起点入队
+    q[tt ++ ] = start;
+    // 将当前点标记为已经在队列中, 即入队
+    st[start] = true;
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        // 越界, 则从0开始
+        if (hh == N) hh = 0;
+        // 将当前点标记为不在对列中, 即出队
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 更新距离
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                // 如果当前点不在队中
+                if (!st[j]) {
+                    // 入队
+                    q[tt ++ ] = j;
+                    // 越界, 则从0开始
+                    if (tt == N) tt = 0;
+                    // 标记当前点在队列中, 即入队
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    int res = 0;
+    for (int i = 1; i <= n; i ++ ) {
+        // 获取奶牛所在的牧场号
+        int j = id[i];
+        // 不可达, 则直接返回
+        if (dist[j] == INF) return INF;
+        // 加上距离即可
+        res += dist[j];
+    }
+    return res;
+}
+int main() {
+    scanf("%d%d%d", &n, &p, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ )
+        scanf("%d", &id[i]);
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        add(u, v, w);
+        add(v, u, w);
+    }
+    int res = INF;
+    for (int i = 1; i <= p; i ++ )
+        // 取最小距离和
+        res = min(res, spfa(i));
+    cout << res << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(nm), n是牧场数目, m是边的个数$
 
 **空间复杂度**
 
-
+$O(m), m是边数$
 
 **标签**
 
-
+`最短路`、`SPFA`
 
 **缝合怪**
 
@@ -9352,23 +9612,65 @@ $O(m)$
 
 **手写稿**
 
-
+![4101235](img/4101235.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 2010, INF = 0x43434343;
+int n, m;
+int st[N];
+double dist[N];
+double g[N][N];
+// 朴素版Dijkstra模板
+// 注意: 数据类型
+void dijkstra(int start, int end) {
+    memset(dist, 0x43, sizeof dist);
+    dist[start] = 100;
+    for (int i = 0; i < n - 1; i ++ ) {
+        int t = -1;
+        for (int j = 1; j <= n; j ++ )
+            if (!st[j] && (t == -1 || dist[t] > dist[j])) t = j;
+        if (t == end) return;
+        st[t] = true;
+        for (int j = 1; j <= n; j ++ ) {
+            if (g[t][j] == INF) continue;
+            if (!st[j] && dist[j] > dist[t] / g[t][j])
+                dist[j] = dist[t] / g[t][j];
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        g[u][v] = g[v][u] = (100.0 - w) / 100;
+    }
+    int start, end;
+    scanf("%d%d", &end, &start);
+    // 反向Dijkstra
+    dijkstra(start, end);
+    printf("%.8lf\n", dist[end]);
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n^2)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`朴素版Dijkstra`
 
 **缝合怪**
 
@@ -9422,23 +9724,72 @@ $O(m)$
 
 **手写稿**
 
-
+![4110919](img/4110919.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+#include <sstream>
+using namespace std;
+const int N = 510, INF = 0x3f3f3f3f;
+int n, m;
+int stop[N], q[N], dist[N], st[N];
+bool g[N][N];
+// BFS模板
+void bfs() {
+    memset(dist, 0x3f, sizeof dist);
+    int hh = 0, tt = -1;
+    q[++ tt ] = 1;
+    st[1] = true;
+    dist[1] = 0;
+    while (hh <= tt) {
+        int t = q[hh ++ ];
+        if (t == n) return;
+        for (int i = 1; i <= n; i ++ )
+            if (!st[i] && g[t][i] && dist[i] > dist[t] + 1) {
+                dist[i] = dist[t] + 1;
+                q[++ tt] = i;
+                st[i] = true;
+            }
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &m, &n);
+    string line;
+    // 由于不知道要输入多少个数
+    // 使用stringstream来处理输入
+    getline(cin, line);
+    while (m -- ) {
+        int cnt = 0, t = 0;
+        getline(cin, line);
+        stringstream ssin(line);
+        while (ssin >> t) stop[cnt ++ ] = t;
+        for (int i = 0; i < cnt; i ++ )
+            for (int j = i + 1; j < cnt; j ++ )
+                // 两个点之间有单向边
+                g[stop[i]][stop[j]] = true;
+    }
+    bfs();
+    if (dist[n] == INF) puts("NO");
+    else cout << max(dist[n] - 1, 0) << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(mn^2)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`最短路`、`BFS`
 
 **缝合怪**
 
@@ -9523,6 +9874,2512 @@ $O(m)$
 
 ```c++
 5250
+```
+
+**手写稿**
+
+![4111127](img/4111127.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110, INF = 0x3f3f3f3f;
+int n, m;
+int pce[N], lev[N], dist[N], st[N];
+int g[N][N];
+// Dijkstra模板
+int dijkstra(int down, int up) {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, false, sizeof st);
+    dist[0] = 0;
+    for (int i = 1; i <= n; i ++ ) {
+        int t = -1;
+        for (int j = 0; j <= n; j ++ )
+            if (!st[j] && (t == -1 || dist[t] > dist[j])) t = j;
+        st[t] = true;
+        if (t == 1) return dist[1];
+        for (int j = 0; j <= n; j ++ )
+            // 注意: 判断等级范围
+            if (!st[j] && lev[j] >= down && lev[j] <= up && g[t][j] != INF && dist[j] > dist[t] + g[t][j])
+                dist[j] = dist[t] + g[t][j];
+    }
+    return dist[1];
+}
+int main() {
+    scanf("%d%d", &m, &n);
+    memset(g, 0x3f, sizeof g);
+    for (int i = 0; i <= n; i ++ ) g[i][i] = 0;
+    for (int i = 1, cnt; i <= n; i ++ ) {
+        scanf("%d%d%d", &pce[i], &lev[i], &cnt);
+        // 0号点是超级源点
+        // 取最小值, 防止重边
+        g[0][i] = min(g[0][i], pce[i]);
+        while (cnt -- ) {
+            int id, price;
+            scanf("%d%d", &id, &price);
+            // 取最小值, 防止重边
+            g[id][i] = min(g[id][i], price);
+        }
+    }
+    int res = INF;
+    // 枚举等级制度范围
+    for (int i = lev[1] - m; i <= lev[1]; i ++ )
+        res = min(res, dijkstra(i, i + m));
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2m)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`建图`、`Dijkstra`、`最短路`
+
+**缝合怪**
+
+
+
+## 单源最短路的综合应用
+
+### [AcWing 1135. 新年好](https://www.acwing.com/problem/content/1137/)
+
+**题目描述**
+
+>   重庆城里有 `n` 个车站，`m` 条 **双向** 公路连接其中的某些车站。
+>
+>   每两个车站最多用一条公路连接，从任何一个车站出发都可以经过一条或者多条公路到达其他车站，但不同的路径需要花费的时间可能不同。
+>
+>   在一条路径上花费的时间等于路径上所有公路需要的时间之和。
+>
+>   佳佳的家在车站 `1`，他有五个亲戚，分别住在车站 `a,b,c,d,e`。
+>
+>   过年了，他需要从自己的家出发，拜访每个亲戚（顺序任意），给他们送去节日的祝福。
+>
+>   怎样走，才需要最少的时间？
+
+**输入格式**
+
+>   第一行：包含两个整数 `n,m`，分别表示车站数目和公路数目。
+>
+>   第二行：包含五个整数 `a,b,c,d,e`，分别表示五个亲戚所在车站编号。
+>
+>   以下 `m` 行，每行三个整数 `x,y,t`，表示公路连接的两个车站编号和时间。
+
+**输出格式**
+
+>   输出仅一行，包含一个整数 `T`，表示最少的总时间。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 50000,$
+>   +   $1 ≤ m ≤ 10^5,$
+>   +   $1 < a, b, c, d, e ≤ n,$
+>   +   $1 ≤ x, y ≤ n,$
+>   +   $1 ≤ t ≤ 100$
+
+**输入样例**
+
+```c++
+6 6
+2 3 4 5 6
+1 2 8
+2 3 3
+3 4 4
+4 5 5
+5 6 2
+1 6 7
+```
+
+**输出样例**
+
+```c++
+21
+```
+
+**手写稿**
+
+![4121036](img/4121036.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <queue>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 50010, M = 200010, INF = 0x3f3f3f3f;
+int n, m, idx;
+int rel[6], h[N], e[M], w[M], ne[M], st[N];
+int dist[6][N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// 数组传的都是指针
+void dijkstra(int start, int dist[]) {
+    // 注意: 这里的初始化方式有些不同, 使用N * 4, 一个整数占据4个字节
+    // 不能使用sizeof dist, 因为, 二维数组的原因
+    memset(dist, 0x3f, N * 4);
+    memset(st, false, sizeof st);
+    priority_queue<PII, vector<PII>, greater<PII>> heap;
+    dist[start] = 0;
+    heap.push({0, start});
+    while (heap.size()) {
+        auto t = heap.top(); heap.pop();
+        int v = t.y;
+        st[v] = true;
+        for (int i = h[v]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (!st[j] && dist[j] > dist[v] + w[i]) {
+                dist[j] = dist[v] + w[i];
+                heap.push({dist[j], j});
+            }
+        }
+    }
+    return;
+}
+/*
+参数:
+    参数1: 当前已经访问过的亲戚数量
+    参数2: 当前正在访问的亲戚编号
+    参数3: 当前的花费
+*/
+int dfs(int u, int start, int cost) {
+    int res = INF;
+    if (u == 5) {
+        res = min(res, cost);
+        return cost;
+    }
+    for (int i = 1; i <= 5; i ++ )
+        if (!st[i]) {
+            st[i] = true;
+            int next = rel[i];
+            res = min(res, dfs(u + 1, i, cost + dist[start][next]));
+            st[i] = false;
+        }
+    return res;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    rel[0] = 1;
+    // 记录亲戚所处的车站编号
+    for (int i = 1; i <= 5; i ++ )
+        scanf("%d", &rel[i]);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    // 计算亲戚所在的车站到其他车站的最短路径
+    for (int i = 0; i <= 5; i ++ )
+        dijkstra(rel[i], dist[i]);
+    memset(st, false,sizeof st);
+    /*
+    参数:
+        参数1: 当前已经访问过的亲戚数量
+        参数2: 当前正在访问的亲戚编号
+        参数3: 当前的花费
+    */
+    cout << dfs(0, 0, 0) << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`Dijkstra`、`DFS`
+
+**缝合怪**
+
+[AcWing 850. Dijkstra求最短路 II](#AcWing 850. Dijkstra求最短路 II)
+
+### [AcWing 340. 通信线路](https://www.acwing.com/problem/content/342/)
+
+**题目描述**
+
+>   在郊区有 `N` 座通信基站，`P` 条 **双向** 电缆，第 `i` 条电缆连接基站 $A_i$ 和 $B_i$。
+>
+>   特别地，`1` 号基站是通信公司的总站，`N` 号基站位于一座农场中。
+>
+>   现在，农场主希望对通信线路进行升级，其中升级第 `i` 条电缆需要花费 $L_i$。
+>
+>   电话公司正在举行优惠活动。
+>
+>   农产主可以指定一条从 `1` 号基站到 `N` 号基站的路径，并指定路径上不超过 `K` 条电缆，由电话公司免费提供升级服务。
+>
+>   农场主只需要支付在该路径上剩余的电缆中，升级价格最贵的那条电缆的花费即可。
+>
+>   求至少用多少钱可以完成升级。
+
+**输入格式**
+
+>   第 `1` 行：三个整数 `N，P，K`。
+>
+>   第 `2..P + 1` 行：第 `i + 1` 行包含三个整数 $A_i,B_i,L_i$。
+
+**输出格式**
+
+>   包含一个整数表示最少花费。
+>
+>   若 `1` 号基站与 `N` 号基站之间不存在路径，则输出 `−1`。
+
+**数据范围**
+
+>   +   $0 ≤ K < N ≤ 1000,$
+>   +   $1 ≤ P ≤ 10000,$
+>   +   $1 ≤ L_i ≤ 1000000$
+
+**输入样例**
+
+```c++
+5 7 1
+1 2 5
+3 1 4
+2 4 8
+3 2 3
+5 2 9
+3 4 7
+4 5 6
+```
+
+**输出样例**
+
+```c++
+4
+```
+
+**手写稿**
+
+![4122101](img/4122101.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <deque>
+using namespace std;
+const int N = 1010, M = 20010;
+int n, m, k, idx;
+int h[N], e[M], w[M], ne[M], st[N], dist[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// 双端队列模板
+bool check(int x) {
+    deque<int> q;
+    // 初始化
+    memset(st, 0, sizeof st);
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    q.push_back(1);
+    st[1] = true;
+    while (q.size()) {
+        int t = q.front(); q.pop_front();
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i], v = w[i] > x; // 权值w > x
+            if (!st[j] && dist[j] > dist[t] + v) {
+                dist[j] = dist[t] + v;
+                q.push_back(j);
+            }
+        }
+    }
+    return dist[n] <= k; // 性质是最小值小于等于k
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &k);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    // 二分的是答案
+    int l = 0, r = 1e6 + 1;
+    while (l < r) {
+        int mid = l + r >> 1;
+        // 符合条件, 说明是在答案右边, 故, 缩小范围
+        // 具体手写稿
+        if (check(mid)) r = mid;
+        else l = mid + 1;
+    }
+    if (r == 1e6 + 1) r = -1;
+    cout << r << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(plogL)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`最短路`、`二分`
+
+**缝合怪**
+
+
+
+### [AcWing 342. 道路与航线](https://www.acwing.com/problem/content/344/)
+
+**题目描述**
+
+>   农夫约翰正在一个新的销售区域对他的牛奶销售方案进行调查。
+>
+>   他想把牛奶送到 `T` 个城镇，编号为 `1 ∼ T`。
+>
+>   这些城镇之间通过 `R` 条道路 (编号为 `1` 到 `R`) 和 `P` 条航线 (编号为 `1` 到 `P`) 连接。
+>
+>   每条道路 `i` 或者航线 `i` 连接城镇 $A_i$ 到 $B_i$，花费为 $C_i$。
+>
+>   对于道路，$0 ≤ C_i ≤ 10,000$;然而航线的花费很神奇，花费 $C_i$ 可能是负数$(−10,000 ≤ C_i ≤ 10,000)$。
+>
+>   道路是双向的，可以从 $A_i$ 到 $B_i$，也可以从 $B_i$ 到 $A_i$，花费都是 $C_i$。
+>
+>   然而航线与之不同，只可以从 $A_i$ 到 $B_i$。
+>
+>   事实上，由于最近恐怖主义太嚣张，为了社会和谐，出台了一些政策：保证如果有一条航线可以从 $A_i$ 到 $B_i$，那么保证不可能通过一些道路和航线从 $B_i$ 回到 $A_i$。
+>
+>   由于约翰的奶牛世界公认十分给力，他需要运送奶牛到每一个城镇。
+>
+>   他想找到从发送中心城镇 `S` 把奶牛送到每个城镇的最便宜的方案。
+
+**输入格式**
+
+>   第一行包含四个整数 `T,R,P,S`。
+>
+>   接下来 `R` 行，每行包含三个整数（表示一个道路）$A_i,B_i,C_i$。
+>
+>   接下来 `P` 行，每行包含三个整数（表示一条航线）$A_i,B_i,C_i$。
+
+**输出格式**
+
+>   第 $1 .. T$ 行：第 `i` 行输出从 `S` 到达城镇 `i` 的最小花费，如果不存在，则输出 `NO PATH`。
+
+**数据范围**
+
+>   +   $1 ≤ T ≤ 25000,$
+>   +   $1 ≤ R, P ≤ 50000,$
+>   +   $1 ≤ A_i, B_i, S ≤ T$
+
+**输入样例**
+
+```c++
+6 3 3 4
+1 2 5
+3 4 5
+5 6 10
+3 5 -100
+4 6 -100
+1 3 -10
+```
+
+**输出样例**
+
+```c++
+NO PATH
+NO PATH
+5
+0
+-95
+-100
+```
+
+**手写稿**
+
+![4131154](img/4131154.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <queue>
+#include <vector>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 25010, M = 150010, INF = 0x3f3f3f3f;
+int n, mr, mp, S, idx, bcnt, hh, tt;
+int h[N], e[M], w[M], ne[M], id[N], st[N], dist[N], q[N], din[N];
+vector<int> block[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u, int bid) {
+    id[u] = bid;
+    st[u] = true;
+    block[bid].push_back(u);
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        // 如果j没有被访问过并且j没有被分组
+        if (!st[j] && !id[j])
+            dfs(j, bid);
+    }
+    st[u] = false;
+    return;
+}
+void dijkstra(int bid) {
+    priority_queue<PII, vector<PII>, greater<PII>> heap;
+    // 将当前连通块中的城镇全部压入小根堆中
+    for (auto t : block[bid])
+        heap.push({dist[t], t});
+    // 堆优化版dijkstra
+    while (heap.size()) {
+        auto t = heap.top(); heap.pop();
+        int v = t.y;
+        if (st[v]) continue;
+        st[v] = true;
+        // 访问邻接点
+        for (int i = h[v]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 如果当前点v和其临接点j不属于同一个连通块
+            // 说明j所在的连通块id[j]的入度需要➖1
+            // 如果减到0, 则加入队列q
+            if (id[v] != id[j] && -- din[id[j]] == 0) q[++tt] = id[j];
+            // 更新距离
+            if (dist[j] > dist[v] + w[i]) {
+                dist[j] = dist[v] + w[i];
+                // 注意: 这里只有同属一个连通块的时候才加入优先队列
+                // 同一个连通块内部都是道路, 道路的权值是非负的
+                if (id[j] == id[v]) heap.push({dist[j], j});
+            }
+        }
+    }
+    return;
+}
+void topsort() {
+    hh = 0, tt = -1;
+    // 初始化为+∞
+    memset(dist, 0x3f, sizeof dist);
+    // 起点为0
+    dist[S] = 0;
+    for (int i = 1; i <= bcnt; i ++ )
+        // 将所有入度为0的点加入队列q
+        if (!din[i]) q[++ tt] = i;
+    while (hh <= tt) {
+        int t = q[hh ++ ];
+        dijkstra(t);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d%d%d", &n, &mr, &mp, &S);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < mr; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    for (int i = 1; i <= n; i ++ )
+        if (!id[i])
+            // 连通块编号从1开始
+            dfs(i, ++ bcnt);
+    for (int i = 0; i < mp; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        // b城镇所在的连通块入度➕1
+        din[id[b]] ++;
+        add(a, b, c);
+    }
+    topsort();
+    for (int i = 1; i <= n; i ++ ) {
+        // 因为有负权边, 因此, 判断其大于某个大值即可
+        if (dist[i] > INF / 2) puts("NO PATH");
+        else cout << dist[i] << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(nm), m是连通块的数量$
+
+**标签**
+
+`最短路`、`拓扑排序`
+
+**缝合怪**
+
+
+
+### [AcWing 341. 最优贸易](https://www.acwing.com/problem/content/343/)
+
+**题目描述**
+
+>   `C` 国有 `n` 个大城市和 `m` 条道路，每条道路连接这 `n` 个城市中的某两个城市。
+>
+>   任意两个城市之间最多只有一条道路直接相连。
+>
+>   这 `m` 条道路中有一部分为单向通行的道路，一部分为双向通行的道路，双向通行的道路在统计条数时也计为 `1` 条。
+>
+>   `C` 国幅员辽阔，各地的资源分布情况各不相同，这就导致了同一种商品在不同城市的价格不一定相同。
+>
+>   但是，同一种商品在同一个城市的买入价和卖出价始终是相同的。
+>
+>   商人阿龙来到 `C` 国旅游。
+>
+>   当他得知“同一种商品在不同城市的价格可能会不同”这一信息之后，便决定在旅游的同时，利用商品在不同城市中的差价赚一点旅费。
+>
+>   设 `C` 国 `n` 个城市的标号从` 1 ∼ n`，阿龙决定从 `1` 号城市出发，并最终在 `n` 号城市结束自己的旅行。
+>
+>   在旅游的过程中，任何城市可以被重复经过多次，但不要求经过所有 `n` 个城市。
+>
+>   阿龙通过这样的贸易方式赚取旅费：他会选择一个经过的城市买入他最喜欢的商品——水晶球，并在之后经过的另一个城市卖出这个水晶球，用赚取的差价当做旅费。
+>
+>   因为阿龙主要是来 `C` 国旅游，他决定这个贸易只进行最多一次，当然，在赚不到差价的情况下他就无需进行贸易。
+>
+>   现在给出 `n` 个城市的水晶球价格，`m` 条道路的信息（每条道路所连接的两个城市的编号以及该条道路的通行情况）。
+>
+>   请你告诉阿龙，他最多能赚取多少旅费。
+>
+>   注意：本题数据有加强。
+
+**输入格式**
+
+>   第一行包含 `2` 个正整数 `n` 和 `m`，中间用一个空格隔开，分别表示城市的数目和道路的数目。
+>
+>   第二行 `n` 个正整数，每两个整数之间用一个空格隔开，按标号顺序分别表示这 ``n`` 个城市的商品价格。
+>
+>   接下来 `m` 行，每行有 `3` 个正整数，`x，y，z`，每两个整数之间用一个空格隔开。
+>
+>   如果 `z = 1`，表示这条道路是城市 `x` 到城市 `y` 之间的单向道路；如果 `z = 2`，表示这条道路为城市 `x` 和城市 `y` 之间的双向道路。
+
+**输出格式**
+
+>   一个整数，表示答案。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 100000,$
+>   +   $1 ≤ m ≤ 500000,$
+>   +   $1 ≤ 各城市水晶球价格 ≤ 100$
+
+**输入样例**
+
+```c++
+5 5
+4 3 5 6 1
+1 2 1
+1 4 1
+2 3 2
+3 5 1
+4 5 2
+```
+
+**输出样例**
+
+```c++
+5
+```
+
+**手写稿**
+
+![4131635](img/4131635.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 100010, M = 2000010;
+int n, m, idx;
+int w[N], h[N], rh[N], e[M], ne[M], fmin[N], fmax[N], q[N], st[N];
+void add(int h[], int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void spfa(int dist[], int type) {
+    memset(st, false, sizeof st);
+    int hh = 0, tt = 0;
+    if (type == 0) { // 正向遍历, 求最小值
+        memset(dist, 0x3f, sizeof fmin);
+        dist[1] = w[1];
+        q[tt ++ ] = 1;
+        st[1] = true;
+    }
+    else { // 反向遍历, 求最大值
+        memset(dist, -0x3f, sizeof fmax);
+        dist[n] = w[n];
+        q[tt ++ ] = n;
+        st[n] = true;
+    }
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        if (type == 0) { // 正向遍历, 求最小值
+            for (int i = h[t]; i != -1; i = ne[i]) {
+                int j = e[i];
+                if (dist[j] > min(dist[t], w[j])) {
+                    dist[j] = min(dist[t], w[j]);
+                    if (!st[j]) { // 如果没有加入队列, 则将其加入队列
+                        q[tt ++ ] = j;
+                        if (tt == N) tt = 0;
+                        st[j] = true;
+                    }
+                }
+            }
+        }
+        else { // 反向遍历, 求最大值
+            for (int i = rh[t]; i != -1; i = ne[i]) {
+                int j = e[i];
+                if (dist[j] < max(dist[t], w[j])) { // 如果没有加入队列, 则将其加入队列
+                    dist[j] = max(dist[t], w[j]);
+                    if (!st[j]) {
+                        q[tt ++ ] = j;
+                        if (tt == N) tt = 0;
+                        st[j] = true;
+                    }
+                }
+            }
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    memset(rh, -1, sizeof rh);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &w[i]);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(h, a, b);
+        add(rh, b, a);
+        if (c == 2) {
+            add(h, b, a);
+            add(rh, a, b);
+        }
+    }
+    spfa(fmin, 0);
+    spfa(fmax, 1);
+    int res = 0;
+    for (int i = 1; i <= n; i ++ )
+        res = max(res, fmax[i] - fmin[i]);
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$最坏时间复杂度 O(nm), 一般情况下为O(m)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`最短路`、`动态规划`、`spfa`
+
+**缝合怪**
+
+## 单源最短路的扩展应用
+
+### [AcWing 1137. 选择最佳线路](https://www.acwing.com/problem/content/1139/)
+
+**题目描述**
+
+>   有一天，琪琪想乘坐公交车去拜访她的一位朋友。
+>
+>   由于琪琪非常容易晕车，所以她想尽快到达朋友家。
+>
+>   现在给定你一张城市交通路线图，上面包含城市的公交站台以及公交线路的具体分布。
+>
+>   已知城市中共包含 `n` 个车站（编号`1 ~ n`）以及 `m` 条公交线路。
+>
+>   每条公交线路都是 **单向的**，从一个车站出发直接到达另一个车站，两个车站之间可能存在多条公交线路。
+>
+>   琪琪的朋友住在 `s` 号车站附近。
+>
+>   琪琪可以在任何车站选择换乘其它公共汽车。
+>
+>   请找出琪琪到达她的朋友家（附近的公交车站）需要花费的最少时间。
+
+**输入格式**
+
+>   输入包含多组测试数据。
+>
+>   每组测试数据第一行包含三个整数 `n,m,s`，分别表示车站数量，公交线路数量以及朋友家附近车站的编号。
+>
+>   接下来 `m` 行，每行包含三个整数 `p,q,t`，表示存在一条线路从车站 `p` 到达车站 `q`，用时为 `t`。
+>
+>   接下来一行，包含一个整数 `w`，表示琪琪家附近共有 `w` 个车站，她可以在这 `w` 个车站中选择一个车站作为始发站。
+>
+>   再一行，包含 `w` 个整数，表示琪琪家附近的 `w` 个车站的编号。
+
+**输出格式**
+
+>   每个测试数据输出一个整数作为结果，表示所需花费的最少时间。
+>
+>   如果无法达到朋友家的车站，则输出 ``-1``。
+>
+>   每个结果占一行。
+
+**数据范围**
+
+>   +   $n ≤ 1000, m ≤ 20000,$
+>   +   $1 ≤ s ≤ n,$
+>   +   $0 < w < n,$
+>   +   $0 < t ≤ 1000$
+
+**输入样例**
+
+```c++
+5 8 5
+1 2 2
+1 5 3
+1 3 4
+2 4 7
+2 5 6
+2 3 5
+3 5 1
+4 5 1
+2
+2 3
+4 3 4
+1 2 3
+1 3 4
+2 3 2
+1
+1
+```
+
+**输出样例**
+
+```c++
+1
+-1
+```
+
+**手写稿**
+
+![4140934](img/4140934.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 1010, M = 21010, INF = 0x3f3f3f3f;
+int n, m, T, idx;
+int h[N], e[M], w[M], ne[M], st[N], dist[N], q[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// SPFA模板
+int spfa() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    // 使用循环队列
+    int hh = 0, tt = 0;
+    dist[0] = 0;
+    q[tt ++ ] = 0;
+    st[0] = true;
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    if (tt == N) tt = 0;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    if (dist[T] == INF) return -1;
+    return dist[T];
+}
+int main() {
+    while (~scanf("%d%d%d", &n, &m, &T)) {
+        memset(h, -1, sizeof h);
+        idx = 0;
+        for (int i = 0; i < m; i ++ ) {
+            int a, b, c;
+            scanf("%d%d%d", &a, &b, &c);
+            add(a, b, c);
+        }
+        int k;
+        scanf("%d", &k);
+        for (int i = 0, station; i < k; i ++ ) {
+            scanf("%d", &station);
+            // 将起点和虚拟源点之间建立一条边, 权值为0
+            add(0, station, 0);
+        }
+        cout << spfa() << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(m)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`最短路`、`虚拟源点`
+
+**缝合怪**
+
+
+
+### [AcWing 1131. 拯救大兵瑞恩](https://www.acwing.com/problem/content/1133/)
+
+**题目描述**
+
+>   `1944` 年，特种兵麦克接到国防部的命令，要求立即赶赴太平洋上的一个孤岛，营救被敌军俘虏的大兵瑞恩。
+>
+>   瑞恩被关押在一个迷宫里，迷宫地形复杂，但幸好麦克得到了迷宫的地形图。
+>
+>   迷宫的外形是一个长方形，其南北方向被划分为 `N` 行，东西方向被划分为 `M` 列， 于是整个迷宫被划分为 `N×M` 个单元。
+>
+>   每一个单元的位置可用一个有序数对 (单元的行号, 单元的列号) 来表示。
+>
+>   南北或东西方向相邻的 `2` 个单元之间可能互通，也可能有一扇锁着的门，或者是一堵不可逾越的墙。
+>
+>   **注意：** 门可以从两个方向穿过，即可以看成一条无向边。
+>
+>   迷宫中有一些单元存放着钥匙，同一个单元可能存放 **多把钥匙**，并且所有的门被分成 `P` 类，打开同一类的门的钥匙相同，不同类门的钥匙不同。
+>
+>   大兵瑞恩被关押在迷宫的东南角，即 `(N,M)` 单元里，并已经昏迷。
+>
+>   迷宫只有一个入口，在西北角。
+>
+>   也就是说，麦克可以直接进入 `(1,1)` 单元。
+>
+>   另外，麦克从一个单元移动到另一个相邻单元的时间为 `1`，拿取所在单元的钥匙的时间以及用钥匙开门的时间可忽略不计。
+>
+>   试设计一个算法，帮助麦克以最快的方式到达瑞恩所在单元，营救大兵瑞恩。
+
+**输入格式**
+
+>   第一行有三个整数,分别表示 `N,M,P` 的值。
+>
+>   第二行是一个整数 `k`，表示迷宫中门和墙的总数。
+>
+>   接下来 `k` 行，每行包含五个整数，$X_{i1}, Y_{i1}, X_{i2}, Y_{i2}, G_i$：当 $G_i≥1$ 时，表示 $(X_{i1},Y_{i1})$ 单元与 $(X_{i2},Y_{i2}) $单元之间有一扇第 $G_i$ 类的门，当 $G_i=0$ 时，表示 $(X_{i1},Y_{i1})$ 单元与 $(X_{i2},Y_{i2})$ 单元之间有一面不可逾越的墙。
+>
+>   接下来一行，包含一个整数 `S`，表示迷宫中存放的钥匙的总数。
+>
+>   接下来 `S` 行，每行包含三个整数 $X_{i1},Y_{i1},Q_i$，表示 $(X_{i1},Y_{i1})$ 单元里存在一个能开启第 $Q_i$ 类门的钥匙。
+
+**输出格式**
+
+>   输出麦克营救到大兵瑞恩的最短时间。
+>
+>   如果问题无解，则输出 `-1`。
+
+**数据范围**
+
+>   +   $|X_{i1} − X_{i2}| + |Y_{i1} − Y_{i2}| = 1,$
+>   +   $0 ≤ G_i ≤ P,$
+>   +   $1 ≤ Q_i ≤ P,$
+>   +   $1 ≤ N, M, P ≤ 10,$
+>   +   $1 ≤ k ≤ 150$
+
+**输入样例**
+
+```c++
+4 4 9
+9
+1 2 1 3 2
+1 2 2 2 0
+2 1 2 2 0
+2 1 3 1 0 
+2 3 3 3 0
+2 4 3 4 1
+3 2 3 3 0
+3 3 4 3 0
+4 3 4 4 0
+2
+2 1 2 
+4 2 1
+```
+
+**输出样例**
+
+```c++
+14
+```
+
+**样例解释**
+
+>   迷宫如下所示：
+>
+>   ![1131.png](img/1_17c87ee400-1131.png)
+
+**手写稿**
+
+![4151310](img/4151310.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <set>
+#include <deque>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 15, M = 400, K = 1 << 10;
+int n, m, p, k, idx;
+int dx[4] = {-1, 0, 1, 0};
+int dy[4] = {0, 1, 0, -1};
+// 注意: 队头有N * N个点
+int h[N * N], e[M], w[M], ne[M], key[N * N];
+int g[N][N], dist[N * N][K];
+bool st[N * N][K];
+set <PII> edges;
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void build() {
+    // 遍历整张图
+    for (int x = 1; x <= n; x ++ )
+        for (int y = 1; y <= m; y ++ )
+            for (int i = 0; i < 4; i ++ ) { // 遍历四个方向
+                int tx = x + dx[i];
+                int ty = y + dy[i];
+                int a = g[x][y], b = g[tx][ty];
+                // 现在二维都已经映射成一维了, 因此, 是点a和点b之间的边, 不是tx和ty的边!!
+                if (tx <= 0 || tx > n || ty <= 0 || ty > m || edges.count({a, b}))
+                    continue;
+                // 遍历到a的时候建a -> b
+                // 遍历到b的时候建b -> a
+                // 故, 当遍历到a时, 只需建a -> b的单向边即可
+                add(a, b, 0);
+                // 记录当前边已经建完
+                edges.insert({a, b});
+            }
+    return;
+}
+int bfs() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    deque<PII> q;
+    // 第一维: 点
+    // 第二维: 从起点到当前点的钥匙的状态, 二进制数
+    q.push_back({g[1][1], 0});
+    dist[g[1][1]][0] = 0;
+    while (q.size()) {
+        auto t = q.front(); q.pop_front();
+        int u = t.x, state = t.y;
+        // 到达结尾, 返回即可
+        if (u == g[n][m]) return dist[u][state];
+        // 已经被访问过, 则进行下一次的循环
+        if (st[u][state]) continue;
+        // 标记当前点的状态已经被访问过
+        st[u][state] = true;
+        if (key[u]) // 如果当前点有钥匙
+            // 如果能更新, 则进行更新
+            // 注意: 状态转移方程的写法
+            if (dist[u][key[u] | state] > dist[u][state]) {
+                dist[u][key[u] | state] = dist[u][state];
+                // 距离不更新, 更新钥匙的状态, 权值为0, 故, 插入到队头
+                q.push_front({u, key[u] | state});
+            }
+        // 访问邻边
+        for (int i = h[u]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 如果当前位置有门, 但是, 没有对应的钥匙, 则进行下一次循环
+            if (w[i] && !(state >> w[i] - 1 & 1)) continue;
+            // 如果能更新, 则进行更新
+            // 注意: 状态转移方程
+            if (dist[j][state] > dist[u][state] + 1) {
+                dist[j][state] = dist[u][state] + 1;
+                // 权值为1, 加入队尾
+                q.push_back({j, state});
+            }
+        }
+    }
+    return -1;
+}
+int main() {
+    scanf("%d%d%d%d", &n, &m, &p, &k);
+    // 编号
+    for (int i = 1, t = 0; i <= n; i ++ )
+        for (int j = 1; j <= m; j ++ )
+            g[i][j] = ++ t;
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < k; i ++ ) {
+        int x1, y1, x2, y2, type;
+        scanf("%d%d%d%d%d", &x1, &y1, &x2, &y2, &type);
+        // 将二维映射成一维
+        int a = g[x1][y1], b = g[x2][y2];
+        // 记录当前边
+        // 即使是墙, 也得记录[虽然不连边]
+        // 原因: 需要和空地分开, 所以, 需要记录, 但是不连边
+        edges.insert({a, b});
+        edges.insert({b, a});
+        // 如果不是墙, 无向边
+        if (type) {
+            add(a, b, type);
+            add(b, a, type);
+        }
+    }
+    // 将其他空地, 进行建边
+    build();
+    int s;
+    scanf("%d", &s);
+    for (int i = 0; i < s; i ++ ) {
+        int x, y, type;
+        scanf("%d%d%d", &x, &y, &type);
+        int a = g[x][y];
+        // 钥匙的存储已经映射为一维了, 点a
+        key[a] |= 1 << type - 1;
+    }
+    cout << bfs() << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(n^2k)$
+
+**标签**
+
+`最短路`、`双端队列`、`动态规划`
+
+**缝合怪**
+
+
+
+### [AcWing 1134. 最短路计数](https://www.acwing.com/problem/content/1136/)
+
+**题目描述**
+
+>   给出一个 `N` 个顶点 `M` 条边的无向无权图，顶点编号为 `1` 到 `N`。
+>
+>   问从顶点 `1` 开始，到其他每个点的最短路有几条。
+
+**输入格式**
+
+>   第一行包含 `2` 个正整数 `N,M`，为图的顶点数与边数。
+>
+>   接下来 `M` 行，每行两个正整数 `x,y`，表示有一条顶点 `x` 连向顶点 `y` 的边，请注意可能有自环与重边。
+
+**输出格式**
+
+>   输出 `N` 行，每行一个非负整数，第 `i` 行输出从顶点 `1` 到顶点 `i` 有多少条不同的最短路，由于答案有可能会很大，你只需要输出对 `100003` 取模后的结果即可。
+>
+>   如果无法到达顶点 `i` 则输出 `0`。
+
+**数据范围**
+
+>   +   $1 ≤ N ≤ 10^5,$
+>   +   $1 ≤ M ≤ 2 × 10^5$
+
+**输入样例**
+
+```c++
+5 7
+1 2
+1 3
+2 4
+3 4
+2 3
+4 5
+4 5
+```
+
+**输出样例**
+
+```c++
+1
+1
+1
+2
+4
+```
+
+**手写稿**
+
+![4160933](img/4160933.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 100010, M = 400010, mod = 100003;
+int n, m, idx;
+int h[N], e[M], ne[M], q[N], st[N], dist[N], cnt[N];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void bfs() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, false, sizeof st);
+    int hh = 0, tt = -1;
+    dist[1] = 0;
+    // 起点到起点的最短路径条数为1
+    cnt[1] = 1;
+    q[++ tt] = 1;
+    while (hh <= tt) {
+        int t = q[hh ++ ];
+        if (st[t]) continue;
+        st[t] = true;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] > dist[t] + 1) {
+                dist[j] = dist[t] + 1;
+                cnt[j] = cnt[t];
+                q[++ tt] = j;
+            }
+            else if (dist[j] == dist[t] + 1)
+                cnt[j] = (cnt[j] + cnt[t]) % mod;
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        add(a, b);
+        add(b, a);
+    }
+    bfs();
+    for (int i = 1; i <= n; i ++ ) cout << cnt[i] << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`最短路计数`、`BFS`、`DP`
+
+**缝合怪**
+
+
+
+### [AcWing 383. 观光](https://www.acwing.com/problem/content/385/)
+
+**题目描述**
+
+>   “您的个人假期”旅行社组织了一次比荷卢经济联盟的巴士之旅。
+>
+>   比荷卢经济联盟有很多公交线路。
+>
+>   每天公共汽车都会从一座城市开往另一座城市。
+>
+>   沿途汽车可能会在一些城市（零或更多）停靠。
+>
+>   旅行社计划旅途从 `S` 城市出发，到 `F` 城市结束。
+>
+>   由于不同旅客的景点偏好不同，所以为了迎合更多旅客，旅行社将为客户提供多种不同线路。
+>
+>   游客可以选择的行进路线有所限制，要么满足所选路线总路程为 `S` 到 `F` 的最小路程，要么满足所选路线总路程仅比最小路程多一个单位长度。
+>
+>   ![3463_1.png](img/19_75361c2839-3463_1.png)
+>
+>   如上图所示，如果 `S = 1，F = 5`，则这里有两条最短路线 `1 → 2 → 5, 1 → 3 → 5`，长度为 `6`；有一条比最短路程多一个单位长度的路线 `1 → 3 → 4 → 5`，长度为 `7`。
+>
+>   现在给定比荷卢经济联盟的公交路线图以及两个城市 `S` 和 `F`，请你求出旅行社最多可以为旅客提供多少种不同的满足限制条件的线路。
+
+**输入格式**
+
+>   第一行包含整数 `T`，表示共有 `T` 组测试数据。
+>
+>   每组数据第一行包含两个整数 `N` 和 `M`，分别表示总城市数量和道路数量。
+>
+>   接下来 `M` 行，每行包含三个整数 `A, B, L`，表示有一条线路从城市 `A` 通往城市 `B`，长度为 `L`。
+>
+>   需注意，线路是 **单向的**，存在从 `A` 到 `B` 的线路不代表一定存在从 `B` 到 `A` 的线路，另外从城市 `A` 到城市 `B` 可能存在多个不同的线路。
+>
+>   接下来一行，包含两个整数 `S` 和 `F`，数据保证 `S` 和 `F` 不同，并且 `S、 F` 之间至少存在一条线路。
+
+**输出格式**
+
+>   每组数据输出一个结果，每个结果占一行。
+>
+>   数据保证结果不超过 $10^9$。
+
+**数据范围**
+
+>   +   $2 ≤ N ≤ 1000,$
+>   +   $1 ≤ M ≤ 10000,$
+>   +   $1 ≤ L ≤ 1000，$
+>   +   $1 ≤ A, B, S, F ≤ N$
+
+**输入样例**
+
+```c++
+2
+5 8
+1 2 3
+1 3 2
+1 4 5
+2 3 1
+2 5 3
+3 4 2
+3 5 4
+4 5 3
+1 5
+5 6
+2 3 1
+3 2 1
+3 1 10
+4 5 2
+5 2 7
+5 2 7
+4 1
+```
+
+**输出样例**
+
+```c++
+3
+2
+```
+
+**手写稿**
+
+![4161316](img/4161316.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+const int N = 1010, M = 10010, K = 5;
+int n, m, T, idx;
+int h[N], e[M], w[M], ne[M];
+int st[N][K], cnt[N][K], dist[N][K];
+struct Node {
+    int ver, distance, type;
+    // 重载大于号
+    bool operator > (const Node &W) const {
+        return distance > W.distance;
+    }
+};
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+int dijkstra(int start, int end) {
+    // 初始化三个数组
+    memset(st, false, sizeof st);
+    memset(dist, 0x3f, sizeof dist);
+    memset(cnt, 0, sizeof cnt);
+    priority_queue<Node, vector<Node>, greater<Node>> heap;
+    heap.push({start, 0, 0});
+    dist[start][0] = 0;
+    cnt[start][0] = 1;
+    while (heap.size()) {
+        auto t = heap.top(); heap.pop();
+        int ver = t.ver, distance = t.distance, type = t.type;
+        if (st[ver][type]) continue;
+        st[ver][type] = true;
+        for (int i = h[ver]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j][0] > distance + w[i]) {
+                // 更新次短路路径
+                cnt[j][1] = cnt[j][0];
+                dist[j][1] = dist[j][0];
+                heap.push({j, dist[j][1], 1});
+                // 更新最短路径
+                // 注意: 这里是cnt[ver][type]不是cnt[ver][0]
+                cnt[j][0] = cnt[ver][0];
+                dist[j][0] = distance + w[i];
+                heap.push({j, dist[j][0], 0});
+            }
+            else if (dist[j][0] == distance + w[i]) {
+                // 注意: 这里是cnt[ver][type]不是cnt[ver][0]
+                cnt[j][0] += cnt[ver][0];
+            }
+            else if (dist[j][1] > distance + w[i]) {
+                // 注意: 这里是cnt[ver][type]不是cnt[ver][0]
+                // 这里的类型不一定是次短路径, 有可能是落败的最短路径, [手写稿解释]
+                cnt[j][1] = cnt[ver][type];
+                dist[j][1] = distance + w[i];
+                heap.push({j, dist[j][1], 1});
+            }
+            else if (dist[j][1] == distance + w[i]) {
+                // 注意: 这里是cnt[ver][type]不是cnt[ver][0]
+                // 这里的类型不一定是次短路径, 有可能是落败的最短路径, [手写稿解释]
+                cnt[j][1] += cnt[ver][type];
+            }
+        }
+    }
+    int res = cnt[end][0];
+    if (dist[end][0] + 1 == dist[end][1]) res += cnt[end][1];
+    return res;
+}
+int main() {
+    scanf("%d", &T);
+    while (T -- ) {
+        // 初始化队头
+        memset(h, -1, sizeof h);
+        // 初始化指针
+        idx = 0;
+        scanf("%d%d", &n, &m);
+        for (int i = 0; i < m; i ++ ) {
+            int a, b, c;
+            scanf("%d%d%d", &a, &b, &c);
+            // 建立单向边
+            add(a, b, c);
+        }
+        int start, end;
+        scanf("%d%d", &start, &end);
+        // 起点和终点
+        cout << dijkstra(start, end) << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`Dijkstra`、`最短路`、`次短路`
+
+**缝合怪**
+
+
+
+## `Floyd` 算法
+
+### 原理介绍
+
+![4171051](img/4171051.png)
+
+### [AcWing 854. Floyd求最短路](https://www.acwing.com/problem/content/856/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的有向图，图中可能存在重边和自环，边权可能为负数。
+>
+>   再给定 `k` 个询问，每个询问包含两个整数 `x` 和 `y`，表示查询从点 `x` 到点 `y` 的最短距离，如果路径不存在，则输出 `impossible`。
+>
+>   数据保证图中不存在负权回路。
+
+**输入格式**
+
+>   第一行包含三个整数 `n, m, k`。
+>
+>   接下来 `m` 行，每行包含三个整数 `x, y ,z`，表示存在一条从点 `x` 到点 `y` 的有向边，边长为 `z`。
+>
+>   接下来 `k` 行，每行包含两个整数 `x, y`，表示询问点 `x` 到点 `y` 的最短距离。
+
+**输出格式**
+
+>   共 `k` 行，每行输出一个整数，表示询问的结果，若询问两点间不存在路径，则输出 `impossible`。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 200,$
+>   +   $1 ≤ k ≤ n^2$
+>   +   $1 ≤ m ≤ 20000,$
+>   +   $图中涉及边长绝对值均不超过 10000。$
+
+**输入样例**
+
+```c++
+3 3 2
+1 2 1
+2 3 2
+1 3 1
+2 1
+1 3
+```
+
+**输出样例**
+
+```c++
+impossible
+1
+```
+
+**手写稿**
+
+>   1.   模板题, 参见[原理介绍](#原理介绍)
+>   2.   注意: 枚举的顺序即可, `k -> i -> j`
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 210, INF = 0x3f3f3f3f;
+int n, m, k;
+int g[N][N];
+int main() {
+    scanf("%d%d%d", &n, &m, &k);
+    memset(g, 0x3f, sizeof g);
+    for (int i = 1; i <= n; i ++ ) g[i][i] = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        // 可能会有重边, 重边的话取最小值即可
+        g[u][v] = min(g[u][v], w);
+    }
+    for (int k = 1; k <= n; k ++ )
+        for (int i = 1; i <= n; i ++ )
+            for (int j = 1; j <= n; j ++ )
+                g[i][j] = min(g[i][j], g[i][k] + g[k][j]);
+    while (k -- ) {
+        int u, v;
+        scanf("%d%d", &u, &v);
+        // 可能会有负数, 因此, 如果当其大于 INF / 2 的时候, 则判定其无解
+        if (g[u][v] > INF / 2) puts("impossible");
+        else cout << g[u][v] << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^3)$
+
+**空间复杂度**
+
+$O(n ^ 2)$
+
+**标签**
+
+`Floyd`、`动态规划`
+
+**缝合怪**
+
+
+
+### [AcWing 1125. 牛的旅行](https://www.acwing.com/problem/content/1127/)
+
+**题目描述**
+
+>   农民 `John` 的农场里有很多牧区，有的路径连接一些特定的牧区。
+>
+>   一片所有连通的牧区称为一个牧场。
+>
+>   但是就目前而言，你能看到至少有两个牧区不连通。
+>
+>   现在，`John` 想在农场里添加一条路径（注意，恰好一条）。
+>
+>   一个牧场的直径就是牧场中最远的两个牧区的距离（本题中所提到的所有距离指的都是最短的距离）。
+>
+>   考虑如下的两个牧场，每一个牧区都有自己的坐标：
+>
+>   ![1.png](img/19_2da2200cfa-1.gif)
+>
+>   图 `1` 是有 `5` 个牧区的牧场，牧区用`“*”`表示，路径用直线表示。
+>
+>   图 `1` 所示的牧场的直径大约是 `12.07106`, 最远的两个牧区是 `A` 和 `E`，它们之间的最短路径是 `A-B-E`。
+>
+>   图 `2` 是另一个牧场。
+>
+>   这两个牧场都在 `John` 的农场上。
+>
+>   `John` 将会在两个牧场中各选一个牧区，然后用一条路径连起来，使得连通后这个新的更大的牧场有最小的直径。
+>
+>   注意，如果两条路径中途相交，我们不认为它们是连通的。
+>
+>   只有两条路径在同一个牧区相交，我们才认为它们是连通的。
+>
+>   现在请你编程找出一条连接两个不同牧场的路径，使得连上这条路径后，所有牧场（生成的新牧场和原有牧场）中直径最大的牧场的直径尽可能小。
+>
+>   输出这个直径最小可能值。
+
+**输入格式**
+
+>   第 `1` 行：一个整数 `N`, 表示牧区数；
+>
+>   第 `2` 到 `N + 1` 行：每行两个整数 `X,Y`， 表示 `N` 个牧区的坐标。每个牧区的坐标都是不一样的。
+>
+>   第 `N + 2` 行到第 `2 * N + 1` 行：每行包括 `N` 个数字 ( `0`或`1` ) 表示一个对称邻接矩阵。
+>
+>   例如，题目描述中的两个牧场的矩阵描述如下：
+>
+>   ```c++
+>      A B C D E F G H 
+>   A 0 1 0 0 0 0 0 0 
+>   B 1 0 1 1 1 0 0 0 
+>   C 0 1 0 0 1 0 0 0 
+>   D 0 1 0 0 1 0 0 0 
+>   E 0 1 1 1 0 0 0 0 
+>   F 0 0 0 0 0 0 1 0 
+>   G 0 0 0 0 0 1 0 1 
+>   H 0 0 0 0 0 0 1 0
+>   ```
+>
+>   输入数据中至少包括两个不连通的牧区。
+
+**输出格式**
+
+>   只有一行，包括一个实数，表示所求答案。
+>
+>   数字保留六位小数。
+
+**数据范围**
+
+>   +   $1 ≤ N ≤ 150,$
+>   +   $0 ≤ X, Y ≤ 10^5$
+
+**输入样例**
+
+```c++
+8
+10 10
+15 10
+20 10
+15 15
+20 15
+30 15
+25 10
+30 10
+01000000
+10111000
+01001000
+01001000
+01110000
+00000010
+00000101
+00000010
+```
+
+**输出样例**
+
+```c++
+22.071068
+```
+
+**手写稿**
+
+![4171451](img/4171451.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cmath>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 155;
+const double INF = 1e20;
+int n;
+PII q[N];
+double Max[N];
+double dist[N][N];
+char g[N][N];
+// 计算欧式距离
+double get_dist(PII a, PII b) {
+    int dx = a.x - b.x;
+    int dy = a.y - b.y;
+    return sqrt(dx * dx + dy * dy);
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ ) scanf("%d%d", &q[i].x, &q[i].y);
+    for (int i = 0; i < n; i ++ ) scanf("%s", g[i]);
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < n; j ++ )
+            // 更新两个点之间的距离
+            if (g[i][j] == '1') dist[i][j] = get_dist(q[i], q[j]);
+            else if (i == j) dist[i][j] = 0;
+            else dist[i][j] = INF;
+    // Floyd算法模板
+    for (int k = 0; k < n; k ++ )
+        for (int i = 0; i < n; i ++ )
+            for (int j = 0; j < n; j ++ )
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+    // 计算连通块内部任意两个点之间的最长距离, 即计算第一种情况
+    // 初始化为-∞
+    double res1 = -INF;
+    for (int i = 0; i < n; i ++ ) {
+        for (int j = 0; j < n; j ++ )
+            if (dist[i][j] < INF / 2)
+                Max[i] = max(Max[i], dist[i][j]);
+        res1 = max(res1, Max[i]);
+    }
+    // 计算第二种情况
+    // 初始化为+∞
+    double res2 = INF;
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < n; j ++ )
+            if (dist[i][j] > INF / 2) // 不连通
+                res2 = min(res2, Max[i] + Max[j] + get_dist(q[i], q[j]));
+    // 两种情况取max即可
+    printf("%lf\n", max(res1, res2));
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^3)$
+
+**空间复杂度**
+
+`O(n^2)`
+
+**标签**
+
+`Floyd`
+
+**缝合怪**
+
+
+
+### [AcWing 343. 排序](https://www.acwing.com/problem/content/345/)
+
+**题目描述**
+
+>   给定 `n` 个变量和 `m` 个不等式。其中 `n` 小于等于 `26`，变量分别用前 `n` 的大写英文字母表示。
+>
+>   不等式之间具有传递性，即若 `A > B` 且 `B > C`，则 `A > C`。
+>
+>   请从前往后遍历每对关系，每次遍历时判断：
+>
+>   -   如果能够确定全部关系且无矛盾，则结束循环，输出确定的次序；
+>   -   如果发生矛盾，则结束循环，输出有矛盾；
+>   -   如果循环结束时没有发生上述两种情况，则输出无定解。
+
+**输入格式**
+
+>   输入包含多组测试数据。
+>
+>   每组测试数据，第一行包含两个整数 `n` 和 `m`。
+>
+>   接下来 `m` 行，每行包含一个不等式，不等式全部为小于关系。
+>
+>   当输入一行 `0 0` 时，表示输入终止。
+
+**输出格式**
+
+>   每组数据输出一个占一行的结果。
+>
+>   结果可能为下列三种之一：
+>
+>   1.  如果可以确定两两之间的关系，则输出 `"Sorted sequence determined after t relations: yyy...y."`,其中`'t'`指迭代次数，`'yyy...y'`是指升序排列的所有变量。
+>   2.  如果有矛盾，则输出： `"Inconsistency found after t relations."`，其中`'t'`指迭代次数。
+>   3.  如果没有矛盾，且不能确定两两之间的关系，则输出 `"Sorted sequence cannot be determined."`。
+
+**数据范围**
+
+>   +   $2 ≤ n ≤ 26，变量只可能为大写字母 A ∼ Z。$
+
+**输入样例1**
+
+```c++
+4 6
+A<B
+A<C
+B<C
+C<D
+B<D
+A<B
+3 2
+A<B
+B<A
+26 1
+A<Z
+0 0
+```
+
+**输出样例1**
+
+```c++
+Sorted sequence determined after 4 relations: ABCD.
+Inconsistency found after 2 relations.
+Sorted sequence cannot be determined.
+```
+
+**输入样例2**
+
+```c++
+6 6
+A<F
+B<D
+C<E
+F<D
+D<E
+E<F
+0 0
+```
+
+**输出样例2**
+
+```c++
+Inconsistency found after 6 relations.
+```
+
+**输入样例3**
+
+```c++
+5 5
+A<B
+B<C
+C<D
+D<Ec
+E<A
+0 0
+```
+
+**输出样例3**
+
+```c++
+Sorted sequence determined after 4 relations: ABCDE.
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 344. 观光之旅](https://www.acwing.com/problem/content/346/)
+
+**题目描述**
+
+>   给定一张无向图，求图中一个至少包含 `3` 个点的环，环上的节点不重复，并且环上的边的长度之和最小。
+>
+>   该问题称为无向图的最小环问题。
+>
+>   你需要输出最小环的方案，若最小环不唯一，输出任意一个均可。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `M`，表示无向图有 `N` 个点，`M` 条边。
+>
+>   接下来 `M` 行，每行包含三个整数 `u，v，l`，表示点 `u` 和点 `v` 之间有一条边，边长为 `l`。
+
+**输出格式**
+
+>   输出占一行，包含最小环的所有节点（按顺序输出），如果不存在则输出 `No solution.`。
+
+**数据范围**
+
+>   +   $1 ≤ N ≤ 100,$
+>   +   $1 ≤ M ≤ 10000,$
+>   +   $1 ≤ l < 500$
+
+**输入样例**
+
+```c++
+5 7
+1 4 1
+1 3 300
+3 1 10
+1 2 16
+2 3 100
+2 5 15
+5 3 20
+```
+
+**输出样例**
+
+```c++
+1 3 5 2
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 345. 牛站](https://www.acwing.com/problem/content/347/)
+
+**题目描述**
+
+>   给定一张由 `T` 条边构成的无向图，点的编号为 `1 ∼ 1000` 之间的整数。
+>
+>   求从起点 `S` 到终点 `E` 恰好经过 `N` 条边（可以重复经过）的最短路。
+>
+>   **注意**: 数据保证一定有解。
+
+**输入格式**
+
+>   第 `1` 行：包含四个整数 `N，T，S，E`。
+>
+>   第 `2..T + 1` 行：每行包含三个整数，描述一条边的边长以及构成边的两个点的编号。
+
+**输出格式**
+
+>   输出一个整数，表示最短路的长度。
+
+**数据范围**
+
+>   +   $2 ≤ T ≤ 100,$
+>   +   $2 ≤ N ≤ 10^6$
+
+**输入样例**
+
+```c++
+2 6 6 4
+11 4 6
+4 4 8
+8 4 9
+6 6 8
+2 6 9
+3 8 9
+```
+
+**输出样例**
+
+```c++
+10
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+## 最小生成树
+
+### [AcWing 858. Prim算法求最小生成树](https://www.acwing.com/problem/content/860/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的无向图，图中可能存在重边和自环，边权可能为负数。
+>
+>   求最小生成树的树边权重之和，如果最小生成树不存在则输出 `impossible`。
+>
+>   给定一张边带权的无向图 `G=(V,E)`，其中 `V` 表示图中点的集合，`E` 表示图中边的集合，`n=|V|`，`m=|E|`。
+>
+>   由 `V` 中的全部 `n` 个顶点和 `E` 中 `n − 1` 条边构成的无向连通子图被称为 `G` 的一棵生成树，其中边的权值之和最小的生成树被称为无向图 `G` 的最小生成树。
+
+**输入格式**
+
+>   第一行包含两个整数 `n` 和 `m`。
+>
+>   接下来 `m` 行，每行包含三个整数 `u,v,w`，表示点 `u` 和点 `v` 之间存在一条权值为 `w` 的边。
+
+**输出格式**
+
+>   共一行，若存在最小生成树，则输出一个整数，表示最小生成树的树边权重之和，如果最小生成树不存在则输出 `impossible`。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 500,$
+>   +   $1 ≤ m ≤ 10^5,$
+>   +   $图中涉及边的边权的绝对值均不超过 10000。$
+
+**输入样例**
+
+```c++
+4 5
+1 2 1
+1 3 2
+1 4 3
+2 3 2
+3 4 4
+```
+
+**输出样例**
+
+```c++
+6
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 859. Kruskal算法求最小生成树](https://www.acwing.com/problem/content/861/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的无向图，图中可能存在重边和自环，边权可能为负数。
+>
+>   求最小生成树的树边权重之和，如果最小生成树不存在则输出 `impossible`。
+>
+>   给定一张边带权的无向图 `G=(V,E)`，其中 `V` 表示图中点的集合，`E` 表示图中边的集合，`n=|V|`，`m=|E|`。
+>
+>   由 `V` 中的全部 `n` 个顶点和 `E` 中 `n − 1` 条边构成的无向连通子图被称为 `G` 的一棵生成树，其中边的权值之和最小的生成树被称为无向图 `G` 的最小生成树。
+
+**输入格式**
+
+>   第一行包含两个整数 `n` 和 `m`。
+>
+>   接下来 `m` 行，每行包含三个整数 `u,v,w`，表示点 `u` 和点 `v` 之间存在一条权值为 `w` 的边。
+
+**输出格式**
+
+>   共一行，若存在最小生成树，则输出一个整数，表示最小生成树的树边权重之和，如果最小生成树不存在则输出 `impossible`。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 10^5,$
+>   +   $1 ≤ m ≤ 2 ∗ 10^5,$
+>   +   $图中涉及边的边权的绝对值均不超过 1000。$
+
+**输入样例**
+
+```c++
+4 5
+1 2 1
+1 3 2
+1 4 3
+2 3 2
+3 4 4
+```
+
+**输出样例**
+
+```c++
+6
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+## 拓扑排序
+
+### [LeetCode 207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+
+**题目描述**
+
+>   你这个学期必须选修 `numCourses` 门课程，记为 `0` 到 `numCourses - 1` 。
+>
+>   在选修某些课程之前需要一些先修课程。 先修课程按数组 `prerequisites` 给出，其中 $prerequisites[i] = [a_i, b_i]$ ，表示如果要学习课程 $a_i$ 则 必须 先学习课程  $b_i$ 。
+>
+>   例如，先修课程对 `[0, 1]` 表示：想要学习课程 `0` ，你需要先完成课程 `1` 。
+>   请你判断是否可能完成所有课程的学习？如果可以，返回 `true` ；否则，返回 `false` 。
+
+**示例 1**
+
+>   输入：`numCourses = 2, prerequisites = [[1,0]]`
+>   输出：`true`
+>   解释：总共有 `2` 门课程。学习课程 `1` 之前，你需要完成课程 `0` 。这是可能的。
+
+**示例 2**
+
+>   输入：`numCourses = 2, prerequisites = [[1,0],[0,1]]`
+>   输出：`false`
+>   解释：总共有 `2` 门课程。学习课程 `1` 之前，你需要先完成课程 `0` ；并且学习课程 `0` 之前，你还应先完成课程 `1` 。这是不可能的。
+
+**提示**
+
+>   +   $1 <= numCourses <= 10^5$
+>   +   $0 <= prerequisites.length <= 5000$
+>   +   $prerequisites[i].length == 2$
+>   +   $0 <= a_i, b_i < numCourses$
+>   +   $prerequisites[i] 中的所有课程对 互不相同$
+
+**手写稿**
+
+![4111523](img/4111523.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    bool canFinish(int n, vector<vector<int>>& gc) {
+        queue<int> q;
+        vector<int> d(n + 5);
+        vector<vector<int>> g(n + 5);
+        for (int i = 0; i < gc.size(); i ++ ) {
+            int a = gc[i][0], b = gc[i][1];
+            // 将b插入a中
+            g[b].push_back(a);
+            // a的入度++
+            d[a] ++;
+        }
+        for (int i = 0; i < n; i ++ )
+            // 统计所有入度为0的节点
+            if (!d[i]) q.push(i);
+        while (q.size()) {
+            int t = q.front(); q.pop();
+            for (int i = 0; i < g[t].size(); i ++ ) {
+                // 入度为0, 继续下一次循环
+                if (!d[g[t][i]]) continue;
+                // 入度 --
+                d[g[t][i]] --;
+                // 如果度为0, 则加入队列
+                if (!d[g[t][i]]) q.push(g[t][i]);
+            }
+        }
+        // 统计所有度为0的节点
+        int res = 0;
+        for (int i = 0; i < n; i ++ ) res += (d[i] == 0);
+        return res == n;
+    }
+};
+```
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [LeetCode 210. 课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
+
+**题目描述**
+
+>   现在你总共有 `numCourses` 门课需要选，记为 `0` 到 `numCourses - 1`。给你一个数组 `prerequisites `，其中 $prerequisites[i] = [a_i, b_i]$ ，表示在选修课程 $a_i$ 前 必须 先选修 $b_i$ 。
+>
+>   例如，想要学习课程 `0` ，你需要先完成课程 `1` ，我们用一个匹配来表示：`[0,1]` 。
+>   返回你为了学完所有课程所安排的学习顺序。可能会有多个正确的顺序，你只要返回 任意一种 就可以了。如果不可能完成所有课程，返回 一个空数组 。
+
+**示例 1**
+
+>   输入：`numCourses = 2, prerequisites = [[1,0]]`
+>   输出：`[0,1]`
+>   解释：总共有 `2` 门课程。要学习课程 `1`，你需要先完成课程 `0`。因此，正确的课程顺序为 `[0,1]` 。
+
+**示例 2**
+
+>   输入：`numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]`
+>   输出：`[0,2,1,3]`
+>   解释：总共有 `4` 门课程。要学习课程 `3`，你应该先完成课程 `1` 和课程 `2`。并且课程 `1` 和课程 `2` 都应该排在课程 `0` 之后。
+>   因此，一个正确的课程顺序是 `[0,1,2,3]` 。另一个正确的排序是 `[0,2,1,3]` 。
+
+**示例 3**
+
+>   输入：`numCourses = 1, prerequisites = []`
+>   输出：`[0]`
+
+**提示**
+
+>   +   $1 <= numCourses <= 2000$
+>   +   $0 <= prerequisites.length <= numCourses * (numCourses - 1)$
+>   +   $prerequisites[i].length == 2$
+>   +   $0 <= a_i, b_i < numCourses$
+>   +   $a_i != b_i$
+>   +   $所有[a_i, b_i] 互不相同$
+
+**手写稿**
+
+>   1.   详细手写稿, 请看上一题
+>   2.   记录答案即可
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<int> findOrder(int n, vector<vector<int>>& g) {
+        queue<int> q;
+        vector<int> d(n + 5);
+        vector<vector<int>> course(n + 5);
+        for (int i = 0; i < g.size(); i ++ ) {
+            int a = g[i][0], b = g[i][1];
+            course[b].push_back(a);
+            d[a] ++;
+        }
+        vector<int> res;
+        for (int i = 0; i < n; i ++ )
+            // 将所有入度为0的点全部加入答案
+            if (!d[i]) {
+                q.push(i);
+                res.push_back(i);
+            }
+        while (q.size()) {
+            int t = q.front(); q.pop();
+            // 注意: 长度为course[t].size()而不是n
+            for (int i = 0; i < course[t].size(); i ++ ) {
+                if (!d[course[t][i]]) continue;
+                d[course[t][i]] -- ;
+                // 入度为0, 加入队列, 加入答案
+                if (!d[course[t][i]]) {
+                    q.push(course[t][i]);
+                    res.push_back(course[t][i]);
+                }
+            }
+        }
+        // 答案个数不满n, 则清空答案数组
+        if (res.size() != n) res = {};
+        return res;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n + m), n是点数, m是边数$
+
+**空间复杂度**
+
+$O(n + m), n是点数, m是边数$
+
+**标签**
+
+`拓扑排序`
+
+**缝合怪**
+
+
+
+## 二分图
+
+### 染色法
+
+#### [AcWing 860. 染色法判定二分图](https://www.acwing.com/problem/content/862/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的无向图，图中可能存在重边和自环。
+>
+>   请你判断这个图是否是二分图。
+
+**输入格式**
+
+>   第一行包含两个整数 `n` 和 `m`。
+>
+>   接下来 `m` 行，每行包含两个整数 `u` 和 `v`，表示点 `u` 和点 `v` 之间存在一条边。
+
+**输出格式**
+
+>   如果给定图是二分图，则输出 `Yes`，否则输出 `No`。
+
+**数据范围**
+
+>   +   $1 ≤ n, m ≤ 10^5$
+
+**输入样例**
+
+```c++
+4 4
+1 3
+1 4
+2 3
+2 4
+```
+
+**输出样例**
+
+```c++
+Yes
+```
+
+**手写稿**
+
+![4141657](img/4141657.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 100010, M = 200010;
+int n, m, idx;
+int h[N], e[M], ne[M], color[N];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+bool dfs(int u, int c) {
+    color[u] = c;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        if (!color[j]) { // 如果当前点没染颜色, 则将其染色
+            // 如果当前点j染色失败, 则产生连锁反应, 都失败
+            if (!dfs(j, 3 - c)) return false;
+        }
+        else {
+            // 如果当前点j染的颜色和u染的颜色不一样, 返回false
+            if (color[j] == c) return false;
+        }
+    }
+    return true;
+}
+int main() {
+    memset(h, -1, sizeof h);
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        add(a, b);
+        add(b, a);
+    }
+    int flag = true;
+    // 注意: 图可能不是连通
+    for (int i = 1; i <= n; i ++ )
+        if (!color[i])
+            if (!dfs(i, 1)) {
+                flag = false;
+                break;
+            }
+    if (flag) puts("Yes");
+    else puts("No");
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n + m), n是点数, m是边数$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`二分图`、`染色法`
+
+**缝合怪**
+
+
+
+### 匈牙利算法
+
+#### [AcWing 861. 二分图的最大匹配](https://www.acwing.com/problem/content/863/)
+
+**题目描述**
+
+>   给定一个二分图，其中左半部包含 $n_1$ 个点（编号 $1 ∼ n_1$），右半部包含 $n_2$ 个点（编号 $1 ∼ n_2$），二分图共包含 `m` 条边。
+>
+>   数据保证任意一条边的两个端点都不可能在同一部分中。
+>
+>   请你求出二分图的最大匹配数。
+>
+>   >   二分图的匹配：给定一个二分图 `G`，在 `G` 的一个子图 `M` 中，`M` 的边集 `{E}` 中的任意两条边都不依附于同一个顶点，则称 `M` 是一个匹配。
+>   >
+>   >   二分图的最大匹配：所有匹配中包含边数最多的一组匹配被称为二分图的最大匹配，其边数即为最大匹配数。
+
+**输入格式**
+
+>   第一行包含三个整数 $n_1、 n_2$ 和 `m`。
+>
+>   接下来 `m` 行，每行包含两个整数 `u` 和 `v`，表示左半部点集中的点 `u` 和右半部点集中的点 `v` 之间存在一条边。
+
+**输出格式**
+
+>   输出一个整数，表示二分图的最大匹配数。
+
+**数据范围**
+
+>   +   $1 ≤ n_1, n_2 ≤ 500,$
+>   +   $1 ≤ u ≤ n_1,$
+>   +   $1 ≤ v ≤ n_2,$
+>   +   $1 ≤ m ≤ 10^5$
+
+**输入样例**
+
+```c++
+2 2 4
+1 1
+1 2
+2 1
+2 2
+```
+
+**输出样例**
+
+```c++
+2
 ```
 
 **手写稿**
@@ -12089,6 +14946,140 @@ $O(m), m是生成字符串的最大长度$
 **标签**
 
 `模拟`
+
+**缝合怪**
+
+
+
+### [LeetCode 68. 文本左右对齐](https://leetcode-cn.com/problems/text-justification/)
+
+**题目描述**
+
+>   给定一个单词数组 `words` 和一个长度 `maxWidth` ，重新排版单词，使其成为每行恰好有 `maxWidth` 个字符，且左右两端对齐的文本。
+>
+>   你应该使用 “贪心算法” 来放置给定的单词；也就是说，尽可能多地往每行中放置单词。必要时可用空格 ' ' 填充，使得每行恰好有 `maxWidth` 个字符。
+>
+>   要求尽可能均匀分配单词间的空格数量。如果某一行单词间的空格不能均匀分配，则左侧放置的空格数要多于右侧的空格数。
+>
+>   文本的最后一行应为左对齐，且单词之间不插入额外的空格。
+>
+>   注意:
+>
+>   单词是指由非空格字符组成的字符序列。
+>   每个单词的长度大于 `0`，小于等于 `maxWidth`。
+>   输入单词数组 `words` 至少包含一个单词。
+
+**示例 1**
+
+>   输入: `words = ["This", "is", "an", "example", "of", "text", "justification."], maxWidth = 16`
+>   输出:
+>   `[
+>      "This    is    an",
+>      "example  of text",
+>      "justification.  "
+>   ]`
+
+**示例 2**
+
+>   输入:`words = ["What","must","be","acknowledgment","shall","be"], maxWidth = 16`
+>   输出:
+>   `[
+>     "What   must   be",
+>     "acknowledgment  ",
+>     "shall be        "
+>   ]`
+>   解释: 注意最后一行的格式应为 `"shall be    "` 而不是 `"shall     be"`,
+>        因为最后一行应为左对齐，而不是左右两端对齐。       
+>        第二行同样为左对齐，这是因为这行只包含一个单词。
+
+**示例 3**
+
+>   输入:`words = ["Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"]，maxWidth = 20`
+>   输出:
+>   `[
+>     "Science  is  what we",
+>     "understand      well",
+>     "enough to explain to",
+>     "a  computer.  Art is",
+>     "everything  else  we",
+>     "do                  "
+>   ]`
+
+**提示**
+
+>   +   $1 <= words.length <= 300$
+>   +   $1 <= words[i].length <= 20$
+>   +   $words[i] 由小写英文字母和符号组成$
+>   +   $1 <= maxWidth <= 100$
+>   +   $words[i].length <= maxWidth$
+
+**手写稿**
+
+>   1.   模拟, 分两步进行
+>        +   左对齐
+>        +   两端对齐
+>   2.   `++ usednum <= leftnum` 解释
+>        +   `usednum` 表示的含义是在多出来的空格中已经使用的个数
+>        +   `leftnum` 表示多出来空格的总个数
+>        +   假设 `leftnum = 0`
+>        +   `usednum` 初始值为 `0`, 表示一个数字都没有被使用过
+>        +   上式含义是用过一个数字之后如果小于等于总个数, 说明合法, 返回 `true(1)`, 否则, 返回 `false(0)`
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<string> fullJustify(vector<string>& g, int Max) {
+        int n = g.size();
+        vector<string> res;
+        for (int i = 0; i < n; i ++ ) {
+            // spe含义为空格的数量
+            int j = i, len = 0, spe = 0;
+            string line;
+            while (j < n && len + spe + g[j].size() <= Max) {
+                len = len + spe + g[j].size();
+                spe = 1, j ++ ;
+            }
+            int wdnum = j - i; // 单词的数量
+            if (j == n || wdnum == 1) { // 到达最后一行活着本行只有一个单词, 左对齐
+                // 先输入一个单词
+                line = g[i];
+                for (int k = i + 1; k < j; k ++ ) line += ' ' + g[k];
+                // 将剩余的空格补齐
+                line += string(Max - line.size(), ' ');
+            }
+            else { // 两端对齐
+                // 空格的平均数量
+                int spenum = (Max - len + wdnum - 1) / (wdnum - 1);
+               	// 剩余空格的数量
+                int leftnum = (Max - len + wdnum - 1) % (wdnum - 1);
+                int usednum = 0; // 已经用过的空格的数量
+                line = g[i ++]; // 先输入一个单词
+                // 严格小于
+                // ++ usednum <= leftnum[手写稿解释原因]
+                while (line.size() < Max)
+                    line += string(spenum + (++ usednum <= leftnum), ' ') + g[i ++ ];
+            }
+            i = j - 1;
+            res.push_back(line);
+        }
+        return res;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n), n表示单词的数量$
+
+**空间复杂度**
+
+$O(n), n表示单词的总长度$
+
+**标签**
+
+`模拟`、`字符串`
 
 **缝合怪**
 
@@ -15849,189 +18840,203 @@ public:
 
 **手写稿**
 
-
+![482113](img/482113.png)
 
 **代码**
 
-
+```c++
+#define x first
+#define y second
+class Solution {
+public:
+    typedef pair<int, int> PII;
+    int maximumGap(vector<int>& nums) {
+        int n = nums.size();
+        if (n < 2) return 0;
+        int Max = INT_MIN, Min = INT_MAX;
+        for (int i = 0; i < n; i ++ ) {
+            Max = max(Max, nums[i]);
+            Min = min(Min, nums[i]);
+        }
+        // 数组的值都相同
+        if (Max == Min) return 0;
+        // 桶的个数[手写稿]
+        int bk_num = n + 5;
+        vector<PII> buckets(bk_num, {INT_MAX, INT_MIN});
+        // 桶的容量[手写稿]
+        int bk_size = (Max - Min + bk_num - 1) / bk_num;
+        // 枚举每个数应该放在哪个桶
+        for (int i = 0; i < n; i ++ ) {
+            // 查看当前数字应该放哪个桶
+            int k = (nums[i] - Min) / bk_size;
+            buckets[k].x = min(buckets[k].x, nums[i]);
+            buckets[k].y = max(buckets[k].y, nums[i]);
+        }
+        int res = -1;
+        // 枚举每个桶
+        for (int i = 0, last = -1; i <= bk_num; i ++ ) {
+            // 如果当前桶没有被用过, 则直接跳过即可
+            if (buckets[i] == PII{INT_MAX, INT_MIN})
+                continue;
+           	// 记录上一个桶的位置
+            if (last != -1)
+                res = max(res, buckets[i].x - buckets[last].y);
+            last = i;
+        }
+        return res;
+    }
+};
+```
 
 **时间复杂度**
 
-
+$O(n)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`🪣排序`、`桶排序`
 
 **缝合怪**
 
 
 
-# 单调栈和队列
+# 栈和队列
 
-## 滑动窗口【双端队列】专题
+## 栈
 
-### [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
+### 普通栈
+
+#### [LeetCode 232. 用栈实现队列](https://leetcode-cn.com/problems/implement-queue-using-stacks/)
 
 **题目描述**
 
-> 交换 定义为选中一个数组中的两个 互不相同 的位置并交换二者的值。
+>   请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（`push`、`pop`、`peek`、`empty`）：
 >
-> 环形 数组是一个数组，可以认为 第一个 元素和 最后一个 元素 相邻 。
+>   实现 `MyQueue` 类：
 >
-> 给你一个 二进制环形 数组 `nums` ，返回在 任意位置 将数组中的所有 `1` 聚集在一起需要的最少交换次数。
+>   +   `void push(int x)` 将元素 `x` 推到队列的末尾
+>   +   `int pop()` 从队列的开头移除并返回元素
+>   +   `int peek()` 返回队列开头的元素
+>   +   `boolean empty()` 如果队列为空，返回 `true` ；否则，返回 `false`
+>
+>   说明：
+>
+>   +   你 只能 使用标准的栈操作 —— 也就是只有 `push to top`, `peek/pop from top`, `size`, 和 `is empty` 操作是合法的。
+>   +   你所使用的语言也许不支持栈。你可以使用 `list` 或者 `deque`（双端队列）来模拟一个栈，只要是标准的栈操作即可。
 
 **示例 1**
 
-> 输入：`nums = [0,1,0,1,1,0,0]`
-> 输出：`1`
-> 解释：这里列出一些能够将所有 1 聚集在一起的方案：
-> `[0,0,1,1,1,0,0]` 交换 `1` 次。
-> `[0,1,1,1,0,0,0]` 交换 `1` 次。
-> `[1,1,0,0,0,0,1]` 交换 `2` 次（利用数组的环形特性）。
-> 无法在交换 `0` 次的情况下将数组中的所有 `1` 聚集在一起。
-> 因此，需要的最少交换次数为 `1` 。
-
-**示例 2**
-
-> 输入：`nums = [0,1,1,1,0,0,1,1,0]`
-> 输出：`2`
-> 解释：这里列出一些能够将所有 `1` 聚集在一起的方案：
-> `[1,1,1,0,0,0,0,1,1]` 交换 `2` 次（利用数组的环形特性）。
-> `[1,1,1,1,1,0,0,0,0]` 交换 `2` 次。
-> 无法在交换 `0` 次或 `1` 次的情况下将数组中的所有 `1` 聚集在一起。
-> 因此，需要的最少交换次数为 `2` 。
-
-**示例 3**
-
-> 输入：`nums = [1,1,0,0,1]`
-> 输出：`0`
-> 解释：得益于数组的环形特性，所有的 `1` 已经聚集在一起。
-> 因此，需要的最少交换次数为 `0` 。
+>   输入：
+>   `["MyQueue", "push", "push", "peek", "pop", "empty"]`
+>   `[[], [1], [2], [], [], []]`
+>   输出：
+>   `[null, null, null, 1, 1, false]`
+>
+>   解释：
+>   `MyQueue myQueue = new MyQueue();`
+>   `myQueue.push(1); // queue is: [1]`
+>   `myQueue.push(2); // queue is: [1, 2] (leftmost is front of the queue)`
+>   `myQueue.peek(); // return 1`
+>   `myQueue.pop(); // return 1, queue is [2]`
+>   `myQueue.empty(); // return false`
 
 **提示**
 
-> $1\;\leq\;nums.length\;\leq\;10^5$
-> `nums[i]` 为 `0` 或者 `1`
+>   +   $1 <= x <= 9$
+>   +   $最多调用 100 次 push、pop、peek 和 empty$
+>   +   $假设所有操作都是有效的 （例如，一个空的队列不会调用 pop 或者 peek 操作）$
 
-**题解**
+**进阶**
 
-> 1. 统计出 `1` 的个数，作为滑动窗口的大小
-> 2. 将数组复制一遍，目的是断环成链
-> 3. 答案即为窗口内 `0` 的最小个数
+>   你能否实现每个操作均摊时间复杂度为 `O(1)` 的队列？换句话说，执行 `n` 个操作的总时间复杂度为 `O(n) `，即使其中一个操作可能花费较长时间。
+
+**手写稿**
+
+
 
 **代码**
 
 ```c++
-class Solution {
+class MyQueue {
 public:
-    int minSwaps(vector<int>& nums) {
-        // 滑动窗口
-        // 第一步：统计 1 的个数 作为窗口的大小
-        int cnt = 0;
-        for (auto& num : nums) cnt += num;
-        // 第二步：断环成链
-        nums.insert(nums.begin(), nums.begin(), nums.end());
-        int res = INT_MAX, tmp = 0;
-        for (int i = 0, j = 0; i < nums.size(); i ++ ) {
-            if (i + 1 > cnt) tmp -= nums[j ++];
-            // tmp 统计的是窗口内 1 的个数
-            tmp += nums[i];
-            res = min(res, cnt - tmp);
+    stack<int> sk1, sk2;
+    MyQueue() {}
+    
+    void push(int x) {
+        sk1.push(x);
+        return;
+    }
+    
+    int pop() {
+        // 留下最后一个数
+        while (sk1.size() > 1) {
+            sk2.push(sk1.top());
+            sk1.pop();
         }
-        return res;
+        // 记录最后一个数
+        int t = sk1.top();
+        // 将最后一个数弹出
+        sk1.pop();
+        while (sk2.size()) {
+            sk1.push(sk2.top());
+            sk2.pop();
+        }
+        return t;
+    }
+    
+    int peek() {
+        // 留下最后一个数
+        while (sk1.size() > 1) {
+            sk2.push(sk1.top());
+            sk1.pop();
+        }
+        // 记录最后一个数
+        int t = sk1.top();
+        while (sk2.size()) {
+            sk1.push(sk2.top());
+            sk2.pop();
+        }
+        return t;
+    }
+    
+    bool empty() {
+        return sk1.empty();
     }
 };
+
+/**
+ * Your MyQueue object will be instantiated and called as such:
+ * MyQueue* obj = new MyQueue();
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * int param_3 = obj->peek();
+ * bool param_4 = obj->empty();
+ */
 ```
 
- **标签**
+**时间复杂度**
 
-`滑动窗口`、`双端队列`、`环`
+$O(n)$
 
-### [LeetCode 239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+**空间复杂度**
 
-**题目描述**
-
-> 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
->
-> 返回滑动窗口中的最大值。
-
-**示例 1**
-
-> 输入：`nums = [1,3,-1,-3,5,3,6,7], k = 3`
-> 输出：`[3,3,5,5,6,7]`
-> 解释：
-> 滑动窗口的位置                            最大值
->
-> ---------------               -----
->
-> `[1  3  -1] -3  5  3  6  7       3
-> 1 [3  -1  -3] 5  3  6  7       3
-> 1  3 [-1  -3  5] 3  6  7       5
-> 1  3  -1 [-3  5  3] 6  7       5
-> 1  3  -1  -3 [5  3  6] 7       6
-> 1  3  -1  -3  5 [3  6  7]      7`
-
-**示例 2**
-
-> 输入：`nums = [1], k = 1`
-> 输出：`[1]`
-
-**示例 3**
-
-> 输入：`nums = [1,-1], k = 1`
-> 输出：`[1,-1]`
-
-**示例 4**
-
-> 输入：`nums = [9,11], k = 2`
-> 输出：`[11]`
-
-**示例 5**
-
-> 输入：`nums = [4,-2], k = 2`
-> 输出：`[4]`
-
-**提示**
-
-> + $1 <= nums.length <= 10^5$
-> + $-10^4 <= nums[i] <= 10^4$
-> + $1 <= k <= nums.length$
-
-**题解**
-
-> 1. <font style="color: red">**记住，单调队列是双端队列即可**</font>
-
-**代码**
-
-```c++
-class Solution {
-public:
-    vector<int> maxSlidingWindow(vector<int>& g, int k) {
-        deque<int> dq;
-        vector<int> res;
-        for (int i = 0; i < g.size(); i ++ ) {
-            if (dq.size() && i - dq.front() + 1 > k) dq.pop_front();
-            while (dq.size() && g[i] >= g[dq.back()]) dq.pop_back();
-            dq.push_back(i);
-            if (i >= k - 1) res.push_back(g[dq.front()]);
-        }
-        return res;
-    }
-};
-```
+$O(n)$
 
 **标签**
 
-`滑动窗口`
+`栈`
 
-## 单调栈
+**缝合怪**
 
-### [LeetCode 42. 接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+
+
+### 单调栈
+
+#### [LeetCode 42. 接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
 
 **题目描述**
 
@@ -16105,7 +19110,7 @@ $O(n)$
 
 **缝合怪**
 
-### [LeetCode 84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+#### [LeetCode 84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
 
 **题目描述**
 
@@ -16185,6 +19190,286 @@ $O(n)$
 **缝合怪**
 
 
+
+## 队列
+
+### 循环队列
+
+#### [LeetCode 622. 设计循环队列](https://leetcode-cn.com/problems/design-circular-queue/)
+
+**题目描述**
+
+>   设计你的循环队列实现。 循环队列是一种线性数据结构，其操作表现基于 `FIFO`（先进先出）原则并且队尾被连接在队首之后以形成一个循环。它也被称为“环形缓冲器”。
+>
+>   循环队列的一个好处是我们可以利用这个队列之前用过的空间。在一个普通队列里，一旦一个队列满了，我们就不能插入下一个元素，即使在队列前面仍有空间。但是使用循环队列，我们能使用这些空间去存储新的值。
+>
+>   你的实现应该支持如下操作：
+>
+>   +   `MyCircularQueue(k):` 构造器，设置队列长度为 `k` 。
+>   +   `Front:` 从队首获取元素。如果队列为空，返回 `-1` 。
+>   +   `Rear:` 获取队尾元素。如果队列为空，返回 `-1` 。
+>   +   `enQueue(value):` 向循环队列插入一个元素。如果成功插入则返回真。
+>   +   `deQueue():` 从循环队列中删除一个元素。如果成功删除则返回真。
+>   +   `isEmpty():` 检查循环队列是否为空。
+>   +   `isFull():` 检查循环队列是否已满。
+
+**示例**
+
+>   `MyCircularQueue circularQueue = new MyCircularQueue(3);` // 设置长度为 `3`
+>   `circularQueue.enQueue(1);`  // 返回 `true`
+>   `circularQueue.enQueue(2);`  // 返回 `true`
+>   `circularQueue.enQueue(3);`  // 返回 `true`
+>   `circularQueue.enQueue(4);`  // 返回 `false`，队列已满
+>   `circularQueue.Rear();`  // 返回 `3`
+>   `circularQueue.isFull();`  // 返回 `true`
+>   `circularQueue.deQueue();`  // 返回 `true`
+>   `circularQueue.enQueue(4);`  // 返回 `true`
+>   `circularQueue.Rear();`  // 返回 `4`
+
+**提示**
+
+>   +   所有的值都在 `0` 至 `1000` 的范围内；
+>   +   操作数将在 `1` 至 `1000` 的范围内；
+>   +   请不要使用内置的队列库。
+
+**手写稿**
+
+![491037](img/491037.png)
+
+![img](img/20160402104839540.jpeg)
+
+**代码**
+
+```c++
+class MyCircularQueue {
+public:
+    int hh = 0, tt = 0;
+    vector<int> q;
+    MyCircularQueue(int k) {
+        // 因为tt所在的位置, 不存储数字, 故长度为n, 则需要开长度为n + 1的数组
+        q.resize(k + 1);
+    }
+    
+    bool enQueue(int value) {
+        if (isFull()) return false;
+        // 注意: 这里使用tt ++, 原因: tt所指的位置为空, 不填写任何数
+        q[tt ++ ] = value;
+        // 越界, 则从头开始
+        if (tt >= q.size()) tt = 0;
+        return true;
+    }
+    
+    bool deQueue() {
+        if (isEmpty()) return false;
+        hh ++;
+        // 越界, 则从头开始
+        if (hh >= q.size()) hh = 0;
+        return true; 
+    }
+    
+    int Front() {
+        if (isEmpty()) return -1;
+        return q[hh];
+    }
+    
+    int Rear() {
+        if (isEmpty()) return -1;
+        // 注意: tt - 1可能小于0, 故, 需要先➕q.size(), 再%q.size()
+        return q[(tt - 1 + q.size()) % q.size()];
+    }
+    
+    bool isEmpty() {
+        return hh == tt;
+    }
+    
+    bool isFull() {
+        return (tt + 1) % q.size() == hh;
+    }
+};
+
+/**
+ * Your MyCircularQueue object will be instantiated and called as such:
+ * MyCircularQueue* obj = new MyCircularQueue(k);
+ * bool param_1 = obj->enQueue(value);
+ * bool param_2 = obj->deQueue();
+ * int param_3 = obj->Front();
+ * int param_4 = obj->Rear();
+ * bool param_5 = obj->isEmpty();
+ * bool param_6 = obj->isFull();
+ */
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`循环队列`
+
+**缝合怪**
+
+
+
+### 滑动窗口【双端队列】
+
+#### [LeetCode 5977. 最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
+
+**题目描述**
+
+> 交换 定义为选中一个数组中的两个 互不相同 的位置并交换二者的值。
+>
+> 环形 数组是一个数组，可以认为 第一个 元素和 最后一个 元素 相邻 。
+>
+> 给你一个 二进制环形 数组 `nums` ，返回在 任意位置 将数组中的所有 `1` 聚集在一起需要的最少交换次数。
+
+**示例 1**
+
+> 输入：`nums = [0,1,0,1,1,0,0]`
+> 输出：`1`
+> 解释：这里列出一些能够将所有 1 聚集在一起的方案：
+> `[0,0,1,1,1,0,0]` 交换 `1` 次。
+> `[0,1,1,1,0,0,0]` 交换 `1` 次。
+> `[1,1,0,0,0,0,1]` 交换 `2` 次（利用数组的环形特性）。
+> 无法在交换 `0` 次的情况下将数组中的所有 `1` 聚集在一起。
+> 因此，需要的最少交换次数为 `1` 。
+
+**示例 2**
+
+> 输入：`nums = [0,1,1,1,0,0,1,1,0]`
+> 输出：`2`
+> 解释：这里列出一些能够将所有 `1` 聚集在一起的方案：
+> `[1,1,1,0,0,0,0,1,1]` 交换 `2` 次（利用数组的环形特性）。
+> `[1,1,1,1,1,0,0,0,0]` 交换 `2` 次。
+> 无法在交换 `0` 次或 `1` 次的情况下将数组中的所有 `1` 聚集在一起。
+> 因此，需要的最少交换次数为 `2` 。
+
+**示例 3**
+
+> 输入：`nums = [1,1,0,0,1]`
+> 输出：`0`
+> 解释：得益于数组的环形特性，所有的 `1` 已经聚集在一起。
+> 因此，需要的最少交换次数为 `0` 。
+
+**提示**
+
+> $1\;\leq\;nums.length\;\leq\;10^5$
+> `nums[i]` 为 `0` 或者 `1`
+
+**题解**
+
+> 1. 统计出 `1` 的个数，作为滑动窗口的大小
+> 2. 将数组复制一遍，目的是断环成链
+> 3. 答案即为窗口内 `0` 的最小个数
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int minSwaps(vector<int>& nums) {
+        // 滑动窗口
+        // 第一步：统计 1 的个数 作为窗口的大小
+        int cnt = 0;
+        for (auto& num : nums) cnt += num;
+        // 第二步：断环成链
+        nums.insert(nums.begin(), nums.begin(), nums.end());
+        int res = INT_MAX, tmp = 0;
+        for (int i = 0, j = 0; i < nums.size(); i ++ ) {
+            if (i + 1 > cnt) tmp -= nums[j ++];
+            // tmp 统计的是窗口内 1 的个数
+            tmp += nums[i];
+            res = min(res, cnt - tmp);
+        }
+        return res;
+    }
+};
+```
+
+ **标签**
+
+`滑动窗口`、`双端队列`、`环`
+
+#### [LeetCode 239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+
+**题目描述**
+
+> 给你一个整数数组 `nums`，有一个大小为 `k` 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 `k` 个数字。滑动窗口每次只向右移动一位。
+>
+> 返回滑动窗口中的最大值。
+
+**示例 1**
+
+> 输入：`nums = [1,3,-1,-3,5,3,6,7], k = 3`
+> 输出：`[3,3,5,5,6,7]`
+> 解释：
+> 滑动窗口的位置                            最大值
+>
+> ---------------               -----
+>
+> `[1  3  -1] -3  5  3  6  7       3
+> 1 [3  -1  -3] 5  3  6  7       3
+> 1  3 [-1  -3  5] 3  6  7       5
+> 1  3  -1 [-3  5  3] 6  7       5
+> 1  3  -1  -3 [5  3  6] 7       6
+> 1  3  -1  -3  5 [3  6  7]      7`
+
+**示例 2**
+
+> 输入：`nums = [1], k = 1`
+> 输出：`[1]`
+
+**示例 3**
+
+> 输入：`nums = [1,-1], k = 1`
+> 输出：`[1,-1]`
+
+**示例 4**
+
+> 输入：`nums = [9,11], k = 2`
+> 输出：`[11]`
+
+**示例 5**
+
+> 输入：`nums = [4,-2], k = 2`
+> 输出：`[4]`
+
+**提示**
+
+> + $1 <= nums.length <= 10^5$
+> + $-10^4 <= nums[i] <= 10^4$
+> + $1 <= k <= nums.length$
+
+**题解**
+
+> 1. <font style="color: red">**记住，单调队列是双端队列即可**</font>
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& g, int k) {
+        deque<int> dq;
+        vector<int> res;
+        for (int i = 0; i < g.size(); i ++ ) {
+            if (dq.size() && i - dq.front() + 1 > k) dq.pop_front();
+            while (dq.size() && g[i] >= g[dq.back()]) dq.pop_back();
+            dq.push_back(i);
+            if (i >= k - 1) res.push_back(g[dq.front()]);
+        }
+        return res;
+    }
+};
+```
+
+**标签**
+
+`滑动窗口`
 
 ## end
 
@@ -17210,6 +20495,92 @@ public:
 **标签**
 
 `位运算`
+
+## [LeetCode 29. 两数相除](https://leetcode-cn.com/problems/divide-two-integers/)
+
+**题目描述**
+
+>   给定两个整数，被除数 `dividend` 和除数 `divisor`。将两数相除，要求不使用乘法、除法和 `mod` 运算符。
+>
+>   返回被除数 `dividend` 除以除数 `divisor` 得到的商。
+>
+>   整数除法的结果应当截去（`truncate`）其小数部分，例如：`truncate(8.345) = 8` 以及 `truncate(-2.7335) = -2`
+
+**示例 1**
+
+>   输入: `dividend = 10, divisor = 3`
+>   输出: `3`
+>   解释: `10/3 = truncate(3.33333..) = truncate(3) = 3`
+
+**示例 2**
+
+>   输入: `dividend = 7, divisor = -3`
+>   输出: `-2`
+>   解释: `7/-3 = truncate(-2.33333..) = -2`
+
+**提示**
+
+>   被除数和除数均为 `32` 位有符号整数。
+>   除数不为 `0`。
+>   假设我们的环境只能存储 `32` 位有符号整数，其数值范围是 $[−2^{31},  2^{31} − 1]$。本题中，如果除法结果溢出，则返回 $2^{31} − 1$。
+
+**手写稿**
+
+![4102110](img/4102110.png)
+
+**代码**
+
+```c++
+#define x first
+#define y second
+typedef pair<int, int> PII;
+class Solution {
+public:
+    int divide(int a, int b) {
+        int sign = (a < 0) ^ (b < 0);
+        if (a > 0) a = 0 - a;
+        if (b > 0) b = 0 - b;
+        vector<PII> nums; // 第二维记录-1 << i
+        for (int i = 0, bia = b, t = -1; i < 32; i ++ ) {
+            nums.push_back({bia, t});
+            // 越界, 则直接返回即可
+            if (bia < a / 2) break;
+            bia += bia;
+            t += t;
+        }
+        int res = 0;
+        for (int i = nums.size() - 1; i >= 0; i -- )
+            if (a <= nums[i].x) {
+                res += nums[i].y;
+                a -= nums[i].x;
+            }
+        // 如果同号
+        if (!sign) {
+            // 如果等于最小值, 则取反之后一定会越界, 故, 返回最大值即可
+            if (res == INT_MIN) res = INT_MAX;
+            // 否则, 取反即可
+            else res = 0 - res;
+        }
+        return res;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(log_n)$
+
+**空间复杂度**
+
+$O(log_n)$
+
+**标签**
+
+`位运算`
+
+**缝合怪**
+
+
 
 ## end
 
