@@ -128,6 +128,190 @@ public:
 
 `动态规划`
 
+## 数字三角形模型
+
+### [AcWing 1015. 摘花生](https://www.acwing.com/problem/content/1017/)
+
+**题目描述**
+
+>   `Hello Kitty` 想摘点花生送给她喜欢的米老鼠。
+>
+>   她来到一片有网格状道路的矩形花生地(如下图)，从西北角进去，东南角出来。
+>
+>   地里每个道路的交叉点上都有种着一株花生苗，上面有若干颗花生，经过一株花生苗就能摘走该它上面所有的花生。
+>
+>   `Hello Kitty` 只能向东或向南走，不能向西或向北走。
+>
+>   问 `Hello Kitty` 最多能够摘到多少颗花生。
+>
+>   ![1.gif](img/19_a8509f26d5-1.gif)
+
+**输入格式**
+
+>   第一行是一个整数 `T`，代表一共有多少组数据。
+>
+>   接下来是 `T` 组数据。
+>
+>   每组数据的第一行是两个整数，分别代表花生苗的行数 `R` 和列数 `C`。
+>
+>   每组数据的接下来 `R` 行数据，从北向南依次描述每行花生苗的情况。每行数据有 `C` 个整数，按从西向东的顺序描述了该行每株花生苗上的花生数目 `M`。
+
+**输出格式**
+
+>   对每组输入数据，输出一行，内容为 `Hello Kitty` 能摘到得最多的花生颗数。
+
+**数据范围**
+
+>   +   $1 ≤ T ≤ 100,$
+>   +   $1 ≤ R, C ≤ 100,$
+>   +   $0 ≤ M ≤ 1000$
+
+**输入样例**
+
+```c++
+2
+2 2
+1 1
+3 4
+2 3
+2 3 4
+1 6 5
+```
+
+**输出样例**
+
+```c++
+8
+16
+```
+
+**手写稿**
+
+![4172205](img/4172205.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110;
+int n, m, T;
+int g[N][N], f[N][N];
+int main() {
+    scanf("%d", &T);
+    while (T -- ) {
+        memset(g, 0, sizeof g);
+        memset(f, 0, sizeof f);
+        scanf("%d%d", &n, &m);
+        for (int i = 1; i <= n; i ++ )
+            for (int j = 1; j <= m; j ++ )
+                scanf("%d", &g[i][j]);
+        // DP
+        for (int i = 1; i <= n; i ++ )
+            for (int j = 1; j <= m; j ++ )
+                f[i][j] = max(f[i - 1][j], f[i][j - 1]) + g[i][j];
+        cout << f[n][m] << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(nm)$
+
+**标签**
+
+`DP`、`动态规划`
+
+**缝合怪**
+
+
+
+### [AcWing 1018. 最低通行费](https://www.acwing.com/problem/content/1020/)
+
+**题目描述**
+
+>   一个商人穿过一个 `N × N` 的正方形的网格，去参加一个非常重要的商务活动。
+>
+>   他要从网格的左上角进，右下角出。
+>
+>   每穿越中间 `1` 个小方格，都要花费 `1` 个单位时间。
+>
+>   商人必须在 `(2N − 1)` 个单位时间穿越出去。
+>
+>   而在经过中间的每个小方格时，都需要缴纳一定的费用。
+>
+>   这个商人期望在规定时间内用最少费用穿越出去。
+>
+>   请问至少需要多少费用？
+>
+>   注意：不能对角穿越各个小方格（即，只能向上下左右四个方向移动且不能离开网格）。
+
+**输入格式**
+
+>   第一行是一个整数，表示正方形的宽度 `N`。
+>
+>   后面 `N` 行，每行 `N` 个不大于 `100` 的正整数，为网格上每个小方格的费用。
+
+**输出格式**
+
+>   输出一个整数，表示至少需要的费用。
+
+**数据范围**
+
+>   +   $1 ≤ N ≤ 100$
+
+**输入样例**
+
+```c++
+5
+1  4  6  8  10
+2  5  7  15 17
+6  8  9  18 20
+10 11 12 19 21
+20 23 25 29 33
+```
+
+**输出样例**
+
+```c++
+109
+```
+
+**样例解释**
+
+>   样例中，最小值为 `109=1+2+5+7+9+12+19+21+33`。
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
 ## 线性 `DP`
 
 ### [AcWing 897. 最长公共子序列](https://www.acwing.com/problem/content/899/)
@@ -6370,6 +6554,69 @@ $O(n)$
 
 
 
+#### [LeetCode 394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
+
+**题目描述**
+
+>   给定一个经过编码的字符串，返回它解码后的字符串。
+>
+>   编码规则为: `k[encoded_string]`，表示其中方括号内部的 `encoded_string` 正好重复 `k` 次。注意 `k` 保证为正整数。
+>
+>   你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+>
+>   此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 `k` ，例如不会出现像 `3a` 或 `2[4]` 的输入。
+
+**示例 1**
+
+>   输入：`s = "3[a]2[bc]"`
+>   输出：`"aaabcbc"`
+
+**示例 2**
+
+>   输入：`s = "3[a2[c]]"`
+>   输出：`"accaccacc"`
+
+**示例 3**
+
+>   输入：`s = "2[abc]3[cd]ef"`
+>   输出：`"abcabccdcdcdef"`
+
+**示例 4**
+
+>   输入：`s = "abc3[cd]xyz"`
+>   输出：`"abccdcdcdxyz"`
+
+**提示**
+
+>   +   $1 <= s.length <= 30$
+>   +   $s 由小写英文字母、数字和方括号 '[]' 组成$
+>   +   $s 保证是一个 有效 的输入。$
+>   +   $s 中所有整数的取值范围为 [1, 300]$
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
 ### DFS之连通性模型
 
 #### [AcWing 1112. 迷宫](https://www.acwing.com/problem/content/1114/)
@@ -8794,6 +9041,149 @@ $O(m)$
 `堆优化版Dijkstra`
 
 **缝合怪**
+
+### [AcWing 4196. 最短路径](https://www.acwing.com/problem/content/4199/)
+
+**题目描述**
+
+>   给定一个 `n` 个点 `m` 条边的的无向图。
+>
+>   点的编号从 `1` 到 `n`。
+>
+>   图中可能包含重边和自环。
+>
+>   请你找到并输出一条从点 `1` 到点 `n` 的最短路径。
+
+**输入格式**
+
+>   第一行包含两个整数 `n,m`。
+>
+>   接下来 `m` 行，每行包含三个整数 `a,b,w`，表示点 `a` 和点 `b` 之间存在一条无向边，边长为 `w`。
+
+**输出格式**
+
+>   如果最短路径不存在，则输出 `−1`。
+>
+>   否则，在一行内输出从点 `1` 到点 `n` 的最短路径中依次包含的点的编号，各点编号之间用空格隔开。
+>
+>   如果答案不唯一，输出任意合理方案均可。
+
+**数据范围**
+
+>   +   $前六个测试点满足 2 ≤ n ≤ 10，1 ≤ m ≤ 10。$
+>   +   $所有测试点满足 2 ≤ n ≤ 10^5，1 ≤ m ≤ 10^5，1 ≤ a, b ≤ n，1 ≤ w ≤ 10^6。$
+>   +   $本题不卡spfa算法。$
+
+**输入样例**
+
+```c++
+5 6
+1 2 2
+2 5 5
+2 3 4
+1 4 1
+4 3 3
+3 5 1
+```
+
+**输出样例**
+
+```c++
+1 4 3 5
+```
+
+**手写稿**
+
+>   1.   `long long` 占 `8` 个字节, 因此, `memset` 初始化为 `0x3f` 的时候, 最大值不是 `0x3f3f3f3f`, 而是 `0x3f3f3f3f3f3f3f3fll` 共 `8` 个 `3f`
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <queue>
+#define x first
+#define y second
+using namespace std;
+typedef long long LL;
+typedef pair<LL, int> PLI;
+const int N = 100010, M = 200010;
+// LL占8个字节, 因此, INF初始化为8个3f
+const LL INF = 0x3f3f3f3f3f3f3f3fll;
+int n, m, idx;
+int h[N], e[M], w[M], ne[M], st[N], path[N];
+LL dist[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dijkstra() {
+    // 初始化dist, 类型为LL, 占8个字节!!!
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, false, sizeof st);
+    priority_queue<PLI, vector<PLI>, greater<PLI>> heap;
+    // 从n到1倒序枚举
+    dist[n] = true;
+    heap.push({0, n});
+    while (heap.size()) {
+        auto t = heap.top(); heap.pop();
+        int u = t.y;
+        LL distance = t.x;
+        if (st[u]) continue;
+        st[u] = true;
+        for (int i = h[u]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] > distance + w[i]) {
+                dist[j] = distance + w[i];
+                heap.push({dist[j], j});
+                path[j] = u;
+            }
+        }
+    }
+    if (dist[1] == INF) cout << -1 << endl;
+    else {
+        int start = 1;
+        while (start != n) {
+            cout << start << " ";
+            start = path[start];
+        }
+        // 最后输出n即可
+        cout << n << endl;
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    dijkstra();
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`最短路`、`路径输出`
+
+**缝合怪**
+
+
 
 ## `Bellman-Ford`
 
@@ -11731,23 +12121,95 @@ Sorted sequence determined after 4 relations: ABCDE.
 
 **手写稿**
 
-
+![4181728](img/4181728.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 30;
+int n, m;
+int g[N][N], dist[N][N], st[N];
+void floyd() {
+    memcpy(dist, g, sizeof g);
+    for (int k = 0; k < n; k ++ )
+        for (int i = 0; i < n; i ++ )
+            for (int j = 0; j < n; j ++ )
+                // |=不是=
+                dist[i][j] |= dist[i][k] && dist[k][j];
+    return;
+}
+int check() {
+    for (int i = 0; i < n; i ++ )
+        // 判断是否有矛盾, 即第2种情况
+        if (dist[i][i]) return 2;
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < i; j ++ )
+            // 判断第3种情况
+            if (!dist[i][j] && !dist[j][i]) return 0;
+    // 判断第1种情况
+    return 1;
+}
+int get_min() {
+    for (int i = 0; i < n; i ++ ) {
+        if (!st[i]) {
+            int flag = true;
+            for (int j = 0; j < n; j ++ )
+                // 判断j和i之间是否有一条边, 而不是判断i和j之间是否有一条边
+                if (!st[j] && dist[j][i]) {
+                    flag = false;
+                    break;
+                }
+            if (flag) {
+                st[i] = true;
+                return 'A' + i;
+            }
+        }
+    }
+    return 0;
+}
+int main() {
+    while (~scanf("%d%d", &n, &m), n || m) {
+        memset(g, 0, sizeof g);
+        memset(dist, 0, sizeof dist);
+        memset(st, 0, sizeof st);
+        int tms = 0, type = 0;
+        for (int i = 1; i <= m; i ++ ) {
+            char str[5];
+            scanf("%s", str);
+            int a = str[0] - 'A', b = str[2] - 'A';
+            g[a][b] = 1;
+            if (!type) { // 如果不能确定关系, 则确定关系
+                floyd();
+                type = check();
+                tms = i;
+            }
+        }
+        if (!type) printf("Sorted sequence cannot be determined.\n");
+        else if (type == 1) {
+            printf("Sorted sequence determined after %d relations: ", tms);
+            for (int i = 0; i < n; i ++ ) printf("%c", get_min());
+            puts(".");
+        }
+        else printf("Inconsistency found after %d relations.\n", tms);
+    }
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(mn^3)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`Floyd`、`闭包`、`传递闭包`
 
 **缝合怪**
 
@@ -11800,23 +12262,80 @@ Sorted sequence determined after 4 relations: ABCDE.
 
 **手写稿**
 
-
+![4191406](img/4191406.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110, INF = 0x3f3f3f3f;
+int n, m, cnt;
+int path[N];
+int g[N][N], dist[N][N], pos[N][N];
+void dfs(int i, int j) {
+    if (pos[i][j] == 0) return;
+    // 枚举i和j的分界点
+    int k = pos[i][j];
+    // 递归左半边
+    dfs(i, k);
+    // 记录中间点
+    path[cnt ++ ] = k;
+    // 递归右半边
+    dfs(k, j);
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(g, 0x3f, sizeof g);
+    for (int i = 1; i <= n; i ++ ) g[i][i] = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d",&a, &b, &c);
+        g[a][b] = g[b][a] = min(g[a][b], c);
+    }
+    memcpy(dist, g, sizeof g);
+    int res = INF;
+    for (int k = 1; k <= n; k ++ ) {
+        for (int i = 1; i < k; i ++ )
+            for (int j = i + 1; j < k; j ++ )
+                // g[i][k]是i和k之间的权值
+                // g[k][j]是k和j之间的权值
+                if ((long long)dist[i][j] + g[i][k] + g[k][j] < res) {
+                    cnt = 0;
+                    res = dist[i][j] + g[i][k] + g[k][j];
+                    path[cnt ++ ] = k;
+                    path[cnt ++ ] = i;
+                    dfs(i, j);
+                    path[cnt ++ ] = j;
+                }
+        for (int i = 1; i <= n; i ++ )
+            for (int j = 1; j <= n; j ++ )
+                if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                    // 记录分界点
+                    pos[i][j] = k;
+                }
+    }
+    if (res == INF) puts("No solution.");
+    else
+        for (int i = 0; i < cnt; i ++ ) cout << path[i] << " ";
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n^3)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`最小环`、`Floyd`
 
 **缝合怪**
 
@@ -11867,29 +12386,97 @@ Sorted sequence determined after 4 relations: ABCDE.
 
 **手写稿**
 
-
+![4211039](img/4211039.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+#include <unordered_map>
+using namespace std;
+const int N = 210;
+int n, m, k, S, E;
+int g[N][N], res[N][N];
+unordered_map<int, int> id;
+void mul(int c[][N], int a[][N], int b[][N]) {
+    // 由于c和a或者b相等, 为防止读写冲突
+    // 因此, 使用tmp作为新的临时数组
+    static int tmp[N][N];
+    memset(tmp, 0x3f, sizeof tmp);
+    // Floyd模板
+    for (int k = 1; k <= n; k ++ )
+        for (int i = 1; i <= n; i ++ )
+            for (int j = 1; j <= n; j ++ )
+                tmp[i][j] = min(tmp[i][j], a[i][k] + b[k][j]);
+    memcpy(c, tmp, sizeof tmp);
+    return;
+}
+void qmi() {
+    // res表示经过0条边, 从S到E的最短路径
+    // 故: res[i][i]初始化为0
+    memset(res, 0x3f, sizeof res);
+    for (int i = 1; i <= n; i ++ ) res[i][i] = 0;
+    while (k) {
+        if (k & 1) mul(res, res, g);
+        // g倍增一次, 表示经过2条边, 从S走到E的最短距离
+        // g倍增两次, 表示经过4条边, 从S走到E的最短距离
+        // ... 依次类推
+        mul(g, g, g);
+        k >>= 1;
+    }
+    return;
+}
+int main() {
+    // g数组表示经过1条边, 从S走到E的最短距离
+    memset(g, 0x3f, sizeof g);
+    scanf("%d%d%d%d", &k, &m, &S, &E);
+    if (!id.count(S)) id[S] = ++ n;
+    if (!id.count(E)) id[E] = ++ n;
+    // 离散化
+    S = id[S], E = id[E];
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &c, &a, &b);
+        if (!id.count(a)) id[a] = ++ n;
+        if (!id.count(b)) id[b] = ++ n;
+        a = id[a], b = id[b];
+        // 防止重边
+        g[a][b] = g[b][a] = min(g[a][b], c);
+    }
+    qmi();
+    cout << res[S][E] << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n^3log_k)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`Floyd`、`倍增`
 
 **缝合怪**
 
 
 
 ## 最小生成树
+
+### 正确性证明
+
+#### `Prim`
+
+![4231017](img/4231017.png)
+
+#### `Kruskal`
+
+>   1.   同 `prim` 证明方法
 
 ### [AcWing 858. Prim算法求最小生成树](https://www.acwing.com/problem/content/860/)
 
@@ -11938,23 +12525,71 @@ Sorted sequence determined after 4 relations: ABCDE.
 
 **手写稿**
 
-
+![4211434](img/4211434.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 510, INF = 0x3f3f3f3f;
+int n, m;
+int dist[N], st[N];
+int g[N][N];
+int prim() {
+    // dist[i]表示点i到[集合]的点的距离
+    memset(dist, 0x3f, sizeof dist);
+    // st[i]表示点i是否加入到集合中
+    memset(st, false, sizeof st);
+    int res = 0;
+    // 一共取n个点, 故, 循环n次
+    for (int i = 0; i < n; i ++ ) {
+        int t = -1;
+        for (int j = 1; j <= n; j ++ )
+            // 寻找距离[集合]的点的最小距离
+            if (!st[j] && (t == -1 || dist[t] > dist[j]))
+                t = j;
+        // 标记当前点已经处于[集合]内
+        st[t] = true;
+        // 不连通, 返回false
+        if (i && dist[t] == INF) return INF;
+        if (i) res += dist[t];
+        for (int j = 1; j <= n; j ++ )
+            // 如果当前点处于[集合]外并且当前点到[集合]内的点的距离更小, 则更新
+            if (!st[j] && dist[j] > g[t][j]) dist[j] = g[t][j];
+    }
+    return res;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    // 最小生成树不含有自环
+    // 因此, 将g[i][i]之间的距离也初始化为+∞
+    memset(g, 0x3f, sizeof g);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        // 取重边的最小值即可
+        g[a][b] = g[b][a] = min(g[a][b], c);
+    }
+    int t = prim();
+    if (t == INF) puts("impossible");
+    else cout << t << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n^2)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`最小生成树`、`prim`
 
 **缝合怪**
 
@@ -12007,6 +12642,1006 @@ Sorted sequence determined after 4 relations: ABCDE.
 
 **手写稿**
 
+>   1.   算法流程:
+>        +   将所有边按照权值从小到大进行排序
+>        +   依次遍历每条边, 如果边两端的点 `a` 和 `b` 不在一个集合`[并查集]`, 则将其加入最小生成树即可
+>        +   重复上述步骤, 直到结束
+
+**代码**
+
+````c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int N = 100010, M = 200010;
+int n, m;
+int f[N];
+struct Edge {
+    int u, v, w;
+    bool operator < (const Edge &W) const {
+        // 按照权值从小到大进行排序
+        return w < W.w;
+    }
+}edges[M];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        edges[i] = {a, b, c};
+    }
+    sort(edges, edges + m);
+    // res是最小生成树的权值
+    // cnt是最小生成树的边数
+    int res = 0, cnt = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int a = edges[i].u;
+        int b = edges[i].v;
+        int c = edges[i].w;
+        int fa = find(a);
+        int fb = find(b);
+        if (fa != fb) { // 如果不处于一个集合当中
+            res += c; // 权值相加
+            f[fb] = fa; // 强行融合为一个和和睦睦的大家庭
+            cnt ++; // 边数 ++
+        }
+    }
+    // 如果最小生成树的边的个数小于 n - 1, 则说明不连通, 输出 "impossible"
+    if (cnt < n - 1) puts("impossible");
+    else cout << res << endl;
+    return 0;
+}
+````
+
+**时间复杂度**
+
+$O(mlog_m)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`kruskal`、`最小生成树`
+
+**缝合怪**
+
+[AcWing 837. 连通块中点的数量](#AcWing 837. 连通块中点的数量)
+
+### [AcWing 1140. 最短网络](https://www.acwing.com/problem/content/1142/)
+
+**题目描述**
+
+>   农夫约翰被选为他们镇的镇长！
+>
+>   他其中一个竞选承诺就是在镇上建立起互联网，并连接到所有的农场。
+>
+>   约翰已经给他的农场安排了一条高速的网络线路，他想把这条线路共享给其他农场。
+>
+>   约翰的农场的编号是 `1`，其他农场的编号是 `2 ∼ n`。
+>
+>   为了使花费最少，他希望用于连接所有的农场的光纤总长度尽可能短。
+>
+>   你将得到一份各农场之间连接距离的列表，你必须找出能连接所有农场并使所用光纤最短的方案。
+
+**输入格式**
+
+>   第一行包含一个整数 `n`，表示农场个数。
+>
+>   接下来 `n` 行，每行包含 `n` 个整数，输入一个对角线上全是 `0` 的对称矩阵。
+>   其中第 `x + 1` 行 `y` 列的整数表示连接农场 `x` 和农场 `y` 所需要的光纤长度。
+
+**输出格式**
+
+>   输出一个整数，表示所需的最小光纤长度。
+
+**数据范围**
+
+>   +   $3 ≤ n ≤ 100$
+>   +   $每两个农场间的距离均是非负整数且不超过100000。$
+
+**输入样例**
+
+```c++
+4
+0  4  9  21
+4  0  8  17
+9  8  0  16
+21 17 16  0
+```
+
+**输出样例**
+
+```c++
+28
+```
+
+**手写稿**
+
+>   1.   裸的 `prim` 算法
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110;
+int n;
+int dist[N], st[N];
+int g[N][N];
+int prim() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, false, sizeof st);
+    int res = 0;
+    for (int i = 0; i < n; i ++ ) {
+        int t = -1;
+        for (int j = 1; j <= n; j ++ )
+            if (!st[j] && (t == -1 || dist[t] > dist[j]))
+                t = j;
+        st[t] = true;
+        if (i) res += dist[t];
+        for (int j = 1; j <= n; j ++ )
+            dist[j] = min(dist[j], g[t][j]);
+    }
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    // 下标从1开始
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= n; j ++ )
+            scanf("%d", &g[i][j]);
+    cout << prim() << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`prim`、`最小生成树`
+
+**缝合怪**
+
+
+
+### [AcWing 1141. 局域网](https://www.acwing.com/problem/content/1143/)
+
+**题目描述**
+
+>   某个局域网内有 `n` 台计算机和 `k` 条 **双向** 网线，计算机的编号是 `1 ∼ n`。由于搭建局域网时工作人员的疏忽，现在局域网内的连接形成了回路，我们知道如果局域网形成回路那么数据将不停的在回路内传输，造成网络卡的现象。
+>
+>   **注意**：
+>
+>   -   对于某一个连接，虽然它是双向的，但我们不将其当做回路。本题中所描述的回路至少要包含两条不同的连接。
+>   -   两台计算机之间最多只会存在一条连接。
+>   -   不存在一条连接，它所连接的两端是同一台计算机。
+>
+>   因为连接计算机的网线本身不同，所以有一些连线不是很畅通，我们用 `f(i, j)` 表示 `i, j` 之间连接的畅通程度，`f(i, j)` 值越小表示 `i, j`之间连接越通畅。
+>
+>   现在我们需要解决回路问题，我们将除去一些连线，使得网络中没有回路且不影响连通性（即如果之前某两个点是连通的，去完之后也必须是连通的），并且被除去网线的 `Σf(i, j)` 最大，请求出这个最大值。
+
+**输入格式**
+
+>   第一行两个正整数 `n, k`。
+>
+>   接下来的 `k` 行每行三个正整数 `i, j, m` 表示 `i, j` 两台计算机之间有网线联通，通畅程度为 `m`。
+
+**输出格式**
+
+>   一个正整数，表示被除去网线的 `Σf(i, j)` 的最大值。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 100$
+>   +   $0 ≤ k ≤ 200$
+>   +   $1 ≤ f(i, j) ≤ 1000$
+
+**输入样例**
+
+```c++
+5 5
+1 2 8
+1 3 1
+1 5 3
+2 4 5
+3 4 2
+```
+
+**输出样例**
+
+```c++
+8
+```
+
+**手写稿**
+
+![4231250](img/4231250.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int N = 110, M = 210;
+struct Edge {
+    int u, v, w;
+    bool operator < (const Edge &W) const {
+        // 按照权值从小到大排序
+        return w < W.w;
+    }
+}edges[M];
+int n, m;
+int f[N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        edges[i] = {a, b, c};
+    }
+    sort(edges, edges + m);
+    int res = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int a = edges[i].u;
+        int b = edges[i].v;
+        int c = edges[i].w;
+        int fa = find(a); // 找到其祖先
+        int fb = find(b); // 找到其祖先
+        if (fa != fb) f[fb] = fa;
+        // 当其已经处于一个连通块中, 则说明可以将其删除, 同时, 累加其值
+        else res += c;
+    }
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_m)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`最小生成树`、`并查集`
+
+**缝合怪**
+
+
+
+### [AcWing 1142. 繁忙的都市](https://www.acwing.com/problem/content/1144/)
+
+**题目描述**
+
+>   城市 `C` 是一个非常繁忙的大都市，城市中的道路十分的拥挤，于是市长决定对其中的道路进行改造。
+>
+>   城市 `C` 的道路是这样分布的：
+>
+>   城市中有 `n` 个交叉路口，编号是 `1 ∼ n`，有些交叉路口之间有道路相连，两个交叉路口之间最多有一条道路相连接。
+>
+>   这些道路是 **双向** 的，且把所有的交叉路口直接或间接的连接起来了。
+>
+>   每条道路都有一个分值，分值越小表示这个道路越繁忙，越需要进行改造。
+>
+>   但是市政府的资金有限，市长希望进行改造的道路越少越好，于是他提出下面的要求：
+>
+>   1．改造的那些道路能够把所有的交叉路口直接或间接的连通起来。
+>
+>   2．在满足要求 `1` 的情况下，改造的道路尽量少。
+>
+>   3．在满足要求 `1、2` 的情况下，改造的那些道路中分值最大值尽量小。
+>
+>   作为市规划局的你，应当作出最佳的决策，选择哪些道路应当被修建。
+
+**输入格式**
+
+>   第一行有两个整数 `n, m` 表示城市有 `n` 个交叉路口，`m` 条道路。
+>
+>   接下来 `m` 行是对每条道路的描述，每行包含三个整数 `u, v, c` 表示交叉路口 `u` 和 `v` 之间有道路相连，分值为 `c`。
+
+**输出格式**
+
+>   两个整数 `s, max`，表示你选出了几条道路，分值最大的那条道路的分值是多少。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 300,$
+>   +   $1 ≤ m ≤ 8000,$
+>   +   $1 ≤ c ≤ 10000$
+
+**输入样例**
+
+```c++
+4 5
+1 2 3
+1 4 5
+2 4 7
+2 3 6
+3 4 8
+```
+
+**输出样例**
+
+```c++
+3 6
+```
+
+**手写稿**
+
+![4231351](img/4231351.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int N = 310, M = 8010;
+struct Edge {
+    int u, v, w;
+    bool operator < (const Edge &W) const {
+        // 按照权值从小到大进行排序
+        return w < W.w;
+    }
+}edges[M];
+int n, m;
+int f[N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        edges[i] = {a, b, c};
+    }
+    sort(edges, edges + m);
+    int Max = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int a = edges[i].u;
+        int b = edges[i].v;
+        int c = edges[i].w;
+        int fa = find(a);
+        int fb = find(b);
+        if (fa != fb) {
+            f[fb] = fa;
+            Max = c;
+        }
+    }
+    cout << n - 1 << " " << Max << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_m)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 1143. 联络员](https://www.acwing.com/problem/content/1145/)
+
+**题目描述**
+
+>   `Tyvj` 已经一岁了，网站也由最初的几个用户增加到了上万个用户，随着 `Tyvj` 网站的逐步壮大，管理员的数目也越来越多，现在你身为 `Tyvj` 管理层的联络员，希望你找到一些通信渠道，使得管理员两两都可以联络（直接或者是间接都可以）。本题中所涉及的通信渠道都是 **双向** 的。
+>
+>   `Tyvj` 是一个公益性的网站，没有过多的利润，所以你要尽可能的使费用少才可以。
+>
+>   目前你已经知道，`Tyvj` 的通信渠道分为两大类，一类是必选通信渠道，无论价格多少，你都需要把所有的都选择上；还有一类是选择性的通信渠道，你可以从中挑选一些作为最终管理员联络的通信渠道。
+>
+>   数据保证给出的通信渠道可以让所有的管理员联通。
+>
+>   **注意：** 对于某两个管理员 `u, v`，他们之间可能存在多条通信渠道，你的程序应该累加所有 `u, v` 之间的必选通行渠道。
+
+**输入格式**
+
+>   第一行两个整数 `n，m` 表示 `Tyvj` 一共有 `n` 个管理员，有 `m` 个通信渠道;
+>
+>   第二行到 `m + 1` 行，每行四个非负整数，`p, u, v, w` 当 `p = 1` 时，表示这个通信渠道为必选通信渠道；当 `p = 2` 时，表示这个通信渠道为选择性通信渠道；`u, v, w` 表示本条信息描述的是 `u，v` 管理员之间的通信渠道，`u` 可以收到 `v` 的信息，`v` 也可以收到 `u` 的信息，`w` 表示费用。
+
+**输出格式**
+
+>   一个整数，表示最小的通信费用。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 2000$
+>   +   $1 ≤ m ≤ 10000$
+
+**输入样例**
+
+```c++
+5 6
+1 1 2 1
+1 2 3 1
+1 3 4 1
+1 4 1 1
+2 2 5 10
+2 2 5 5
+```
+
+**输出样例**
+
+```c++
+9
+```
+
+**手写稿**
+
+![4240954](img/4240954.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int N = 2010, M = 10010;
+struct Edge {
+    int u, v, w;
+    bool operator < (const Edge &W) const {
+        return w < W.w;
+    }
+}edges[M];
+int n, m;
+int f[N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    int res = 0, cnt = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int p, a, b, c;
+        scanf("%d%d%d%d", &p, &a, &b, &c);
+        // 只要是必选通道, 则必须加上, 不管之前是否处于同一个连通块内
+        if (p == 1) {
+            int fa = find(a);
+            int fb = find(b);
+            f[fb] = fa;
+            res += c;
+        }
+        else edges[cnt ++ ] = {a, b, c};
+    }
+    sort(edges, edges + cnt);
+    for (int i = 0; i < cnt; i ++ ) {
+        int a = edges[i].u;
+        int b = edges[i].v;
+        int c = edges[i].w;
+        int fa = find(a);
+        int fb = find(b);
+        // 可选通道, 如果已经处于同一个连通块内, 则不需要在累加权值
+        if (fa == fb) continue;
+        f[fb] = fa;
+        res += c;
+    }
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(m)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`Kruskal`、`并查集`
+
+**缝合怪**
+
+
+
+### [AcWing 1144. 连接格点](https://www.acwing.com/problem/content/1146/)
+
+**题目描述**
+
+>   有一个 `m` 行 `n` 列的点阵，相邻两点可以相连。
+>
+>   一条纵向的连线花费一个单位，一条横向的连线花费两个单位。
+>
+>   某些点之间已经有连线了，试问至少还需要花费多少个单位才能使所有的点全部连通。
+
+**输入格式**
+
+>   第一行输入两个正整数 `m` 和 `n`。
+>
+>   以下若干行每行四个正整数 $x_1,y_1,x_2,y_2$，表示第 $x_1$ 行第 $y_1$ 列的点和第 $x_2$ 行第 $y_2$ 列的点已经有连线。
+>
+>   输入保证$|x_1 − x_2| + |y_1 − y_2| = 1$。
+
+**输出格式**
+
+>   输出使得连通所有点还需要的最小花费。
+
+**数据范围**
+
+>   +   $1 ≤ m, n ≤ 1000$
+>   +   $0 ≤ 已经存在的连线数 ≤ 10000$
+
+**输入样例**
+
+```c++
+2 2
+1 1 2 1
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+![4241408](img/4241408.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1010, M = N * N, K = 2 * N * N;
+struct Edge {
+    int u, v, w;
+}edges[K];
+int n, m, k;
+int f[M];
+int g[N][N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+void get_edges() {
+    int dx[4] = {-1, 0, 1, 0};
+    int dy[4] = {0, 1, 0, -1};
+    // 四个方向上的权值
+    int dw[4] = {1, 2, 1, 2};
+    // 遍历两种情况, 一种是横向, 另一种是纵向
+    for (int z = 0; z < 2; z ++ )
+        for (int x = 1; x <= n; x ++ )
+            for (int y = 1; y <= m; y ++ )
+                for (int u = 0; u < 4; u ++ ) {
+                    int tx = x + dx[u];
+                    int ty = y + dy[u];
+                    // 越界, 则返回即可
+                    if (tx <= 0 || tx > n || ty <= 0 || ty > m) continue;
+                    // 获取二维坐标对应的一维坐标
+                    int a = g[x][y];
+                    int b = g[tx][ty];
+                    // 如果 3 -> 5 有条边相连接, 则 5 -> 3 不需要再进行连边
+                    // 如果非要进行连边, 则记得K需要再大打一倍, 4 * N * N
+                    if (a > b) continue;
+                    // 如果当前的情况等于z, z = 0 代表横向, 1 代表纵向
+                    if (u % 2 == z) edges[k ++ ] = {a, b, dw[z]};
+                }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n * m; i ++ ) f[i] = i;
+    for (int i = 1, t = 0; i <= n; i ++ )
+        for (int j = 1; j <= m; j ++ )
+            g[i][j] = ++ t;
+    int x1, y1, x2, y2;
+    while (~scanf("%d%d%d%d", &x1, &y1, &x2, &y2)) {
+        int a = g[x1][y1];
+        int b = g[x2][y2];
+        int fa = find(a);
+        int fb = find(b);
+        if (fa == fb) continue;
+        f[fb] = fa;
+    }
+    get_edges();
+    int res = 0;
+    for (int i = 0; i < k; i ++ ) {
+        int a = edges[i].u;
+        int b = edges[i].v;
+        int c = edges[i].w;
+        int fa = find(a);
+        int fb = find(b);
+        if (fa == fb) continue;
+        f[fb] = fa;
+        res += c;
+    }
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(n ^ 2)$
+
+**标签**
+
+`最小生成树`、`Kruskal`、`并查集`
+
+**缝合怪**
+
+
+
+## 最小生成树的扩展应用
+
+### [AcWing 1146. 新的开始](https://www.acwing.com/problem/content/1148/)
+
+**题目描述**
+
+>   发展采矿业当然首先得有矿井，小 `F` 花了上次探险获得的千分之一的财富请人在岛上挖了 `n` 口矿井，但他似乎忘记了考虑矿井供电问题。
+>
+>   为了保证电力的供应，小 `F` 想到了两种办法：
+>
+>   1.  在矿井 `i` 上建立一个发电站，费用为 $v_i$（发电站的输出功率可以供给任意多个矿井）。
+>   2.  将这口矿井 `i` 与另外的已经有电力供应的矿井 `j` 之间建立电网，费用为 $p_{i,j}$。
+>
+>   小 `F` 希望你帮他想出一个保证所有矿井电力供应的最小花费方案。
+
+**输入格式**
+
+>   第一行包含一个整数 `n`，表示矿井总数。
+>
+>   接下来 `n` 行，每行一个整数，第 `i` 个数 $v_i$ 表示在第 `i` 口矿井上建立发电站的费用。
+>
+>   接下来为一个 `n × n` 的矩阵 `P`，其中 $p_{i,j}$ 表示在第 `i` 口矿井和第 `j` 口矿井之间建立电网的费用。
+>
+>   数据保证 $p_{i,j} = p_{j,i}$，且 $p_{i,i} = 0$。
+
+**输出格式**
+
+>   输出一个整数，表示让所有矿井获得充足电能的最小花费。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 300,$
+>   +   $0 ≤ v_i, p_{i, j} ≤ 10^5$
+
+**输入样例**
+
+```c++
+4
+5
+4
+4
+3
+0 2 2 2
+2 0 3 3
+2 3 0 4
+2 3 4 0
+```
+
+**输出样例**
+
+```c++
+9
+```
+
+**手写稿**
+
+![4250928](img/4250928.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 310;
+int n;
+int dist[N], st[N];
+int g[N][N];
+// prim模板
+int prim() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(st, false, sizeof st);
+    int res = 0;
+    // 注意有 n + 1 个点, 范围0 ~ n
+    for (int i = 0; i < n + 1; i ++ ) {
+        int t = -1;
+        for (int j = 0; j <= n; j ++ )
+            if (!st[j] && (t == -1 || dist[t] > dist[j]))
+                t = j;
+        st[t] = true;
+        if (t) res += dist[t];
+        for (int j = 0; j <= n; j ++ ) {
+            if (st[j]) continue;
+            dist[j] = min(dist[j], g[t][j]);
+        }
+    }
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    // 将所有能够自己发电的矿井和虚拟源点连一条边即可
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[0][i]);
+        g[i][0] = g[0][i];
+    }
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= n; j ++ ) {
+            scanf("%d", &g[i][j]);
+            g[j][i] = g[i][j];
+        }
+    cout << prim() << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`虚拟源点`、`Prim`、`最小生成树`
+
+**缝合怪**
+
+
+
+### [AcWing 1145. 北极通讯网络](https://www.acwing.com/problem/content/1147/)
+
+**题目描述**
+
+>   北极的某区域共有 `n` 座村庄，每座村庄的坐标用一对整数 `(x, y)` 表示。
+>
+>   为了加强联系，决定在村庄之间建立通讯网络，使每两座村庄之间都可以直接或间接通讯。
+>
+>   通讯工具可以是无线电收发机，也可以是卫星设备。
+>
+>   无线电收发机有多种不同型号，不同型号的无线电收发机有一个不同的参数 `d`，两座村庄之间的距离如果不超过 `d`，就可以用该型号的无线电收发机直接通讯，`d` 值越大的型号价格越贵。现在要先选择某一种型号的无线电收发机，然后统一给所有村庄配备，**数量不限**，但型号都是 **相同的**。
+>
+>   配备卫星设备的两座村庄无论相距多远都可以直接通讯，但卫星设备是 **有限的**，只能给一部分村庄配备。
+>
+>   现在有 `k` 台卫星设备，请你编一个程序，计算出应该如何分配这 `k` 台卫星设备，才能使所配备的无线电收发机的 `d` 值最小。
+>
+>   例如，对于下面三座村庄：
+>
+>   ![1.png](img/19_61a45e3c01-1.png)
+>
+>   其中，$|AB| = 10, |BC| = 20, |AC| = 10\sqrt{5} ≈ 22.36$。
+>
+>   如果没有任何卫星设备或只有 `1` 台卫星设备 (`k = 0` 或 `k = 1`)，则满足条件的最小的 `d = 20`，因为 `A` 和 `B`，`B` 和 `C` 可以用无线电直接通讯；而 `A` 和 `C` 可以用 `B` 中转实现间接通讯 (即消息从 `A` 传到 `B`，再从 `B` 传到 `C`)；
+>
+>   如果有 `2` 台卫星设备 (`k = 2`)，则可以把这两台设备分别分配给 `B` 和 `C` ，这样最小的 `d` 可取 `10`，因为 `A` 和 `B` 之间可以用无线电直接通讯；`B` 和 `C` 之间可以用卫星直接通讯；`A` 和 `C` 可以用 `B` 中转实现间接通讯。
+>
+>   如果有 `3` 台卫星设备，则 `A,B,C` 两两之间都可以直接用卫星通讯，最小的 `d` 可取 `0`。
+
+**输入格式**
+
+>   第一行为由空格隔开的两个整数 `n, k`;
+>
+>   接下来 `n` 行，每行两个整数，第 `i` 行的 $x_i, y_i$ 表示第 `i` 座村庄的坐标 $(x_i, y_i)$。
+
+**输出格式**
+
+>   一个实数，表示最小的 `d` 值，结果保留 `2` 位小数。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 500,$
+>   +   $0 ≤ x, y ≤ 10^4,$
+>   +   $0 ≤ k ≤ 100$
+
+**输入样例**
+
+```c++
+3 2
+10 10
+10 0
+30 0
+```
+
+**输出样例**
+
+```c++
+10.00
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 346. 走廊泼水节](https://www.acwing.com/problem/content/348/)
+
+**题目描述**
+
+>   给定一棵 `N` 个节点的树，要求增加若干条边，把这棵树扩充为完全图，并满足图的唯一最小生成树仍然是这棵树。
+>
+>   求增加的边的权值总和最小是多少。
+>
+>   **注意：** 树中的所有边权均为整数，且新加的所有边权也必须为整数。
+
+**输入格式**
+
+>   第一行包含整数 `t`，表示共有 `t` 组测试数据。
+>
+>   对于每组测试数据，第一行包含整数 `N`。
+>
+>   接下来 `N − 1` 行，每行三个整数 `X, Y, Z`，表示 `X` 节点与 `Y` 节点之间存在一条边，长度为 `Z`。
+
+**输出格式**
+
+>   每组数据输出一个整数，表示权值总和最小值。
+>
+>   每个结果占一行。
+
+**数据范围**
+
+>   +   $1 ≤ N ≤ 6000$
+>   +   $1 ≤ Z ≤ 100$
+
+**输入样例**
+
+```c++
+2
+3
+1 2 2
+1 3 3
+4
+1 2 3
+2 3 4
+3 4 5 
+```
+
+**输出样例**
+
+```c++
+4
+17 
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 1148. 秘密的牛奶运输](https://www.acwing.com/problem/content/1150/)
+
+**题目描述**
+
+>   农夫约翰要把他的牛奶运输到各个销售点。
+>
+>   运输过程中，可以先把牛奶运输到一些销售点，再由这些销售点分别运输到其他销售点。
+>
+>   运输的总距离越小，运输的成本也就越低。
+>
+>   低成本的运输是农夫约翰所希望的。
+>
+>   不过，他并不想让他的竞争对手知道他具体的运输方案，所以他希望采用费用第二小的运输方案而不是最小的。
+>
+>   现在请你帮忙找到该运输方案。
+>
+>   **注意：**
+>
+>   -   如果两个方案至少有一条边不同，则我们认为是不同方案；
+>   -   费用第二小的方案在数值上一定要严格大于费用最小的方案；
+>   -   答案保证一定有解；
+
+**输入格式**
+
+>   第一行是两个整数 `N, M`，表示销售点数和交通线路数；
+>
+>   接下来 `M` 行每行 `3` 个整数 `x, y, z`，表示销售点 `x` 和销售点 `y` 之间存在线路，长度为 `z`。
+
+**输出格式**
+
+>   输出费用第二小的运输方案的运输总距离。
+
+**数据范围**
+
+>   +   $1 ≤ N ≤ 500,$
+>   +   $1 ≤ M ≤ 10^4,$
+>   +   $1 ≤ z ≤ 10^9,$
+>   +   $数据中可能包含重边。$
+
+**输入样例**
+
+```c++
+4 4
+1 2 100
+2 4 200
+2 3 250
+3 4 100
+```
+
+**输出样例**
+
+```c++
+450
+```
+
+**手写稿**
+
 
 
 **代码**
@@ -12030,6 +13665,67 @@ Sorted sequence determined after 4 relations: ABCDE.
 
 
 ## 拓扑排序
+
+### [U107394. 拓扑排序模板](https://www.luogu.com.cn/problem/U107394)
+
+**题目描述**
+
+>   有向无环图上有 `n` 个点，`m` 条边。求这张图字典序最小的拓扑排序的结果。字典序最小指希望排好序的结果中，比较靠前的数字尽可能小。
+
+**输入格式**
+
+>   第一行是用空格隔开的两个整数 `n` 和 `m`，表示 `n` 个点和 `m` 条边。
+>
+>   接下来是 `m` 行，每行用空格隔开的两个数 `u` 和 `v`，表示有一条从 `u` 到 `v` 的边。
+
+**输出格式**
+
+>   输出一行，拓扑排序的结果，数字之间用空格隔开
+
+**输入样例**
+
+```c++
+5 3
+1 2
+2 4
+4 3
+```
+
+**输出样例**
+
+```c++
+1 2 4 3 5
+```
+
+**说明/提示**
+
+>   +   $1 \leq n,m \leq 10^5$
+>
+>   +   $注意：图上可能有重边$
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
 
 ### [LeetCode 207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
 
@@ -12384,23 +14080,74 @@ $O(m)$
 
 **手写稿**
 
-
+![4182143](img/4182143.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 510, M = 100010;
+int n1, n2, m, idx;
+int h[N], e[M], ne[M], match[N], st[N];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// st数组保证在每局的匹配中每个姑娘只会被遍历一次
+bool dfs(int u) {
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        // 如果当前姑娘在本局当中还没有被访问过, 则访问
+        if (!st[j]) {
+            // 标记为已经访问过
+            st[j] = true;
+            // 如果没有匹配或者当前姑娘的男朋友可以找到其他的女孩子, 则皆大欢喜
+            if (!match[j] || dfs(match[j])) {
+                match[j] = u;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    memset(h, -1, sizeof h);
+    scanf("%d%d%d", &n1, &n2, &m);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        add(a, b);
+    }
+    int res = 0;
+    for (int i = 1; i <= n1; i ++ ) {
+        // st数组保证在每局的匹配中每个姑娘只会被遍历一次
+        // 每次新开一局都需要重新初始化
+        // 原因: 假设当前男孩A和女孩G不合适, 那你能确定下一个男孩和女孩G不合适??
+        // 凭啥男孩A访问过女孩G之后, 就不让下一个男孩访问了???
+        // 还有王法吗???还有法律吗???
+        memset(st, false, sizeof st);
+        if (dfs(i)) res ++;
+    }
+    cout << res << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n_1m)$
 
 **空间复杂度**
 
-
+$O(m)$
 
 **标签**
 
-
+`匈牙利算法`、`二分图匹配`
 
 **缝合怪**
 
@@ -14429,6 +16176,388 @@ public:
 
 `二叉树`、`dfs`
 
+# 并查集
+
+## [AcWing 836. 合并集合](https://www.acwing.com/problem/content/838/)
+
+**题目描述**
+
+>   一共有 `n` 个数，编号是 `1 ∼ n`，最开始每个数各自在一个集合中。
+>
+>   现在要进行 `m` 个操作，操作共有两种：
+>
+>   1.  `M a b`，将编号为 `a` 和 `b` 的两个数所在的集合合并，如果两个数已经在同一个集合中，则忽略这个操作；
+>   2.  `Q a b`，询问编号为 `a` 和 `b` 的两个数是否在同一个集合中；
+
+**输入格式**
+
+>   第一行输入整数 `n` 和 `m`。
+>
+>   接下来 `m` 行，每行包含一个操作指令，指令为 `M a b` 或 `Q a b` 中的一种。
+
+**输出格式**
+
+>   对于每个询问指令 `Q a b`，都要输出一个结果，如果 `a` 和 `b` 在同一集合内，则输出 `Yes`，否则输出 `No`。
+>
+>   每个结果占一行。
+
+**数据范围**
+
+>   +   $1 ≤ n, m ≤ 10^5$
+
+**输入样例**
+
+```c++
+4 5
+M 1 2
+M 3 4
+Q 1 2
+Q 1 3
+Q 3 4
+```
+
+**输出样例**
+
+```c++
+Yes
+No
+Yes
+```
+
+**手写稿**
+
+>   1.   开始时每个集合都是一个独立的集合,并且都是等于自己本身下标的数
+>   2.   例 `1`:
+>        `p[5] = 5, p[3] = 3;`
+>        如果是 `M` 操作的话那么就将集合进行合并,合并的操作是:
+>        `p[3] = p[5] = 5;`
+>        所以 `3` 的祖宗节点便成为了 `5`
+>        此时以 `5` 为祖宗节点的集合为 `{5，3}`
+>        如果要将 `p[9] = 9` 插入到 `p[3]` 当中,应该找到 `3` 的祖宗节点,
+>        然后再把 `p[9] = 9` 插入其中,所以`p[9] = find(3);`(`find()`函数用于查找祖宗节点)
+>        也可以是`p[find(9)] = find(3)`,因为 `9` 的节点本身就是 `9`
+>        此时以 `5` 为祖宗节点的集合为 `{5, 3, 9};`
+>        如果碰到多个数的集合插入另一个集合当中其原理是相同的
+>   3.   例 `2`:
+>        上述中以 `5` 为祖宗节点的是`p[5], p[3], p[9];`(即`p[5] = 5, p[3] = 5, p[9] = 5`)
+>        再构造一个以 `6` 为祖宗节点的集合为 `{6, 4, 7, 10}`
+>        如果要将以 `6` 为祖宗节点的集合插入到以 `5` 为祖宗节点的集合,则该操作可以是
+>        `p[6] = find(3)`（或者`find(9), find(5)`）
+>        此时`p[6] = 5`
+>        当然如果是以 `6` 为祖宗节点集合中的`4, 7, 10`则可以这样
+>        `p[find(4)] = find(3)`
+>        或者`p[find(7)] = find(3)`均可以
+>        此时以 `6` 为祖宗节点的集合的祖宗节点都成为了 `5`
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n, m;
+int f[N];
+int find(int x) {
+    // 如果已经走到最顶部, 则返回
+    if (f[x] == x) return f[x];
+    // 让x的父亲指向家族中的老不死
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    // 将每个孩子的父亲都是本身
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b;
+        char op[2];
+        scanf("%s%d%d", op, &a, &b);
+        // 找a的父亲, 找b的父亲
+        int fa = find(a), fb = find(b);
+        if (op[0] == 'M') {
+            // 如果都属于同一个家族, 则跳过本次循环
+            if (fa == fb) continue;
+            // 让fa成为fb的父亲
+            f[fb] = fa;
+        }
+        else {
+            // 如果同属于一个家族, 则返回Yes
+            if (fa == fb) puts("Yes");
+            // 否则, 返回No
+            else puts("No");
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`并查集`
+
+**缝合怪**
+
+
+
+## [AcWing 837. 连通块中点的数量](https://www.acwing.com/problem/content/839/)
+
+**题目描述**
+
+>   给定一个包含 `n` 个点（编号为 `1 ∼ n`）的无向图，初始时图中没有边。
+>
+>   现在要进行 `m` 个操作，操作共有三种：
+>
+>   1.  `C a b`，在点 `a` 和点 `b` 之间连一条边，`a` 和 `b` 可能相等；
+>   2.  `Q1 a b`，询问点 `a` 和点 `b` 是否在同一个连通块中，`a` 和 `b` 可能相等；
+>   3.  `Q2 a`，询问点 `a` 所在连通块中点的数量；
+
+**输入格式**
+
+>   第一行输入整数 `n` 和 `m`。
+>
+>   接下来 `m` 行，每行包含一个操作指令，指令为 `C a b`，`Q1 a b` 或 `Q2 a` 中的一种。
+
+**输出格式**
+
+>   对于每个询问指令 `Q1 a b`，如果 `a` 和 `b` 在同一个连通块中，则输出 `Yes`，否则输出 `No`。
+>
+>   对于每个询问指令 `Q2 a`，输出一个整数表示点 `a` 所在连通块中点的数量
+>
+>   每个结果占一行。
+
+**数据范围**
+
+>   +   $1 ≤ n, m ≤ 10^5$
+
+**输入样例**
+
+```c++
+5 5
+C 1 2
+Q1 1 2
+Q2 1
+C 2 5
+Q2 5
+```
+
+**输出样例**
+
+```c++
+Yes
+2
+3
+```
+
+**手写稿**
+
+>   1.   并查集模板
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 100010;
+int n, m;
+int f[N], g[N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    // 初始自己为自己的父亲, 初始集合内数字个数为1
+    for (int i = 1; i <= n; i ++ ) f[i] = i, g[i] = 1;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b;
+        char op[2];
+        scanf("%s", op);
+        if (!strcmp(op, "C")) {
+            scanf("%d%d", &a, &b);
+            // 找到其祖先
+            int fa = find(a), fb = find(b);
+            // 相等, 则返回
+            if (fa == fb) continue;
+            // 将fb的父亲换成fa
+            f[fb] = fa;
+            // 集合内的数字个数进行累加
+            g[fa] += g[fb];
+        }
+        else if (!strcmp(op, "Q1")) {
+            scanf("%d%d", &a, &b);
+            // 找到其祖先
+            int fa = find(a), fb = find(b);
+            // 相等, 说明是一个大家族, 返回Yes, 否则返回No
+            if (fa == fb) puts("Yes");
+            else puts("No");
+        }
+        else {
+            scanf("%d", &a);
+            // 找到其祖先, 返回大家族内的人数
+            int fa = find(a);
+            cout << g[fa] << endl;
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(m)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`并查集`
+
+**缝合怪**
+
+
+
+## [AcWing 240. 食物链](https://www.acwing.com/problem/content/242/)
+
+**题目描述**
+
+>   动物王国中有三类动物 `A,B,C`，这三类动物的食物链构成了有趣的环形。
+>
+>   `A` 吃 `B`，`B` 吃 `C`，`C` 吃 `A`。
+>
+>   现有 `N` 个动物，以 `1 ∼ N` 编号。
+>
+>   每个动物都是 `A,B,C` 中的一种，但是我们并不知道它到底是哪一种。
+>
+>   有人用两种说法对这 `N` 个动物所构成的食物链关系进行描述：
+>
+>   第一种说法是 `1 X Y`，表示 `X` 和 `Y` 是同类。
+>
+>   第二种说法是 `2 X Y`，表示 `X` 吃 `Y`。
+>
+>   此人对 `N` 个动物，用上述两种说法，一句接一句地说出 `K` 句话，这 `K` 句话有的是真的，有的是假的。
+>
+>   当一句话满足下列三条之一时，这句话就是假话，否则就是真话。
+>
+>   1.  当前的话与前面的某些真的话冲突，就是假话；
+>   2.  当前的话中 `X` 或 `Y` 比 `N` 大，就是假话；
+>   3.  当前的话表示 `X` 吃 `X`，就是假话。
+>
+>   你的任务是根据给定的 `N` 和 `K` 句话，输出假话的总数。
+
+**输入格式**
+
+>   第一行是两个整数 `N` 和 `K`，以一个空格分隔。
+>
+>   以下 `K` 行每行是三个正整数 `D，X，Y`，两数之间用一个空格隔开，其中 `D` 表示说法的种类。
+>
+>   若 `D=1`，则表示 `X` 和 `Y` 是同类。
+>
+>   若 `D=2`，则表示 `X` 吃 `Y`。
+
+**输出格式**
+
+>   只有一个整数，表示假话的数目。
+
+**数据范围**
+
+>   +   $1 ≤ N ≤ 50000,$
+>   +   $0 ≤ K ≤ 100000$
+
+**输入样例**
+
+```c++
+100 7
+1 101 1
+2 1 2
+2 2 3
+2 3 3
+1 1 3
+2 3 1
+1 5 5
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+![4222147](img/4222147.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 50010;
+int n, k;
+int f[N], dist[N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    int p = find(f[x]);
+    dist[x] += dist[f[x]];
+    return f[x] = p;
+}
+int main() {
+    scanf("%d%d", &n, &k);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    int res = 0;
+    for (int i = 0; i < k; i ++ ) {
+        int c, a, b;
+        scanf("%d%d%d", &c, &a, &b);
+        if (a > n || b > n) {
+            res ++ ;
+            continue;
+        }
+        int fa = find(a), fb = find(b);
+        if (c == 1) {
+            if (fa != fb) { // 不在一个集合内, 说明无矛盾!!
+                f[fb] = fa; // 更新父节点
+                dist[fb] = dist[a] - dist[b]; // 更新距离[距离含义看手写稿]
+            }
+            else if (fa == fb && (dist[a] - dist[b]) % 3) res ++;
+        }
+        else {
+            if (fa != fb) { // 不在一个集合内, 说明无矛盾!!
+                f[fb] = fa; // 更新父节点
+                dist[fb] = dist[a] + 1 - dist[b]; // 更新距离[距离含义看手写稿]
+            }
+            else if(fa == fb && (dist[a] + 1 - dist[b]) % 3) res ++;
+        }
+    }
+    cout << res << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(k)$
+
+**空间复杂度**
+
+$(n)$
+
+**标签**
+
+`带权并查集`、`并查集`
+
+**缝合怪**
+
+
+
 # 字符串专题
 
 ## KMP
@@ -15080,6 +17209,162 @@ $O(n), n表示单词的总长度$
 **标签**
 
 `模拟`、`字符串`
+
+**缝合怪**
+
+
+
+## 阅读理解题
+
+### [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
+
+**题目描述**
+
+> 给你一个整数数组 `citations` ，其中 `citations[i]` 表示研究者的第 `i` 篇论文被引用的次数，`citations` 已经按照 升序排列 。计算并返回该研究者的 `h` 指数。
+>
+> `h` 指数的定义：`h` 代表“高引用次数”（`high citations`），一名科研人员的 `h` 指数是指他（她）的 （`n` 篇论文中）总共有 `h` 篇论文分别被引用了至少 `h` 次。且其余的 `n - h` 篇论文每篇被引用次数 不超过 `h` 次。
+>
+> 提示：如果 `h` 有多种可能的值，h 指数 是其中最大的那个。
+>
+> 请你设计并实现对数时间复杂度的算法解决此问题。
+
+**示例 1**
+
+> 输入：`citations = [0,1,3,5,6]`
+> 输出：`3`
+> 解释：给定数组表示研究者总共有 `5` 篇论文，每篇论文相应的被引用了 `0, 1, 3, 5, 6` 次。
+> 由于研究者有 `3` 篇论文每篇 至少 被引用了 `3` 次，其余两篇论文每篇被引用 不多于 `3` 次，所以她的 `h` 指数是 `3` 。
+
+**示例 2**
+
+> 输入：`citations = [1,2,100]`
+> 输出：`2`
+
+**提示**
+
+> + $n == citations.length$
+> + $1 <= n <= 10^5$
+> + $0 <= citations[i] <= 1000$
+> + $citations 按 升序排列$
+
+**分析**
+
+> 1. 将数组从大到小排序，然后从前往后一次枚举每一个数字，如果当前数字 `g[i] >= n - i`，则找到答案
+> 2. 本题中由于按照从小到大排序的，所以做的时候需要进行坐标变换 `g[n - mid]` 表示的是从大到小的第 `mid` 个数字
+> 3. 本题中二分的是答案也就是 `H` 的值，最小是 `0`，最大是 `n`
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int hIndex(vector<int>& g) {
+        int n = g.size(), l = 0, r = n;
+        while (l < r) {
+            int mid = l + r + 1 >> 1;
+            if (g[n - mid] >= mid) l = mid;
+            else r = mid - 1;
+        }
+        return l;
+    }
+};
+```
+
+**标签**
+
+`阅读理解`
+
+### [LeetCode 393. UTF-8 编码验证](https://leetcode-cn.com/problems/utf-8-validation/)
+
+**题目描述**
+
+>   给定一个表示数据的整数数组 `data` ，返回它是否为有效的 `UTF-8` 编码。
+>
+>   `UTF-8` 中的一个字符可能的长度为 `1` 到 `4` 字节，遵循以下的规则：
+>
+>   +   对于 `1` 字节 的字符，字节的第一位设为 `0` ，后面 `7` 位为这个符号的 `unicode` 码。
+>   +   对于 `n` 字节 的字符 (`n > 1`)，第一个字节的前 `n` 位都设为`1`，第 `n + 1` 位设为 `0` ，后面字节的前两位一律设为 `10` 。剩下的没有提及的二进制位，全部为这个符号的 `unicode` 码。
+>
+>   这是 `UTF-8` 编码的工作方式：
+>
+>   ```c++
+>      Char. number range  |        UTF-8 octet sequence
+>         (hexadecimal)    |              (binary)
+>      --------------------+---------------------------------------------
+>      0000 0000-0000 007F | 0xxxxxxx
+>      0000 0080-0000 07FF | 110xxxxx 10xxxxxx
+>      0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+>      0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+>   ```
+>
+>
+>   注意：输入是整数数组。只有每个整数的 最低 `8` 个有效位 用来存储数据。这意味着每个整数只表示 `1` 字节的数据。
+
+**示例 1**
+
+>   输入：`data = [197,130,1]`
+>   输出：`true`
+>   解释：数据表示字节序列:`11000101 10000010 00000001`。
+>   这是有效的 `utf-8` 编码，为一个 `2` 字节字符，跟着一个 `1` 字节字符。
+
+**示例 2**
+
+>   输入：`data = [235,140,4]`
+>   输出：`false`
+>   解释：数据表示 `8` 位的序列: `11101011 10001100 00000100`.
+>   前 `3` 位都是 `1` ，第 `4` 位为 `0` 表示它是一个 `3` 字节字符。
+>   下一个字节是开头为 `10` 的延续字节，这是正确的。
+>   但第二个延续字节不以 `10` 开头，所以是不符合规则的。
+
+**提示**
+
+>   +   $1 <= data.length <= 2 * 10^4$
+>   +   $0 <= data[i] <= 255$
+
+**手写稿**
+
+![4241610](img/4241610.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int get(int x, int k) {
+        return x >> k & 1;
+    }
+    bool validUtf8(vector<int>& data) {
+        for (int i = 0; i < data.size(); i ++ ) {
+            // 如果是一个字节, 则跳过
+            if (!get(data[i], 7)) continue;
+            int k = 0;
+            // 查看当前字符占据的字节数
+            while (k <= 4 && get(data[i], 7 - k)) k ++ ;
+            if (k < 2 || k > 4) return false;
+           	// 查看之后的k个字节[包括当前位置]
+            for (int j = 1; j < k; j ++ )
+                // 不能越界
+                if (i + j < data.size() && get(data[i + j], 7) && !get(data[i + j], 6))
+                    continue;
+                else return false;
+            i += k - 1;
+        }
+        return true;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`阅读理解题`
 
 **缝合怪**
 
@@ -20245,7 +22530,9 @@ public:
 
 # 位运算
 
-## [LeetCode 260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
+## 普通位运算
+
+### [LeetCode 260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
 
 **题目描述**
 
@@ -20305,7 +22592,7 @@ public:
 
 `位运算`
 
-## [LeetCode 338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
+### [LeetCode 338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
 
 **题目描述**
 
@@ -20393,7 +22680,7 @@ public:
 
 ` 动态规划`、`位运算`
 
-## [AcWing 318. 最大单词长度乘积](https://leetcode-cn.com/problems/maximum-product-of-word-lengths/)
+### [AcWing 318. 最大单词长度乘积](https://leetcode-cn.com/problems/maximum-product-of-word-lengths/)
 
 **题目描述**
 
@@ -20455,7 +22742,7 @@ public:
 
 `位运算`
 
-## [LeetCode 371. 两整数之和](https://leetcode-cn.com/problems/sum-of-two-integers/)
+### [LeetCode 371. 两整数之和](https://leetcode-cn.com/problems/sum-of-two-integers/)
 
 **题目描述**
 
@@ -20496,7 +22783,7 @@ public:
 
 `位运算`
 
-## [LeetCode 29. 两数相除](https://leetcode-cn.com/problems/divide-two-integers/)
+### [LeetCode 29. 两数相除](https://leetcode-cn.com/problems/divide-two-integers/)
 
 **题目描述**
 
@@ -20577,6 +22864,328 @@ $O(log_n)$
 **标签**
 
 `位运算`
+
+**缝合怪**
+
+
+
+## 快速幂
+
+### 整数快速幂
+
+#### [AcWing 875. 快速幂](https://www.acwing.com/problem/content/877/)
+
+**题目描述**
+
+>   给定 `n` 组 $a_i, b_i, p_i$，对于每组数据，求出 $a_i^{b_i} mod p_i$ 的值。
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含三个整数 $a_i, b_i, p_i$。
+
+**输出格式**
+
+>   对于每组数据，输出一个结果，表示 $a_i^{b_i} mod p_i$ 的值。
+>
+>   每个结果占一行。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 100000,$
+>   +   $1 ≤ a_i, b_i, p_i ≤ 2 × 10^9$
+
+**输入样例**
+
+```c++
+2
+3 2 5
+4 3 9
+```
+
+**输出样例**
+
+```c++
+4
+1
+```
+
+**手写稿**
+
+>   1.   模板题
+
+**代码**
+
+```c++
+
+#include <iostream>
+using namespace std;
+typedef long long LL;
+int n;
+int qmi(int a, int b, int p) {
+    int res = 1;
+    while (b) {
+        // 转成long long类型, 乘积可能会爆int类型
+        if (b & 1) res = (LL)res * a % p;
+        // 转成long long类型, 乘积可能会爆int类型
+        a = (LL)a * a % p;
+        b >>= 1;
+    }
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ ) {
+        int a, b, p;
+        scanf("%d%d%d", &a, &b, &p);
+        cout << qmi(a, b, p) << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_b)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`快速幂`
+
+**缝合怪**
+
+
+
+### 矩阵快速幂
+
+#### [T103763 【模板】矩阵乘法](https://www.luogu.com.cn/problem/T103763)
+
+**题目描述**
+
+>   给定两个矩阵`a、b`，求矩阵`c = a * b`。
+
+**输入格式**
+
+>   $x_1, y_1, x_2, y_2$分别为矩阵 `1` 和矩阵 `2` 的列数和行数。
+>
+>   第 `1` 行：$x_1 y_1 x_2 y_2$
+>
+>   第 $2 \sim 2 + y_1$ 行：矩阵`1`
+>
+>   第 $3 + y_1 \sim 3 + y_1 + y_2$ 行：矩阵`2`
+>
+>   （数据保证$x_1 = y_2$）
+
+**输出格式**
+
+>   共 $x_1$ 行，每行输出矩阵 `c` 在该行的每个值
+
+**输入样例1**
+
+```c++
+2 2 2 2
+2 2
+2 2
+2 2
+2 2
+```
+
+**输出样例1**
+
+```c++
+8 8
+8 8
+```
+
+**输入样例2**
+
+```c++
+2 2 2 2
+1 2
+3 1
+2 5
+1 7
+```
+
+**输出样例2**
+
+```c++
+4 19
+7 22
+```
+
+**说明/提示**
+
+>   $对于 100\% 的数据，1 <= x_1, y_1, x_2, y_2 <= 100，1 <= 矩阵a, b中的每个值 <= 100$
+
+**手写稿**
+
+![4201432](img/4201432.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int x1, y1, x2, y2;
+int a[N][N], b[N][N], res[N][N];
+int main() {
+    // 小小的注意点: 先输入列数, 再输入行数
+    scanf("%d%d%d%d", &y1, &x1, &y2, &x2);
+    for (int i = 0; i < x1; i ++ )
+        for (int j = 0; j < y1; j ++ )
+            scanf("%d", &a[i][j]);
+    for (int i = 0; i < x2; i ++ )
+        for (int j = 0; j < y2; j ++ )
+            scanf("%d", &b[i][j]);
+    // 枚举列
+    for (int k = 0; k < x2; k ++ )
+        // 枚举横坐标
+        for (int i = 0; i < x1; i ++ )
+            // 枚举纵坐标
+            for (int j = 0; j < y2; j ++ )
+                res[i][j] += a[i][k] * b[k][j];
+    for (int i = 0; i < x1; i ++ ) {
+        for (int j = 0; j < y2; j ++ )
+            cout << res[i][j] << " ";
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(x_1x_2y_2)$
+
+**空间复杂度**
+
+$O(max(x_1 * y_1, x_2 * y_ 2))$
+
+**标签**
+
+`矩阵乘法`
+
+**缝合怪**
+
+
+
+#### [P3390 【模板】矩阵快速幂](https://www.luogu.com.cn/problem/P3390)
+
+**题目描述**
+
+>   给定 $n\times n$ 的矩阵 `A`，求 $A^k$。
+
+**输入格式**
+
+>   第一行两个整数 `n, k` 接下来 `n` 行，每行 `n` 个整数，第 `i` 行的第 `j` 的数表示 $A_{i,j}$。
+
+**输出格式**
+
+>   输出$ A^k$
+>
+>   共 `n` 行，每行 `n` 个数，第 `i` 行第 `j` 个数表示 $(A^k)_{i,j}$，每个元素对 $10^9 + 7$ 取模。
+
+**输入样例**
+
+```c++
+2 1
+1 1
+1 1
+```
+
+**输出样例**
+
+```c++
+1 1
+1 1
+```
+
+**说明/提示**
+
+>   【数据范围】
+>   对于 $100\%$ 的数据：$1\le n \le 100，0 \le k \le 10^{12}, |A_{i,j}| \le 1000$
+
+**手写稿**
+
+>   1.   矩阵中的单位 `“1”` 被称作单位矩阵
+>
+>   2.   `4` 阶单位矩阵, 主对角线为 `1`, 其他为 `0`
+>        $$
+>        A=\begin{bmatrix}
+>        1 & 0 & 0 & 0 \\
+>        0 & 1 & 0 & 0 \\
+>        0 & 0 & 1 & 0 \\
+>        0 & 0 & 0 & 1 \\
+>        \end{bmatrix}_{4 \times 4}
+>        $$
+>        
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+typedef long long LL;
+const int N = 100, mod = 1e9 + 7;
+LL n, k;
+LL g[N][N], res[N][N];
+void mul(LL c[][N], LL a[][N], LL b[][N]) {
+    static LL tmp[N][N];
+    // 初始化为0
+    memset(tmp, 0, sizeof tmp);
+    for (int k = 0; k < n; k ++ )
+        for (int i = 0; i < n; i ++ )
+            for (int j = 0; j < n; j ++ )
+                // 不可写成 +=
+                tmp[i][j] = (tmp[i][j] + (a[i][k] * b[k][j] % mod)) % mod;
+    memcpy(c, tmp, sizeof tmp);
+    return;
+}
+void qmi() {
+    // 初始化为单位矩阵
+    for (int i = 0; i < n; i ++ ) res[i][i] = 1;
+    while (k) {
+        if (k & 1) mul(res, res, g);
+        mul(g, g, g);
+        k >>= 1;
+    }
+    return;
+}
+int main() {
+    // 注意: 使用long long类型
+    scanf("%lld%lld", &n, &k);
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < n; j ++ )
+            scanf("%lld", &g[i][j]);
+    qmi();
+    for (int i = 0; i < n; i ++ ) {
+        for (int j = 0; j < n; j ++ )
+            cout << res[i][j] << " ";
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n^2logk)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`矩阵快速幂`
 
 **缝合怪**
 
@@ -21991,66 +24600,6 @@ $O(n), n是节点的个数$
 **缝合怪**
 
 [SDUT 2054. 双向链表](#SDUT 2054. 双向链表)
-
-# 阅读理解题
-
-## [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
-
-**题目描述**
-
-> 给你一个整数数组 `citations` ，其中 `citations[i]` 表示研究者的第 `i` 篇论文被引用的次数，`citations` 已经按照 升序排列 。计算并返回该研究者的 `h` 指数。
->
-> `h` 指数的定义：`h` 代表“高引用次数”（`high citations`），一名科研人员的 `h` 指数是指他（她）的 （`n` 篇论文中）总共有 `h` 篇论文分别被引用了至少 `h` 次。且其余的 `n - h` 篇论文每篇被引用次数 不超过 `h` 次。
->
-> 提示：如果 `h` 有多种可能的值，h 指数 是其中最大的那个。
->
-> 请你设计并实现对数时间复杂度的算法解决此问题。
-
-**示例 1**
-
-> 输入：`citations = [0,1,3,5,6]`
-> 输出：`3`
-> 解释：给定数组表示研究者总共有 `5` 篇论文，每篇论文相应的被引用了 `0, 1, 3, 5, 6` 次。
-> 由于研究者有 `3` 篇论文每篇 至少 被引用了 `3` 次，其余两篇论文每篇被引用 不多于 `3` 次，所以她的 `h` 指数是 `3` 。
-
-**示例 2**
-
-> 输入：`citations = [1,2,100]`
-> 输出：`2`
-
-**提示**
-
-> + $n == citations.length$
-> + $1 <= n <= 10^5$
-> + $0 <= citations[i] <= 1000$
-> + $citations 按 升序排列$
-
-**分析**
-
-> 1. 将数组从大到小排序，然后从前往后一次枚举每一个数字，如果当前数字 `g[i] >= n - i`，则找到答案
-> 2. 本题中由于按照从小到大排序的，所以做的时候需要进行坐标变换 `g[n - mid]` 表示的是从大到小的第 `mid` 个数字
-> 3. 本题中二分的是答案也就是 `H` 的值，最小是 `0`，最大是 `n`
-
-**代码**
-
-```c++
-class Solution {
-public:
-    int hIndex(vector<int>& g) {
-        int n = g.size(), l = 0, r = n;
-        while (l < r) {
-            int mid = l + r + 1 >> 1;
-            if (g[n - mid] >= mid) l = mid;
-            else r = mid - 1;
-        }
-        return l;
-    }
-};
-```
-
-**标签**
-
-`阅读理解`
 
 ## end
 
