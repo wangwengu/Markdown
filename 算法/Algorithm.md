@@ -1501,6 +1501,157 @@ $O(n)$
 
 **缝合怪**
 
+
+
+### [PTA L2-038 病毒溯源](https://pintia.cn/problem-sets/994805046380707840/problems/1386335159927652361)
+
+**题目描述**
+
+>   ![V.JPG](img/19836809-3b79-48c6-91d0-e7ff8501b708.jpeg)
+>
+>   病毒容易发生变异。某种病毒可以通过突变产生若干变异的毒株，而这些变异的病毒又可能被诱发突变产生第二代变异，如此继续不断变化。
+>
+>   现给定一些病毒之间的变异关系，要求你找出其中最长的一条变异链。
+>
+>   在此假设给出的变异都是由突变引起的，不考虑复杂的基因重组变异问题 —— 即每一种病毒都是由唯一的一种病毒突变而来，并且不存在循环变异的情况。
+
+**输入格式**
+
+>   输入在第一行中给出一个正整数 `N`（$≤ 10^4$），即病毒种类的总数。于是我们将所有病毒从 `0` 到 `N − 1` 进行编号。
+>
+>   随后 `N` 行，每行按以下格式描述一种病毒的变异情况：
+>
+>   ```c++
+>   k 变异株1 …… 变异株k
+>   ```
+>
+>   其中 `k` 是该病毒产生的变异毒株的种类数，后面跟着每种变异株的编号。第 `i` 行对应编号为 `i` 的病毒（`0 ≤ i < N`）。题目保证病毒源头有且仅有一个。
+
+**输出格式**
+
+>   首先输出从源头开始最长变异链的长度。
+>
+>   在第二行中输出从源头开始最长的一条变异链，编号间以 `1` 个空格分隔，行首尾不得有多余空格。如果最长链不唯一，则输出最小序列。
+>
+>   注：我们称序列 ${a_1, ⋯ ,a_n }$ 比序列 ${b_1, ⋯ ,b_n}$ “小”，如果存在 `1 ≤ k ≤ n` 满足 $a_i=b_i$ 对所有 `i < k` 成立，且 $a_k < b_k$。
+
+**输入样例**
+
+```c++
+10
+3 6 4 8
+0
+0
+0
+2 5 9
+0
+1 7
+1 2
+0
+2 3 1
+```
+
+**输出样例**
+
+```c++
+4
+0 4 9 1
+```
+
+**手写稿**
+
+![511408](img/511408.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+const int N = 1e4 + 10;
+int n, idx, cnt;
+int h[N], e[N], ne[N], st[N], f[N], path[N], g[N];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+int dp(int u) {
+    // 每个节点高度都为1
+    f[u] = 1;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        int d = dp(j);
+        // 取最大值
+        f[u] = max(f[u], d + 1);
+    }
+    return f[u];
+}
+void dfs(int u) {
+    path[cnt ++ ] = u;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        // 找到条件的话, 遍历结束之后, 直接返回即可
+        // 原因: 当前一定就是字典序最小的且最长的
+        if (f[j] + 1 == f[u]) {
+            dfs(j);
+            return;
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < n; i ++ ) {
+        int k;
+        scanf("%d", &k);
+        for (int j = 0, x; j < k; j ++ ) scanf("%d", &g[j]);
+        // 从大到小进行排序
+        sort(g, g + k, [&](int a, int b) {
+            return a > b;
+        });
+        for (int j = 0; j < k; j ++ ) {
+            add(i, g[j]);
+            st[g[j]] = true;
+        }
+    }
+    // 寻找根节点
+    int rt;
+    for (int i = 0; i < n; i ++ )
+        if (!st[i]) {
+            rt = i;
+            break;
+        }
+    cout << dp(rt) << endl;
+    dfs(rt);
+    // 注意: 控制格式
+    for (int i = 0; i < cnt; i ++ ) {
+        if (!i) cout << path[i];
+        else cout << " " << path[i];
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nk)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`树形DP`、`路径输出`
+
+**缝合怪**
+
+
+
 ## 状态压缩 `DP`
 
 ### [Acwing 1064. 小国王](https://www.acwing.com/problem/content/1066/)
@@ -4616,6 +4767,8 @@ $O(n^2)$
 
 **缝合怪**
 
+
+
 ### 多源 `BFS` 模型
 
 #### [AcWing 173. 矩阵距离](https://www.acwing.com/problem/content/175/)
@@ -6595,23 +6748,102 @@ $O(n)$
 
 **手写稿**
 
+![4252109](img/4252109.png)
 
+**代码一: 栈**
 
-**代码**
-
-
+```c++
+class Solution {
+public:
+    string decodeString(string s) {
+        stack<int> num;
+        stack<string> str;
+        int multi = 0;
+        string res = "";
+        for (int i = 0; i < s.size(); i ++ ) {
+            if (s[i] >= 'a' && s[i] <= 'z' || s[i] >= 'A' && s[i] <= 'Z') res += s[i];
+            else if (s[i] >= '0' && s[i] <= '9') multi = multi * 10 + s[i] - '0';
+            else if (s[i] == '[') {
+                num.push(multi);
+                multi = 0;
+                str.push(res);
+                res = "";
+            }
+            else {
+                // 取出倍数
+                multi = num.top(); num.pop();
+                while (multi -- ) str.top() += res;
+                // 注意: 此时的multi的值为-1, 需要将其重置为0, 或者直接使用另一个变量k即可
+                multi = 0;
+                res = str.top();
+                str.pop();
+            }
+        }
+        return res;
+    }
+};
+```
 
 **时间复杂度**
 
-
+$O(nm), n是字符串的长度, m是重复的数量的最大值$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
+`栈`
 
+**代码二: 递归**
+
+```c++
+class Solution {
+public:
+    string dfs(string &s, int &u) {
+        string res = "";
+        int multi = 0;
+        while (u < s.size()) {
+            if (s[u] >= 'a' && s[u] <= 'z' || s[u] >= 'A' && s[u] <= 'Z')
+                res += s[u ++ ];
+            else if (s[u] >= '0' && s[u] <= '9') multi = multi * 10 + s[u ++ ] - '0';
+            else if (s[u] == '[') {
+                // 记录上一层的字符串
+                string tmp = dfs(s, ++ u);
+                // 倍增multi次
+                while (multi -- ) res += tmp;
+                // 注意: 此时的multi的值为-1
+                // 重置multi为0, 开始记录当前层的下一个字符串倍增的次数
+                multi = 0;
+            }
+            else {
+                // 跳过']'
+                u ++;
+                // 返回res
+                return res;
+            }
+        }
+        return res;
+    }
+    string decodeString(string s) {
+        int u = 0;
+        return dfs(s, u);
+    }
+};
+```
+
+**时间复杂度**
+
+$O(nm), n是字符串的长度, m是重复的数量的最大值$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`DFS`、`深度优先搜索`
 
 **缝合怪**
 
@@ -12012,7 +12244,160 @@ $O(n^3)$
 
 **标签**
 
-`Floyd`
+`Floyd`、`传递闭包`
+
+**缝合怪**
+
+
+
+### [PTA L2-010 排座位](https://pintia.cn/problem-sets/994805046380707840/problems/994805066135879680)
+
+**题目描述**
+
+>   布置宴席最微妙的事情，就是给前来参宴的各位宾客安排座位。无论如何，总不能把两个死对头排到同一张宴会桌旁！这个艰巨任务现在就交给你，对任何一对客人，请编写程序告诉主人他们是否能被安排同席。
+
+**输入格式**
+
+>   输入第一行给出3个正整数：`N`（`≤100`），即前来参宴的宾客总人数，则这些人从`1`到`N`编号；`M`为已知两两宾客之间的关系数；`K`为查询的条数。随后`M`行，每行给出一对宾客之间的关系，格式为：`宾客1 宾客2 关系`，其中`关系`为`1`表示是朋友，`-1`表示是死对头。注意两个人不可能既是朋友又是敌人。最后`K`行，每行给出一对需要查询的宾客编号。
+>
+>   这里假设朋友的朋友也是朋友。但敌人的敌人并不一定就是朋友，朋友的敌人也不一定是敌人。只有单纯直接的敌对关系才是绝对不能同席的。
+
+**输出格式**
+
+>   对每个查询输出一行结果：如果两位宾客之间是朋友，且没有敌对关系，则输出`No problem`；如果他们之间并不是朋友，但也不敌对，则输出`OK`；如果他们之间有敌对，然而也有共同的朋友，则输出`OK but...`；如果他们之间只有敌对关系，则输出`No way`。
+
+**输入样例**
+
+```c++
+7 8 4
+5 6 1
+2 7 -1
+1 3 1
+3 4 1
+6 7 -1
+1 2 1
+1 4 1
+2 3 -1
+3 4
+5 7
+2 3
+7 2
+```
+
+**输出样例**
+
+```c++
+No problem
+OK
+OK but...
+No way
+```
+
+**手写稿**
+
+![4281609](img/4281609.png)
+
+**代码一:传递闭包**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n, m, k;
+int friends[N][N], enemy[N][N];
+void floyd() {
+    for (int k = 1; k <= n; k ++ )
+        for (int i = 1; i <= n; i ++ )
+            for (int j = 1; j <= n; j ++ )
+                // |= 不是 =
+                // 如果i和j已经是朋友, 则不管i和k已经k和j是否是朋友
+                // 都不能影响i和j已经是朋友这件事实, 故使用 |= 而不是 =
+                friends[i][j] |= friends[i][k] && friends[k][j];
+    return;
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &k);
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        // 朋友的朋友还是朋友
+        if (c == 1) friends[a][b] = friends[b][a] = 1;
+        else enemy[a][b] = enemy[b][a] = 1;
+    }
+    floyd();
+    while (k -- ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        if (friends[a][b] && !enemy[a][b]) puts("No problem");
+        else if (!friends[a][b] && !enemy[a][b]) puts("OK");
+        else if (friends[a][b] && enemy[a][b]) puts("OK but...");
+        else if (!friends[a][b] && enemy[a][b]) puts("No way");
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n ^ 3)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**代码二: 并查集**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n, m, k;
+int f[N];
+int enemy[N][N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &k);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        // 朋友的朋友还是朋友
+        if (c == 1) {
+            int fa = find(a);
+            int fb = find(b);
+            if (fa == fb) continue;
+            f[fb] = fa;
+        }
+        else enemy[a][b] = enemy[b][a] = 1;
+    }
+    while (k -- ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        int fa = find(a);
+        int fb = find(b);
+        if (fa == fb && !enemy[a][b]) puts("No problem");
+        else if (fa != fb && !enemy[a][b]) puts("OK");
+        else if (fa == fb && enemy[a][b]) puts("OK but...");
+        else if (fa != fb && enemy[a][b]) puts("No way");
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`并查集`、`传递闭包`
 
 **缝合怪**
 
@@ -12108,7 +12493,7 @@ Inconsistency found after 6 relations.
 A<B
 B<C
 C<D
-D<Ec
+D<E
 E<A
 0 0
 ```
@@ -12121,7 +12506,13 @@ Sorted sequence determined after 4 relations: ABCDE.
 
 **手写稿**
 
-![4181728](img/4181728.png)
+>   1.   原始手写稿
+>
+>        ![4181728](img/4181728.png)
+>
+>   2.   补充说明
+>
+>        ![4272041](img/4272041.png)
 
 **代码**
 
@@ -12131,69 +12522,70 @@ Sorted sequence determined after 4 relations: ABCDE.
 using namespace std;
 const int N = 30;
 int n, m;
-int g[N][N], dist[N][N], st[N];
+int st[N];
+int g[N][N];
 void floyd() {
-    memcpy(dist, g, sizeof g);
     for (int k = 0; k < n; k ++ )
         for (int i = 0; i < n; i ++ )
             for (int j = 0; j < n; j ++ )
-                // |=不是=
-                dist[i][j] |= dist[i][k] && dist[k][j];
+                g[i][j] |= g[i][k] && g[k][j];
     return;
 }
 int check() {
     for (int i = 0; i < n; i ++ )
-        // 判断是否有矛盾, 即第2种情况
-        if (dist[i][i]) return 2;
+        if (g[i][i]) return 2;
     for (int i = 0; i < n; i ++ )
-        for (int j = 0; j < i; j ++ )
-            // 判断第3种情况
-            if (!dist[i][j] && !dist[j][i]) return 0;
-    // 判断第1种情况
+        for (int j = i + 1; j < n; j ++ )
+            // 注意: 手写稿说明
+            if (!g[i][j] && !g[j][i]) return 3;
     return 1;
-}
-int get_min() {
-    for (int i = 0; i < n; i ++ ) {
-        if (!st[i]) {
-            int flag = true;
-            for (int j = 0; j < n; j ++ )
-                // 判断j和i之间是否有一条边, 而不是判断i和j之间是否有一条边
-                if (!st[j] && dist[j][i]) {
-                    flag = false;
-                    break;
-                }
-            if (flag) {
-                st[i] = true;
-                return 'A' + i;
-            }
-        }
-    }
-    return 0;
 }
 int main() {
     while (~scanf("%d%d", &n, &m), n || m) {
         memset(g, 0, sizeof g);
-        memset(dist, 0, sizeof dist);
-        memset(st, 0, sizeof st);
-        int tms = 0, type = 0;
+        char str[5];
+        int tms, t = 3;
         for (int i = 1; i <= m; i ++ ) {
-            char str[5];
             scanf("%s", str);
-            int a = str[0] - 'A', b = str[2] - 'A';
-            g[a][b] = 1;
-            if (!type) { // 如果不能确定关系, 则确定关系
+            int a = str[0] - 'A';
+            int b = str[2] - 'A';
+            // 第三种情况, 也就是不确定的时候, 才继续连边
+            // 第一、二种情况, 也就是说已经得出结论了, 则直接跳过, 不需要连边, 也不需要进行判断
+            if (t == 3) {
+                g[a][b] = 1;
                 floyd();
-                type = check();
+                int k = check();
+                t = k;
                 tms = i;
             }
         }
-        if (!type) printf("Sorted sequence cannot be determined.\n");
-        else if (type == 1) {
+        if (t == 1) {
             printf("Sorted sequence determined after %d relations: ", tms);
-            for (int i = 0; i < n; i ++ ) printf("%c", get_min());
+            memset(st, false, sizeof st);
+         	// 找到n个点, 故循环n次
+            for (int k = 0; k < n; k ++ )
+                // 遍历每一列
+                for (int j = 0; j < n; j ++ ) {
+                    if (st[j]) continue;
+                    int flag = true;
+                    // 遍历每一行
+                    for (int i = 0; i < n; i ++ ) {
+                        if (st[i]) continue;
+                        if (g[i][j]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        st[j] = true;
+                        printf("%c", j + 'A');
+                        break;
+                    }
+                }
             puts(".");
         }
-        else printf("Inconsistency found after %d relations.\n", tms);
+        else if (t == 2) printf("Inconsistency found after %d relations.\n", tms);
+        else printf("Sorted sequence cannot be determined.\n");
     }
     return 0;
 }
@@ -13490,23 +13882,80 @@ $O(n^2)$
 
 **手写稿**
 
-
+![4251129](img/4251129.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 510, M = N * N / 2;
+struct Edge {
+    int u, v;
+    // 距离是 double 类型
+    double w;
+    bool operator < (const Edge& W) const {
+        return w < W.w;
+    }
+}edges[M];
+int n, m, k;
+int f[N];
+PII g[N];
+double get_dist(PII a, PII b) {
+    int dx = a.x - b.x;
+    int dy = a.y - b.y;
+    return sqrt(dx * dx + dy * dy);
+}
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d%d", &n, &k);
+    for (int i = 0; i < n; i ++ ) f[i] = i;
+    for (int i = 0; i < n; i ++ )
+        scanf("%d%d", &g[i].x, &g[i].y);
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < i; j ++ )
+            edges[m ++ ] = {i, j, get_dist(g[i], g[j])};
+    sort(edges, edges + m);
+    // 一开始所有点各自为政, 故, 连通块的数量为n
+    int cnt = n;
+    double res = 0;
+    for (int i = 0; i < m; i ++ ) {
+        if (cnt <= k) break;
+        int a = edges[i].u;
+        int b = edges[i].v;
+        double c = edges[i].w;
+        int fa = find(a);
+        int fb = find(b);
+        if (fa == fb) continue;
+        // 每次加入一条边, 说明连通块的数量 --
+        f[fb] = fa;
+        cnt --;
+        res = c;
+    }
+    printf("%.2lf\n", res);
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(m)$
 
 **空间复杂度**
 
-
+$O(m)$
 
 **标签**
 
-
+`最小生成树`、`Kruskal`
 
 **缝合怪**
 
@@ -13563,23 +14012,69 @@ $O(n^2)$
 
 **手写稿**
 
-
+![4271312](img/4271312.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int N = 6010;
+struct Edge {
+    int u, v, w;
+    bool operator < (const Edge &W) const {
+        return w < W.w;
+    }
+}edges[N];
+int n, T;
+int f[N], cnt[N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+int main() {
+    scanf("%d", &T);
+    while (T -- ) {
+        scanf("%d", &n);
+        for (int i = 1; i <= n; i ++ ) f[i] = i, cnt[i] = 1;
+        for (int i = 0; i < n - 1; i ++ ) {
+            int a, b, c;
+            scanf("%d%d%d", &a, &b, &c);
+            edges[i] = {a, b, c};
+        }
+        sort(edges, edges + n - 1);
+        int res = 0;
+        for (int i = 0; i < n - 1; i ++ ) {
+            int a = edges[i].u;
+            int b = edges[i].v;
+            int c = edges[i].w;
+            int fa = find(a);
+            int fb = find(b);
+            if (fa == fb) continue;
+            // 完全图边数
+            res += (cnt[fa] * cnt[fb] - 1) * (c + 1);
+            f[fb] = fa;
+            // 统计个数
+            cnt[fa] += cnt[fb];
+        }
+        cout << res << endl;
+    }
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`最小生成树`
 
 **缝合怪**
 
@@ -13638,6 +14133,865 @@ $O(n^2)$
 
 ```c++
 450
+```
+
+**手写稿**
+
+![4281408](img/4281408.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+typedef long long LL;
+const int N = 510, M = 10010, K = N * 2;
+struct Edge {
+    int u, v, w;
+    bool flag;
+    bool operator < (const Edge &W) const {
+        return w < W.w;
+    }
+}edges[M];
+int n, m, idx;
+int f[N], h[N], e[K], w[K], ne[K];
+int dist1[N][N], dist2[N][N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void dfs(int u, int father, int Max1, int Max2, int dist1[], int dist2[]) {
+    dist1[u] = Max1, dist2[u] = Max2;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        if (j == father) continue;
+        // 必须新开变量进行记录, 原因: [手写稿]
+        int tMax1 = Max1, tMax2 = Max2;
+        if (w[i] > tMax1) {
+            tMax2 = tMax1;
+            tMax1 = w[i];
+        }
+        // 最大值必须要严格大于次大值, 因此, 这里必须判断w[i] < tMax1
+        // 不加判断的话, 则有可能会出现 w[i] == tMax1的情况
+        else if (w[i] < tMax1 && w[i] > tMax2) tMax2 = w[i];
+        dfs(j, u, tMax1, tMax2, dist1, dist2);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    for (int i = 0; i < m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        edges[i] = {a, b, c};
+    }
+    sort(edges, edges + m);
+    // long long 类型
+    LL sum = 0;
+    for (int i = 0; i < m; i ++ ) {
+        int a = edges[i].u;
+        int b = edges[i].v;
+        int c = edges[i].w;
+        int fa = find(a);
+        int fb = find(b);
+        if (fa == fb) continue;
+        f[fb] = fa;
+        edges[i].flag = true;
+        sum += c;
+        // 给最小生成树加边
+        add(a, b, c);
+        add(b, a, c);
+    }
+    for (int i = 1; i <= n; i ++ ) dfs(i, -1, 0, 0, dist1[i], dist2[i]);
+    // long long 类型
+    LL res = 1e18;
+    for (int i = 0; i < m; i ++ ) {
+        // 如果是树边, 则跳过此次循环
+        if (edges[i].flag) continue;
+        int a = edges[i].u;
+        int b = edges[i].v;
+        int c = edges[i].w;
+        // 最短路径
+        if (c > dist1[a][b]) res = min(res, sum - dist1[a][b] + c);
+        // 次短路径
+        else if (c > dist2[a][b]) res = min(res, sum - dist2[a][b] + c);
+    }
+    printf("%lld\n", res);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_m)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`次小生成树`
+
+**缝合怪**
+
+
+
+## 负环
+
+### 概述
+
+![4290951](img/4290951.png)
+
+### [AcWing 904. 虫洞](https://www.acwing.com/problem/content/906/)
+
+**题目描述**
+
+>   农夫约翰在巡视他的众多农场时，发现了很多令人惊叹的虫洞。
+>
+>   虫洞非常奇特，它可以看作是一条 **单向** 路径，通过它可以使你回到过去的某个时刻（相对于你进入虫洞之前）。
+>
+>   农夫约翰的每个农场中包含 `N` 片田地，`M` 条路径（**双向**）以及 `W` 个虫洞。
+>
+>   现在农夫约翰希望能够从农场中的某片田地出发，经过一些路径和虫洞回到过去，并在他的出发时刻之前赶到他的出发地。
+>
+>   他希望能够看到出发之前的自己。
+>
+>   请你判断一下约翰能否做到这一点。
+>
+>   下面我们将给你提供约翰拥有的农场数量 `F`，以及每个农场的完整信息。
+>
+>   已知走过任何一条路径所花费的时间都不超过 `10000` 秒，任何虫洞将他带回的时间都不会超过 `10000` 秒。
+
+**输入格式**
+
+>   第一行包含整数 `F`，表示约翰共有 `F` 个农场。
+>
+>   对于每个农场，第一行包含三个整数 `N,M,W`。
+>
+>   接下来 `M` 行，每行包含三个整数 `S,E,T`，表示田地 `S` 和 `E` 之间存在一条路径，经过这条路径所花的时间为 `T`。
+>
+>   再接下来 `W` 行，每行包含三个整数 `S,E,T`，表示存在一条从田地 `S` 走到田地 `E` 的虫洞，走过这条虫洞，可以回到 `T` 秒之间。
+
+**输出格式**
+
+>   输出共 `F` 行，每行输出一个结果。
+>
+>   如果约翰能够在出发时刻之前回到出发地，则输出 `YES`，否则输出 `NO`。
+
+**数据范围**
+
+>   +   $1 ≤ F ≤ 5$
+>   +   $1 ≤ N ≤ 500,$
+>   +   $1 ≤ M ≤ 2500,$
+>   +   $1 ≤ W ≤ 200,$
+>   +   $1 ≤ T ≤ 10000,$
+>   +   $1 ≤ S, E ≤ N$
+
+**输入样例**
+
+```c++
+2
+3 3 1
+1 2 2
+1 3 4
+2 3 1
+3 1 3
+3 2 1
+1 2 3
+2 3 4
+3 1 8
+```
+
+**输出样例**
+
+```c++
+NO
+YES
+```
+
+**手写稿**
+
+>   1.   模板题, 看本章开头概述
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 510, M = 5210;
+int n, m1, m2, T, idx;
+int h[N], e[M], w[M], ne[M], dist[N], st[N], q[N], cnt[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+bool spfa() {
+    memset(dist, 0, sizeof dist);
+    memset(st, 0, sizeof st);
+    memset(cnt, 0, sizeof cnt);
+    int hh = 0, tt = 0;
+    // 由于不知道哪个点作为起点, 因此, 将所有点入队, 标记当前点已经在队列中
+    for (int i = 1; i <= n; i ++ ) {
+        q[tt ++ ] = i;
+        st[i] = true;
+    }
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        st[t] = false;
+        if (hh == N) hh = 0;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+                if (cnt[j] >= n) return true;
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    st[j] = true;
+                    if (tt == N) tt = 0;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d", &T);
+    while (T -- ) {
+        memset(h, -1, sizeof h);
+        idx = 0;
+        scanf("%d%d%d", &n, &m1, &m2);
+        for (int i = 0; i < m1; i ++ ) {
+            int a, b, c;
+            scanf("%d%d%d", &a, &b, &c);
+            add(a, b, c);
+            add(b, a, c);
+        }
+        for (int i = 0; i < m2; i ++ ) {
+            int a, b, c;
+            scanf("%d%d%d", &a, &b, &c);
+            add(a, b, -c);
+        }
+        if (spfa()) puts("YES");
+        else puts("NO");
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$spfa求负环, 时间复杂度一般为O(nm)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`spfa`
+
+**缝合怪**
+
+[AcWing 852. spfa判断负环](#AcWing 852. spfa判断负环)
+
+### [AcWing 361. 观光奶牛](https://www.acwing.com/problem/content/363/)
+
+**题目描述**
+
+>   给定一张 `L` 个点、`P` 条边的有向图，每个点都有一个权值 `f[i]`，每条边都有一个权值 `t[i]`。
+>
+>   求图中的一个环，使“环上各点的权值之和”除以“环上各边的权值之和”最大。
+>
+>   输出这个最大值。
+>
+>   **注意**：数据保证至少存在一个环。
+
+**输入格式**
+
+>   第一行包含两个整数 `L` 和 `P`。
+>
+>   接下来 `L` 行每行一个整数，表示 `f[i]`。
+>
+>   再接下来 `P` 行，每行三个整数 `a，b，t[i]`，表示点 `a` 和 `b` 之间存在一条边，边的权值为 `t[i]`。
+
+**输出格式**
+
+>   输出一个数表示结果，保留两位小数。
+
+**数据范围**
+
+>   +   $2 ≤ L ≤ 1000,$
+>   +   $2 ≤ P ≤ 5000,$
+>   +   $1 ≤ f[i], t[i] ≤ 1000$
+
+**输入样例**
+
+```c++
+5 7
+30
+10
+10
+5
+10
+1 2 3
+2 3 2
+3 4 5
+3 5 2
+4 5 5
+5 1 3
+5 2 2
+```
+
+**输出样例**
+
+```c++
+6.00
+```
+
+**手写稿**
+
+![4291143](img/4291143.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 1010, M = 10010;
+int n, m, idx;
+int f[N], h[N], e[M], w[M], ne[M], st[N], q[N], cnt[N];
+// 注意: double类型
+double dist[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// 注意: double类型
+// SPFA求环模板
+bool check(double mid) {
+    memset(st, 0, sizeof st);
+    memset(cnt, 0, sizeof cnt);
+    int hh = 0, tt = 0;
+    for (int i = 1; i <= n; i ++ ) {
+        q[tt ++ ] = i;
+        st[i] = true;
+    }
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 求正环, 使用小于号<, 而不是大于号>
+            if (dist[j] < dist[t] + f[j] - mid * w[i]) {
+                dist[j] = dist[t] + f[j] - mid * w[i];
+                cnt[j] = cnt[t] + 1;
+                if (cnt[j] >= n) return true;
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    if (tt == N) tt = 0;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &f[i]);
+    for (int i = 1; i <= m; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+    }
+    double l = 0, r = 1010;
+    while (r - l > 1e-4) {
+        double mid = (l + r) / 2;
+        if (check(mid)) l = mid;
+        else r = mid;
+    }
+    printf("%.2lf\n", r);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nmlog_{1000})$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`01规划问题`、`SPFA`
+
+**缝合怪**
+
+
+
+### [AcWing 1165. 单词环](https://www.acwing.com/problem/content/1167/)
+
+**题目描述**
+
+>   我们有 `n` 个字符串，每个字符串都是由 `a∼z` 的小写英文字母组成的。
+>
+>   如果字符串 `A` 的结尾两个字符刚好与字符串 `B` 的开头两个字符相匹配，那么我们称 `A` 与 `B` 能够相连（注意：`A` 能与 `B` 相连不代表 `B` 能与 `A` 相连）。
+>
+>   我们希望从给定的字符串中找出一些，使得它们首尾相连形成一个环串（一个串首尾相连也算），我们想要使这个环串的平均长度最大。
+>
+>   如下例：
+>
+>   ```c++
+>   ababc
+>   bckjaca
+>   caahoynaab
+>   ```
+>
+>   第一个串能与第二个串相连，第二个串能与第三个串相连，第三个串能与第一个串相连，我们按照此顺序相连，便形成了一个环串，长度为 `5+7+10=22`（重复部分算两次），总共使用了 `3` 个串，所以平均长度是 $\frac{22}{3}≈7.33$。
+
+**输入格式**
+
+>   本题有多组数据。
+>
+>   每组数据的第一行，一个整数 `n`，表示字符串数量；
+>
+>   接下来 `n` 行，每行一个长度小于等于 `1000` 的字符串。
+>
+>   读入以 `n=0` 结束。
+
+**输出格式**
+
+>   若不存在环串，输出`”No solution”`，否则输出最长的环串的平均长度。
+>
+>   只要答案与标准答案的差不超过 `0.01`，就视为答案正确。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 10^5$
+
+**输入样例**
+
+```c++
+3
+intercommunicational
+alkylbenzenesulfonate
+tetraiodophenolphthalein
+0
+```
+
+**输出样例**
+
+```c++
+21.66
+```
+
+**手写稿**
+
+![511127](img/511127.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 700, M = 100010, K = 1010;
+// 一共只有676个点, n设置为676
+int n = 676, m, idx;
+char str[K];
+int h[N], e[M], w[M], ne[M], st[N], q[N], cnt[N];
+double dist[N];
+// 加边的模板[头插法]
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// SPFA模板
+bool check(double mid) {
+    memset(st, false, sizeof st);
+    memset(cnt, 0, sizeof cnt);
+    int hh = 0, tt = 0;
+    // 注意: 一共只有676个点
+    for (int i = 0; i < n; i ++ ) {
+        q[tt ++ ] = i;
+        st[i] = true;
+    }
+    int count = 0;
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 权值为w[i] - mid
+            if (dist[j] < dist[t] + w[i] - mid) {
+                dist[j] = dist[t] + w[i] - mid;
+                cnt[j] = cnt[t] + 1;
+                if (++ count > 5000) return true; // 经验上的trick, 点数的若干倍
+                if (cnt[j] >= n) return true;
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    if (tt == N) tt = 0;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    while (scanf("%d", &m), m) {
+        memset(h, -1, sizeof h);
+        idx = 0;
+        for (int i = 0; i < m; i ++ ) {
+            scanf("%s", str);
+            int len = strlen(str);
+            if (len >= 2) {
+                int a = (str[0] - 'a') * 26 + (str[1] - 'a');
+                int b = (str[len - 2] - 'a') * 26 + (str[len - 1] - 'a');
+                add(a, b, len);
+            }
+        }
+        if (!check(0)) puts("No solution");
+        else {
+            double l = 0, r = 1000;
+            while (r - l > 1e-4) {
+                double mid = (l + r) / 2;
+                if (check(mid)) l = mid;
+                else r = mid;
+            }
+            printf("%lf\n", r);
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(不好分析), 玄学优化$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`SPFA`、`负环`、`玄学优化`
+
+**缝合怪**
+
+## 差分约束
+
+### [AcWing 1169. 糖果](https://www.acwing.com/problem/content/1171/)
+
+**题目描述**
+
+>   幼儿园里有 `N` 个小朋友，老师现在想要给这些小朋友们分配糖果，要求每个小朋友都要分到糖果。
+>
+>   但是小朋友们也有嫉妒心，总是会提出一些要求，比如小明不希望小红分到的糖果比他的多，于是在分配糖果的时候， 老师需要满足小朋友们的 `K` 个要求。
+>
+>   幼儿园的糖果总是有限的，老师想知道他至少需要准备多少个糖果，才能使得每个小朋友都能够分到糖果，并且满足小朋友们所有的要求。
+
+**输入格式**
+
+>   输入的第一行是两个整数 `N,K`。
+>
+>   接下来 `K` 行，表示分配糖果时需要满足的关系，每行 `3` 个数字 `X,A,B`。
+>
+>   -   如果 `X=1`．表示第 `A` 个小朋友分到的糖果必须和第 `B` 个小朋友分到的糖果一样多。
+>   -   如果 `X=2`，表示第 `A` 个小朋友分到的糖果必须少于第 `B` 个小朋友分到的糖果。
+>   -   如果 `X=3`，表示第 `A` 个小朋友分到的糖果必须不少于第 `B` 个小朋友分到的糖果。
+>   -   如果 `X=4`，表示第 `A` 个小朋友分到的糖果必须多于第 `B` 个小朋友分到的糖果。
+>   -   如果 `X=5`，表示第 `A` 个小朋友分到的糖果必须不多于第 `B` 个小朋友分到的糖果。
+>
+>   小朋友编号从 `1` 到 `N`。
+
+**输出格式**
+
+>   输出一行，表示老师至少需要准备的糖果数，如果不能满足小朋友们的所有要求，就输出 `−1`。
+
+**数据范围**
+
+>   +   $1 ≤ N < 10^5,$
+>   +   $1 ≤ K ≤ 10^5,$
+>   +   $1 ≤ X ≤ 5,$
+>   +   $1 ≤ A, B ≤ N$
+
+**输入样例**
+
+```c++
+5 7
+1 1 2
+2 3 2
+4 4 1
+3 4 5
+5 4 5
+2 3 5
+4 5 1
+```
+
+**输出样例**
+
+```c++
+11
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWinng 362. 区间](https://www.acwing.com/problem/content/364/)
+
+**题目描述**
+
+>   给定 `n` 个区间 $[a_i, b_i]$ 和 `n` 个整数 $c_i$。
+>
+>   你需要构造一个整数集合 `Z`，使得 $∀i∈[1,n]$，`Z` 中满足 $a_i ≤ x ≤ b_i$ 的整数 `x` 不少于 $c_i$ 个。
+>
+>   求这样的整数集合 `Z` 最少包含多少个数。
+
+**输入格式**
+
+>   第一行包含整数 `n`。
+>
+>   接下来 `n` 行，每行包含三个整数 $a_i, b_i, c_i$。
+
+**输出格式**
+
+>   输出一个整数表示结果。
+
+**数据范围**
+
+>   +   $1 ≤ n ≤ 50000,$
+>   +   $0 ≤ a_i, b_i ≤ 50000,$
+>   +   $1 ≤ c_i ≤ b_i − a_i + 1$
+
+**输入样例**
+
+```c++
+5
+3 7 3
+8 10 3
+6 8 1
+1 3 1
+10 11 1
+```
+
+**输出样例**
+
+```c++
+6
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 1170. 排队布局](https://www.acwing.com/problem/content/1172/)
+
+**题目描述**
+
+>   当排队等候喂食时，奶牛喜欢和它们的朋友站得靠近些。
+>
+>   农夫约翰有 `N` 头奶牛，编号从 `1` 到 `N`，沿一条直线站着等候喂食。
+>
+>   奶牛排在队伍中的顺序和它们的编号是相同的。
+>
+>   因为奶牛相当苗条，所以可能有两头或者更多奶牛站在同一位置上。
+>
+>   如果我们想象奶牛是站在一条数轴上的话，允许有两头或更多奶牛拥有相同的横坐标。
+>
+>   一些奶牛相互间存有好感，它们希望两者之间的距离不超过一个给定的数 `L`。
+>
+>   另一方面，一些奶牛相互间非常反感，它们希望两者间的距离不小于一个给定的数 `D`。
+>
+>   给出 $M_L$ 条关于两头奶牛间有好感的描述，再给出 $M_D$ 条关于两头奶牛间存有反感的描述。
+>
+>   你的工作是：如果不存在满足要求的方案，输出`-1`；如果 `1` 号奶牛和 `N` 号奶牛间的距离可以任意大，输出`-2`；否则，计算出在满足所有要求的情况下，`1` 号奶牛和 `N` 号奶牛间可能的最大距离。
+
+**输入格式**
+
+>   第一行包含三个整数 $N,M_L,M_D$。
+>
+>   接下来 $M_L$ 行，每行包含三个正整数 $A,B,L$，表示奶牛 `A` 和奶牛 `B` 至多相隔 `L` 的距离。
+>
+>   再接下来 $M_D$ 行，每行包含三个正整数 $A,B,D$，表示奶牛 `A` 和奶牛 `B` 至少相隔 `D` 的距离。
+
+**输出格式**
+
+>   输出一个整数，如果不存在满足要求的方案，输出`-1`；如果 `1` 号奶牛和 `N` 号奶牛间的距离可以任意大，输出`-2`；否则，输出在满足所有要求的情况下，`1` 号奶牛和 `N` 号奶牛间可能的最大距离。
+
+**数据范围**
+
+>   +   $2≤N≤1000,$
+>   +   $1≤ML,MD≤10^4,$
+>   +   $1≤L,D≤10^6$
+
+**输入样例**
+
+```c++
+4 2 1
+1 3 10
+2 4 20
+2 3 3
+```
+
+**输出样例**
+
+```c++
+27
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 393. 雇佣收银员](https://www.acwing.com/problem/content/395/)
+
+**题目描述**
+
+>   一家超市要每天 `24` 小时营业，为了满足营业需求，需要雇佣一大批收银员。
+>
+>   已知不同时间段需要的收银员数量不同，为了能够雇佣尽可能少的人员，从而减少成本，这家超市的经理请你来帮忙出谋划策。
+>
+>   经理为你提供了一个各个时间段收银员最小需求数量的清单 $R(0),R(1),R(2),…,R(23)$。
+>
+>   `R(0)` 表示午夜 `00:00` 到凌晨 `01:00` 的最小需求数量，`R(1)` 表示凌晨 `01:00` 到凌晨 `02:00` 的最小需求数量，以此类推。
+>
+>   一共有 `N` 个合格的申请人申请岗位，第 `i` 个申请人可以从 $t_i$ 时刻开始连续工作 `8` 小时。
+>
+>   收银员之间不存在替换，一定会完整地工作 `8` 小时，收银台的数量一定足够。
+>
+>   现在给定你收银员的需求清单，请你计算最少需要雇佣多少名收银员。
+
+**输入格式**
+
+>   第一行包含一个不超过 `20` 的整数，表示测试数据的组数。
+>
+>   对于每组测试数据，第一行包含 `24` 个整数，分别表示 `R(0),R(1),R(2),…,R(23)`。
+>
+>   第二行包含整数 `N`。
+>
+>   接下来 `N` 行，每行包含一个整数 $t_i$。
+
+**输出格式**
+
+>   每组数据输出一个结果，每个结果占一行。
+>
+>   如果没有满足需求的安排，输出 `No Solution`。
+
+**数据范围**
+
+>   +   $0≤R(0)≤1000,$
+>   +   $0≤N≤1000,$
+>   +   $0≤t_i≤23$
+
+**输入样例**
+
+```c++
+1
+1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+5
+0
+23
+22
+1
+10
+```
+
+**输出样例**
+
+```c++
+1
 ```
 
 **手写稿**
@@ -23676,6 +25030,85 @@ int main() {
 
 # 链表专题
 
+## [AcWing 826. 单链表](https://www.acwing.com/problem/content/828/)
+
+**题目描述**
+
+>   实现一个单链表，链表初始为空，支持三种操作：
+>
+>   1.  向链表头插入一个数；
+>   2.  删除第 `k` 个插入的数后面的数；
+>   3.  在第 `k` 个插入的数后插入一个数。
+>
+>   现在要对该链表进行 `M` 次操作，进行完所有操作后，从头到尾输出整个链表。
+>
+>   **注意**:题目中第 `k` 个插入的数并不是指当前链表的第 `k` 个数。例如操作过程中一共插入了 `n` 个数，则按照插入的时间顺序，这 `n` 个数依次为：第 `1` 个插入的数，第 `2` 个插入的数，…第 `n` 个插入的数。
+
+**输入格式**
+
+>   第一行包含整数 `M`，表示操作次数。
+>
+>   接下来 `M` 行，每行包含一个操作命令，操作命令可能为以下几种：
+>
+>   1.  `H x`，表示向链表头插入一个数 `x`。
+>   2.  `D k`，表示删除第 `k` 个插入的数后面的数（当 `k` 为 `0` 时，表示删除头结点）。
+>   3.  `I k x`，表示在第 `k` 个插入的数后面插入一个数 `x`（此操作中 `k` 均大于 `0`）。
+
+**输出格式**
+
+>   共一行，将整个链表从头到尾输出。
+
+**数据范围**
+
+>   +   $1 ≤ M ≤ 100000$
+>   +   $所有操作保证合法。$
+
+**输入样例**
+
+```c++
+10
+H 9
+I 1 1
+D 1
+D 0
+H 6
+I 3 6
+I 4 5
+I 4 5
+I 3 4
+D 6
+```
+
+**输出样例**
+
+```c++
+6 4 6 5
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
 ## [AcWing 827. 双链表](https://www.acwing.com/problem/content/829/)
 
 **题目描述**
@@ -24604,6 +26037,33 @@ $O(n), n是节点的个数$
 ## end
 
 # 附录
+
+
+
+## 常用变量
+
+### 次数
+
+>   `tms`
+
+### 检查
+
+>   `check()`
+
+### 行
+
+>   `row`
+
+### 列
+
+>   `col`
+
+## 常见错误
+
+### 变量名冲突
+
+>   1.   `friend` 不能在全局使用, 局部使用可以
+>   2.   
 
 ## 运算符优先级
 
