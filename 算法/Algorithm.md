@@ -14612,9 +14612,17 @@ tetraiodophenolphthalein
 
 **手写稿**
 
-![511127](img/511127.png)
+>   讲解
+>
+>   ![511127](img/511127.png)
+>
+>   补充说明
+>
+>   ![521153](img/521153.png)
 
-**代码**
+
+
+**代码一:玄学优化**
 
 ```c++
 #include <iostream>
@@ -14703,6 +14711,93 @@ $O(不好分析), 玄学优化$
 
 $O(m)$
 
+**代码二:栈优化**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 700, M = 100010, K = 1010;
+// 一共只有676个点, n设置为676
+int n = 676, m, idx;
+char str[K];
+int h[N], e[M], w[M], ne[M], st[N], stk[N], cnt[N];
+double dist[N];
+// 加边的模板[头插法]
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// SPFA模板
+bool check(double mid) {
+    memset(st, false, sizeof st);
+    memset(cnt, 0, sizeof cnt);
+    int tt = -1;
+    // 注意: 一共只有676个点
+    for (int i = 0; i < n; i ++ ) {
+        stk[++ tt] = i;
+        st[i] = true;
+    }
+    int count = 0;
+    // 使用栈不是队列!!
+    while (tt != -1) {
+        int t = stk[tt -- ];
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 权值为w[i] - mid
+            if (dist[j] < dist[t] + w[i] - mid) {
+                dist[j] = dist[t] + w[i] - mid;
+                cnt[j] = cnt[t] + 1;
+                if (cnt[j] >= n) return true;
+                if (!st[j]) {
+                    stk[++ tt] = j;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    while (scanf("%d", &m), m) {
+        memset(h, -1, sizeof h);
+        idx = 0;
+        for (int i = 0; i < m; i ++ ) {
+            scanf("%s", str);
+            int len = strlen(str);
+            if (len >= 2) {
+                int a = (str[0] - 'a') * 26 + (str[1] - 'a');
+                int b = (str[len - 2] - 'a') * 26 + (str[len - 1] - 'a');
+                add(a, b, len);
+            }
+        }
+        if (!check(0)) puts("No solution");
+        else {
+            double l = 0, r = 1000;
+            while (r - l > 1e-4) {
+                double mid = (l + r) / 2;
+                if (check(mid)) l = mid;
+                else r = mid;
+            }
+            printf("%lf\n", r);
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(不好计算), 因为有栈存在且剪枝$
+
+**空间复杂度**
+
+$O(m)$
+
 **标签**
 
 `SPFA`、`负环`、`玄学优化`
@@ -14710,6 +14805,10 @@ $O(m)$
 **缝合怪**
 
 ## 差分约束
+
+### 原理
+
+![531143](img/531143.png)
 
 ### [AcWing 1169. 糖果](https://www.acwing.com/problem/content/1171/)
 
@@ -14767,27 +14866,93 @@ $O(m)$
 
 **手写稿**
 
-
+![531146](img/531146.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+typedef long long LL;
+const int N = 100010, M = 300010;
+int n, m, idx;
+int h[N], e[M], w[M], ne[M], stk[N], dist[N], st[N], cnt[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+bool spfa() {
+    int tt = -1;
+    memset(dist, -0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    memset(cnt, 0, sizeof cnt);
+    // 求环的时候, 使用栈的效果比较好[原因:缝合怪链接]
+    stk[ ++ tt] = 0;
+    st[0] = true;
+    dist[0] = 0;
+    while (tt != -1) {
+        int t = stk[tt -- ];
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            // 求的是正环!![注意]
+            if (dist[j] < dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+                if (cnt[j] >= n + 1) return true;
+                if (!st[j]) {
+                    stk[ ++ tt] = j;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < m; i ++ ) {
+        int x, a, b;
+        scanf("%d%d%d", &x, &a, &b);
+        if (x == 1) add(b, a, 0), add(a, b, 0);
+        else if (x == 2) add(a, b, 1);
+        else if (x == 3) add(b, a, 0);
+        else if (x == 4) add(b, a, 1);
+        else add(a, b, 0);
+    }
+    // 将每个点都和超级源点连一条边, 权值为1
+    for (int i = 1; i <= n; i ++ ) add(0, i, 1);
+    LL res = 0; // 有可能爆int
+    // 求的是正环
+    if (spfa()) puts("-1");
+    else {
+        for (int i = 1; i <= n; i ++ ) res += dist[i];
+        printf("%lld\n", res);
+    }
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(nm)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`差分约束`、`正环`
 
 **缝合怪**
 
-
+[AcWing 1165. 单词环](#AcWing 1165. 单词环)
 
 ### [AcWinng 362. 区间](https://www.acwing.com/problem/content/364/)
 
@@ -14803,7 +14968,7 @@ $O(m)$
 
 >   第一行包含整数 `n`。
 >
->   接下来 `n` 行，每行包含三个整数 $a_i, b_i, c_i$。
+>   接下来 `n` 行，每行包含三个    整数 $a_i, b_i, c_i$。
 
 **输出格式**
 
@@ -14834,11 +14999,71 @@ $O(m)$
 
 **手写稿**
 
-
+![541009](img/541009.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 50010, M = 150010;
+int n, idx;
+int h[N], e[M], w[M], ne[M], dist[N], st[N], q[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// spfa模板
+void spfa() {
+    memset(dist, -0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    int hh = 0, tt = 0;
+    dist[0] = 0;
+    q[tt ++ ] = 0;
+    st[0] = true;
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] < dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    if (tt == N) tt = 0;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= 50001; i ++ ) {
+        // 第一和第二个条件
+        add(i - 1, i, 0);
+        add(i, i - 1, -1);
+    }
+    for (int i = 0; i < n; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        // 注意: 下标 + 1
+        a ++, b ++;
+        add(a - 1, b, c);
+    }
+    spfa();
+    // 输出结果即可
+    cout << dist[50001] << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
@@ -14846,11 +15071,11 @@ $O(m)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`差分约束`、`spfa`
 
 **缝合怪**
 
@@ -14893,7 +15118,7 @@ $O(m)$
 **数据范围**
 
 >   +   $2≤N≤1000,$
->   +   $1≤ML,MD≤10^4,$
+>   +   $1 ≤ M_L, M_D ≤ 10 ^ 4,$
 >   +   $1≤L,D≤10^6$
 
 **输入样例**
@@ -14913,11 +15138,88 @@ $O(m)$
 
 **手写稿**
 
-
+![541201](img/541201.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 1010, M = 21010, INF = 0x3f3f3f3f;
+int n, m1, m2, idx;
+int h[N], e[M], w[M], ne[M], dist[N], cnt[N], st[N], q[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// spfa模板
+bool spfa(int size) {
+    memset(dist, 0x3f, sizeof dist);
+    memset(cnt, 0, sizeof cnt);
+    memset(st, 0, sizeof st);
+    int hh = 0, tt = 0;
+    for (int i = 1; i <= size; i ++ ) {
+        q[tt ++ ] = i;
+        st[i] = true;
+        dist[i] = 0;
+    }
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+                if (cnt[j] >= n) return true;
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    if (tt == N) tt = 0;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d%d%d", &n, &m1, &m2);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ ) add(i + 1, i, 0);
+    for (int i = 0; i < m1; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        // 注意: a和b的大小不确定
+        if (a < b) swap(a, b);
+        add(b, a, c);
+    }
+    for (int i = 0; i < m2; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        // 注意: a和b的大小不确定
+        if (a < b) swap(a, b);
+        add(a, b, -c);
+    }
+    // 将所有点入队[虚拟源点作用]
+    if (spfa(n)) { // 存在环
+        puts("-1");
+    }
+    else {
+        // 将第一个点入队
+        spfa(1);
+        // 无穷大,返回-2
+        if (dist[n] == INF) puts("-2");
+        // 返回最大距离
+        else cout << dist[n] << endl;
+    }
+    return 0;
+}
+```
 
 **时间复杂度**
 
@@ -14925,11 +15227,11 @@ $O(m)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`差分约束`、`spfa`
 
 **缝合怪**
 
@@ -14992,6 +15294,690 @@ $O(m)$
 
 ```c++
 1
+```
+
+**手写稿**
+
+![560926](img/560926.png)
+
+**代码一:差分约束 + 暴力枚举**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 30, M = 110;
+int n, T, idx;
+int r[N], num[N], h[N], e[M], w[M], ne[M], cnt[N], st[N], dist[N], q[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// 差分约束建边[手写稿]
+void build(int c) {
+    memset(h, -1, sizeof h);
+    idx = 0;
+    for (int i = 1; i <= 24; i ++ ) {
+        add(i - 1, i, 0);
+        add(i, i - 1, -num[i]);
+    }
+    for (int i = 1; i <= 7; i ++ ) add(16 + i, i, -c + r[i]);
+    for (int i = 8; i <= 24; i ++ ) add(i - 8, i, r[i]);
+    add(0, 24, c);
+    add(24, 0, -c);
+    return;
+}
+// spfa模板
+bool spfa(int c) {
+    build(c);
+    memset(dist, -0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    memset(cnt, 0, sizeof cnt);
+    int hh = 0, tt = 0;
+    q[tt ++ ] = 0;
+    st[0] = true;
+    dist[0] = 0;
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] < dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+                // 注意: 图中的点不是n + 1个, n + 1是申请人的个数
+                // 图中点的数量为25个, 0 ~ 24
+                if (cnt[j] >= 25) return true;
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    if (tt == N) tt = 0;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d", &T);
+    while (T -- ) {
+        // 注意: 着重理解r数组的含义
+        for (int i = 1; i <= 24; i ++ ) scanf("%d", &r[i]);
+        scanf("%d", &n);
+        // 注意: 着重理解num数组的含义
+        // num[i]数组表示i时刻到店的人数, 本题为方便将所有时刻向后移动一位 ++
+        memset(num, 0, sizeof num);
+        for (int i = 0; i < n; i ++ ) {
+            int t;
+            scanf("%d", &t);
+            num[t + 1] ++;
+        }
+        int flag = false;
+        // 枚举s[24]的值
+        for (int i = 0; i <= n; i ++ )
+            // 如果找到答案
+            if (!spfa(i)) {
+                cout << i << endl;
+                flag = true;
+                break;
+            }
+        if (!flag) puts("No Solution");
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(Tn2500)$
+
+**空间复杂度**
+
+$O(m)$
+
+**代码二: 差分约束 + 二分**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 30, M = 110;
+int n, T, idx;
+int r[N], num[N], h[N], e[M], w[M], ne[M], cnt[N], st[N], dist[N], q[N];
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// 差分约束建边[手写稿]
+void build(int c) {
+    memset(h, -1, sizeof h);
+    idx = 0;
+    for (int i = 1; i <= 24; i ++ ) {
+        add(i - 1, i, 0);
+        add(i, i - 1, -num[i]);
+    }
+    for (int i = 1; i <= 7; i ++ ) add(16 + i, i, -c + r[i]);
+    for (int i = 8; i <= 24; i ++ ) add(i - 8, i, r[i]);
+    add(0, 24, c);
+    add(24, 0, -c);
+    return;
+}
+// spfa模板
+bool spfa(int c) {
+    build(c);
+    memset(dist, -0x3f, sizeof dist);
+    memset(st, 0, sizeof st);
+    memset(cnt, 0, sizeof cnt);
+    int hh = 0, tt = 0;
+    q[tt ++ ] = 0;
+    st[0] = true;
+    dist[0] = 0;
+    while (hh != tt) {
+        int t = q[hh ++ ];
+        if (hh == N) hh = 0;
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (dist[j] < dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+                // 注意: 图中的点不是n + 1个, n + 1是申请人的个数
+                // 图中点的数量为25个, 0 ~ 24
+                if (cnt[j] >= 25) return true;
+                if (!st[j]) {
+                    q[tt ++ ] = j;
+                    if (tt == N) tt = 0;
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d", &T);
+    while (T -- ) {
+        // 注意: 着重理解r数组的含义
+        for (int i = 1; i <= 24; i ++ ) scanf("%d", &r[i]);
+        scanf("%d", &n);
+        // 注意: 着重理解num数组的含义
+        // num[i]数组表示i时刻到店的人数, 本题为方便将所有时刻向后移动一位 ++
+        memset(num, 0, sizeof num);
+        for (int i = 0; i < n; i ++ ) {
+            int t;
+            scanf("%d", &t);
+            num[t + 1] ++;
+        }
+        int flag = false;
+        // 枚举s[24]的值
+        // 注意: 二分的范围[0, n]
+        int l = 0, r = n;
+        while (l < r) {
+            int mid = l + r >> 1;
+            if (!spfa(mid)) r = mid;
+            else l = mid + 1;
+        }
+        if (spfa(l)) puts("No Solution");
+        else cout << l << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(Tlog_n2500)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`差分约束`、`spfa`、`二分`
+
+**缝合怪**
+
+
+
+## 最近公共祖先
+
+### 原理
+
+![581323](img/581323.png)
+
+### [AcWing 1172. 祖孙询问](https://www.acwing.com/problem/content/1174/)
+
+**题目描述**
+
+>   给定一棵包含 `n` 个节点的有根无向树，节点编号互不相同，但不一定是 `1 ∼ n`。
+>
+>   有 `m` 个询问，每个询问给出了一对节点的编号 `x` 和 `y`，询问 `x` 与 `y` 的祖孙关系。
+
+**输入格式**
+
+>   输入第一行包括一个整数 表示节点个数；
+>
+>   接下来 `n` 行每行一对整数 `a` 和 `b`，表示 `a` 和 `b` 之间有一条无向边。如果 `b` 是 `−1`，那么 `a` 就是树的根；
+>
+>   第 `n + 2` 行是一个整数 `m` 表示询问个数；
+>
+>   接下来 `m` 行，每行两个不同的正整数 `x` 和 `y`，表示一个询问。
+
+**输出格式**
+
+>   对于每一个询问，若 `x` 是 `y` 的祖先则输出 `1`，若 `y` 是 `x` 的祖先则输出 `2`，否则输出 `0`。
+
+**数据范围**
+
+>   +   $1≤n,m≤4×10^4,$
+>   +   $1≤每个节点的编号≤4×10^4$
+
+**输入样例**
+
+```c++
+10
+234 -1
+12 234
+13 234
+14 234
+15 234
+16 234
+17 234
+18 234
+19 234
+233 19
+5
+234 233
+233 12
+233 13
+233 15
+233 19
+```
+
+**输出样例**
+
+```c++
+1
+0
+0
+0
+2
+```
+
+**手写稿**
+
+>   1.   模板题,查看最近公共祖先 => 原理 => 算法二
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 40010, M = 80010, K = 16;
+int n, m, idx;
+int h[N], e[M], ne[M], depth[N], st[N], q[N];
+int fa[N][K];
+void add(int a, int b) {
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+void bfs(int u) {
+    memset(depth, 0x3f, sizeof depth);
+    memset(st, false, sizeof st);
+    int hh = 0, tt = -1;
+    depth[u] = 1;
+    q[++ tt] = u;
+    while (hh <= tt) {
+        int t = q[hh ++ ];
+        st[t] = true;
+        for (int i = h[t]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (!st[j]) {
+                depth[j] = depth[t] + 1;
+                q[++ tt] = j;
+                // 从j走1步到达t
+                fa[j][0] = t;
+                // 递推公式
+                for (int k = 1; k <= 15; k ++ ) fa[j][k] = fa[fa[j][k - 1]][k - 1];
+            }
+        }
+    }
+    return;
+}
+int lca(int a, int b) {
+    // 设置哨兵
+    depth[0] = 0;
+    // 为了方便编码,始终保持a的深度depth[a] >= b的深度depth[b]
+    // 注意: swap(a, b) 不是 swap(depth[a], depth[b])
+    if (depth[a] < depth[b]) swap(a, b);
+    // 将a和b跳到同一层
+    for (int k = 15; k >= 0; k -- )
+        // 哨兵的作用一:
+        // 如果跳出界,则fa[a][k] = 0, 此时depth[0] = 0, 此条件一定不会成立
+        // 原因:树中的深度至少为1
+        if (depth[fa[a][k]] >= depth[b]) a = fa[a][k];
+    // 如果a和b已经相等, 则返回即可
+    if (a == b) return a;
+    for (int k = 15; k >= 0; k -- )
+        // 如果a和b相等, 则一直跳
+        // 假设a和b此时处于最近公共祖先的下一层, 则不会进行跳跃
+        // 哨兵的作用二:
+        // 如果跳出界,则fa[a][k]和fa[b][k]都为0, 此时depth[0] = depth[0] = 0
+        // 两者相等,此条件也不会成立
+        if (fa[a][k] != fa[b][k]) {
+            a = fa[a][k];
+            b = fa[b][k];
+        }
+    // 向上走一步,就是最近公共祖先
+    return fa[a][0];
+}
+int main() {
+    int root;
+    scanf("%d", &n);
+    memset(h, -1, sizeof h);
+    for (int i = 0; i < n; i ++ ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        if (b == -1) root = a;
+        else {
+            add(a, b);
+            add(b, a);
+        }
+    }
+    bfs(root);
+    scanf("%d", &m);
+    while (m -- ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        int rt = lca(a, b);
+        if (rt == a) puts("1");
+        else if (rt == b) puts("2");
+        else puts("0");
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_n + mlog_n)$
+
+**空间复杂度**
+
+$O(nlog_n)$
+
+**标签**
+
+`LCA`、`倍增`
+
+**缝合怪**
+
+
+
+### [AcWing 1171. 距离](https://www.acwing.com/problem/content/1173/)
+
+**题目描述**
+
+>   给出 `n` 个点的一棵树，多次询问两点之间的最短距离。
+>
+>   注意：
+>
+>   -   边是**无向**的。
+>   -   所有节点的编号是 `1, 2, …, n`。
+
+**输入格式**
+
+>   第一行为两个整数 `n` 和 `m`。`n` 表示点数，`m` 表示询问次数；
+>
+>   下来 `n − 1` 行，每行三个整数 `x, y, k`，表示点 `x` 和点 `y` 之间存在一条边长度为 `k`；
+>
+>   再接下来 `m` 行，每行两个整数 `x, y`，表示询问点 `x` 到点 `y` 的最短距离。
+>
+>   树中结点编号从 `1` 到 `n`。
+
+**输出格式**
+
+>   共 `m` 行，对于每次询问，输出一行询问结果。
+
+**数据范围**
+
+>   +   $2≤n≤10^4,$
+>   +   $1≤m≤2×10^4,$
+>   +   $0<k≤100,$
+>   +   $1≤x,y≤n$
+
+**输入样例1**
+
+```c++
+2 2 
+1 2 100 
+1 2 
+2 1
+```
+
+**输出样例1**
+
+```c++
+100
+100
+```
+
+**输入样例2**
+
+```c++
+3 2
+1 2 10
+3 1 15
+1 2
+3 2
+```
+
+**输出样例2**
+
+```c++
+10
+25
+```
+
+**手写稿**
+
+![581331](img/581331.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <vector>
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 10010, M = 20010;
+int n, m, idx;
+int h[N], e[M], w[M], ne[M], dist[N], res[M], st[N], f[N];
+vector<PII> query[N];
+int find(int x) {
+    if (f[x] == x) return f[x];
+    return f[x] = find(f[x]);
+}
+void add(int a, int b, int c) {
+    e[idx] = b;
+    w[idx] = c;
+    ne[idx] = h[a];
+    h[a] = idx ++;
+    return;
+}
+// 计算距离
+void dfs(int u, int father) {
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        if (j == father) continue;
+        // 计算距离不是计算高度!!!
+        dist[j] = dist[u] + w[i];
+        dfs(j, u);
+    }
+    return;
+}
+void tarjan(int u) {
+    // 标记当前正在访问u节点
+    st[u] = 1;
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        // 如果节点j还没有被访问过
+        if (!st[j]) {
+            tarjan(j);
+            // 将j的父亲标为u[手写稿进一步解释]
+            f[j] = u;
+        }
+    }
+    // 秋后算账
+    // 每遍历完一个子树,都需要进行询问[原因: 手写稿]
+    for (auto [b, i] : query[u]) // 遍历所有和u相关的询问
+        // 如果b已经被访问过[后续不会再次被访问]
+        if (st[b] == 2) {
+            // 找到其最近公共祖先
+            int anc = find(b);
+            // 公式
+            res[i] = dist[u] + dist[b] - 2 * dist[anc];
+        }
+    // 标为u为已经被访问过
+    st[u] = 2;
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    memset(h, -1, sizeof h);
+    for (int i = 1; i <= n; i ++ ) f[i] = i;
+    for (int i = 0; i < n - 1; i ++ ) {
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+        add(b, a, c);
+    }
+    for (int i = 0; i < m; i ++ ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        // 两边查询都要建立[原因: 手写稿]
+        // 第一维存节点编号
+        // 第二维存查询编号
+        query[a].push_back({b, i});
+        query[b].push_back({a, i});
+    }
+    // 任意根结点, 如1
+    dfs(1, -1);
+    // 从根节点开始遍历
+    tarjan(1);
+    for (int i = 0; i < m; i ++ ) cout << res[i] << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`Tarjan`、`次小生成树`
+
+**缝合怪**
+
+
+
+### [AcWing 356. 次小生成树](https://www.acwing.com/problem/content/description/358/)
+
+**题目描述**
+
+>   给定一张 `N` 个点 `M` 条边的无向图，求无向图的严格次小生成树。
+>
+>   设最小生成树的边权之和为 `sum`，严格次小生成树就是指边权之和大于 `sum` 的生成树中最小的一个。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `M`。
+>
+>   接下来 `M` 行，每行包含三个整数 `x，y，z`，表示点 `x` 和点 `y` 之前存在一条边，边的权值为 `z`。
+
+**输出格式**
+
+>   包含一行，仅一个数，表示严格次小生成树的边权和。(数据保证必定存在严格次小生成树)
+
+**数据范围**
+
+>   +   $N≤10^5,M≤3×10^5$
+
+**输入样例**
+
+```c++
+5 6
+1 2 1
+1 3 2
+2 4 3
+3 5 4
+3 4 3
+4 5 6
+```
+
+**输出样例**
+
+```c++
+11
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 352. 闇の連鎖](https://www.acwing.com/problem/content/description/354/)
+
+**题目描述**
+
+>   传说中的暗之连锁被人们称为 `Dark`。
+>
+>   `Dark` 是人类内心的黑暗的产物，古今中外的勇者们都试图打倒它。
+>
+>   经过研究，你发现 `Dark` 呈现无向图的结构，图中有 `N` 个节点和两类边，一类边被称为主要边，而另一类被称为附加边。
+>
+>   `Dark` 有 `N – 1` 条主要边，并且 `Dark` 的任意两个节点之间都存在一条只由主要边构成的路径。
+>
+>   另外，`Dark` 还有 `M` 条附加边。
+>
+>   你的任务是把 `Dark` 斩为不连通的两部分。
+>
+>   一开始 `Dark` 的附加边都处于无敌状态，你只能选择一条主要边切断。
+>
+>   一旦你切断了一条主要边，`Dark` 就会进入防御模式，主要边会变为无敌的而附加边可以被切断。
+>
+>   但是你的能力只能再切断 `Dark` 的一条附加边。
+>
+>   现在你想要知道，一共有多少种方案可以击败 `Dark`。
+>
+>   注意，就算你第一步切断主要边之后就已经把 `Dark` 斩为两截，你也需要切断一条附加边才算击败了 `Dark`。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `M`。
+>
+>   之后 `N – 1` 行，每行包括两个整数 `A` 和 `B`，表示 `A` 和 `B` 之间有一条主要边。
+>
+>   之后 `M` 行以同样的格式给出附加边。
+
+**输出格式**
+
+>   输出一个整数表示答案。
+
+**数据范围**
+
+>   +   $N≤100000,M≤200000，数据保证答案不超过2^{31}−1$
+
+**输入样例**
+
+```c++
+4 1
+1 2
+2 3
+1 4
+3 4
+```
+
+**输出样例**
+
+```c++
+3
 ```
 
 **手写稿**

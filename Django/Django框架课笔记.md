@@ -1,618 +1,824 @@
-#  开发流程
+# 初始化 `Django` 
 
-## 初始化设置
-
-### 设置全局的 `URL`
-
-> 在全局 `urls.py` 里面设置 `game` 的 `url`
+>   1. 创建 `Django` 项目 `django-admin startproject Acapp` 
 >
-> ```python
-> from django.urls import path, include
-> path('', include('game.urls.index'))
-> ```
-
-### 设置 `APP` 的 `URL`
-
-> 打开 `game/urls/index.py` 文件（没有就自己创建）
+>   2. 在 `Acapp/Acapp/settings.py` 将服务器的地址加入到 `Django` 项目中
 >
-> ```python
-> from django.urls import path
-> 
-> urlpatterns = []
-> ```
-
-### 修改 `APP` 的 `VIEW`
-
-> 删除本身存在的 `views.py` 文件 创建 `game/views/index.py` 文件（没有就自己创建）
+>       ```python
+>       ALLOWED_HOSTS = [
+>           '101.35.165.69', # 服务器地址
+>       ]
+>       ```
 >
-> + [Django模板详细介绍](https://www.cnblogs.com/rexcheny/p/9635764.html)
+>   3. 启动 `Django` 项目 `python3 manage.py runserver 0.0.0.0:8000`
 >
->   ```python
->   from django.shortcuts import render
->                                                                                         
->   def index(request):
->       # render的作用就是加载模板或者渲染模板
->       return render(request, 'multiends/web.html')
->   ```
-
-### 创建模板文件
-
-> 创建 `game/templates/multiends/web.html`
+>   4. 对数据库做迁移, 每次对数据库做改动的时候, 都必须进行下面两步
 >
-> ```html
-> <head>
->    	<!-- 引入 css 文件-->
->     <link rel = "stylesheet" href = "https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
->     <!-- 引入 js 文件 -->
->     <script src = "https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
-> </head>
-> <!-- 将 body 的外边框设置为 0px 更加美观-->
-> <body style = "margin: 0px;">
->    	<div id = "ac_game_12345678">你好</div>
-> </body>
-> ```
-
-### 引入视图文件
-
-> 在 `game/urls/index.py` 中引入 `game/views/index` 函数
+>       ```python
+>       # 第一步: 迁移准备
+>       python3 manage.py makemigrations
+>       # 第二步: 迁移
+>       python3 manage.py migrate
+>       ```
 >
-> ```python
-> from django.urls import path
-> from game.views.index import index
-> 
-> urlpatterns = [
->        path('', index, name = 'index')
-> ]
-> ```
-
-### 创建菜单界面
-
-> 修改 `game/templates/multiends/web.html`
+>   5. 在 `Acapp/Acapp/settings.py` 修改时区, 并且重启项目使其生效
 >
-> ```html
-> <!-- 加载 static 文件夹-->
-> {% load static %}
-> <head>
->        <!-- 引入 css 文件-->
->        <link rel = "stylesheet" href = "https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
->        <!-- 引入 js 文件 -->
->        <script src = "https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
-> </head>
-> <!-- 将 body 的外边框设置为 0px 更加美观-->
-> <body style = "margin: 0px;">
->        <div id = "ac_game_12345678"></div>
->        <!-- module 模块化编程-->
->        <script type = "module">
->            import {AcGame} from "{% static 'js/dist/game.js' %}";
->            $(document).ready(function() {
->                let ac_game = new AcGame("ac_game_12345678");
->            });
->        </script>
-> </body>
-> ```
-
-### 创建项目根 `JS`
-
-> 修改 `static/js/src/zbase.js`
+>       ```python
+>       TIME_ZONE = 'Asia/Shanghai' # 更改时区
+>       ```
 >
-> ```javascript
-> <!-- 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字-->
-> export class AcGame {
->        constructor(id) {
->            <!-- id 即为传进来的id 名称-->
->            this.id = id;
->            <!-- 获取 id 所对应的 div 标签-->
->            this.$ac_game = $('#' + id);
->            <!-- 创建菜单界面 -->
->            this.menu = new AcGameMenu(this);
+>   6. 在 `Acapp/Acapp/settings.py` 将 `static` 文件夹加入地址路径
+>
+>       ```python
+>       STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+>       ```
+>
+>   7. 在 `Acapp/` 下创建 `APP` 应用 `python3 manage.py startapp Game`
+>
+>   8. 在 `Acapp/Acapp/settings.py` 将当前新建的 `App` 加入到 `Django` 项目中
+>
+>       ```python
+>       INSTALLED_APPS = [
+>           'Game.apps.GameConfig', # 添加 Game
+>       ]
+>       ```
+
+# 初始化 `App`
+
+>   1.   `MTV` 模式
+>
+>        ![django_mvc_mvt_pattern](img/django_mvc_mvt_pattern.jpeg)
+>
+>   2.   在 `Acapp/Acapp/urls.py` 里设置全局的 `URL`
+>
+>        ```python
+>        urlpatterns = [
+>            path('', include('Game.urls.index')), # 添加Game的Url路径
+>        ]
+>        ```
+>
+>   3.   在 `Acapp/Game/urls/index.py` 里设置 `Game` 的 `URL`
+>
+>        ```python
+>        from django.urls import path
+>        
+>        urlpatterns = []
+>        ```
+>
+>   4.   在 `Acapp/Game/templates/multiends/` 下创建模板文件 `web.html`
+>
+>        ```html
+>        <head>
+>            <!-- 引入 jquery css 文件-->
+>            <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
+>            <!-- 引入 jquery js 文件 -->
+>            <script src="https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
+>            <!-- 引入网站图标 -->
+>            <link rel="icon" href="https://cdn.acwing.com/media/article/image/2021/12/17/1_be4c11ce5f-acapp.png">
+>        </head>
+>        <!-- 将 body 的外边框设置为 0px 更加美观 -->
+>        <body style="margin: 0px;">
+>            <div id="ac_game_12345678">你好</div>
+>        </body>
+>        ```
+>
+>   5.   在 `Acapp/Game/views/index.py` 里设置 `Game` 的 `VIEW`
+>
+>        ```python
+>        from django.shortcuts import render
+>        
+>        def index(request):
+>            # render的作用就是加载模板或者渲染模板
+>            return render(request, 'multiends/web.html')
+>        ```
+>
+>        [Django模板详细介绍](https://www.cnblogs.com/rexcheny/p/9635764.html)
+>
+>        >   1.   `Django` 模板载⼊有两种模式:
+>        >
+>        >        +   `django.template.loaders.filesystem.Loader` 它会遍历所有 `app` 中的 `templates` 然后找到符合名字的就返回
+>        >
+>        >        +   `django.template.loaders.app_directories.Loader` 它会从 `app` 对应的 `templates` ⽬录中查找要渲染的模板⽂件,即使找不到也不去其
+>        >            他 `app` ⾥⾯找
+>        >
+>        >            ![541928](img/541928.png)
+>        >
+>        >        +   `APP_DIRS` 的值设置为 `TRUE` ,表⽰启⽤`django.template.loaders.app_directories.Loader`, `DIRS` 为空即可.
+>        >
+>        >        +   如果不设置 `APP_DIRS` 或者设置为 `False`,则启⽤ `django.template.loaders.filesystem.Loader` 模式,这个模式需要把 `DIRS` 设置好,要不然找不到任何模板
+>        >
+>        >   2.   在 `Acapp/Acapp/settings.py` 将当前新建的 `App` 的模板加入到 `Django` 项目中
+>        >
+>        >        ```python
+>        >        TEMPLATES = [
+>        >            {
+>        >                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+>        >                'DIRS': [
+>        >                    os.path.join(BASE_DIR, 'Game/templates') # 加入app的模板路径
+>        >                ],
+>        >                'APP_DIRS': False, # 设置为False
+>        >                'OPTIONS': {
+>        >                    'context_processors': [
+>        >                        'django.template.context_processors.debug',
+>        >                        'django.template.context_processors.request',
+>        >                        'django.contrib.auth.context_processors.auth',
+>        >                        'django.contrib.messages.context_processors.messages',
+>        >                    ],
+>        >                },
+>        >            },
+>        >        ]
+>        >        ```
+>
+>   6.   在 `Acapp/Game/urls/index.py` 里引入视图函数 `index`
+>
+>        ```python
+>        from django.urls import path
+>        from Game.views.index import index # 导入index函数
+>                                                
+>        urlpatterns = [
+>            path('', index, name = 'index') # 添加路由
+>        ]
+>        ```
+
+# `App` 根目录设置
+
+>   1.   在 `Acapp/Game/templates/multiends/web.html` 中创建 `ac_game`
+>
+>        ```html
+>        <!-- 加载 static 文件夹 -->
+>        {% load static %}
+>        <head>
+>            <!-- 引入 jquery css 文件-->
+>            <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
+>            <!-- 引入 jquery js 文件 -->
+>            <script src="https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
+>            <!-- 引入网站图标 -->
+>            <link rel="icon" href="https://cdn.acwing.com/media/article/image/2021/12/17/1_be4c11ce5f-acapp.png">
+>        </head>
+>        <!-- 将 body 的外边框设置为 0px 更加美观 -->
+>        <body style="margin: 0px;">
+>            <div id="ac_game_12345678"></div>
+>            <!-- 模块化编程 -->
+>            <script type="module">
+>                import {AcGame} from "{% static 'js/dist/game.js' %}";
+>                $(document).ready(function() { // 作用:希望在页面加载完，自动执行定义js代码
+>                    let ac_game = new AcGame("ac_game_12345678");
+>                });
+>            </script>
+>        </body>
+>        ```
+>
+>   2.   在 `Acapp/Game/static/js/src` 下创建根 `Js` 文件 `zbase.js`
+>
+>        ```javascript
+>        // 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字
+>        export class AcGame {
+>            constructor(id) {
+>                // id 即为传进来的id 名称
+>                this.id = id;
+>                // 获取 id 所对应的 div 标签
+>                this.$ac_game = $('#' + id);
+>            }
 >        }
-> }
-> ```
-
-### 创建压缩 `JS` 脚本
-
-> 编写 `js` 的脚本 创建 `acapp/scripts/compress_game_js.sh`
+>        ```
 >
-> ```bash
-> #! /bin/bash
-> 
-> JS_PATH=/home/django/acapp/game/static/js
-> JS_PATH_DIST=${JS_PATH}/dist # 记得先创建 dist 文件夹
-> JS_PATH_SRC=${JS_PATH}/src
-> 
-> find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat > ${JS_PATH_DIST}/game.js
-> ```
-
-## 界面设置
-
-### 编写 `AcGameMenu` 界面
-
-#### 编写 `menu` 的 `JS` 文件
-
-> 创建 `acapp/game/static/js/src/menu/zbase.js` 并写入以下内容
+>   3.   在 `Acapp/scripts/compress_game_js.sh` 里写入内容
 >
-> ```javascript
-> class AcGameMenu {
->        constructor(root) {
->            this.root = root;
->            this.$menu = $(`
->                <div class="ac_game_menu">
->                    <div class="ac_game_menu_field">
->                        <div class="ac_game_menu_field_item ac_game_menu_field_item_single_mode">
->                             单人模式
->                        </div>
->                        <!-- 添加换行 -->
->                        <br>
->                        <div class="ac_game_menu_field_item ac_game_menu_field_item_multi_mode">
->                            多人模式
->                        </div>
->                        <!-- 添加换行 -->
->                        <br>
->                        <div class="ac_game_menu_field_item ac_game_menu_field_item_settings">
->                            设置
+>        ```shell
+>        #! /bin/bash
+>                                           
+>        JS_PATH=/home/django/Acapp/Game/static/js # js路径
+>        JS_PATH_DIST=${JS_PATH}/dist # 压缩文件夹
+>        JS_PATH_SRC=${JS_PATH}/src # 源文件夹
+>        find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat > ${JS_PATH_DIST}/game.js # 压缩文件
+>        ```
+>
+>        给 `compress_game_js.sh` 添加可执行权限
+>
+>        ```shell
+>        chmod +x compress_game_js.sh
+>        ```
+
+# 界面设置
+
+## 前端界面
+
+### 菜单 `menu` 界面
+
+#### 编写 `JS` 文件
+
+>   1.   创建 `Acapp/Game/static/js/src/menu/zbase.js`
+>
+>        ```javascript
+>        class AcGameMenu {
+>            constructor(root) {
+>                this.root = root;
+>                this.$menu = $(`
+>                    <div class="ac_game_menu">
+>                        <div class="ac_game_menu_field">
+>                            <div class="ac_game_menu_field_item ac_game_menu_field_item_single_mode">
+>                                单人模式
+>                            </div>
+>                            <br>
+>                            <div class="ac_game_menu_field_item ac_game_menu_field_item_multi_mode">
+>                                多人模式
+>                            </div>
+>                            <br>
+>                            <div class="ac_game_menu_field_item ac_game_menu_field_item_settings">
+>                                设置
+>                            </div>
 >                        </div>
 >                    </div>
->                </div>
->         	`);
->            this.root.$ac_game.append(this.$menu);
+>                `);
+>                // 将菜单界面添加到根界面中
+>                this.root.$ac_game.append(this.$menu);
+>            }
+>            show() { // 显示菜单界面
+>                this.$menu.show();
+>            }
+>            hide() { // 隐藏菜单界面
+>                this.$menu.hide();
+>            }
 >        }
-> }
-> ```
-
-#### 下载背景图片
-
-> 下载背景图片 放到 `acapp/game/static/image/menu/`
+>        ```
 >
-> + `ubuntu` 下载图片命令 `wget --output-document=图片别名 图片地址 图片存储地址`
-> + [图片地址](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_match%2F0%2F11156556256%2F0.jpg&refer=http%3A%2F%2Finews.gtimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg)
-
-#### 创建项目的 `css` 文件
-
-> 创建 `acapp/game/static/css/game.css`
+>   2.   在 `Acapp/Game/static/js/src/zbase.js` 里将菜单界面创建出来
 >
-> ```css
-> .ac_game_menu {
->        width: 100%;
->        height: 100%;
->        background-image: url("/static/image/menu/background.gif");
->        /* 禁止左右上下拉伸 */
->        background-size: 100% 100%;
->        /* 禁止用户鼠标点选 */
->        user-select: none;
-> }
-> 
-> .ac_game_menu_field {
->        width: 20vw;
->        position: relative;
->        top: 40vh;
->        left: 19vw;
-> }
-> 
-> .ac_game_menu_field_item {
->        color: white;
->        height: 7vh;
->        width: 20vw;
->        font-size: 6vh;
->        /* 设置字体样式为斜体 */
->        font-style: italic;
->        padding: 2vh;
->        text-align: center;
->        background-color: rgba(39, 21, 28, 0.6);
->        border-radius: 10px;
->        /* 设置字体之间的间距 */
->        letter-spacing: 0.5vw;
->        /* 设置鼠标样式 接触到之后变成指针样式 */
->        cursor: pointer;
-> }
-> 
-> .ac_game_menu_field_item:hover {
->        /* 设置缩放效果 */
->        transform: scale(1.2);
->        /* 设置秒数 */
->        transition: 100ms;
-> }
-> ```
-
-#### 引入到模板文件
-
-> 将 `css` 文件引入到 `web.html` 中
->
-> ```html
-> <head>
->    	<!-- 引入 css 文件-->
->        <link rel = "stylesheet" href = "{% static 'css/game.css' %}">
-> </head>
-> ```
-
-### 编写 `playground` 界面
-
-#### 创建 `playground` 的 `JS` 文件
-
-> 创建 `acapp/game/static/js/src/playground/zbase.js`
->
-> ```javascript
-> class AcGamePlayground {
->        constructor(root) {
->            this.root = root;
->            this.$playground = $(`
->            	<div class = "ac_game_playground">这是玩家页面</div>
->           	`);
->            <!-- 将玩家页面添加到游戏中去 -->
->            this.root.$ac_game.append(this.$playground);
+>        ```javascript
+>        // 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字
+>        export class AcGame {
+>            constructor(id) {
+>                // 创建菜单界面
+>                this.menu = new AcGameMenu(this);
+>            }
 >        }
->        <!-- 添加显示函数 -->
->        show() {
->            this.$playground.show();
+>        ```
+
+#### 编写 `CSS` 文件
+
+>   1.   下载背景图片
+>
+>        +   下载背景图片,放到 `Acapp/Game/static/image/menu/`
+>        +   `ubuntu` 下载图片命令 `wget --output-document=图片别名 图片地址 图片存储地址`
+>        +   [图片地址](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_match%2F0%2F11156556256%2F0.jpg&refer=http%3A%2F%2Finews.gtimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg)
+>        +   背景图片加载不出来
+>            +   原因:可能是百度反爬的问题 导致无法加载图片
+>            +   解决方案:下载到本地,然后上传到服务器即可
+>            +   上传文件夹 `scp -r 文件或者文件夹路径 服务器名:路径`
+>            +   !! 注意 `-r` 的位置
+>
+>   2.   创建 `Acapp/Game/static/css/game.css` 并写入一下内容
+>
+>        ```css
+>        .ac_game_menu {
+>            width: 100%;
+>            height: 100%;
+>            background-image: url("/static/image/menu/background.gif");
+>            /* 禁止左右上下拉伸 */
+>            background-size: 100% 100%;
+>            /* 禁止用户鼠标点选 */
+>            user-select: none;
 >        }
->        <!-- 添加隐藏函数 -->
->        hide() {
->            this.$playground.hide();
+>        
+>        .ac_game_menu_field {
+>            width: 20vw;
+>            position: relative;
+>            top: 40vh;
+>            left: 19vw;
 >        }
-> }
-> ```
-
-#### 添加到根 `JS`
-
-> 将玩家页面添加到游戏页面中去 进入 `acapp/game/static/js/src/zbase.js`
+>        
+>        .ac_game_menu_field_item {
+>            color: white;
+>            height: 7vh;
+>            width: 20vw;
+>            font-size: 6vh;
+>            /* 设置字体样式为斜体 */
+>            font-style: italic;
+>            padding: 2vh;
+>            text-align: center;
+>            background-color: rgba(39, 21, 28, 0.6);
+>            border-radius: 10px;
+>            /* 设置字体之间的间距 */
+>            letter-spacing: 0.5vw;
+>            /* 设置鼠标样式 接触到之后变成指针样式 */
+>            cursor: pointer;
+>        }
+>        
+>        .ac_game_menu_field_item:hover {
+>            /* 设置缩放效果 */
+>            transform: scale(1.2);
+>            /* 设置秒数 */
+>            transition: 100ms;
+>        }
+>        ```
 >
-> ```javascript
-> <!-- 隐藏菜单界面 方便调试 -->
-> this.menu = new AcGameMenu(this);
-> <!-- 添加此行 -->
-> this.playground = new AcGamePlayground(this);
-> ```
-
-#### 添加点击事件
-
-> 修改菜单界面 进入 `acapp/game/static/js/src/menu/zbase.js`
+>   3.   在 `Acapp/Game/templates/multiends/web.html` 中引入 `game.css` 文件
 >
-> ```javascript
-> class AcGameMenu {
->     constructor(root) {
->         <!-- 找到单人模式的权柄 -->
->         this.$single_mode = this.$menu.find('.ac_game_menu_field_item_single_mode');
->         this.start();
->     }
->     start() {
->         <!-- 添加监听事件 -->
->         this.add_listening_events();
->     }
->     add_listening_events() {
->         <!-- 保存主权柄 -->
->         let outer = this;
->         <!-- 给 single_mode 添加点击事件 -->
->         this.$single_mode.click(function() {
->             <!-- 隐藏菜单界面 -->
->             outer.hide();
->             <!-- 显示玩家界面 -->
->             outer.root.playground.show();
->         });
->     }
->     hide() {
->         <!-- 隐藏函数 -->
->         this.$menu.hide();
->     }
-> }
-> ```
-
-#### 给 `playground` 添加 `css` 样式
-
-> 给玩家界面添加 `css` 样式  进入 `acapp/game/static/css/game.css`
+>        ```html
+>        <!-- 加载 static 文件夹 -->
+>        {% load static %}
+>        <head>
+>            <!-- 引入 css 文件 -->
+>            <link rel="stylesheet" href="{% static 'css/game.css' %}">
+>        </head>
+>        ```
 >
-> ```css
-> .ac_game_playground {
->        width: 100%;
->        height: 100%;
->        user-select: none;
-> }
-> ```
+
+### 玩家 `playground` 界面
+
+#### 编写 `JS` 文件
+
+> 1.   创建 `acapp/game/static/js/src/playground/zbase.js`
+>
+>      ```javascript
+>      class AcGamePlayground {
+>          constructor(root) {
+>              this.root = root;
+>              this.$playground = $(`
+>                  <div class="ac_game_playground"></div>
+>              `);
+>              // 一开始将玩家界面隐藏
+>              this.hide();
+>              // 将玩家界面添加到根界面中
+>              this.root.$ac_game.append(this.$playground);
+>              // 添加启动函数
+>              this.start();
+>          }
+>          start() {
+>              let outer = this;
+>              // 当页面大小发生变化的时候触发此函数
+>              $(window).resize(function() {
+>                  // 调用外部的resize()函数
+>                  outer.resize();
+>              });
+>          }
+>          resize() {
+>              // 获取宽度
+>              this.width = this.$playground.width();
+>              // 获取高度
+>              this.height = this.$playground.height();
+>              // 获取单位
+>              let unit = Math.min(this.width / 16, this.height / 9);
+>              // 宽度占16份
+>              this.width = unit * 16;
+>              // 高度占9份
+>              this.height = unit * 9;
+>              // 获取缩放比例
+>              this.scale = this.height;
+>              // 如果存在地图, 则调用地图的resize()函数
+>              if (this.game_map) {
+>                  this.game_map.resize();
+>              }
+>          }
+>          show(mode) {
+>              // 显示玩家界面
+>              this.$playground.show();
+>              // 获取玩家界面的宽度
+>              this.width = this.$playground.width();
+>              // 获取玩家界面的高度
+>              this.height = this.$playground.height();
+>              // 将地图创建出来
+>              this.game_map = new GameMap(this);
+>              // 当前模式
+>              this.mode = mode;
+>              // 调用resize()函数, 将宽高比设置为16:9
+>              this.resize();
+>          }
+>          hide() { // 隐藏玩家界面
+>              this.$playground.hide();
+>          }
+>      }
+>      ```
+>
+> 2.   在 `Acapp/Game/static/js/src/zbase.js` 里将玩家界面创建出来
+>
+>      ```javascript
+>      // 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字
+>      export class AcGame {
+>          constructor(id) {
+>              // 创建玩家界面
+>              this.playground = new AcGamePlayground(this);
+>          }
+>      }
+>      ```
+>
+> 3.   缩放比例说明
+>
+>      ![572008](img/572008.png)
+
+#### 编写 `CSS` 文件
+
+>   1.   修改 `Acapp/Game/static/css/game.css`
+>
+>        ```css
+>        .ac_game_playground {
+>            width: 100%;
+>            height: 100%;
+>            /* 禁止用户选中 */
+>            user-select: none;
+>            /* 添加一层灰色背景 */
+>            background-color: grey;
+>        }
+>        ```
+
+### 添加点击 `Click` 事件
+
+> 1.   修改 `Acapp/Game/static/js/src/menu/zbase.js`
+>
+>      ```javascript
+>      class AcGameMenu {
+>          constructor(root) {
+>              // 找到单人模式的权柄
+>              this.$single_mode = this.$menu.find('.ac_game_menu_field_item_single_mode');
+>              // 调用启动函数
+>              this.start();
+>          }
+>          start() {
+>              // 添加监听事件
+>              this.add_listening_events();
+>          }
+>          add_listening_events() {
+>              let outer = this; // 保存当前权柄
+>              // 点击单人模式时, 触发此函数
+>              this.$single_mode.click(function() {
+>                  outer.hide(); // 隐藏菜单界面
+>                  outer.root.playground.show("single mode"); // 显示玩家界面
+>              });
+>          }
+>      }
+>      ```
+>
 
 ### 编写游戏引擎
 
-#### 创建游戏引擎的 `JS` 文件
-
-> 创建 `acapp/game/static/js/src/playground/ac_game_object/zbase.js`
+> 1.   创建 `Acapp/Game/static/js/src/playground/ac_game_object/zbase.js`
 >
-> ```javascript
-> let AC_GAME_OBJECTS = [];
+>      ```javascript
+>      let AC_GAME_OBJECTS = [];
+>      class AcGameObject {
+>          constructor() {
+>              // 将所有继承此类的对象加入到此数组中
+>              AC_GAME_OBJECTS.push(this);
+>              // 是否已经执行第一帧
+>              this.has_called_start = false;
+>              // 统计时间间隔
+>              this.timedelta = 0;
+>          }
+>          start() {} // 仅在第一帧执行
+>          update() {} // 从第一帧之后的每一帧都执行
+>          on_destory() {} // 临死之前应该做啥
+>          destory() { // 判处死刑
+>              this.on_destory(); // 临死之前满足你的要求
+>              for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) { // 遍历
+>                  if (AC_GAME_OBJECTS[i] === this) { // 相等就进行删除
+>                      AC_GAME_OBJECTS.splice(i, 1);
+>                      break; // 只删除一个,故跳出循环
+>                  }
+>              }
+>          }
+>      }
+>      let last_timestamp = 0; // 统计时间
+>      let AC_GAME_ANIMATION = function(timestamp) {
+>          // 遍历所有对象
+>          for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
+>              let obj = AC_GAME_OBJECTS[i];
+>              // 如果没有执行第一帧, 则执行
+>              if (!obj.has_called_start) {
+>                  // 执行第一帧
+>                  obj.start();
+>                  // 置为true
+>                  obj.has_called_start = true;
+>              }
+>              else {
+>                  // 计算时间差
+>                  obj.timedelta = timestamp - last_timestamp;
+>                  // 执行第一帧之后的每一帧
+>                  obj.update();
+>              }
+>          }
+>          // 更新时间戳
+>          last_timestamp = timestamp;
+>          // 递归调用
+>          requestAnimationFrame(AC_GAME_ANIMATION);
+>      };
+>      // 第一帧肯定得在外部调用
+>      requestAnimationFrame(AC_GAME_ANIMATION);
+>      ```
 > 
-> class AcGameObject {
->     constructor() {
->         <!-- 将所有继承本类的类对象用列表保存 -->
->         AC_GAME_OBJECTS.push(this);
->         <!-- 判断是否执行过第一帧 -->
->         this.has_called_start = false;
->         <!-- 时间戳 统计时间 -->
->         this.timedelta = 0;
->     }
->     <!-- 只在第一帧执行 -->
->     start() {}
->     <!-- 从第一帧之后的每一帧都执行 -->
->     update() {}
->     <!-- 在被销毁之前执行一次 -->
->     on_destory() {}
->     <!-- 销毁对象 -->
->     destory() {
->         this.on_destory();
->         for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
->             if (AC_GAME_OBJECTS[i] === this) {
->                 <!-- 参数1：位置 参数2：长度 -->
->                 AC_GAME_OBJECTS.splice(i, 1);
->                 break;
->             }
->         }
->     }
-> }
-> 
-> let last_timestamp;
-> let AC_GAME_ANIMATION = function(timestamp) {
->     for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
->         let obj = AC_GAME_OBJECTS[i];
->         <!-- 如果没有执行第一帧 执行第一帧 -->
->         if (!obj.has_called_start) {
->             obj.start();
->             obj.has_called_start = true;
->         }
->         else {
->             <!-- 统计时间间隔 last_timestamp 不用初始化的原因就是第一帧走不到此处 -->
->             obj.timedelta = timestamp - last_timestamp;
->             obj.update();
->         }
->     }
->     last_timestamp = timestamp;
->     requestAnimationFrame(AC_GAME_ANIMATION);
-> };
-> <!-- 绘制动画 通常情况下与屏幕刷新率保持一致 -->
-> <!-- 一般情况下不准 比如函数里面写了个循环100000次 时间戳就不准了 就不是屏幕刷新率了 -->
-> requestAnimationFrame(AC_GAME_ANIMATION);
-> ```
 
-### 编写游戏地图界面
+### 创建游戏地图
 
-#### 创建地图界面的 `JS` 文件
+#### 编写 `JS` 文件
 
-> 创建 `acapp/game/static/js/src/playground/game_map/zbase.js`
+> 1.   创建 `Acapp/Game/static/js/src/playground/game_map/zbase.js`
 >
-> ```javascript
-> class GameMap extends AcGameObject {
->     constructor(playground) {
->         <!-- 调用父类的方法 -->
->         super();
->         this.playground = playground;
->         this.$canvas = $(`
->             <canvas></canvas>
->         `);
->         <!-- 获取画布的权柄 -->
->         this.ctx = this.$canvas[0].getContext('2d');
->         this.ctx.canvas.width = this.playground.width;
->         this.ctx.canvas.height = this.playground.height;
->         this.playground.$playground.append(this.$canvas);
->     }
->     start() {}
->     update() {
->         this.render();
->     }
->     render() {
->         <!-- 给画布添加背景-->
->         this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
->         <!-- 画正方形 -->
->         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
->     }
-> }
-> ```
-
-#### 添加到 `playground`
-
-> 将地图界面添加到玩家界面 进入 `acapp/game/static/js/src/playground/zbase.js`
+>      ```javascript
+>      class GameMap extends AcGameObject {
+>          constructor(playground) {
+>              // 继承父类的所有方法
+>              super();
+>              this.playground = playground;
+>              // 地图
+>              this.$canvas = $(`
+>                  <canvas></canvas>
+>              `);
+>              // 获取地图的权柄
+>              this.ctx = this.$canvas[0].getContext('2d');
+>              // 地图的宽度
+>              this.ctx.canvas.width = this.playground.width;
+>              // 地图的高度
+>              this.ctx.canvas.height = this.playground.height;
+>              // 将地图添加到玩家界面中
+>              this.playground.$playground.append(this.$canvas);
+>          }
+>          start() {}
+>          resize() { // 调整宽高比16:9
+>              // 获取地图的宽度
+>              this.ctx.canvas.width = this.playground.width;
+>              // 获取地图的高度
+>              this.ctx.canvas.height = this.playground.height;
+>              // 覆盖一层不透明的黑色背景
+>              this.ctx.fillStyle = "rgba(0, 0, 0, 1)";
+>              // 画
+>              this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+>          }
+>          update() {
+>              // 渲染地图
+>              this.render();
+>          }
+>          render() {
+>              // 填充颜色
+>              this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+>              // 画正方形, (左上角坐标, 右下角坐标)
+>              this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+>          }
+>      }
+>      ```
 >
-> ```javascript
-> class AcGamePlayground {
->     constructor(root) {
->         this.$playground = $(`
->             <div class = "ac_game_playground"></div>
->         `);
->         <!-- 将玩家界面添加到游戏界面 注意此行务必写在 this.width this.height 之前 -->
->         this.root.$ac_game.append(this.$playground);
->         this.width = this.$playground.width();
->         this.height = this.$playground.height();
->         <!-- 创建地图界面 -->
->         this.game_map = new GameMap(this);
->     }
->     show() {
->         this.$playground.show();
->     }
-> }
-> ```
+> 2.   在 `Acapp/Game/static/js/src/playground/zbase.js` 里将地图创建出来
+>
+>      ```javascript
+>      class AcGamePlayground {
+>          constructor(root) {
+>              // 将地图创建出来
+>              this.game_map = new GameMap(this);
+>          }
+>      }
+>      ```
+
+#### 编写 `CSS` 文件
+
+>   1.   修改 `Acapp/Game/static/css/game.css`
+>
+>        ```c++
+>        .ac_game_playground > canvas {
+>            position: relative;
+>            top: 50%;
+>            left: 50%;
+>            /* 平移给定元素 */
+>            transform: translate(-50%, -50%);
+>        }
+>        ```
 
 ### 创建玩家
 
-#### 创建玩家的 `JS` 文件
+#### 编写 `JS` 文件
 
-> 创建 `acapp/game/static/js/src/playground/player/zbase.js`
+> 1.   创建 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
-> ```javascript
-> class Player extends AcGameObject {
->     constructor(playground, x, y, radius, color) {
->         <!-- 继承父类的方法 -->
->         super();
->         this.playground = playground;
->         <!-- 拿到画布的权柄 -->
->         this.ctx = this.playground.game_map.ctx;
->         this.x = x;
->         this.y = y;
->         this.radius = radius;
->         this.color = color;
->     }
->     start() {}
->     update() {
->         this.render();
->     }
->     render() {
->         <!-- 告诉浏览器开始作画 -->
->         this.ctx.beginPath();
->         this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
->         this.ctx.fillStyle = this.color;
->         this.ctx.fill();
->     }
-> }
-> ```
-
-#### 添加到地图界面
-
-> 将玩家添加到地图中 进入 `acapp/game/static/js/src/playground/zbase.js`
+>      ```javascript
+>      class Player extends AcGameObject {
+>          constructor(playground, x, y, radius, color) {
+>              // 继承父类的方法
+>              super();
+>              this.playground = playground;
+>              // 获取地图的权柄
+>              this.ctx = this.playground.game_map.ctx;
+>              this.x = x;
+>              this.y = y;
+>              this.radius = radius;
+>              this.color = color;
+>          }
+>          start() {}
+>          update() {
+>              // 渲染玩家
+>              this.render();
+>          }
+>          render() {
+>              // 获取新地图的缩放比例,不是旧地图的缩放比例this.scale
+>              let scale = this.playground.scale;
+>              // 告诉浏览器开始作画
+>              this.ctx.beginPath();
+>              // 画圆弧
+>              // 单位坐标✖️缩放比例
+>              this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>              // 拿起当前颜色的画笔
+>              this.ctx.fillStyle = this.color;
+>              // 用当前颜色的画笔进行填充
+>              this.ctx.fill();
+>          }
+>      }
+>      ```
 >
-> ```javascript
-> class AcGamePlayground {
->     constructor(root) {
->         <!-- 创建玩家列表 -->
->         this.players = [];
->         this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, "white"));
->     }
-> }
-> ```
-
-#### 操作玩家移动
-
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js` 
+> 2.   在 `Acapp/Game/static/js/src/playground/zbase.js` 里将玩家创建出来
 >
-> ```javascript
-> class Player extends AcGameObject {
->     constructor(speed, is_me) {
->         <!-- 添加两个属性 玩家移动的速度 是否是玩家本人 -->
->         this.speed = speed;
->         this.is_me = is_me;
->     }
->     start() {
->         if (this.is_me) {
->             this.add_listening_events();
->         }
->     }
->     add_listening_events() {
->         let outer = this;
->         <!-- 禁用鼠标右键功能 -->
->         this.playground.game_map.$canvas.on("contextmenu", function() {
->             return false;
->         });
->         this.playground.game_map.$canvas.mousedown(function(e) {
->             <!-- 如果按下的是右键 -->
->             if (e.which == 3) {
->                 console.log("click me");
->             }
->         });
->     }
-> }
-> ```
+>      ```javascript
+>      class AcGamePlayground {
+>          show() {
+>              // 创建玩家列表
+>              this.players = [];
+>              // 将玩家插入玩家列表
+>              // 宽度寸的是比例
+>              this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white"));
+>          }
+>      }
+>      ```
 
-#### 给玩家添加速度等属性
+### 操作玩家移动
 
-> 修改 `acapp/game/static/js/src/playground/zbase.js`
+> 1.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js` 
 >
-> ```javascript
-> <!-- 更新 player 的属性 将速度和标志加上-->
-> this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, "white", this.height * 0.2, true));
-> ```
-
-#### 计算玩家移动距离
-
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>      ```javascript
+>      class Player extends AcGameObject {
+>          constructor(playground, x, y, radius, color, speed, character) {
+>              this.vx = 0; // x轴上的移动速度
+>              this.vy = 0; // y轴上的移动速度
+>              this.speed = speed;
+>              this.move_length = 0; // 移动距离
+>              this.character = character; // 当前的角色
+>              this.eps = 1e-4; // 极小值
+>          }
+>          start() {
+>              // 如果当前的角色是本人
+>              if (this.character === "me") {
+>                  // 添加监听事件
+>                  this.add_listening_events();
+>              }
+>          }
+>          add_listening_events() {
+>              let outer = this;
+>              // 禁用鼠标右键功能
+>              this.playground.game_map.$canvas.on("contextmenu", function() {
+>                  return false;
+>              });
+>              this.playground.game_map.$canvas.mousedown(function(e) {
+>                  // 注意: 此句话位置处于mousedown函数里面
+>                  const rect = outer.ctx.canvas.getBoundingClientRect();
+>                  if (e.which === 3) { // 点击右键
+>                      // 获取相对距离
+>                      let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                      let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                      // 移动
+>                      outer.move_to(tx, ty);
+>                  }
+>              });
+>          }
+>          update() {
+>              // 更新移动
+>              this.update_move();
+>              // 渲染
+>              this.render();
+>          }
+>          update_move() {
+>              // 如果当前剩余的距离小于this.eps, 则认为其已经到达目的地
+>              if (this.move_length < this.eps) {
+>                  // 将速度和移动距离设置为0
+>                  this.vx = this.vy = this.move_length = 0;
+>              }
+>              else {
+>                  // 获取移动距离, 取较小值
+>                  let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+>                  // 获取x轴的移动距离
+>                  this.x += this.vx * moved;
+>                  // 获取y轴的移动距离
+>                  this.y += this.vy * moved;
+>                  // 剩余距离减去移动的距离
+>                  this.move_length -= moved;
+>              }
+>          }
+>          get_dist(x1, y1, x2, y2) { // 计算欧几里得距离
+>              let dx = x1 - x2;
+>              let dy = y1 - y2;
+>              return Math.sqrt(dx * dx + dy * dy);
+>          }
+>          move_to(tx, ty) {
+>              // 获取距离
+>              this.move_length = this.get_dist(this.x, this.y, tx, ty);
+>              // 获取角度
+>              let angle = Math.atan2(ty - this.y, tx - this.x);
+>              // 获取x轴的角度
+>              this.vx = Math.cos(angle);
+>              // 获取y轴的角度
+>              this.vy = Math.sin(angle);
+>          }
+>      }
+>      ```
 >
-> ```javascript
-> class Player extends AcGameObject {
->     constructor(playground, x, y, radius, color, speed, is_me) {
->         <!-- 小球移动的长度 -->
->         this.move_length = 0;
->         <!-- 小球移动的最小值 -->
->         this.eps = 0.1;
->     }
->     add_listening_events() {
->         this.playground.game_map.$canvas.mousedown(function(e) {
->             if (e.which == 3) {
->                 <!-- 获取鼠标点击的横、纵坐标位置 -->
->                 outer.move_to(e.clientX, e.clientY);
->             }
->         });
->     }
->     get_dist(x1, y1, x2, y2) {
->         let dx = x1 - x2;
->         let dy = y1 - y2;
->         return Math.sqrt(dx * dx + dy * dy);
->     }
->     <!-- 让小球移动到 tx、ty 位置 -->
->     move_to(tx, ty) {
->         <!-- 计算距离 -->
->         this.move_length = this.get_dist(this.x, this.y, tx, ty);
->         <!-- 计算角度 -->
->         <!-- [atan2 维基百科](https://zh.wikipedia.org/wiki/Atan2) -->
->         let angle = Math.atan2(ty - this.y, tx - this.x);
->         <!-- 水平方向的分角度 -->
->         this.vx = Math.cos(angle);
->         <!-- 垂直方向的分角度 -->
->         this.vy = Math.sin(angle);
->     }
->     update() {
->         <!-- 如果移动的长度小于最小值 就认为已经到达目标值 -->
->         if (this.move_length < this.eps) {
->             <!-- 将变量置为 0 -->
->             this.move_length = this.vx = this.vy = 0;
->         }
->         else {
->             <!-- 计算移动的长度 注意 取较小值 因为有可能会越界 原因 this.timedelta 随着时间增加值越来越大 -->
->             let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
->             <!-- 水平方向的新位置等于 水平速度 * 移动距离 -->
->             this.x += this.vx * moved;
->             <!-- 垂直方向的新位置等于 垂直速度 * 移动距离 -->
->             this.y += this.vy * moved;
->             <!-- 将当前移动的距离剪掉 -->
->             this.move_length -= moved;
->         }
->         this.render();
->     }
-> }
-> ```
+> 2.   在 `Acapp/Game/static/js/src/playground/zbase.js` 里更新玩家的属性
+>
+>      ```javascript
+>      class AcGamePlayground {
+>          show() {
+>              // 宽度存的是比例
+>              this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.2, "me"));
+>          }
+>      }
+>      ```
+>
+> 3.   相关函数解释
+>
+>      +   `Element.getBoundingClientRect()`
+>
+>          >   1.   含义: `Element.getBoundingClientRect()` 方法返回元素的大小及其相对于视口的位置
+>          >
+>          >   2.   解释
+>          >
+>          >        ![DOMRect 示例图](img/rect.png)
+>
+>      +   `Math.atan2()`
+>
+>          >   1.   含义: `Math.atan2()` 返回从原点 `(0,0)` 到 `(x,y)` 点的线段与<font style="color: red"> `x` 轴正方向</font>之间的平面角度(弧度值)，也就是 `Math.atan2(y,x)`
+>
 
 ### 让玩家发射炮弹
 
-#### 创建炮弹的 `JS` 文件
+#### 编写 `JS` 文件
 
-> 创建炮弹类 `acapp/game/static/js/src/playground/skill/fireball`
+>   1.   创建 `Acapp/Game/static/js/src/playground/skill/fireball/zbase.js`
 >
-> ```javascript
-> class FireBall extends AcGameObject {
->     constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length) {
->         super();
->         this.playground = playground;
->         this.player = player;
->         <!-- 获取画布的权柄 -->
->         this.ctx = this.playground.game_map.ctx;
->         this.x = x;
->         this.y = y;
->         this.radius = radius;
->         this.vx = vx;
->         this.vy = vy;
->         this.color = color;
->         this.speed = speed;
->         this.move_length = move_length;
->         <!-- 获取最小值 -->
->         this.eps = 0.1;
->     }
->     update() {
->         if (this.move_length < this.eps) {
->             return false;
->         }
->         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
->         this.x += this.vx * moved;
->         this.y += this.vy * moved;
->         this.move_length -= moved;
->         this.render();
->     }
->     render() {
->         this.ctx.beginPath();
->         this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
->         this.ctx.fillStyle = this.color;
->         this.ctx.fill();
->     }
-> }
-> ```
+>        ```javascript
+>        class FireBall extends AcGameObject {
+>            constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length) {
+>                super();
+>                this.playground = playground;
+>                this.player = player;
+>                // 获取画布的权柄
+>                this.ctx = this.playground.game_map.ctx;
+>                this.x = x;
+>                this.y = y;
+>                this.radius = radius;
+>                this.vx = vx;
+>                this.vy = vy;
+>                this.color = color;
+>                this.speed = speed;
+>                this.move_length = move_length;
+>                // 极小值
+>                this.eps = 1e-4;
+>            }
+>            update() {
+>                // 移动距离为0
+>                if (this.move_length < this.eps) {
+>                    return false;
+>                }
+>                // 获取移动距离
+>                let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+>                // 获取x轴的坐标
+>                this.x += moved * this.vx;
+>                // 获取y轴的坐标
+>                this.y += moved * this.vy;
+>                // 当前剩余的距离减去移动的距离
+>                this.move_length -= moved;
+>                // 渲染
+>                this.render();
+>            }
+>            render() {
+>                // 告诉浏览器开始作画
+>                this.ctx.beginPath();
+>                // 圆弧的参数
+>                this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+>                // 使用的颜色
+>                this.ctx.fillStyle = this.color;
+>                // 一切准备就绪, 画!!
+>                this.ctx.fill();
+>            }
+>        }
+>        ```
+>
+>   2.   修改 
+>
+>   3.   相关函数解释
+>
+>        +   `Image()`
+>
+>            >   1.   含义: `Image()`函数将会创建一个新的[`HTMLImageElement`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLImageElement)实例,它的功能等价于 [`document.createElement('img')`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/createElement)
+>            >
+>            >   2.   解释
+>            >
+>            >        ```javascript
+>            >        var myImage = new Image(100, 200);
+>            >        myImage.src = 'picture.jpg';
+>            >        document.body.appendChild(myImage);
+>            >        ```
+>            >
+>            >        等价于
+>            >
+>            >        ```javascript
+>            >        <img width="100" height="200" src="picture.jpg">
+>            >        ```
+>
+>        +   `CanvasRenderingContext2D.save()`
+>
+>            >   1.   含义: `CanvasRenderingContext2D.save()` 是 `Canvas 2D API` 通过将当前状态放入栈中，保存 `canvas` 全部状态的方法
 
 #### 添加到玩家手中
 
@@ -3063,15 +3269,15 @@
 >            ```python
 >            from channels.generic.websocket import AsyncWebsocketConsumer
 >            import json
->                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                           
 >            class MultiPlayer(AsyncWebsocketConsumer):
 >                async def connect(self):
 >                    await self.accept()
 >                    print('accept')
->                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                           
 >                    self.room_name = "room"
 >                    await self.channel_layer.group_add(self.room_name, self.channel_name)
->                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                           
 >                async def disconnect(self, close_code):
 >                    print('disconnect')
 >                    await self.channel_layer.group_discard(self.room_name, self.channel_name);
@@ -3081,11 +3287,11 @@
 >                    data = json.loads(text_data)
 >                    print(data)
 >            ```
->                                                                                                            
+>                                                                                                                                                                        
 >        +   启动 `django_channels`
->                                                                                                        
+>                                                                                                                                                                    
 >            在 `~/acapp` 目录下执行：
->                                                                                                        
+>                                                                                                                                                                    
 >            ```bash
 >            daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
 >            ```
@@ -3265,7 +3471,7 @@ class MultiPlayerSocket {
 >        ```python
 >        from django.conf import settings # 导入全局设置
 >        from django.core.cache import cache # 导入redis数据库
->                                                                                                                 
+>                                                                                                                                                                                            
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            async def connect(self):
 >                self.room_name = None
@@ -4821,14 +5027,14 @@ class MultiPlayerSocket {
 >
 >        ```c++
 >        namespace cpp match_service // 命名空间
->                            
+>                                                                                                       
 >        // 定义玩家的结构体
 >        struct User {
 >            1: i32 id,
 >            2: string name,
 >            3: i32 score
 >        }
->                            
+>                                                                                                       
 >        // 定义类
 >        service Match {
 >            /**
@@ -5041,38 +5247,38 @@ class MultiPlayerSocket {
 >        from match_client.match import Match
 >        from match_client.match.ttypes import User
 >        from sys import stdin
->                  
+>                                                                                             
 >        def operate(op, user_id, username, score):
 >            # Make socket
 >            transport = TSocket.TSocket('127.0.0.1', 9090)
->                  
+>                                                                                             
 >            # Buffering is critical. Raw sockets are very slow
 >            transport = TTransport.TBufferedTransport(transport)
->                  
+>                                                                                             
 >            # Wrap in a protocol
 >            protocol = TBinaryProtocol.TBinaryProtocol(transport)
->                  
+>                                                                                             
 >            # Create a client to use the protocol encoder
 >            client = Match.Client(protocol)
->                  
+>                                                                                             
 >            # Connect!
 >            transport.open()
->                  
+>                                                                                             
 >            user = User(user_id, username, score)
->                  
+>                                                                                             
 >            if op == "add":
 >                client.add_user(user, "")
 >            elif op == "remove":
 >                client.remove_user(user, "")
->                  
+>                                                                                             
 >            # Close!
 >            transport.close()
->                  
+>                                                                                             
 >        def main():
 >            for line in stdin:
 >                op, user_id, username, score = line.split(' ')
 >                operate(op, int(user_id), username, int(score))
->                  
+>                                                                                             
 >        if __name__ == "__main__":
 >            main()
 >        ```
@@ -5149,11 +5355,310 @@ class MultiPlayerSocket {
 >
 >   4.   运行 `main.py` 文件 `./main.py`
 >
->   到1时10分
+>   5.   修改 `acapp/asgi.py`
 >
->   bug待修: 建议从1时5分开始查看
+>        ```python
+>        """
+>        ASGI config for acapp project.
+>        
+>        It exposes the ASGI callable as a module-level variable named ``application``.
+>        
+>        For more information on this file, see
+>        https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
+>        """
+>        import os
+>        import django # 导入Django
+>        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'acapp.settings')
+>        django.setup() # 开启Django
+>        from channels.auth import AuthMiddlewareStack
+>        from channels.routing import ProtocolTypeRouter, URLRouter
+>        from django.core.asgi import get_asgi_application
+>        from game.routing import websocket_urlpatterns
+>        from channels.layers import get_channel_layer # 导入此包
+>        channel_layer = get_channel_layer() # 记录
+>        
+>        application = ProtocolTypeRouter({
+>            "http": get_asgi_application(),
+>            "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+>        })
+>        ```
 >
->   bug内容: 点击多人模式不显示玩家信息
+>   6.   修改数据库信息 `acapp/game/models/player/player.py`
+>
+>        ```python
+>        from django.db import models
+>        from django.contrib.auth.models import User
+>        class Player(models.Model):
+>            user = models.OneToOneField(User, on_delete = models.CASCADE)
+>            photo = models.URLField(max_length = 256, blank = True)
+>            openid = models.CharField(default = '', max_length = 50, blank = True, null = True)
+>            score = models.IntegerField(default=1500) # 初始分数1500分
+>            def __str__(self):
+>                return str(self.user)
+>        ```
+>
+>   7.   更新数据库
+>
+>        +   `python3 manage.py makemigrations`
+>        +   `python3 manage.py migrate`
+>
+>   8.   重启服务, 否则, 数据库不生效
+>
+
+## 收尾工作
+
+### 加密、压缩 `js` 代码
+
+>   1.   安装 `terser`:
+>
+>        ```bash
+>        sudo apt-get update # 更新软件源
+>        sudo apt-get install npm # node.js的包管理软件
+>        # 创建文件夹.npm [统一存储, 非常的方便]
+>        # 进入.npm
+>        # 运行命令, 进行安装
+>        sudo npm install terser -g # 安装terser
+>        ```
+>
+>   2.   注意事项:
+>
+>        +   `terser` 不仅支持文件输入, 同时也支持标准输入, 结果会输出到标准输出中
+>
+>   3.   使用方式:
+>
+>        +   `terser xxx.js -c -m`
+>
+>   4.   修改 `acapp/scripts/compress_game_js.sh`
+>
+>        ```shell
+>        #! /bin/bash
+>                                                               
+>        JS_PATH=/home/django/acapp/game/static/js
+>        JS_PATH_DIST=${JS_PATH}/dist
+>        JS_PATH_SRC=${JS_PATH}/src
+>                                                               
+>        # 将结果过一遍terser -c -m即可
+>        find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat | terser -c -m > ${JS_PATH_DIST}/game.js
+>        echo yes | python3 manage.py collectstatic
+>        ```
+
+### 清理监听函数
+
+>   1.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        // 创建唯一编号uuid
+>        create_uuid() {
+>            let res = "";
+>            for (let i = 0; i < 8; i ++ ) {
+>                // 返回0~9的随机数字
+>                let x = parseInt(Math.floor(Math.random() * 10));
+>                res += x;
+>            }
+>            return res;
+>        }
+>        start() {
+>            let outer = this;
+>            let uuid = this.create_uuid();
+>            // 使用on绑定当前的窗口
+>            // 当前窗口可能有多个, 故使用uuid来区分唯一窗口
+>            $(window).on(`resize.${uuid}`, function() {
+>                console.log("resize");
+>                outer.resize();
+>            });
+>            // 如果当前窗口是acapp端
+>            if (this.root.AcWingOS) {
+>                // 如果当前的窗口被关闭
+>                this.root.AcWingOS.api.window.on_close(function() {
+>                    // 关闭相对应的事件
+>                    $(window).off(`resize.${uuid}`);
+>                });
+>            }
+>        }
+>        ```
+>
+>   2.   注意事项
+>
+>        +   同一个页面中，多个 `acapp` 引入的 `js` 代码只会加载一次，因此 `AC_GAME_OBJECTS` 等全局变量是同一个页面、同一个 `acapp` 的所有窗口共用的。
+>        +   各自创建的局部变量是独立的，比如 `new AcGame()` 创建出的对象各个窗口是独立的。
+
+### 编写结束界面
+
+>   1.   创建 `acapp/game/static/js/src/playground/score_board/zbase.js`
+>
+>        ```javascript
+>        class ScoreBoard extends AcGameObject {
+>            constructor(playground) {
+>                super(); // 继承父类的方法
+>                this.playground = playground;
+>                this.ctx = this.playground.game_map.ctx;
+>                this.state = null; // win: 胜利, lose: 失败
+>                this.win_img = new Image(); // 创建图片对象
+>                // 图片地址
+>                this.win_img.src = "https://cdn.acwing.com/media/article/image/2021/12/17/1_8f58341a5e-win.png";
+>                this.lose_img = new Image(); // 创建图片对象
+>                // 图片地址
+>                this.lose_img.src = "https://cdn.acwing.com/media/article/image/2021/12/17/1_9254b5f95e-lose.png";
+>            }
+>            start() {}
+>            win() {}
+>            lose() {}
+>            update() {
+>                this.render();
+>            }
+>            render() {
+>                let len = this.playground.height / 2;
+>                if (this.state === "win") {
+>                    /**
+>                     * 参数1: 图片
+>                     * 参数2和参数3: 左上角的坐标(x, y)
+>                     * 参数4和参数5: 图片的宽和高
+>                     */
+>                    this.ctx.drawImage(this.win_img, this.playground.width / 2 - len / 2, this.playground.height / 2 - len / 2, len, len);
+>                }
+>                else if (this.state === "lose") {
+>                    /**
+>                     * 参数1: 图片
+>                     * 参数2和参数3: 左上角的坐标(x, y)
+>                     * 参数4和参数5: 图片的宽和高
+>                     */
+>                    this.ctx.drawImage(this.lose_img, this.playground.width / 2 - len / 2, this.playground.height / 2 - len / 2, len, len);
+>                }
+>            }
+>        }
+>        ```
+>
+>   2.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                // 创建分数板
+>                this.score_board = new ScoreBoard(this);
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `acapp/game/static/js/src/playground/ac_game_object/zbase.js`
+>
+>        ```javascript
+>        class AcGameObject {
+>            late_update() {} // 在每一帧的最后执行一次
+>        }
+>        let AC_GAME_ANIMATION = function(timestamp) {
+>            // 在每一帧的最后需要再次执行此函数
+>            for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
+>                let obj = AC_GAME_OBJECTS[i];
+>                obj.late_update();
+>            }
+>        };
+>        ```
+>
+>   4.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            hide() {
+>                // 清除多余的对象
+>                // 如果存在玩家, 则将其删除
+>                while (this.players && this.players.length > 0) {
+>                    this.players[0].destory();
+>                }
+>                if (this.game_map) {
+>                    this.game_map.destory();
+>                    this.game_map = null;
+>                }
+>                if (this.notice_board) {
+>                    this.notice_board.destory();
+>                    this.notice_board = null;
+>                }
+>                if (this.score_board) {
+>                    this.score_board.destory();
+>                    this.score_board = null;
+>                }
+>                this.$playground.empty(); // html置空
+>                this.$playground.hide();
+>            }
+>        }
+>        ```
+>
+>   5.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        update() {
+>            this.spent_time += this.timedelta / 1000; // 移动到此处位置
+>            this.update_win(); // 查看当前是否胜利
+>            // 只有当前的角色为自己并且当前对局的状态为fighting, 才更新冷却时间
+>            if (this.character === "me" && this.playground.state === "fighting") {
+>                this.update_coldtime(); // 更新冷却时间
+>            }
+>            this.update_move();
+>            this.render();
+>        }
+>        update_win() { // 查看当前是否胜利
+>            // 如果当前正处于对局状态并且当前角色是自己并且当前只剩最后一名玩家
+>            if (this.playground.state === "fighting" && this.character === "me" && this.playground.players.length === 1) {
+>                this.playground.state = "over"; // 更新对局状态
+>                this.playground.score_board.win(); // 调用胜利函数
+>            }
+>        }
+>        on_destory() {
+>            if (this.character === "me") { // 如果当前角色为自己本身
+>                if (this.playground.state === "fighting") { // 如果当前是战斗状态
+>                    this.playground.state = "over"; // 去世之后, 则更新状态为over, 表示已结束
+>                    this.playground.score_board.lose(); // 调用失败函数
+>                }
+>            }
+>        }
+>        ```
+
+### 战绩更新
+
+>   修改 `acapp/game/consumers/multiplayer/index.py`
+>
+>   ```python
+>   async def attack(self, data): # 攻击函数
+>   	if not self.room_name: # 如果房间不存在, 则直接返回
+>   		return
+>   	players = cache.get(self.room_name) # 取出玩家
+>   	if not players: # 如果玩家不存在, 则直接返回
+>   		return
+>   	for player in players: # 遍历每一名玩家
+>   		if player['uuid'] == data['attackee_uuid']: # 如果当前玩家是被攻击者, 则将其血量减少25
+>   			player['hp'] -= 25
+>   	remain_cnt = 0 # 剩余玩家的数量
+>      	for player in players:
+>   		if player['hp'] > 0:
+>   			remain_cnt += 1 # 统计剩余玩家的数量
+>   	if remain_cnt > 1: # 如果剩余玩家的数量多于1个
+>   		if self.room_name: # 如果当前房间还存在, 非常极限的情况, 房间已经被销毁
+>   			cache.set(self.room_name, players, 3600) # 1个小时之后, 自动销毁
+>   	else: # 如果当前只剩一个玩家
+>   		def db_update_player_score(username, score): # 数据库操作, 必须使用函数进行操作!!!切记!!!
+>   			player = Player.objects.get(user__username=username) # 根据用户名获取玩家
+>   			player.score += score # 更新战绩
+>   			player.save() # 保存战绩
+>   		for player in players: # 遍历每一名玩家
+>   			if player['hp'] <= 0: # 如果当前玩家已经失败, 分数-5
+>   				# 注意: 使用await
+>   				await database_sync_to_async(db_update_player_score)(player['username'], -5)
+>   			else: # 如果当前玩家胜利, 分数+10
+>   				# 注意: 使用 await
+>   				await database_sync_to_async(db_update_player_score)(player['username'], 10)
+>   ```
+
+### 添加图标
+
+>   修改 `acapp/game/templates/multiends/web.html`
+>
+>   ```html
+>   <head>
+>       <!-- 添加网站图标 -->
+>       <link rel="icon" href="">
+>   </head>
+>   ```
+>
+>   
 
 # 注意事项
 
