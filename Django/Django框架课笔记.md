@@ -30,7 +30,7 @@
 >   6. 在 `Acapp/Acapp/settings.py` 将 `static` 文件夹加入地址路径
 >
 >       ```python
->       STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+>       STATIC_ROOT = BASE_DIR / 'static'
 >       ```
 >
 >   7. 在 `Acapp/` 下创建 `APP` 应用 `python3 manage.py startapp Game`
@@ -73,8 +73,6 @@
 >            <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
 >            <!-- 引入 jquery js 文件 -->
 >            <script src="https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
->            <!-- 引入网站图标 -->
->            <link rel="icon" href="https://cdn.acwing.com/media/article/image/2021/12/17/1_be4c11ce5f-acapp.png">
 >        </head>
 >        <!-- 将 body 的外边框设置为 0px 更加美观 -->
 >        <body style="margin: 0px;">
@@ -82,7 +80,21 @@
 >        </body>
 >        ```
 >
->   5.   在 `Acapp/Game/views/index.py` 里设置 `Game` 的 `VIEW`
+>   5.   设置网站的 [logo](https://cdn.acwing.com/media/article/image/2021/12/17/1_be4c11ce5f-acapp.png)
+>
+>        修改 `Acapp/Acapp/urls.py`
+>
+>        ```python
+>        from django.conf.urls import url # 导入url
+>        from django.views.generic.base import RedirectView # 导入重定向函数
+>        
+>        urlpatterns = [
+>            # 当请求favicon.ico的时候, 重定向到图片的位置即可
+>            url(r'^favicon\.ico$',RedirectView.as_view(url=r'static/image/favicon.ico')),
+>        ]
+>        ```
+>
+>   6.   在 `Acapp/Game/views/index.py` 里设置 `Game` 的 `VIEW`
 >
 >        ```python
 >        from django.shortcuts import render
@@ -98,23 +110,35 @@
 >        >
 >        >        +   `django.template.loaders.filesystem.Loader` 它会遍历所有 `app` 中的 `templates` 然后找到符合名字的就返回
 >        >
->        >        +   `django.template.loaders.app_directories.Loader` 它会从 `app` 对应的 `templates` ⽬录中查找要渲染的模板⽂件,即使找不到也不去其
->        >            他 `app` ⾥⾯找
->        >
+>        >        +   `django.template.loaders.app_directories.Loader` 它会从 `app` 对应的 `templates` ⽬录中查找要渲染的模板⽂件,即使找不到也不去其他 `app` ⾥⾯找
+>        >            
 >        >            ![541928](img/541928.png)
->        >
+>        >            
 >        >        +   `APP_DIRS` 的值设置为 `TRUE` ,表⽰启⽤`django.template.loaders.app_directories.Loader`, `DIRS` 为空即可.
 >        >
 >        >        +   如果不设置 `APP_DIRS` 或者设置为 `False`,则启⽤ `django.template.loaders.filesystem.Loader` 模式,这个模式需要把 `DIRS` 设置好,要不然找不到任何模板
 >        >
 >        >   2.   在 `Acapp/Acapp/settings.py` 将当前新建的 `App` 的模板加入到 `Django` 项目中
 >        >
+>        >   3.   将 `Django` 自带的模板文件加载到项目根目录, 比如,后台管理页面, `404` 页面等等
+>        >
+>        >        +   将 `Django` 自带的模板文件夹复制到项目根目录下
+>        >
+>        >            ```bash
+>        >            cp -r /usr/local/lib/python3.8/dist-packages/django/contrib/admin/templates ~/Acapp
+>        >            ```
+>        >
+>        >        +   在 `Acapp/Acapp/settings.py` 将 `~/Acapp/templates` 添加到 `Django` 项目中
+>        >
+>        >   4.   添加后的 `Acapp/Acapp/settings.py` 代码如下
+>        >
 >        >        ```python
 >        >        TEMPLATES = [
 >        >            {
 >        >                'BACKEND': 'django.template.backends.django.DjangoTemplates',
 >        >                'DIRS': [
->        >                    os.path.join(BASE_DIR, 'Game/templates') # 加入app的模板路径
+>        >                    BASE_DIR / 'templates', # 导入Django的admin目录
+>        >                    BASE_DIR / 'Game/templates' # 加入app的模板路径
 >        >                ],
 >        >                'APP_DIRS': False, # 设置为False
 >        >                'OPTIONS': {
@@ -129,14 +153,14 @@
 >        >        ]
 >        >        ```
 >
->   6.   在 `Acapp/Game/urls/index.py` 里引入视图函数 `index`
+>   7.   在 `Acapp/Game/urls/index.py` 里引入视图函数 `index`
 >
 >        ```python
 >        from django.urls import path
 >        from Game.views.index import index # 导入index函数
->                                                
+>                       
 >        urlpatterns = [
->            path('', index, name = 'index') # 添加路由
+>            path('', index, name='index') # 添加路由
 >        ]
 >        ```
 
@@ -152,8 +176,6 @@
 >            <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
 >            <!-- 引入 jquery js 文件 -->
 >            <script src="https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
->            <!-- 引入网站图标 -->
->            <link rel="icon" href="https://cdn.acwing.com/media/article/image/2021/12/17/1_be4c11ce5f-acapp.png">
 >        </head>
 >        <!-- 将 body 的外边框设置为 0px 更加美观 -->
 >        <body style="margin: 0px;">
@@ -167,11 +189,11 @@
 >            </script>
 >        </body>
 >        ```
->
+>        
 >   2.   在 `Acapp/Game/static/js/src` 下创建根 `Js` 文件 `zbase.js`
 >
 >        ```javascript
->        // 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字
+>       // 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字
 >        export class AcGame {
 >            constructor(id) {
 >                // id 即为传进来的id 名称
@@ -180,32 +202,30 @@
 >                this.$ac_game = $('#' + id);
 >            }
 >        }
->        ```
->
+>       ```
+>   
 >   3.   在 `Acapp/scripts/compress_game_js.sh` 里写入内容
 >
 >        ```shell
->        #! /bin/bash
->                                           
+>       #! /bin/bash
+>                     
 >        JS_PATH=/home/django/Acapp/Game/static/js # js路径
->        JS_PATH_DIST=${JS_PATH}/dist # 压缩文件夹
+>                                                                                                  JS_PATH_DIST=${JS_PATH}/dist # 压缩文件夹
 >        JS_PATH_SRC=${JS_PATH}/src # 源文件夹
 >        find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat > ${JS_PATH_DIST}/game.js # 压缩文件
->        ```
->
+>       ```
+>   
 >        给 `compress_game_js.sh` 添加可执行权限
 >
 >        ```shell
->        chmod +x compress_game_js.sh
+>       chmod +x compress_game_js.sh
 >        ```
 
-# 界面设置
+# 前端界面
 
-## 前端界面
+## 菜单 `menu` 界面
 
-### 菜单 `menu` 界面
-
-#### 编写 `JS` 文件
+### 编写 `JS` 文件
 
 >   1.   创建 `Acapp/Game/static/js/src/menu/zbase.js`
 >
@@ -225,7 +245,7 @@
 >                            </div>
 >                            <br>
 >                            <div class="ac_game_menu_field_item ac_game_menu_field_item_settings">
->                                设置
+>                                退出
 >                            </div>
 >                        </div>
 >                    </div>
@@ -254,7 +274,7 @@
 >        }
 >        ```
 
-#### 编写 `CSS` 文件
+### 编写 `CSS` 文件
 
 >   1.   下载背景图片
 >
@@ -324,9 +344,9 @@
 >        ```
 >
 
-### 玩家 `playground` 界面
+## 玩家 `playground` 界面
 
-#### 编写 `JS` 文件
+### 编写 `JS` 文件
 
 > 1.   创建 `acapp/game/static/js/src/playground/zbase.js`
 >
@@ -406,7 +426,7 @@
 >
 >      ![572008](img/572008.png)
 
-#### 编写 `CSS` 文件
+### 编写 `CSS` 文件
 
 >   1.   修改 `Acapp/Game/static/css/game.css`
 >
@@ -421,7 +441,7 @@
 >        }
 >        ```
 
-### 添加点击 `Click` 事件
+## 添加点击 `Click` 事件
 
 > 1.   修改 `Acapp/Game/static/js/src/menu/zbase.js`
 >
@@ -449,7 +469,7 @@
 >      ```
 >
 
-### 编写游戏引擎
+## 编写游戏引擎
 
 > 1.   创建 `Acapp/Game/static/js/src/playground/ac_game_object/zbase.js`
 >
@@ -506,9 +526,9 @@
 >      ```
 > 
 
-### 创建游戏地图
+## 创建游戏地图
 
-#### 编写 `JS` 文件
+### 编写 `JS` 文件
 
 > 1.   创建 `Acapp/Game/static/js/src/playground/game_map/zbase.js`
 >
@@ -566,7 +586,7 @@
 >      }
 >      ```
 
-#### 编写 `CSS` 文件
+### 编写 `CSS` 文件
 
 >   1.   修改 `Acapp/Game/static/css/game.css`
 >
@@ -580,9 +600,7 @@
 >        }
 >        ```
 
-### 创建玩家
-
-#### 编写 `JS` 文件
+## 创建玩家
 
 > 1.   创建 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
@@ -634,7 +652,7 @@
 >      }
 >      ```
 
-### 操作玩家移动
+## 操作玩家移动
 
 > 1.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js` 
 >
@@ -740,9 +758,7 @@
 >          >   1.   含义: `Math.atan2()` 返回从原点 `(0,0)` 到 `(x,y)` 点的线段与<font style="color: red"> `x` 轴正方向</font>之间的平面角度(弧度值)，也就是 `Math.atan2(y,x)`
 >
 
-### 让玩家发射炮弹
-
-#### 编写 `JS` 文件
+## 让玩家发射炮弹
 
 >   1.   创建 `Acapp/Game/static/js/src/playground/skill/fireball/zbase.js`
 >
@@ -768,6 +784,7 @@
 >            update() {
 >                // 移动距离为0
 >                if (this.move_length < this.eps) {
+>                    this.destory(); // 将此炮弹删除
 >                    return false;
 >                }
 >                // 获取移动距离
@@ -792,14 +809,161 @@
 >                this.ctx.fill();
 >            }
 >        }
->        ```
->
->   2.   修改 
->
+>     ```
+>   
+>2.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
+>   
+>        ```javascript
+>        class Player extends AcGameObject {
+>            constructor(playground, x, y, radius, color, speed, character) {
+>                this.move_length = 0; // 移动距离
+>                this.character = character; // 当前的角色
+>                this.cur_skill = null; // 当前的技能
+>                this.eps = 1e-4; // 极小值
+>                this.fireballs = []; // 保存当前玩家发射的所有的炮弹
+>                if (this.character === "me") { // 如果当前玩家是自己本身
+>                    this.fireball_img = new Image(); // 创建图片对象
+>                    // 图片地址
+>                    // 注意: 图片地址从static开始寻找
+>                    // 自己输出路径查看, 就知哪里出错
+>                    this.fireball_img.src = "/static/image/playground/fireball.png";
+>                }
+>            }
+>            start() {
+>                // 如果当前的角色是本人
+>                if (this.character === "me") {
+>                    // 添加监听事件
+>                    this.add_listening_events();
+>                }
+>            }
+>            add_listening_events() {
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    // 注意: 此句话位置处于mousedown函数里面
+>                    const rect = outer.ctx.canvas.getBoundingClientRect();
+>                    if (e.which === 3) { // 点击右键
+>                        // 获取相对距离
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        // 移动
+>                        outer.move_to(tx, ty);
+>                    }
+>                    else if (e.which === 1) { // 点击左键
+>                        let tx = (e.clientX - rect.left) / outer.playground.scale;
+>                        let ty = (e.clientY - rect.top) / outer.playground.scale;
+>                        if (outer.cur_skill === "fireball") {
+>                            // 如果技能冷却时间还没有结束, 返回false
+>                            if (outer.fireball_coldtime > outer.eps) {
+>                                return false;
+>                            }
+>                            // 发射子弹
+>                            let fireball = outer.shoot_fireball(tx, ty);
+>                        }
+>                        // 清空技能
+>                        outer.cur_skill = null;
+>                    }
+>                });
+>                // 监测键盘的动向
+>                $(window).keydown(function(e) {
+>                    if (e.which === 81) { // 点击Q键
+>                        // 如果技能冷却未结束, 返回true
+>                        if (outer.fireball_coldtime > outer.eps) {
+>                            return true;
+>                        }
+>                        // 将技能赋值为fireball, 表明当前的技能
+>                        outer.cur_skill = "fireball";
+>                        // 返回true
+>                        return true;
+>                    }
+>                });
+>            }
+>            update() {
+>                // 如果当前是本人, 则更新技能冷却时间
+>                if (this.character === "me") {
+>                    this.update_coldtime();
+>                }
+>            }
+>            update_coldtime() {
+>                // 单位: 毫秒(ms)
+>                this.fireball_coldtime -= this.timedelta / 1000;
+>                // 计算剩余的冷却时间
+>                this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
+>            }
+>            shoot_fireball(tx, ty) {
+>                // 子弹发射的x轴
+>                let x = this.x;
+>                // 子弹发射的y轴
+>                let y = this.y;
+>                // 子弹的半径
+>                let radius = 0.01;
+>                // 子弹发射的角度
+>                let angle = Math.atan2(ty - this.y, tx - this.x);
+>                // 子弹发射的x轴角度
+>                let vx = Math.cos(angle);
+>                // 子弹发射的y轴角度
+>                let vy = Math.sin(angle);
+>                // 子弹发射的颜色
+>                let color = "orange";
+>                // 子弹的速度
+>                let speed = 0.5;
+>                // 子弹移动的距离
+>                let move_length = 0.8;
+>                // 创建子弹
+>                let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length);
+>                // 将子弹记录下来, 方便后期毁灭子弹
+>                this.fireballs.push(fireball);
+>                // 子弹技能的冷却时间为3秒
+>                this.fireball_coldtime = 3;
+>                // 返回创建的火球
+>                return fireball;
+>            }
+>            render() {
+>                if (this.character === "me") {
+>                    // 如果当前的角色是本人, 则更新技能冷却
+>                    this.render_skill_coldtime();
+>                }
+>            }
+>            render_skill_coldtime() {
+>                // 获取缩放比例
+>                let scale = this.playground.scale;
+>                // 技能的位置
+>                let x = 1.5, y = 0.9, r = 0.04;
+>                // 进入盒子
+>                this.ctx.save();
+>                // 开始做图
+>                this.ctx.beginPath();
+>                // 规划技能的圆圈
+>                this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, false);
+>                // 画
+>                this.ctx.stroke();
+>                // 将画好的圆圈进行剪切, 方便后续操作
+>                this.ctx.clip();
+>                // 将图片填充到圆圈
+>                this.ctx.drawImage(this.fireball_img, (x - r) * scale, (y - r) * scale, r * 2 * scale, r * 2 * scale);
+>                // 退出盒子
+>                this.ctx.restore();
+>                // 如果技能还处于冷却中
+>                if (this.fireball_coldtime > this.eps) {
+>                    // 开始作画
+>                    this.ctx.beginPath();
+>                    // 将画笔的起点移动到指定位置
+>                    this.ctx.moveTo(x * scale, y * scale);
+>                    // 规划圆弧
+>                    this.ctx.arc(x * scale, y * scale, r * scale, 0 - Math.PI / 2, Math.PI * 2 * (1 - this.fireball_coldtime / 3) - Math.PI / 2, true);
+>                    // 打个样
+>                    this.ctx.lineTo(x * scale, y * scale);
+>                    // 颜色
+>                    this.ctx.fillStyle = "rgba(0, 0, 255, 0.6)";
+>                    // 填充颜色
+>                    this.ctx.fill();
+>                }
+>            }
+>        }
+>     ```
+>        
 >   3.   相关函数解释
->
+>   
 >        +   `Image()`
->
+>   
 >            >   1.   含义: `Image()`函数将会创建一个新的[`HTMLImageElement`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLImageElement)实例,它的功能等价于 [`document.createElement('img')`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/createElement)
 >            >
 >            >   2.   解释
@@ -815,376 +979,752 @@
 >            >        ```javascript
 >            >        <img width="100" height="200" src="picture.jpg">
 >            >        ```
->
+>   
 >        +   `CanvasRenderingContext2D.save()`
->
+>   
 >            >   1.   含义: `CanvasRenderingContext2D.save()` 是 `Canvas 2D API` 通过将当前状态放入栈中，保存 `canvas` 全部状态的方法
-
-#### 添加到玩家手中
-
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>            >
+>            >   2.   解释
+>            >
+>            >        代码如下:
+>            >
+>            >        ```javascript
+>            >        ctx.fillStyle = "blue";
+>            >        ctx.fillRect(100, 100, 10, 10);
+>            >        ctx.fillRect(150, 150, 10, 10);
+>            >        ```
+>            >
+>            >        效果如下:
+>            >
+>            >        ![591711](img/591711.png)
+>            >
+>            >        说明:
+>            >
+>            >        >   1.   更新填充颜色为 `blue` 的时候, 所有的颜色都被改变成 `blue`
+>            >
+>            >        新需求: 要求上面的图形是 `blue`, 下面的图形是 `green`
+>            >
+>            >        代码如下:
+>            >
+>            >        ```javascript
+>            >        ctx.save();
+>            >        ctx.fillStyle = "blue";
+>            >        ctx.fillRect(100, 100, 10, 10);
+>            >        ctx.restore();
+>            >        ctx.fillStyle = "green";
+>            >        ctx.fillRect(150, 150, 10, 10);
+>            >        ```
+>            >
+>            >        效果如下:
+>            >
+>            >        ![591717](img/591717.png)
+>            >
+>            >        说明:
+>            >
+>            >        >   1.   位于 `ctx.save()` 和 `ctx.restore()` 之间的代码类似于一个盒子, 在盒子内部设置的属性都属于盒子内部所有,不会影响外部的属性, 同时, 外部设置的属性也不会影响盒子内部的属性
+>         >        >   2.   由 `1` 可知, `ctx.save()` 和 `ctx.restore()` 是一对, 需要联合一起使用, 可以将 `ctx.save()` 理解为进入盒子内部, 向浏览器传达信息, 表示接下来设置的属性都不用同步, `ctx.restore()` 理解为从盒子内部出来, 向浏览器传达信息, 表示接下来设置的属性需要同步
+>   
+>     +   `CanvasRenderingContext2D.stroke()`
+>   
+>         >   1.   含义: `CanvasRenderingContext2D.stroke()` 是 `Canvas 2D API` 使用非零环绕规则，根据当前的画线样式，绘制当前或已经存在的路径的方法
+>            >
+>            >   2.   解释
+>            >
+>            >        代码如下:
+>            >
+>            >        ```javascript
+>            >        ctx.beginPath(); // 开始画
+>            >        ctx.rect(0, 0, 100, 100); // 规划路径
+>            >        ctx.stroke(); // 画图形
+>            >        ctx.beginPath();// 开始画
+>            >        ctx.arc(50, 50, 50, 0, Math.PI * 2); // 规划路径
+>            >        ctx.stroke(); // 画图形
+>            >        ```
+>            >
+>            >        效果如下:
+>         >
+>            >        ![592003](img/592003.png)
 >
-> ```javascript
-> class Player extends AcGameObject {
->     constructor(playground, x, y, radius, color, speed, is_me) {
->         <!-- 添加当前技能 -->
->         this.cur_skill = null;
->     }
->     add_listening_events() {
->         let outer = this;
->         this.playground.game_map.$canvas.mousedown(function(e) {
->             if (e.which == 3) {
->                 outer.move_to(e.clientX, e.clientY);
->             }
->             else if (e.which == 1) { <!-- 如果当前按的键是左键 -->
->                 <!-- 如果当前技能是火球技能 -->
->                 if (outer.cur_skill === "fireball") {
->                     outer.shoot_fireball(e.clientX, e.clientY);
->                 }
->                 <!-- 发完技能之后 清空技能 -->
->                 outer.cur_skill = null;
->             }
->         });
->         $(window).keydown(function(e) {
->             <!-- 如果按下Q键 -->
->             if (e.which == 81) {
->                 outer.cur_skill = "fireball";
->                 return true;
->             }
->         });
->     }
->     shoot_fireball(tx, ty) {
->         let x = this.x;
->         let y = this.y;
->         let radius = this.playground.height * 0.01;
->         let angle = Math.atan2(ty - this.y, tx - this.x);
->         let vx = Math.cos(angle);
->         let vy = Math.sin(angle);
->         let color = "orange";
->         let speed = this.playground.height * 0.5;
->         let move_length = this.playground.height * 0.8;
->         new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length);
->     }
-> }
-> ```
+>        +   `CanvasRenderingContext2D.clip()`
+>   
+>            >   1.   含义: `CanvasRenderingContext2D.clip()` 是 `Canvas 2D API` 将当前创建的路径设置为当前剪切路径的方法
+>            >
+>            >   2.   解释
+>            >
+>            >        代码如下:
+>            >
+>            >        ```javascript
+>            >        ctx.arc(100, 100, 75, 0, Math.PI*2, false);
+>            >        ctx.fillRect(0, 0, 100,100);
+>            >        ```
+>            >
+>            >        效果如下:
+>            >
+>            >        ![592012](img/592012.png)
+>            >
+>            >        加入 `clip()` 函数
+>            >
+>            >        代码如下:
+>            >
+>            >        ```javascript
+>            >        ctx.arc(100, 100, 75, 0, Math.PI*2, false);
+>            >        ctx.clip();
+>            >        ctx.fillRect(0, 0, 100,100);
+>            >        ```
+>            >
+>            >        效果如下:
+>            >
+>            >        ![592014](img/592014.png)
+>            >
+>            >        解释:
+>            >
+>            >        >   1.   本来应该是填满整个正方形的, 但是, `clip()` 将其剪切掉了
+>   
+>        +   `CanvasRenderingContext2D.drawImage()`
+>   
+>            >   1.   含义: `Canvas 2D API` 中的 `CanvasRenderingContext2D.drawImage()` 方法提供了多种方式在 `Canvas` 上绘制图像
+>            >
+>            >   2.   语法:
+>            >
+>         >        ```javascript
+>            >        void ctx.drawImage(image, dx, dy);
+>         >        void ctx.drawImage(image, dx, dy, dWidth, dHeight);
+>            >        void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+>            >        ```
+>            >
+>            >        参数解释:
+>            >
+>            >        >   1.   `sx`可选
+>            >        >
+>            >        >        需要绘制到目标上下文中的，`image`的矩形（裁剪）选择框的左上角 `X` 轴坐标
+>            >        >
+>            >        >   2.   `sy`可选
+>            >        >
+>            >        >        需要绘制到目标上下文中的，`image`的矩形（裁剪）选择框的左上角 `Y` 轴坐标
+>            >        >
+>            >        >   3.   `sWidth`可选
+>            >        >
+>            >        >        需要绘制到目标上下文中的，`image`的矩形（裁剪）选择框的宽度。如果不说明，整个矩形（裁剪）从坐标的`sx`和`sy`开始，到`image`的右下角结束
+>            >        >
+>            >        >   4.   `sHeight`可选
+>         >        >
+>            >        >        需要绘制到目标上下文中的，`image`的矩形（裁剪）选择框的高度
+>         >        >
+>            >        >   5.   `dx`
+>            >        >
+>            >        >        `image`的左上角在目标`canvas`上 `X` 轴坐标
+>            >        >
+>            >        >   6.   `dy`
+>            >        >
+>            >        >        `image`的左上角在目标`canvas`上 `Y` 轴坐标
+>            >        >
+>            >        >   7.   `dWidth`可选
+>            >        >
+>            >        >        `image`在目标`canvas`上绘制的宽度。 允许对绘制的`image`进行缩放。 如果不说明， 在绘制时`image`宽度不会缩放
+>            >        >
+>            >        >   8.   `dHeight`可选
+>            >        >
+>            >        >        `image`在目标`canvas`上绘制的高度。 允许对绘制的`image`进行缩放。 如果不说明， 在绘制时`image`高度不会缩放
+>   
+>        +   `CanvasRenderingContext2D.arc()`
+>   
+>            >   1.   含义: `CanvasRenderingContext2D.arc()` 是 `Canvas 2D API` 绘制圆弧路径的方法。 圆弧路径的圆心在 `(x, y)` 位置，半径为 `r` ，根据`anticlockwise` （默认为顺时针）指定的方向从 `startAngle` 开始绘制，到 `endAngle` 结束
+>            >
+>            >   2.   语法:
+>            >
+>            >        ```javascript
+>            >        void ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+>            >        ```
+>            >
+>            >        参数解释:
+>            >
+>            >        >   1.   `x`
+>            >        >
+>            >        >        圆弧中心（圆心）的 `x` 轴坐标
+>            >        >
+>         >        >   2.   `y`
+>            >        >
+>         >        >        圆弧中心（圆心）的 `y` 轴坐标
+>            >        >
+>            >        >   3.   `radius`
+>            >        >
+>            >        >        圆弧的半径
+>            >        >
+>            >        >   4.   `startAngle`
+>            >        >
+>            >        >        圆弧的起始点， `x`轴方向开始计算，单位以弧度表示
+>            >        >
+>            >        >   5.   `endAngle`
+>            >        >
+>            >        >        圆弧的终点， 单位以弧度表示
+>            >        >
+>            >        >   6.   `anticlockwise` 可选
+>            >        >
+>            >        >        可选的`Boolean`值 ，如果为 `true`，逆时针绘制圆弧，反之，顺时针绘制
+>   
+>        +   `CanvasRenderingContext2D.moveTo()`
+>   
+>            >   1.   含义: `CanvasRenderingContext2D.moveTo()` 是 `Canvas 2D API` 将一个新的子路径的起始点移动到`(x，y)`坐标的方法
+>            >
+>            >   2.   语法:
+>            >
+>            >        ```javascript
+>            >        void ctx.moveTo(x, y);
+>            >        ```
+>            >
+>            >        参数解释:
+>            >
+>            >        >   1.   `x`
+>            >        >
+>            >        >        点的 `x` 轴
+>            >        >
+>            >        >   2.   `y`
+>            >        >
+>            >        >        点的 `y` 轴
+>   
+>        +   `CanvasRenderingContext2D.lineTo()`
+>   
+>            >   1.   含义: `CanvasRenderingContext2D.lineTo()` 是 `Canvas 2D API` 使用直线连接子路径的终点到`x，y`坐标的方法（并不会真正地绘制）
+>            >
+>            >   2.   语法:
+>            >
+>         >        ```javascript
+>            >        void ctx.lineTo(x, y);
+>         >        ```
+>            >
+>            >   3.   代码
+>            >
+>            >        ```javascript
+>            >        ctx.beginPath();
+>            >        ctx.moveTo(0,0);
+>            >        ctx.lineTo(100, 100); // 不会真正绘制, 先行打个样
+>            >        ctx.stroke(); // 绘制
+>            >        ```
 
-### 添加 `AI` 机器人
+## 添加 `AI` 机器人
 
-#### 将玩家修改成机器人
-
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>   1.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
-> ```javascript
-> class Player extends AcGameObject {
->     constructor(playground, x, y, radius, color, speed, is_me) {
->     start() {
->         if (this.is_me) {
->             this.add_listening_events();
->         }
->         else {
->             <!-- 如果不是本人 则随机指定一个地方 -->
->             let tx = Math.random() * this.playground.width;
->             let ty = Math.random() * this.playground.height;
->             this.move_to(tx, ty);
->         }
->     }
->     update() {
->         if (this.move_length < this.eps) {
->             this.move_length = this.vx = this.vy = 0;
->             <!-- 如果不是本人 则当停止下来之后 重新在随机选择一个方向 -->
->             if (!this.is_me) {
->                 let tx = Math.random() * this.playground.width;
->                 let ty = Math.random() * this.playground.height;
->                 this.move_to(tx, ty);
->             }
->         }
->         else {
->             let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
->             this.x += this.vx * moved;
->             this.y += this.vy * moved;
->             this.move_length -= moved;
->         }
->         this.render();
->     }
-> }
-> ```
-
-#### 修改玩家属性
-
-> 修改 `acapp/game/static/js/src/playground/zbase.js`
+>        ```javascript
+>        class Player extends AcGameObject {
+>            start() {
+>                // 如果当前的角色是本人
+>                if (this.character === "me") {
+>                    // 添加监听事件
+>                    this.add_listening_events();
+>                }
+>                // 如果当前的角色是机器人
+>                else if (this.character === "robot") {
+>                    // 获取随机的x方向
+>                    let tx = Math.random() * this.playground.width / this.playground.scale;
+>                    // 获取随机的y方向
+>                    let ty = Math.random() * this.playground.height / this.playground.scale;
+>                    // 向随机的方向进行移动
+>                    this.move_to(tx, ty);
+>                }
+>            }
+>            update_move() {
+>                // 如果当前剩余的距离小于this.eps, 则认为其已经到达目的地
+>                if (this.move_length < this.eps) {
+>                    // 将速度和移动距离设置为0
+>                    this.vx = this.vy = this.move_length = 0;
+>                    // 如果当前的角色是机器人
+>                    if (this.character === "robot") {
+>                        // 选择随机的x轴方向
+>                        let tx = Math.random() * this.playground.width / this.playground.scale;
+>                        // 选择随机的y轴方向
+>                        let ty = Math.random() * this.playground.height / this.playground.scale;
+>                        // 向随机的方向进行移动
+>                        this.move_to(tx, ty);
+>                    }
+>                }
+>                else {
+>                    // 获取移动距离, 取较小值
+>                    let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+>                    // 获取x轴的移动距离
+>                    this.x += this.vx * moved;
+>                    // 获取y轴的移动距离
+>                    this.y += this.vy * moved;
+>                    // 剩余距离减去移动的距离
+>                    this.move_length -= moved;
+>                }
+>            }
+>        }
+>        ```
 >
-> ```javascript
-> for (let i = 0; i < 5; i ++ ) {
->     <!-- 注意最后一个参数是 false 表示不是本人 -->
-> 	this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, "red", this.height * 0.2, false));
-> }
-> ```
-
-### 让 `AI` 发射炮弹
-
-#### 修改机器人 `JS` 文件
-
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>   2.   在 `Acapp/Game/static/js/src/playground/zbase.js` 里添加机器人
 >
-> ```javascript
-> class Player extends AcGameObject {
->     update() {
->         <!-- 如果是机器人 发射炮弹的频率设置 < 1 / 180.0 -->
->         if (!this.is_me && Math.random() < 1 / 180.0) {
->             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
->             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 2;
->             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 2;
->             this.shoot_fireball(tx, ty);
->         }
->     }
-> }
-> ```
+>        ```javascript
+>        class AcGamePlayground {
+>            get_random_color() {
+>                let colors = ["blue", "red", "pink", "grey", "green"];
+>                // Math.random()返回(0, 1)的数字
+>                // Math.floor()向下取整
+>                return colors[Math.floor(Math.random() * 5)];
+>            }
+>            show(mode) {
+>                // 如果是单人模式, 则创建机器人
+>                if (mode === "single mode") {
+>                    // 最后的属性要表明是机器人
+>                    for(let i = 0; i < 5; i ++ ) {
+>                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.2, "robot"));
+>                    }
+>                }
+>            }
+>        }
+>        ```
 
-#### 让炮弹对敌人形成伤害
+## 让 `AI` 发射炮弹
 
-> 修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
+>   1.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
-> ```javascript
-> class FireBall extends AcGameObject {
->     constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) {
->         <!-- 火球的伤害值 -->
->         this.damage = damage;
->     }
->     update() {
->         for (let i = 0; i < this.playground.players.length; i ++ ) {
->             let player = this.playground.players[i];
->             if (this.player !== player && this.is_collision(player)) {
->                 console.log("attack");
->                 this.attack(player);
->             }
->         }
->         this.render();
->     }
->     get_dist(x1, y1, x2, y2) {
->         let dx = x1 - x2;
->         let dy = y1 - y2;
->         return Math.sqrt(dx * dx + dy * dy);
->     }
->     <!-- 判断火球是否攻击到敌人 -->
->     is_collision(player) {
->         let distance = this.get_dist(this.x, this.y, player.x, player.y);
->         if (distance < this.radius + player.radius) {
->             return true;
->         }
->         return false;
->     }
->     attack(player) {
->         <!-- 角度 -->
->         let angle = Math.atan2(player.y - this.y, player.x - this.x);
->         <!-- 朝着某个角度 进行攻击 伤害值为 this.damage -->
->         player.is_attacked(angle, this.damage);
->         <!-- 火球攻击完敌人之后 火球即消失 -->
->         this.destory();
->     }
-> }
-> ```
+>        ```javascript
+>        class Player extends AcGameObject {
+>            update_move() {
+>                // 更新间隔时间
+>                this.spent_time += this.timedelta / 1000;
+>                // 如果当前的角色是机器人
+>                // 设置开局4s之后才可以进行攻击,且攻击的频率设置为1 / 300.0
+>                if (this.character === "robot" && this.spent_time > 4 && Math.random() < 1 / 300.0) {
+>                    // 随机选取一名幸运观众进行攻击
+>                    let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
+>                    // 获取幸运观众的x坐标, 0.3是预判
+>                    let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
+>                    // 获取幸运观众的y坐标, 0.3是预判
+>                    let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
+>                    // 发射子弹
+>                    this.shoot_fireball(tx, ty);
+>                }
+>            }
+>        }
+>        ```
+
+## 让炮弹对敌人形成伤害
+
+>   1.   修改 `Acapp/Game/static/js/src/playground/skill/fireball/zbase.js`
 >
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>        ```javascript
+>        class FireBall extends AcGameObject {
+>            constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) {
+>                this.damage = damage; // 火球造成的伤害
+>            }
+>            update() {
+>                // 如果当前的角色不是敌人, 则更新攻击
+>                if (this.player.character !== "enemy") {
+>                    this.update_attack();
+>                }
+>            }
+>            update_attack() {
+>                // 枚举所有的玩家
+>                for (let i = 0; i < this.playground.players.length; i ++ ) {
+>                    let player = this.playground.players[i];
+>                    // 如果玩家不是本人并且玩家已经被判定被攻击到, 则攻击
+>                    if (this.player !== player && this.is_collision(player)) {
+>                        // 攻击
+>                        this.attack(player);
+>                        break;
+>                    }
+>                }
+>            }
+>            // 获取欧几里得距离
+>            get_dist(x1, y1, x2, y2) {
+>                let dx = x1 - x2;
+>                let dy = y1 - y2;
+>                return Math.sqrt(dx * dx + dy * dy);
+>            }
+>            // 判定是否被攻击到
+>            is_collision(player) {
+>                // 获取距离
+>                let distance = this.get_dist(this.x, this.y, player.x, player.y);
+>                // 误差在极小范围内, 返回true, 表示已经被攻击到
+>                if (distance - this.radius + player.radius < 0.01) {
+>                    return true;
+>                }
+>                return false;
+>            }
+>            attack(player) {
+>                // 确定角度
+>                let angle = Math.atan2(player.y - this.y, player.x - this.x);
+>                // 告诉此玩家, 你已经被攻击了, 接收制裁吧, 发送制裁的相关信息
+>                player.is_attacked(angle, this.damage);
+>                // 攻击完玩家之后, 此炮弹的使命已经完成, 销毁此子弹
+>                this.destory();
+>            }
+>        }
+>        ```
 >
-> ```javascript
-> class Player extends AcGameObject {
->     shoot_fireball(tx, ty) {
->         <!-- 给火球添加伤害 -->
->         new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, this.playground.height * 0.01);
->     }
->     is_attacked(angle, damage) {
->         this.radius -= damage;
->         if (this.radius < 20) {
->             this.destory();
->             return false;
->         }
->     }
->     <!-- on_destory 不是 destroy -->
->     <!-- destory 函数删除的是 AC_GAME_OBJECTS 列表里面的对象 -->
->     <!-- on_destory 函数删除的是 this.playground.players 列表里面的玩家-->
->     on_destory() {
->         for (let i = 0; i < this.playground.players.length; i ++ ) {
->             if (this.playground.players[i] === this) {
->                 this.playground.players.splice(i, 1);
->                 break;
->             }
->         }
->     }
-> }
-> ```
-
-### 设置炮弹击中效果
-
-#### 后退效果
-
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>   2.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
-> ```javascript
-> class Player extends AcGameObject {
->     constructor(playground, x, y, radius, color, speed, is_me) {
->         <!-- 被击中在 x 轴上的方向 -->
->         this.damage_x = 0;
->         <!-- 被击中在 y 轴上的方向 -->
->         this.damage_y = 0;
->         <!-- 被击中之后的速度 -->
->         this.damage_speed = 0;
->         <!-- 被击中之后的摩擦力 -->
->         this.friction = 0.9;
->     }
->     is_attacked(angle, damage) {
->         this.damage_x = Math.cos(angle);
->         this.damage_y = Math.sin(angle);
->         <!-- 被击中之后 更新下速度 -->
->         this.damage_speed = damage * 80;
->         <!-- 被击中之后的速度下降为原来的80% -->
->         this.speed *= 0.8;
->     }
->     update() {
->         <!-- 如果被击中的速度 > 10 暂停自己原来的速度 -->
->         if (this.damage_speed > 10) {
->             <!-- 将原来的速度和移动距离设置为 0 -->
->             this.vx = this.vy = this.move_length = 0;
->             <!-- 更新下当前的位置 -->
->             this.x += this.damage_x + this.damage_speed * this.timedelta / 1000;
->             this.y += this.damage_y + this.damage_speed * this.timedelta / 1000;
->             <!-- 速度✖️摩擦力 速度会越来越慢 -->
->             this.damage_speed *= this.friction;
->         }
->         <!-- 否则 没有变化 -->
->         else {
->             if (this.move_length < this.eps) {
->                 this.move_length = this.vx = this.vy = 0;
->                 if (!this.is_me) {
->                     let tx = Math.random() * this.playground.width;
->                     let ty = Math.random() * this.playground.height;
->                     this.move_to(tx, ty);
->                 }
->             }
->             else {
->                 let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
->                 this.x += this.vx * moved;
->                 this.y += this.vy * moved;
->                 this.move_length -= moved;
->             }
->         }
->         this.render();
->     }
-> }
-> ```
+>        ```javascript
+>        class Player extends AcGameObject {
+>            shoot_fireball(tx, ty) {
+>                // 创建子弹
+>                let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
+>            }
+>            // 接收制裁
+>            is_attacked(angle, damage) {
+>                // 缩小半径
+>                this.radius -= damage;
+>                if (this.radius < this.eps) {
+>                    // 临死之前做点啥
+>                    this.on_destory();
+>                    // 给老子死
+>                    this.destory();
+>                    // 返回
+>                    return false;
+>                }
+>            }
+>            // on_destory 不是 destroy
+>            // destory 函数删除的是 AC_GAME_OBJECTS 列表里面的对象
+>            // on_destory 函数删除的是 this.playground.players 列表里面的玩家
+>            on_destory() {
+>                // 遍历所有玩家
+>                for (let i = 0; i < this.playground.players.length; i ++ ) {
+>                    // 如果玩家相同
+>                    if (this.playground.players[i] === this) {
+>                        // 删除当前玩家
+>                        this.playground.players.splice(i, 1);
+>                        break;
+>                    }
+>                }
+>            }
+>        }
+>        ```
 
-#### 烟花效果
+## 设置炮弹击中效果
 
-> 创建 `acapp/game/static/js/src/playground/particle/zbase.js`
+### 后退效果
+
+>   1.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
-> ```javascript
-> class Particle extends AcGameObject {
->     constructor(playground, x, y, radius, vx, vy, color, speed, move_length) {
->         super();
->         this.playground = playground;
->         <!-- 获取权柄 -->
->         this.ctx = this.playground.game_map.ctx;
->         this.x = x;
->         this.y = y;
->         this.radius = radius;
->         this.vx = vx;
->         this.vy = vy;
->         this.color = color;
->         this.speed = speed;
->         this.move_length = move_length;
->         this.friction = 0.9;
->         this.eps = 1;
->     }
->     update() {
->         if (this.move_length < this.eps || this.speed < this.eps) {
->             this.destory();
->             return false;
->         }
->         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
->         this.x += this.vx * moved;
->         this.y += this.vy * moved;
->         this.speed *= this.friction;
->         this.move_length -= moved;
->         this.render();
->     }
->     render() {
->         this.ctx.beginPath();
->         this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
->         this.ctx.fillStyle = this.color;
->         this.ctx.fill();
->     }
-> }
-> ```
+>        ```javascript
+>        class Player extends AcGameObject {
+>            constructor(playground, x, y, radius, color, speed, character) {
+>                this.damage_x = 0; // 被击中之后x的移动方向
+>                this.damage_y = 0; // 被击中之后y的移动方向
+>                this.damage_speed = 0; // 被击中之后的移动速度
+>                this.friction = 0.9; // 摩擦力
+>            }
+>            update_move() {
+>                // 如果被击中
+>                if (this.damage_speed > this.eps) {
+>                    // 重置变量
+>                    this.vx = this.vy = this.move_length = 0;
+>                    // 获取x轴坐标
+>                    this.x += this.damage_x * this.damage_speed * this.timedelta / 1000;
+>                    // 获取y轴坐标
+>                    this.y += this.damage_y * this.damage_speed * this.timedelta / 1000;
+>                    // 速度乘摩擦力
+>                    this.damage_speed *= this.friction;
+>                }
+>                else { // 没被击中
+>                    // 如果当前剩余的距离小于this.eps, 则认为其已经到达目的地
+>                    if (this.move_length < this.eps) {
+>                        // 将速度和移动距离设置为0
+>                        this.vx = this.vy = this.move_length = 0;
+>                        // 如果当前的角色是机器人
+>                        if (this.character === "robot") {
+>                            // 选择随机的x轴方向
+>                            let tx = Math.random() * this.playground.width / this.playground.scale;
+>                            // 选择随机的y轴方向
+>                            let ty = Math.random() * this.playground.height / this.playground.scale;
+>                            // 向随机的方向进行移动
+>                            this.move_to(tx, ty);
+>                        }
+>                    }
+>                    else {
+>                        // 获取移动距离, 取较小值
+>                        let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+>                        // 获取x轴的移动距离
+>                        this.x += this.vx * moved;
+>                        // 获取y轴的移动距离
+>                        this.y += this.vy * moved;
+>                        // 剩余距离减去移动的距离
+>                        this.move_length -= moved;
+>                    }
+>                }
+>            }
+>            // 接收制裁
+>            is_attacked(angle, damage) {
+>                // 获取x轴方向
+>                this.damage_x = Math.cos(angle);
+>                // 获取y轴方向
+>                this.damage_y = Math.sin(angle);
+>                // 获取被击中的效果
+>                this.damage_speed = damage * 100;
+>                // 速度变为原来的80%
+>                this.speed *= 0.8;
+>            }
+>        }
+>        ```
+
+### 烟花效果
+
+>   1.   修改 `Acapp/Game/static/js/src/playground/particle/zbase.js`
 >
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>        ```javascript
+>        class Particle extends AcGameObject {
+>            constructor(playground, x, y, radius, vx, vy, color, speed, move_length) {
+>                super(); // 继承父类的方法
+>                this.playground = playground;
+>                this.ctx = this.playground.game_map.ctx; // 获取画布的权柄
+>                this.x = x;
+>                this.y = y;
+>                this.radius = radius;
+>                this.vx = vx;
+>                this.vy = vy;
+>                this.color = color;
+>                this.speed = speed;
+>                this.move_length = move_length;
+>                this.friction = 0.9; // 摩擦力
+>                this.eps = 0.01; // 极小值
+>            }
+>            update() {
+>                if (this.move_length < this.eps || this.speed < this.eps) {
+>                    this.destory();
+>                    return false;
+>                }
+>                // 计算移动距离
+>                let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+>                // 获取x轴的坐标
+>                this.x += this.vx * moved;
+>                // 获取y轴的坐标
+>                this.y += this.vy * moved;
+>                // 速度 * 摩擦力
+>                this.speed *= this.friction;
+>                // 剩余的移动距离
+>                this.move_length -= moved;
+>                // 渲染
+>                this.render();
+>            }
+>            render() {
+>                // 获取缩放比例
+>                let scale = this.playground.scale;
+>                // 开始画
+>                this.ctx.beginPath();
+>                // 画圆弧
+>                this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                // 获取颜色
+>                this.ctx.fillStyle = this.color;
+>                // 画
+>                this.ctx.fill();
+>            }
+>        }
+>        ```
 >
-> ```javascript
-> class Player extends AcGameObject {
->     is_attacked(angle, damage) {
->         <!-- 释放烟花 -->
->         for (let i = 0; i < 15 + Math.random() * 5; i ++ ) {
->             let x = this.x;
->             let y = this.y;
->             let radius = this.radius * Math.random() * 0.3;
->             let angle = Math.PI * 2 * Math.random();
->             let vx = Math.cos(angle);
->             let vy = Math.sin(angle);
->             let color = this.color;
->             let speed = this.speed * 10;
->             let move_length = this.radius * Math.random() * 10;
->             new Particle(this.playground, x, y, radius, vx, vy, color, speed, move_length);
->         }
->     }
-> }
-> ```
-
-### 人机相关设置
-
-#### 给人机分配不同的颜色
-
-> 修改 `acapp/game/static/js/src/playground/zbase.js`
+>   2.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
-> ```javascript
-> class AcGamePlayground {
->     constructor(root) {
->         for (let i = 0; i < 5; i ++ ) {
->             <!-- 颜色这一属性调用随机颜色函数即可 -->
->             this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, this.get_random_color(), this.height * 0.2, false));
->         }
->     }
->     get_random_color() {
->         let colors = ["red", "yellow", "blue", "green", "gray"];
->         <!-- 返回随机颜色 -->
->         return colors[Math.floor(Math.random() * 5)];
->     }
-> }
-> ```
+>        ```javascript
+>        class Player extends AcGameObject {
+>            // 接收制裁
+>            is_attacked(angle, damage) {
+>                // 烟花的数量
+>                for (let i = 0; i < 20 + Math.random() * 10; i ++ ) {
+>                    let x = this.x;
+>                    let y = this.y;
+>                    let radius = this.radius * Math.random() * 0.3;
+>                    let angle = Math.PI * 2 * Math.random();
+>                    let vx = Math.cos(angle);
+>                    let vy = Math.sin(angle);
+>                    let color = this.color;
+>                    let speed = this.speed * 10;
+>                    let move_length = this.radius * Math.random() * 5;
+>                    // 生成烟花
+>                    new Particle(this.playground, x, y, radius, vx, vy, color, speed, move_length);
+>                }
+>        }
+>        ```
 
-#### 设置开局 `5s` 后再进行攻击
+## 胜利和失败
 
-> 修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>   1.   修改 `Acapp/Game/static/js/src/playground/ac_game_object/zbase.js`
 >
-> ```javascript
-> class Player extends AcGameObject {
->     constructor(playground, x, y, radius, color, speed, is_me) {
->         <!-- 计算时间 -->
->         this.spent_time = 0;
->     }
->     update() {
->         <!-- 计时 -->
->         this.spent_time += this.timedelta / 1000;
->         if (!this.is_me && this.spent_time > 5 && Math.random() < 1 / 180.0) {
->             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
->             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 2;
->             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 2;
->             this.shoot_fireball(tx, ty);
->         }
->     }
-> }
-> ```
+>        ```javascript
+>        let AC_GAME_OBJECTS = [];
+>        class AcGameObject {
+>            late_update() {} // 在每一帧的最后执行一次
+>        }
+>        let AC_GAME_ANIMATION = function(timestamp) {
+>            // 遍历所有对象
+>            for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
+>                let obj = AC_GAME_OBJECTS[i];
+>                // 在每个对象每一帧的最后执行一次
+>                obj.late_update();
+>            }
+>        };
+>        ```
+>
+>   2.   修改 `Acapp/Game/static/js/src/playground/score_board/zbase.js`
+>
+>        ```javascript
+>        class ScoreBoard extends AcGameObject {
+>            constructor(playground) {
+>                super(); // 继承父类的方法
+>                this.playground = playground;
+>                // 获取画布
+>                this.ctx = this.playground.game_map.ctx;
+>                this.state = null;
+>                this.win_img = new Image();
+>                this.win_img.src = "/static/image/playground/win.png";
+>                this.lose_img = new Image();
+>                this.lose_img.src = "/static/image/playground/lose.png";
+>            }
+>            add_listening_events() {
+>                let outer = this;
+>                // 获取画布的权柄
+>                let $canvas = this.playground.game_map.$canvas;
+>                // on()函数为click事件绑定事件处理函数
+>                $canvas.on('click', function() {
+>                    // 隐藏玩家界面
+>                    outer.playground.hide();
+>                    // 显示菜单界面
+>                    outer.playground.root.menu.show();
+>                });
+>            }
+>            win() {
+>                this.state = "win";
+>                let outer = this;
+>                // 定时器, 规定每间隔1s执行监听函数
+>                setTimeout(function() {
+>                    outer.add_listening_events();
+>                }, 1000);
+>            }
+>            lose() {
+>                this.state = "lose";
+>                let outer = this;
+>                // 定时器, 规定每间隔1s执行监听函数
+>                setTimeout(function() {
+>                    outer.add_listening_events();
+>                }, 1000);
+>            }
+>            late_update() {
+>                // 渲染图片
+>                this.render();
+>            }
+>            render() {
+>                let len = this.playground.height / 2;
+>                if (this.state === "win") {
+>                    /**
+>                     * 参数1: 图片
+>                     * 参数2和参数3: 左上角的坐标(x, y)
+>                     * 参数4和参数5: 图片的宽和高
+>                     */
+>                    this.ctx.drawImage(this.win_img, this.playground.width / 2 - len / 2, this.playground.height / 2 - len / 2, len, len);
+>                }
+>                else if (this.state === "lose") {
+>                    /**
+>                     * 参数1: 图片
+>                     * 参数2和参数3: 左上角的坐标(x, y)
+>                     * 参数4和参数5: 图片的宽和高
+>                     */
+>                    this.ctx.drawImage(this.lose_img, this.playground.width / 2 - len / 2, this.playground.height / 2 - len / 2, len, len);
+>                }
+>            }
+>        }
+>        ```
+>
+>   3.   修改 `Acapp/Game/static/js/src/playground/zbase.js`
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                // 当前的状态是等待模式
+>                this.state = "waiting";
+>                // 创建分数板
+>                this.score_board = new ScoreBoard(this);
+>            }
+>            hide() { // 隐藏玩家界面
+>                // 如果还有玩家存在, 则进行删除
+>                while (this.players && this.players.length > 0) {
+>                    this.players[0].destory();
+>                }
+>                // 如果还存在地图对象一并删掉,并将其置空
+>                if (this.game_map) {
+>                    this.game_map.destory();
+>                    this.game_map = null;
+>                }
+>                // 如果还存在分数板对象一并删掉,并将其置空
+>                if (this.score_board) {
+>                    this.score_board.destory();
+>                    this.score_board = null;
+>                }
+>                // 清空玩家html代码
+>                this.$playground.empty();
+>                // 隐藏玩家界面
+>                this.$playground.hide();
+>            }
+>        }
+>        ```
+>
+>   4.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
+>
+>        ```javascript
+>        class Player extends AcGameObject {
+>            start() {
+>                // 如果当前的模式是单人模式并且当前的玩家数量多于1个, 则将状态设置为战斗状态fighting
+>                if (this.playground.mode === "single mode" && this.playground.players.length > 1) {
+>                    this.playground.state = "fighting";
+>                }
+>            }
+>            add_listening_events() {
+>                this.playground.game_map.$canvas.mousedown(function(e) {
+>                    // 如果战斗已经结束, 则直接返回
+>                    if (outer.playground.state !== "fighting") {
+>                        return true;
+>                    }
+>                });
+>                // 监测键盘的动向
+>                $(window).keydown(function(e) {
+>                    // 如果当前不是战斗状态, 则直接返回
+>                    if (outer.playground.state !== "fighting") {
+>                        return true;
+>                    }
+>                });
+>            }
+>            update() {
+>                // 更新胜利信息
+>                this.update_win();
+>                // 如果当前是本人并且当前的状态是战斗状态, 则更新技能冷却时间
+>                if (this.character === "me" && this.playground.state === "fighting") {
+>                    this.update_coldtime();
+>                }
+>            }
+>            update_win() {
+>                // 如果当前的状态是战斗状态并且当前的角色是本人并且当前玩家的人数只剩一个
+>                if (this.playground.state === "fighting" && this.character === "me" && this.playground.players.length === 1) {
+>                    // 将状态设置为over
+>                    this.playground.state = "over";
+>                    // 调用胜利函数
+>                    this.playground.score_board.win();
+>                }
+>            }
+>            // on_destory 不是 destroy
+>            // destory 函数删除的是 AC_GAME_OBJECTS 列表里面的对象
+>            // on_destory 函数删除的是 this.playground.players 列表里面的玩家
+>            on_destory() {
+>                // 如果当前的角色是本人
+>                if (this.character === "me") {
+>                    // 如果当前的状态是战斗状态
+>                    if (this.playground.state === "fighting") {
+>                        // 更新游戏状态
+>                        this.playground.state = "over";
+>                        // 调用失败函数
+>                        this.playground.score_board.lose();
+>                    }
+>                }
+>            }
+>            render() {
+>                if (this.character === "me" && this.playground.state === "fighting") {
+>                    // 如果当前的角色是本人, 则更新技能冷却
+>                    this.render_skill_coldtime();
+>                }
+>            }
+>        }
+>        ```
 
-## 部署 `nginx` 与对接 `acapp`
+# 部署 `nginx` 与对接 `acapp`
 
-### 增加容器运行的端口
+## 增加容器运行的端口
 
 > 1. `https` 是 `443` 端口；`http` 是 `80` 端口
 >
@@ -1208,1154 +1748,1089 @@
 >    + 去租的服务器中开放 `80` 和 `443` 端口
 >
 
-### 创建 `Acapp`
+## 创建 `Acapp`
 
-#### 修改相关配置文件
+### 修改相关配置文件
 
 > 1. [讲义位置](https://www.acwing.com/file_system/file/content/whole/index/content/3257028/)
-> 2. 将 [nginx.conf](https://www.acwing.com/user/myspace/application/conf/nginx_conf/149/) 中的内容写到服务器 `/etc/nginx/nginx.conf`
-> 3. 将 [acapp.key](https://www.acwing.com/user/myspace/application/conf/acapp_key/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.key`
-> 4. 将 [acapp.pem](https://www.acwing.com/user/myspace/application/conf/acapp_pem/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.pem`
-> 5. 启动 `nginx` 服务 `sudo /etc/init.d/nginx start`，出现 `OK` 则说明成功启动服务
+> 2. 使用管理员模式 `sudo`
+> 3. 将 [nginx.conf](https://www.acwing.com/user/myspace/application/conf/nginx_conf/149/) 中的内容写到服务器 `/etc/nginx/nginx.conf`
+> 4. 将 [acapp.key](https://www.acwing.com/user/myspace/application/conf/acapp_key/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.key`
+> 5. 将 [acapp.pem](https://www.acwing.com/user/myspace/application/conf/acapp_pem/149/) 中的内容写到服务器 `/etc/nginx/cert/acapp.pem`
+> 6. 启动 `nginx` 服务 `sudo /etc/init.d/nginx start`，出现 `OK` 则说明成功启动服务
 
-#### 修改 `Django` 项目的配置
+### 修改 `Django` 项目的配置
 
-> 1. 打开 `acapp/acapp/settings.py`
+> 1. 打开 `Acapp/Acapp/settings.py`
 >
 >    ```python
->    # 将域名添加到ALLOWED_HOSTS
 >    ALLOWED_HOSTS = [
->        # 注意：删除开头的https://
->        'app149.acapp.acwing.com.cn'
+>        # 注意: 删除开头的https://
+>        'app2370.acapp.acwing.com.cn', # 服务器地址
 >    ]
 >    ```
->
-> 2. 将 `DEBUG = True` 设置为 `DEBUG = False`
->
-> 3. 将创建的 `app` 下的 `static` 文件，归档（复制）到根目录 `acapp` 下
->
->    ```python
->    # 根目录下出现了static文件
->    python3 manage.py collectstatic
+>    
+>2. 将创建的 `app` 下的 `static` 文件，归档（复制）到根目录 `Acapp` 下
+> 
+>    ```bash
+>      # 根目录下出现了static文件
+>      python3 manage.py collectstatic
 >    ```
+> 
 
-#### 修改 `uwsgi` 配置文件
+### 修改 `uwsgi` 配置文件
 
 >1. `uwsgi` 相当于在 `nginx` 和 `django` 中间架起了一座桥梁，访问速度更加快速和流畅
 >
->2. 将配置文件写入 `acapp/scripts/uwsgi.ini`
+>2. 将配置文件写入 `Acapp/scripts/uwsgi.ini`
 >
->   ```ini
->   [uwsgi]
->   ; IP地址+端口号
->   socket          = 127.0.0.1:8000
->   ; Django项目地址
->   chdir           = /home/django/acapp
->   ; Django项目中wsgi的地址
->   wsgi-file       = /home/django/acapp/acapp/wsgi.py
->   master          = true
->   ; 开的进程（核）的数量
->   processes       = 2
->   ; 每个进程（核）的线程数量
->   threads         = 5
->   vacuum          = true
->   ```
+>     ```ini
+>     [uwsgi]
+>     ; IP地址+端口号
+>     socket          = 127.0.0.1:8000
+>     ; Django项目地址
+>     chdir           = /home/django/acapp
+>     ; Django项目中wsgi的地址
+>     wsgi-file       = /home/django/acapp/acapp/wsgi.py
+>     master          = true
+>     ; 开的进程（核）的数量
+>     processes       = 2
+>     ; 每个进程（核）的线程数量
+>     threads         = 5
+>     vacuum          = true
+>     ```
 >
 >3. 启动 `uwsgi` 服务
 >
 >   + `uwsgi --ini scripts/uwsgi.ini`
 >   + <font style="color:red">**注意⚠️：务必关闭 python3 ... runserver 服务**</font>
 
-#### 填写剩余的信息
+### 填写剩余的信息
 
 > 1. <font style="color: red">**注意⚠️：css或js前面的https地址是应用的地址，不一定是app149**</font>
 > 1. `css` 地址：`https://app149.acapp.acwing.com.cn/static/css/game.css`
 > 2. `js` 地址：`https://app149.acapp.acwing.com.cn/statis/js/dist/game.js`
 > 3. 主类名：`js` 中暴露出来的类名（加 `export`）
 
-#### 相关问题出错排查
+### 修改脚本文件
 
-##### 加载静态文件出错
-
-> 进入 `nginx` 配置文件
+>   1.   修改 `Acapp/scripts/compress_game_js.sh`
 >
-> ```bash
-> # 修改nginx配置信息
-> # 进入nginx配置文件夹
-> cd /etc/nginx
-> # 修改nginx配置文件
-> sudo vim nginx.conf
-> ```
+>        ```shell
+>        #! /bin/bash
+>                                 
+>        ROOT_PATH=/home/django/Acapp # 定义项目根目录
+>                                 
+>        # 先执行python3 manage.py collectstatic命令
+>        # 再输入yes
+>        echo yes | python3 manage.py collectstatic
+>        # 启动uwsgi
+>        uwsgi --ini ${ROOT_PATH}/scripts/uwsgi.ini
+>        ```
+
+### 相关问题出错排查
+
+#### 加载静态文件出错
+
+> 1.   进入 `nginx` 配置文件
 >
-> 修改 `nginx` 配置文件
+>      ```bash
+>      # 修改nginx配置信息
+>      # 进入nginx配置文件夹
+>      cd /etc/nginx
+>      # 修改nginx配置文件
+>      sudo vim nginx.conf
+>      ```
 >
-> ```nginx
-> # 将static文件修改成自己的
-> alias /home/django/acapp/static/;
-> # 将media文件修改成自己的
-> alias /home/django/acapp/media/;
-> # 将443端口修改成自己网站地址
-> server_name Acapp的应用域名
-> # 将80端口修改成自己网站地址
-> server_name Acapp的应用域名
-> ```
-
-#### `acapp bug` 修复
-
-##### 修改脚本文件
-
-> 修改 `acapp/scripts/compress_game_js.sh`
+> 2.   修改 `nginx` 配置文件
 >
-> ```shell
-> # 先执行python3 manage.py collectstatic命令
-> # 再输入yes
-> echo yes | python3 manage.py collectstatic
-> ```
-
-##### 修改 `acwing` 中应用的坐标
-
-> 产生原因：代码 `e.clientX, e.clientY` 写的是网页的绝对位置（最左上角位置），而画布是网页的相对位置，故需要做一个映射，使用函数 [`getBoundingClientRect()`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect)
+>      ```bash
+>      # 将static文件修改成自己的
+>      # 服务器名称是小写的django
+>      alias /home/django/acapp/static/;
+>      # 将media文件修改成自己的
+>      # 服务器名称是小写的django
+>      alias /home/django/acapp/media/;
+>      # 将443端口修改成自己网站地址
+>      server_name Acapp的应用域名
+>      # 将80端口修改成自己网站地址
+>      server_name Acapp的应用域名
+>      ```
 >
-> 图示如下：
+> 3.   重启 `nginx` 服务
 >
-> ![1642122637189](https://gitee.com/peter95535/image-bed/raw/master/img/1642122637189.jpg)
+>      ```bash
+>      sudo /etc/init.d/nginx restart
+>      ```
+
+#### `Acapp` 找不到图片
+
+>   1.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
-> 修改 `acapp/game/statis/js/src/playground/player/zbase.js`
+>        ```javascript
+>        class Player extends AcGameObject {
+>            constructor(playground, x, y, radius, color, speed, character) {
+>                if (this.character === "me") { // 如果当前玩家是自己本身
+>                    this.fireball_img = new Image(); // 创建图片对象
+>                    // 图片地址
+>                    // 注意: 图片地址从static开始寻找
+>                    // 自己输出路径查看, 就知哪里出错
+>                    // 路径改成应用的图片地址
+>                    this.fireball_img.src = "https://app2370.acapp.acwing.com.cn/static/image/playground/fireball.png";
+>                }
+>            }
+>        }
+>        ```
 >
-> ```javascript
-> const rect = outer.ctx.canvas.getBoundingClientRect();
-> outer.move_to(e.clientX - rect.left, e.clientY - rect.top);
-> outer.shoot_fireball(e.clientX - rect.left, e.clientY - rect.top);
-> ```
+>   2.   修改 `Acapp/Game/static/js/src/playground/score_board/zbase.js`
 >
-> 清理下缓存，然后重新加载页面即可
+>        ```javascript
+>        class ScoreBoard extends AcGameObject {
+>            constructor(playground) {
+>                // 修改成应用的图片地址
+>                this.win_img.src = "https://app2370.acapp.acwing.com.cn/static/image/playground/win.png";
+>                // 修改成应用的图片地址
+>                this.lose_img.src = "https://app2370.acapp.acwing.com.cn/static/image/playground/lose.png";
+>            }
+>        }
+>        ```
 
-##### 显示菜单界面
+# 创建账号系统
 
-> 修改 `acapp/game/static/js/src/zbase.js`
+## 创建超级用户
+
+> 1.   在根目录 `Acapp/`下，运行命令 `python3 manage.py createsuperuser` 创建超级用户
 >
-> ```javascript
-> <!-- 取消此行的注释 -->
-> this.menu = new AcGameMenu(this);
-> ```
+>      <font style="color: red">**邮箱📮可以不填写**</font>
+
+## 创建数据表
+
+> 1.   创建数据表，修改 `Acapp/Game/models/player/player.py` 并写入以下内容
 >
-
-##### 修改玩家页面大小
-
-> 修改 `acapp/game/static/js/src/playground/zbase.js`
+>      ```python
+>      from django.db import models # 导入模型基类
+>      from django.contrib.auth.models import User # 导入User
+>      
+>      # 创建数据库表
+>      class Player(models.Model):
+>          # 一对一模型
+>          # 级联删除, 当User删除的时候, Player也会被删除
+>          user = models.OneToOneField(User, on_delete=models.CASCADE)
+>          # 用户照片的自定义URL地址
+>          photo = models.URLField(max_length=256, blank=True)
+>          # 用户唯一的编号
+>          # null=True表示该字段可以存储NULL,则在数据库中该字段会用NULL来存储空值
+>          # 即如果传入空值，数据库中显示为NULL
+>          openid = models.CharField(default="", max_length=50, blank=True, null=True)
+>          # 多人模式下,用户初始分数1500分
+>          score = models.IntegerField(default=1500)
+>          
+>          # 返回具体的信息
+>          def __str__(self):
+>              # 返回具体的用户信息
+>              return str(self.user)
+>      ```
 >
-> ```javascript
-> class AcGamePlayground {
->  constructor(root) {
->      this.root = root;
->     this.$playground = $(`
->          <div class = "ac_game_playground"></div>
->     `);
->      <!-- 刚开始隐藏玩家界面 -->
->      this.hide();
->     }
->     show() {
->         this.$playground.show();
->         <!-- 将代码移动此处，玩家界面出来之后，再计算页面大小 -->
->         this.root.$ac_game.append(this.$playground);
->         this.width = this.$playground.width();
->         this.height = this.$playground.height();
->         this.game_map = new GameMap(this);
->         this.players = [];
->         this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, "white", this.height * 0.2, true));
->         for (let i = 0; i < 10; i ++ ) {
->             this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, this.get_random_color(), this.height * 0.2, false));
->         }
->     }
->    }
->    ```
-
-##### 自适应页面大小
-
-> 修改 `acapp/game/static/css/game.css`
+> 2.   相关函数用法
 >
-> ```css
-> .ac_game_menu_field {
->  	/* 顶部和左边距修改成百分比% */
->  	top: 40%;
->  	left: 25%;
-> }
-> 
-> .ac_game_menu_field_item {
->  	/* 设置高度 */
-> 	height: 7vh;
->  	/* 设置字体大小 */
->  	font-size: 5vh;
->     /* 【删除】内边距 */
->     padding: 2vw;
-> }
-> ```
+>      +   [`CASCADE`](https://www.cnblogs.com/nucdy/p/5768784.html)
+>      +   [`__str__`](https://www.cnblogs.com/PMXGG/p/13267599.html#:~:text=__%20str%20__%E6%98%AFpython%E7%9A%84object%E5%9F%BA%E7%B1%BB%E7%9A%84%E4%B8%80%E4%B8%AA%E6%96%B9%E6%B3%95%EF%BC%8C%E4%B9%9F%E5%B0%B1%E6%98%AF%E8%AF%B4python%E6%89%80%E6%9C%89%E7%9A%84%E7%B1%BB%E9%83%BD%E6%9C%89%EF%BC%8C%E5%BD%93%E7%84%B6django%E7%9A%84modle%E7%B1%BB%E4%B9%9F%E6%9C%89%EF%BC%8C%E6%88%91%E4%BB%AC%E5%B9%B3%E5%B8%B8%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E5%AF%B9%E8%B1%A1%EF%BC%8Cprint%E8%BF%99%E4%B8%AA%E5%AF%B9%E8%B1%A1%E6%97%B6%E4%B8%80%E8%88%AC%E4%BC%9A%E6%98%AF%3C__main_.TestClass%20object,at%200x7f4126578828%3E%EF%BC%8C%E5%8D%B3%E8%BF%99%E4%B8%AA%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%89%80%E5%B1%9E%E7%B1%BB%E5%92%8C%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80%EF%BC%8C%E6%88%91%E4%BB%AC%E6%94%B9%E5%86%99%E7%B1%BB%E4%B8%AD%E7%9A%84%20__%20str%20__%E6%96%B9%E6%B3%95%E5%90%8E%E5%8F%AF%E4%BB%A5%E5%9C%A8print%E6%97%B6%E5%BE%97%E5%88%B0%E6%83%B3%E8%A6%81%E7%9A%84%E6%98%93%E4%BA%8E%E4%BA%BA%E9%98%85%E8%AF%BB%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%9A%84%E4%BF%A1%E6%81%AF%EF%BC%8C%E4%BB%A5%E4%B8%8B%E6%98%AF%E5%AE%9E%E4%BE%8B)
 
-## 创建账号系统
+## 注册到管理员页面
 
-### 创建数据库
-
-#### 显示错误信息
-
-> 将 `acapp/acapp/setting.py` 中的 `DEBUG` 改成 `True`，否则，前端只会出现错误代码不会出现具体错误信息
-
-#### 创建超级用户
-
-> 在根目录下，运行命令 `python3 manage.py createsuperuser` 创建超级用户
+> 1.   将数据库表注册到管理员页面，修改 `Acapp/Game/admin.py`
 >
-> <font style="color: red">**邮箱📮可以不填写**</font>
-
-#### 创建数据库表
-
-> 创建数据库表，修改 `acapp/game/models/player/player.py` 并写入以下内容，函数 [`CASCADE`](https://www.cnblogs.com/nucdy/p/5768784.html) 的用法
+>      ```python
+>      from django.contrib import admin
+>      from Game.models.player.player import Player
+>      
+>      # 将Player表注册到管理员界面
+>      admin.site.register(Player)
+>      ```
 >
-> ```python
-> # 继承数据库基类
-> from django.db import models
-> # 继承数据库用户表
-> from django.contrib.auth.models import User
-> # 每个数据表类都需要继承models.Model类
-> class Player(models.Model):
->  	# 继承基础的用户信息（一对一的映射）
->  	# CASCADE 级联删除，user 删除的时候与之有关的对象都一并删除
->  	user = models.OneToOneField(User, on_delete = models.CASCADE)
->  	# 照片的URL
->  	photo = models.URLField(max_length = 256, blank = True)
-> 	# 显示用户的名称
->  	def __str__(self):
->      		return str(self.user)
-> ```
-
-#### 注册到管理员页面
-
-> 将数据库表注册到管理员页面，修改 `acapp/game/admin.py`
+> 2.   退到项目根目录下，按照顺序执行如下命令
 >
-> ```python
-># 引入Player表
-> from game.models.player.player import Player
+>      ```bash
+>      # 为迁移做准备
+>      python3 manage.py makemigrations
+>      # 迁移
+>      python3 manage.py migrate
+>      ```
 >
-> # Register your models here.
-># 将player表注册到管理员页面
-> admin.site.register(Player)
-> ```
-> 
-> 退到项目根目录下，按照顺序执行如下命令
-> 
-> ```django
-> python3 manage.py makemigrations
->    python3 manage.py migrate
->    ```
->    
->    重启 `uwsgi` 服务
->    
-> <font style="color:red">**对数据库每一次改动都需要迁移并且重启服务**</font>
+> 3.   重启 `uwsgi` 服务
+>
+>      <font style="color:red">**对数据库每一次改动都需要迁移并且重启服务**</font>
 
-### 登录注册界面
+## 用户名密码登录
 
-#### 准备工作
-
-##### 主要逻辑步骤
+### 主要逻辑步骤
 
 > 用户登录的时候会向服务器发送请求 `getinfo`，服务器会返回相对应的信息；当用户登录成功时，会返回用户的基本信息和头像信息；当用户未登录时，返回未登录信息
 >
 > 附图一
 >
-> ![WeChatd3418912a93399114cc7d3435a258078](https://gitee.com/peter95535/image-bed/raw/master/img/WeChatd3418912a93399114cc7d3435a258078.png)
+> ![WeChatd3418912a93399114cc7d3435a258078](img/WeChatd3418912a93399114cc7d3435a258078.png)
 >
 > 附图二
 >
-> ![39750_2f407ec749-a](https://gitee.com/peter95535/image-bed/raw/master/img/39750_2f407ec749-a.png)
+> ![39750_2f407ec749-a](img/39750_2f407ec749-a.png)
 
-##### 添加端口变量
+### 添加端口变量
 
-> 修改 `acapp/game/static/js/src/zbase.js`
+> 1.   修改 `Acapp/Game/static/js/src/zbase.js`
 >
-> ```javascript
-> export class AcGame {
->        <!-- 添加 AcWingOs 变量，用于判断是哪个端口 -->
->        constructor(id, AcWingOS) {
->            this.AcWingOS = AcWingOS;
+>      ```javascript
+>      // 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字
+>      export class AcGame {
+>          constructor(id, AcWingOS) {
+>              // AcWingOS用来判断是Acapp端还是网站端
+>              this.AcWingOS = AcWingOS;
+>          }
+>      }
+>      ```
+
+### `getinfo` 函数
+
+#### 编写后端代码
+
+##### 编写 `VIEWS`
+
+> 1.   修改 `Acapp/Game/views/settings/getinfo.py`
+>
+>      ```python
+>      from django.http import JsonResponse
+>      from Game.models.player.player import Player # 导入Player表
+>                     
+>      # 获取acapp上的信息
+>      def getinfo_acapp(request):
+>          # 获取玩家
+>          player = Player.objects.all()[0]
+>          # 返回信息
+>          return JsonResponse({
+>              'result': "success",
+>              'username': player.user.username,
+>              'photo': player.photo
+>          })
+>                     
+>      # 获取web上的信息
+>      def getinfo_web(request):
+>          # 获取用户
+>          user = request.user
+>          # 如果当前用户没有登录
+>          if not user.is_authenticated:
+>              return JsonResponse({
+>                  'result': "未登录"
+>              })
+>          else: # 已经登录
+>              # 找到当前用户
+>              player = Player.objects.get(user=user)
+>              return JsonResponse({
+>                  'result': "success",
+>                  'username': player.user.username,
+>                  'photo': player.photo
+>              })
+>                     
+>      # 获取信息
+>      def getinfo(request):
+>          # 获取平台是ACAPP端还是WEB端
+>          platform = request.GET.get('platform')
+>          # 若是ACAPP端, 则调用getinfo_acapp函数
+>          if platform == "ACAPP":
+>              return getinfo_acapp(request)
+>          # 若是WEB端, 则调用getinfo_web函数
+>          elif platform == "WEB":
+>              return getinfo_web(request)
+>      ```
+
+##### 编写 `URL`
+
+> 1.   修改 `app` 的路由 `Acapp/Game/urls/index.py`
+>
+>      ```python
+>      from django.urls import path, include
+>      
+>      urlpatterns = [
+>          path('settings/' include('Game.urls.settings.index')), # 添加路由
+>      ]
+>      ```
+> 
+> 2.   修改 `settings` 的路由 `Acapp/Game/urls/settings/index.py`
+>
+>      ```python
+>     from django.urls import path
+>     # 导入getinfo函数
+>     from Game.views.settings.getinfo import getinfo
+>                  
+>     urlpatterns = [
+>         # 添加路径
+>         path('getinfo/', getinfo, name='settings_getinfo')
+>     ]
+>     ```
+
+#### 编写前端代码
+
+##### 编写 `JS`
+
+> 1.   修改 `Acapp/Game/static/js/src/menu/zbase.js`
+>
+>      ```javascript
+>      class AcGameMenu {
+>          constructor(root) {
+>              // 一开始将菜单进行隐藏, 当用户登录之后在显示菜单界面
+>              this.hide();
+>          }
+>      }
+>      ```
+>
+> 2.   创建 `Acapp/Game/static/js/src/settings/zbase.js` 并写入以下内容
+>
+>      ```javascript
+>      class Settings {
+>          constructor(root) {
+>              this.root = root;
+>              // 默认平台是WEB
+>              this.platform = "WEB";
+>              // 如果存在此参数, 说明平台是ACAPP
+>              if (this.root.AcWingOS) this.platform = "ACAPP";
+>              // 用户名
+>              this.username = "";
+>              // 头像
+>              this.photo = "";
+>              this.$settings = $(`
+>                  <div class="ac_game_settings">
+>                      <div class="ac_game_settings_login">
+>                          <div class="ac_game_settings_title">
+>                              登录
+>                          </div>
+>                          <div class="ac_game_settings_username">
+>                              <div class="ac_game_settings_item">
+>                                  <input type="text" placeholder="用户名">
+>                              </div>
+>                          </div>
+>                          <div class="ac_game_settings_password">
+>                              <div class="ac_game_settings_item">
+>                                  <input type="password" placeholder="密码">
+>                              </div>
+>                          </div>
+>                          <div class="ac_game_settings_submit">
+>                              <div class="ac_game_settings_item">
+>                                  <button>登录</button>
+>                              </div>
+>                          </div>
+>                          <div class="ac_game_settings_error_message"></div>
+>                          <div class="ac_game_settings_option">
+>                              注册
+>                          </div>
+>                          <br>
+>                          <div class="ac_game_settings_acwing">
+>                              <img width="30" src="https://app2370.acapp.acwing.com.cn/static/image/favicon.ico">
+>                              <br>
+>                              <div>
+>                                  AcWing一键登录
+>                              </div>
+>                          </div>
+>                      </div>
+>                      <div class="ac_game_settings_register">
+>                          <div class="ac_game_settings_title">
+>                              注册
+>                          </div>
+>                          <div class="ac_game_settings_username">
+>                              <div class="ac_game_settings_item">
+>                                  <input type="text" placeholder="用户名">
+>                              </div>
+>                          </div>
+>                          <div class="ac_game_settings_password ac_game_settings_password_first">
+>                              <div class="ac_game_settings_item">
+>                                  <input type="password" placeholder="密码">
+>                              </div>
+>                          </div>
+>                          <div class="ac_game_settings_password ac_game_settings_password_second">
+>                              <div class="ac_game_settings_item">
+>                                  <input type="password" placeholder="确认密码">
+>                              </div>
+>                          </div>
+>                          <div class="ac_game_settings_submit">
+>                              <div class="ac_game_settings_item">
+>                                  <button>注册</button>
+>                              </div>
+>                          </div>
+>                          <div class="ac_game_settings_error_message"></div>
+>                          <div class="ac_game_settings_option">
+>                              登录
+>                          </div>
+>                          <br>
+>                          <div class="ac_game_settings_acwing">
+>                              <img width="30" src="https://app2370.acapp.acwing.com.cn/static/image/favicon.ico">
+>                              <br>
+>                              <div>
+>                                  AcWing一键登录
+>                              </div>
+>                          </div>
+>                      </div>
+>                  </div>
+>              `);
+>              // 获取登录的权柄
+>              this.$login = this.$settings.find(".ac_game_settings_login");
+>              this.$login_username = this.$login.find(".ac_game_settings_username input");
+>              this.$login_password = this.$login.find(".ac_game_settings_password input");
+>              this.$login_submit = this.$login.find(".ac_game_settings_submit button");
+>              this.$login_error_message = this.$login.find(".ac_game_settings_error_message");
+>              this.$login_register = this.$login.find(".ac_game_settings_option");
+>              // 一开始将登录界面隐藏
+>              this.$login.hide();
+>              // 获取注册的权柄
+>              this.$register = this.$settings.find(".ac_game_settings_register");
+>              this.$register_username = this.$register.find(".ac_game_settings_username input");
+>              this.$register_password = this.$register.find(".ac_game_settings_password_first input");
+>              this.$register_password_confirm = this.$register.find(".ac_game_settings_password_second input");
+>              this.$register_submit = this.$register.find(".ac_game_settings_submit button");
+>              this.$register_error_message = this.$register.find(".ac_game_settings_error_message");
+>              this.$register_login = this.$register.find(".ac_game_settings_option");
+>              // 将注册界面隐藏
+>              this.$register.hide();
+>              // 获取AcWing一键登录的权柄
+>              this.$acwing_login = this.$settings.find(".ac_game_settings_acwing img");
+>              // 将settings界面加入到根界面
+>              this.root.$ac_game.append(this.$settings);
+>              this.start();
+>          }
+>          start() {
+>              // 如果平台是ACAPP, 则调用getinfo_acapp()
+>              if (this.platform === "ACAPP") {
+>                  this.getinfo_acapp();
+>              }
+>              // 如果平台是WEB, 则调用getinfo_web()
+>              else {
+>                  this.getinfo_web();
+>              }
+>          }
+>          login() {
+>              // 隐藏注册界面
+>              this.$register.hide();
+>              // 显示登录界面
+>              this.$login.show();
+>          }
+>          register() {
+>              // 隐藏登录界面
+>              this.$login.hide();
+>              // 显示注册界面
+>              this.$register.show();
+>          }
+>          getinfo_acapp() {
+>      		// 涉及到一键登录问题,稍后写
+>          }
+>          getinfo_web() {
+>              let outer = this;
+>              $.ajax({
+>                  // 请求的地址
+>                  url: "https://app2370.acapp.acwing.com.cn/settings/getinfo/",
+>                  // GET方式
+>                  type: "GET",
+>                  // 向后台传输的数据
+>                  data: {
+>                      platform: outer.platform,
+>                  },
+>                  // 回调函数
+>                  success: function(resp) {
+>                      // 成功
+>                      if (resp.result === "success") {
+>                          outer.username = resp.username;
+>                          outer.photo = resp.photo;
+>                          outer.hide();
+>                          outer.root.menu.show();
+>                      }
+>                      // 失败, 则调用登录函数
+>                      else {
+>                          outer.login();
+>                      }
+>                  }
+>              });
+>          }
+>          // 隐藏界面
+>          hide() {
+>              this.$settings.hide();
+>          }
+>          // 显示界面
+>          show() {
+>              this.$settings.show();
+>          }
+>      }
+>      ```
+>
+> 3.   在 `Acapp/Game/static/js/src/zbase.js`
+>
+>      ```javascript
+>      // 使用 Javescript 面向对象 需要向外界暴露一个窗口 使用 export 关键字
+>      export class AcGame {
+>          constructor(id, AcWingOS) {
+>              // 创建登录注册界面
+>              // 注意this.settings的位置，必须位于this.playground的前面
+>      		// 因为this.playground需要调用this.settings，因此，this.settings必须先创建
+>              this.settings = new Settings(this);
+>          }
+>      }
+>      ```
+>
+
+##### 编写 `CSS`
+
+>   1.   修改 `Acapp/Game/static/css/game.css`
+>
+>        ```css
+>        .ac_game_settings {
+>            width: 100%;
+>            height: 100%;
+>            background-image: url("/static/image/menu/background.gif");
+>            /* 禁止左右上下拉伸 */
+>            background-size: 100% 100%;
+>            /* 禁止用户鼠标点选 */
+>            user-select: none;
 >        }
-> }
-> ```
-
-##### 编写 `getinfo_web` 函数的 `VIEWS`
-
-> 创建 `acapp/game/views/settings/getinfo.py`
->
-> ```python
-> # 引入 JsonResponse 包
-> from django.http import JsonResponse
-> # 引入 Player 数据库表（类）
-> from game.models.player.player import Player
-> 
-> def getinfo_acapp(request):
->     # 取得第一个用户值的信息
->     player = Player.objects.all()[0]
->     return JsonResponse({
->         # 返回响应的结果
->         'result': "success",
->         # 返回用户名
->         'username': player.user.username,
->         # 返回用户的头像
->         'photo': player.photo
-> 	})
-> 
-> def getinfo_web(request):
->     # 查找当前登录的用户
->     user = request.user
->     # 如果当前用户没有登录，user的值为Anonymous[匿名]User
->     if not user.is_authenticated: # authenticated [已被认证]
->         return JsonResponse({
->             'result': "未登录"
->         })
->     else:
-> 		# 获取当前用户的所有信息
->         player = Player.objects.get(user = user)
->         return JsonResponse({
->             'result': "success",
->             'username': player.user.username,
->             'photo': player.photo
->         })
-> 
-> def getinfo(request):
->     # 获取平台的信息ge
->     platform = request.GET.get('platform')
->     # 如果是 ACAPP 端
->     if platform == 'ACAPP':
->         return getinfo_acapp(request)
->     # 注意：如果写成elif == 'WEB'，则会出现返回空，即报错，因此，写成else，以后再进行修改
->     else:
->         return getinfo_web(request)
-> ```
-
-##### 编写 `getinfo_web` 函数的 `URL`
-
-> 修改 `app` 的路由 `acapp/game/urls/index.py`
->
-> ```python
-> # 导入include关键字
-> from django.urls import path, include
-> 
-> urlpatterns = [
->  	# 添加路径路由
->  	path('settings/', include('game.urls.settings.index'))
-> ]
-> ```
->
-> 修改 `settings` 的路由 `acapp/game/urls/settings/index.py`
->
-> ```python
-> from django.urls import path
-> # 调用getinfo函数
-> from game.views.settings.getinfo import getinfo
-> 
-> urlpatterns = [
->        # 添加路径
->        path('getinfo/', getinfo, name = 'settings_getinfo')
-> ]
-> ```
->
-
-##### 前端调用 `getinfo_web` 函数
-
-> 创建 `acapp/game/static/js/src/settings/zbase.js` 并写入以下内容
->
-> ```javascript
-> class Settings {
->        constructor(root) {
->            this.root = root;
->            <!-- 默认平台是 WEB 平台 -->
->            this.platform = "WEB";
->            if (this.root.AcWingOS) {
->                this.platform = "ACAPP";
->            }
->            this.start();
+>             
+>        .ac_game_settings_login {
+>            height: 45vh;
+>            width: 20vw;
+>            position: relative;
+>            top: 50%;
+>            left: 50%;
+>            transform: translate(-50%, -50%);
+>            background-color: rgba(0, 0, 0, 0.7);
+>            /* 圆角 */
+>            border-radius: 5px;
 >        }
->        start() {
->            this.getinfo_web();
+>             
+>        .ac_game_settings_title {
+>            color: white;
+>            font-size: 3vh;
+>            text-align: center;
+>            padding-top: 2vh;
+>            margin-bottom: 2vh;
 >        }
->        login() {}
->        getinfo_web() {
->            let outer = this;
->            $.ajax({
->                <!-- url 地址别写错 -->
->                url: "https://app149.acapp.acwing.com.cn/settings/getinfo/",
->                type: "GET",
->                data: {
->                    platform: outer.platform
->                },
->                success: function(resp) {
->                    console.log(resp);
->                    <!-- 如果是登录状态，则显示菜单界面 -->
->                    if (resp.result == "success") {
->                        outer.hide();
->                        outer.root.menu.show();
->                    }
->                    <!-- 如果是未登录状态，则跳转到登录界面 -->
->                    else {
->                        outer.login();
->                    }
+>             
+>        .ac_game_settings_username {
+>            display: block;
+>            height: 7vh;
+>        }
+>             
+>        .ac_game_settings_password {
+>            display: block;
+>            height: 7vh;
+>        }
+>             
+>        .ac_game_settings_submit {
+>            display: block;
+>            height: 7vh;
+>        }
+>             
+>        .ac_game_settings_acwing {
+>            display: block;
+>            height: 7vh;
+>        }
+>             
+>        .ac_game_settings_item {
+>            width: 100%;
+>            height: 100%;
+>        }
+>             
+>        .ac_game_settings_item > input {
+>            width: 90%;
+>            line-height: 3vh;
+>            position: relative;
+>            top: 50%;
+>            left: 50%;
+>            transform: translate(-50%, -50%);
+>        }
+>             
+>        .ac_game_settings_item > button {
+>            color: white;
+>            width: 90%;
+>            line-height: 3vh;
+>            position: relative;
+>            top: 50%;
+>            left: 50%;
+>            transform: translate(-50%, -50%);
+>            background-color: #4CAF50;
+>            border-radius: 5px;
+>        }
+>             
+>        .ac_game_settings_error_message {
+>            color: red;
+>            font-size: 0.8vh;
+>            display: inline;
+>            float: left;
+>            padding-left: 1vw;
+>        }
+>             
+>        .ac_game_settings_option {
+>            color: white;
+>            font-size: 2vh;
+>            display: inline;
+>            float: right;
+>            padding-right: 1vw;
+>            cursor: pointer;
+>        }
+>             
+>        .ac_game_settings_acwing > img {
+>            position: relative;
+>            top: 50%;
+>            left: 50%;
+>            transform: translate(-50%, -50%);
+>            cursor: pointer;
+>            display: block;
+>        }
+>             
+>        .ac_game_settings_acwing > div {
+>            color: white;
+>            font-size: 1.5vh;
+>            text-align: center;
+>            display: block;
+>        }
+>             
+>        .ac_game_settings_register {
+>            height: 51vh;
+>            width: 20vw;
+>            position: relative;
+>            top: 50%;
+>            left: 50%;
+>            transform: translate(-50%, -50%);
+>            background-color: rgba(0, 0, 0, 0.7);
+>            border-radius: 5px;
+>        }
+>        ```
+
+#### 登录注册相互跳转
+
+>   1.   修改 `Acapp/Game/static/js/src/settings/zbase.js`
+>
+>        ```javascript
+>        class Settings {
+>            start() {
+>                // 如果平台是ACAPP, 则调用getinfo_acapp()
+>                if (this.platform === "ACAPP") {
+>                    this.getinfo_acapp();
 >                }
->            });
+>                // 如果平台是WEB, 则调用getinfo_web()
+>                else {
+>                    this.getinfo_web();
+>                    // 添加监听事件
+>                    this.add_listening_events();
+>                }
+>            }
+>            add_listening_events() {
+>                let outer = this;
+>                // 监听登录事件
+>                this.add_listening_events_login();
+>                // 监听注册事件
+>                this.add_listening_events_register();
+>                // 如果点击AcWing一键登录
+>                this.$acwing_login.click(function() {
+>                    outer.acwing_login();
+>                });
+>            }
+>            add_listening_events_login() {
+>                let outer = this;
+>                // 在登录界面点击注册按钮
+>                this.$login_register.click(function() {
+>                    // 跳转到注册界面
+>                    outer.register();
+>                });
+>            }
+>            add_listening_events_register() {
+>                let outer = this;
+>                // 在注册界面点击登录按钮
+>                this.$register_login.click(function() {
+>                    // 跳转到登录界面
+>                    outer.login();
+>                });
+>            }
 >        }
->        hide() {}
->    }
->    ```
+>        ```
 
-##### 编写 `menu` 的 `show` 函数
+### `login` 函数
 
->   修改 `acapp/game/static/js/src/menu/zbase.js`，添加一下内容
+#### 编写后端代码
+
+##### 编写 `VIEWS`
+
+>   1.   修改 `Acapp/Game/views/settings/login.py`
 >
->   ```javascript
->   class AcGameMenu {
->       show() {
->           this.$menu.show();
->       }
->   }
->   ```
+>        ```python
+>        from django.http import JsonResponse
+>        from django.contrib.auth import authenticate, login
+>             
+>        def signin(request):
+>            # 获取数据
+>            data = request.GET
+>            # 获取用户名
+>            username = data['username']
+>            # 获取密码
+>            password = data['password']
+>            # 根据用户名和密码找到用户
+>            # 找不到返回None
+>            # Django存储的是密码的哈希值，因此，使用内置函数
+>        	# Django比较的是密码的哈希值，不是密码的值本身，先将输入的密码哈希，再与数据库中的哈希值进行比较，查看是否一致
+>            user = authenticate(username=username, password=password)
+>            if not user:
+>                return JsonResponse({
+>                    'result': "用户名或密码不正确"
+>                })
+>            # 登录
+>            # login内置函数将登录的信息存储在浏览器的cookie里面
+>            login(request, user)
+>            return JsonResponse({
+>                'result': "success"
+>            })
+>        ```
 
-##### 将 `Settings` 添加到主界面
+##### 编写 `URL`
 
->   修改 `acapp/game/static/js/src/zbase.js`，并写入以下内容
+>   1.   修改 `Acapp/Game/urls/settings/index.py`
 >
->   ```javascript
->   <!-- 注意this.settings的位置，必须位于this.playground的前面 -->
->   <!-- 因为this.playground需要调用this.settings，因此，this.settings必须先创建 -->
->   this.settings = new Settings(this);
->   ```
+>        ```python
+>        # 导入signin函数
+>        from Game.views.settings.login import signin
+>             
+>        urlpatterns = [
+>            # 添加login路径
+>            path('login/', signin, name='settings_login'),
+>        ]
+>        ```
 
-##### 渲染用户头像
+#### 编写前端代码
 
->   修改 `acapp/game/static/js/src/settings/zbase.js`
+##### 编写 `JS`
+
+>   1.   修改 `Acapp/Game/static/js/src/settings/zbase.js`
 >
->   ```javascript
->   class Settings {
->       constructor(root) {
->         	<!-- 添加用户的用户名和头像 -->
->           this.username = '';
->           this.photo = '';
->       }
->       getinfo() {
->           $.ajax({
->               success: function(resp) {
->                   if (resp.result == 'success') {
->                       <!-- 获取用户名 -->
->                       outer.username = resp.username;
->                       <!-- 获取密码 -->
->                       outer.photo = resp.photo;
->                   }
->               }
->           })
->       }
->   }
->   ```
+>        ```javascript
+>        class Settings {
+>            add_listening_events_login() {
+>                // 点击提交按钮
+>                this.$login_submit.click(function() {
+>                    // 在远程服务器上进行登录
+>                    outer.login_on_remote();
+>                });
+>            }
+>            login_on_remote() { // 在远程服务器上进行登录
+>                let outer = this;
+>                // 获取输入的用户名
+>                let username = this.$login_username.val();
+>                // 获取输入的密码
+>                let password = this.$login_password.val();
+>                // 将错误信息置空
+>                this.$login_error_message.empty();
+>                $.ajax({
+>                    url: "https://app2370.acapp.acwing.com.cn/settings/login/",
+>                    type: "GET",
+>                    // 向后台传输的数据
+>                    data: {
+>                        // 传输用户名
+>                        username: username,
+>                        // 传输密码
+>                        password: password,
+>                    },
+>                    success: function(resp) {
+>                        // 如果验证通过, 则重新加载页面
+>                        // 这时会调用getinfo_web,在进行后续的一系列操作
+>                        // getinfo_acapp不需要进行登录
+>                        if (resp.result === "success") {
+>                            // 重新加载页面
+>                            location.reload();
+>                        }
+>                        else {
+>                            // 打印错误信息
+>                            outer.$login_error_message.html(resp.result);
+>                        }
+>                    }
+>                });
+>            }
+>        }
+>        ```
+
+### `logout` 函数
+
+#### 编写后端代码
+
+##### 编写 `VIEWS`
+
+>   1.   修改 `Acapp/Game/views/settings/logout.py`
 >
->   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>        ```python
+>        from django.http import JsonResponse
+>        from django.contrib.auth import logout
+>             
+>        def signout(request):
+>            # 获取用户
+>            user = request.user
+>            # 若用户已经登出, 则直接返回
+>            if not user.is_authenticated:
+>                return JsonResponse({
+>                    'result': "success",
+>                })
+>            # 登出用户
+>            logout(request)
+>            # 返回
+>            return JsonResponse({
+>                'result': "success",
+>            })
+>        ```
+
+#####  编写 `URL`
+
+>   1.   修改 `Acapp/Game/urls/settings/index.py`
 >
->   ```javascript
->   class Player extends AcGameObject {
->       constructor(playground, x, y, radius, color, speed, is_me) {
->           <!-- 如果是本人，则获取头像和头像地址 -->
->           if (this.is_me) {
->               <!-- 建立图像的对象 -->
->               this.img = new Image();
->               this.img.src = this.playground.root.settings.photo;
->           }
->       }
->       render() {
->           <!-- 如果是本人，则加载用户头像并且将头像画出来 -->
->           if (this.is_me) {
->               this.ctx.save();
->               this.ctx.beginPath();
->               this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
->               this.ctx.stroke();
->               this.ctx.clip();
->               this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); 
->               this.ctx.restore();
->           }
->           else {
->               this.ctx.beginPath();
->               this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
->               this.ctx.fillStyle = this.color;
->               this.ctx.fill();
->           }
->       }
->   }
->   ```
+>        ```python
+>        # 导入signout函数
+>        from Game.views.settings.logout import signout
+>             
+>        urlpatterns = [
+>            # 添加logout路径
+>            path('logout/', signout, name='settings_logout'),
+>        ]
+>        ```
 
-#### 用户登录与注册页面
+#### 编写前端代码
 
-##### 隐藏菜单界面
-
->   修改 `acapp/game/static/js/src/menu/zbase.js`
+>   1.   修改 `Acapp/Game/static/js/src/menu/zbase.js`
 >
->   ```javascript
->   class AcGameMenu {
->       constructor(root) {
->           <!-- 刚开始需要隐藏菜单界面，登录成功再进行显示 -->
->           <!-- 注意：先在Django后台退出登录，否则，登录状态的话，菜单界面会一直显示 -->
->           this.hide();
->       }
->   }
->   ```
-
-##### 编写登录界面的 `HTML`
-
->   1.   下载 `logo` 图片到 `acapp/game/static/image/settings/acwing_login.png`
+>        ```javascript
+>        class AcGameMenu {
+>            constructor(root) {
+>                // 找到设置的权柄
+>                this.$settings = this.$menu.find('.ac_game_menu_field_item_settings');
+>            }
+>            add_listening_events() {
+>                // 点击退出
+>                this.$settings.click(function() {
+>                    // 调用退出函数
+>                    outer.root.settings.logout_on_remote();
+>                });
+>            }
+>        }
+>        ```
 >
->   + `wget --output-document=图片别名 图片地址 ` [图片地址](https://cdn.acwing.com/media/article/image/2021/11/18/1_ea3d5e7448-logo64x64_2.png)
->   + 记得重启服务
+>   2.   `Acapp/Game/static/js/src/settings/zbase.js`
 >
->   2.   修改 `acapp/game/static/js/src/settings/zbase.js`
+>        ```javascript
+>        class Settings {
+>            logout_on_remote() { // 在远程服务器上登出
+>                if (this.platform === "ACAPP") {
+>                    // 调用网站API
+>                    this.root.AcWingOS.api.window.close();
+>                }
+>                else {
+>                    $.ajax({
+>                        url: "https://app2370.acapp.acwing.com.cn/settings/logout",
+>                        type: "GET",
+>                        success: function(resp) {
+>                            // 成功的话, 则重新加载页面
+>                            if (resp.result === "success") {
+>                                location.reload();
+>                            }
+>                        }
+>                    });
+>                }
+>            }
+>        }
+>        ```
+
+### `register`
+
+#### 编写后端代码
+
+##### 编写 `VIEWS`
+
+>   1.   修改 `Acapp/Game/views/settings/register.py`
 >
->   ```javascript
->   class Settings {
->       constructor(root) {
->           this.$settings = $(`
->               <div class = "ac_game_settings">
->               	<!-- 编写登录界面 -->
->                   <div class = "ac_game_settings_login">
->                       <div class = "ac_game_settings_title">
->                           登录
->                       </div>
->                       <div class = "ac_game_settings_username">
->                           <div class = "ac_game_settings_item">
->                               <input type = "text" placeholder = "用户名">
->                           </div>
->                       </div>
->                       <div class = "ac_game_settings_password">
->                           <div class = "ac_game_settings_item">
->                               <input type = "password" placeholder = "密码">
->                           </div>
->                       </div>
->                       <div class = "ac_game_settings_submit">
->                           <div class = "ac_game_settings_item">
->                               <button>登录</button>
->                           </div>
->                       </div>
->                       <div class = "ac_game_settings_error_messages"></div>
->                       <div class = "ac_game_settings_option">
->                           注册
->                       </div>
->                       <div class = "ac_game_settings_acwing">
->                       	<br>
->                           <img width = "30px;" src = "https://app1164.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
->                           <br>
->                           <div>
->                               AcWing一键登录
->                           </div>
->                       </div>
->                   </div>
->               </div>
->                           `);
->           <!-- 将settings界面添加到主界面中去 -->
->           this.root.$ac_game.append(this.$settings);
->       }
->   }
->   ```
+>        ```python
+>        from django.http import JsonResponse
+>        from django.contrib.auth import login
+>        from django.contrib.auth.models import User
+>        from Game.models.player.player import Player
+>        
+>        def register(request):
+>            data = request.GET
+>            # 获取用户名,获取不到, 返回""
+>            username = data.get("username", "").strip()
+>            password = data.get("password", "").strip()
+>            password_confirm = data.get("password_confirm", "").strip()
+>            #  判断是否为空
+>            if not username or not password:
+>                return JsonResponse({
+>                    'result': "用户名或密码不能为空"
+>                })
+>            # 判断两次密码是否一致
+>            if password != password_confirm:
+>                return JsonResponse({
+>                    'result': "两次密码不一致"
+>                })
+>            # 判断用户名是否存在
+>            if User.objects.filter(username=username).exists():
+>                return JsonResponse({
+>                    'result': "用户名已存在"
+>                })
+>            # 根据用户名创建对象
+>            user = User(username=username)
+>            # 设置密码
+>            user.set_password(password)
+>            # 保存创建的用户
+>            user.save()
+>            # 根据用户创建玩家
+>            Player.objects.create(user=user, photo="https://img2.baidu.com/it/u=2161949891,656888789&fm=26&fmt=auto")
+>            # 用新创建玩家登录账号
+>            login(request, user)
+>            # 返回结果
+>            return JsonResponse({
+>                'result': "success"
+>            })
+>        ```
 
-##### 编写登录界面的 `css`
+##### 编写 `URL`
 
->   修改 `acapp/game/static/css/game.css`
+>   1.   修改 `Acapp/Game/urls/settings/index.py`
 >
->   ```css
->   /* 登录界面相关设置 */
->   .ac_game_settings {
->       width: 100%;
->       height: 100%;
->       background-image: url('/static/image/menu/background.gif');
->       background-size: 100% 100%;
->       user-select: none;
->   }
->   
->   .ac_game_settings_login {
->       height: 43vh;
->       width: 20vw;
->       position: relative;
->       top: 50%;
->       left: 50%;
->       transform: translate(-50%, -50%);
->       background-color: rgba(0, 0, 0, 0.7);
->       border-radius: 5px;
->   }
->   
->   .ac_game_settings_title {
->       color: white;
->       font-size: 3vh;
->       text-align: center;
->       padding-top: 2vh;
->       margin-bottom: 2vh;
->   }
->   
->   .ac_game_settings_username {
->       display: block;
->       height: 7vh;
->   }
->   
->   .ac_game_settings_item {
->       width: 100%;
->       height: 100%;
->   }
->   
->   .ac_game_settings_item > input {
->       width: 90%;
->       line-height: 3vh;
->       position: relative;
->       top: 50%;
->       left: 50%;
->       transform: translate(-50%, -50%);
->   }
->   
->   .ac_game_settings_password {
->       display: block;
->       height: 7vh;
->   }
->   
->   .ac_game_settings_submit {
->       display: block;
->       height: 7vh;
->   }
->   
->   .ac_game_settings_item > button {
->       color: white;
->       width: 90%;
->       line-height: 3vh;
->       position: relative;
->       top: 50%;
->       left: 50%;
->       transform: translate(-50%, -50%);
->       background-color: #4CAF50;
->       border-radius: 5px;
->   }
->   
->   .ac_game_settings_error_messages {
->       color: red;
->       font-size: 0.8vh;
->       display: inline;
->       float: left;
->       padding-left: 1vw;
->   }
->   
->   .ac_game_settings_option {
->       color: white;
->       font-size: 1.8vh;
->       display: inline;
->       float: right;
->       padding-right: 1vw;
->       cursor: pointer;
->   }
->   
->   .ac_game_settings_acwing {
->       display: block;
->       height: 7vh;
->   }
->   
->   .ac_game_settings_acwing > img {
->       position: relative;
->       top: 50%;
->       left: 50%;
->       display: block;
->       transform: translate(-50%, -50%);
->       cursor: pointer;
->   }
->   
->   .ac_game_settings_acwing > div {
->       color: white;
->       font-size: 1.5vh;
->       text-align: center;
->   }
->   ```
->   
+>        ```python
+>        # 导入register函数
+>        from Game.views.settings.register import register
+>        
+>        urlpatterns = [
+>            # 添加register路径
+>            path('register/', register, name='settings_register'),
+>        ]
+>        ```
 
-##### 编写注册界面的 `HTML`
+#### 编写前端代码
 
->   修改 `acapp/game/static/js/src/settings/zbase.js`
+>   1.   修改 `Acapp/Game/static/js/src/settings/zbase.js`
 >
->   ```javascript
->   class Settings {
->       constructor(root) {
->           this.$settings = $(`
->               <div class = "ac_game_settings">
->               	<!-- 编写注册界面 -->
->                   <div class = "ac_game_settings_register">
->                       <div class = "ac_game_settings_title">
->                           注册
->                       </div>
->                       <div class = "ac_game_settings_username">
->                           <div class = "ac_game_settings_item">
->                               <input type = "text" placeholder = "用户名">
->                           </div>
->                       </div>
->                       <div class = "ac_game_settings_password">
->                           <div class = "ac_game_settings_item">
->                               <input type = "password" placeholder = "密码">
->                           </div>
->                       </div>
->                       <div class = "ac_game_settings_password_confirm">
->                           <div class = "ac_game_settings_item">
->                               <input type = "password" placeholder = "确认密码">
->                           </div>
->                       </div>
->                       <div class = "ac_game_settings_submit">
->                           <div class = "ac_game_settings_item">
->                               <button>注册</button>
->                           </div>
->                       </div>
->                       <div class = "ac_game_settings_error_messages"></div>
->                       <div class = "ac_game_settings_option">
->                           登录
->                       </div>
->                       <div class = "ac_game_settings_acwing">
->                           <br>
->                           <img width = "30px;" src = "https://app1164.acapp.acwing.com.cn/static/image/settings/acwing_login.png">
->                           <br>
->                           <div>
->                               AcWing一键登录
->                           </div>
->                       </div>
->                   </div>
->               </div>
->           `);
->           <!-- 获取登录界面的权柄 -->
->           this.$login = this.$settings.find(".ac_game_settings_login");
->           <!-- 将登录界面隐藏，显示注册界面，方便调试 -->
->           this.$login.hide();
->           this.start();
->       }
->   }
->   ```
+>        ```javascript
+>        class Settings {
+>            add_listening_events_register() {
+>                // 点击注册按钮
+>                this.$register_submit.click(function() {
+>                    //  调用注册函数
+>                    outer.register_on_remote();
+>                });
+>            }
+>            register_on_remote() { // 在远程服务器上注册
+>                let outer = this;
+>                // 获取用户名
+>                let username = this.$register_username.val();
+>                // 密码
+>                let password = this.$register_password.val();
+>                // 确认密码
+>                let password_confirm = this.$register_password_confirm.val();
+>                // 清空错误数据
+>                this.$register_error_message.empty();
+>                $.ajax({
+>                    url: "https://app2370.acapp.acwing.com.cn/settings/register",
+>                    type: "GET",
+>                    data: {
+>                        // 用户名
+>                        username: username,
+>                        // 密码
+>                        password: password,
+>                        // 确认密码
+>                        password_confirm: password_confirm,
+>                    },
+>                    success: function(resp) {
+>                        // 若成功, 则刷新页面
+>                        if (resp.result === "success") {
+>                            location.reload();
+>                        }
+>                        else { // 打印错误信息
+>                            outer.$register_error_message.html(resp.result);
+>                        }
+>                    }
+>                });
+>            }
+>        }
+>        ```
 
-##### 编写注册界面的 `css`
+### 渲染用户头像
 
->   修改 `acapp/game/static/css/game.css`
+>   1.   修改 `Acapp/Game/static/js/src/playground/player/zbase.js`
 >
->   ```css
->   /* 注册界面相关设置 */
->   .ac_game_settings_register {
->       height: 50vh;
->       width: 20vw;
->       position: relative;
->       top: 50%;
->       left: 50%;
->       transform: translate(-50%, -50%);
->       background-color: rgba(0, 0, 0, 0.7);
->       border-radius: 5px;
->   }
->   ```
-
-##### 登录和注册相互跳转
-
->   修改 `acapp/game/static/js/src/settings/zbase.js`
+>        ```javascript
+>        class Player extends AcGameObject {
+>            constructor(username, photo) {
+>                this.username = username; // 玩家用户名
+>                this.photo = photo; // 玩家头像
+>                if (this.character !== "robot") { // 非机器人才需要渲染头像
+>                    // 创建照片头像
+>                    this.img = new Image();
+>                    // 头像
+>                    this.img.src = this.photo;
+>                }
+>            }
+>            render() {
+>                // 获取新地图的缩放比例,不是旧地图的缩放比例this.scale
+>                let scale = this.playground.scale;
+>                // 如果不是机器人,则渲染其头像
+>                if (this.character !== "robot") {
+>                    // 保存当前状态
+>                    this.ctx.save();
+>                    // 开始做图
+>                    this.ctx.beginPath();
+>                    // 圆弧
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                    // 画
+>                    this.ctx.stroke();
+>                    // 剪切
+>                    this.ctx.clip();
+>                    // 渲染头像
+>                    this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+>                    // 恢复状态
+>                    this.ctx.restore();
+>                }
+>                else {
+>                    // 告诉浏览器开始作画
+>                    this.ctx.beginPath();
+>                    // 画圆弧
+>                    // 单位坐标✖️缩放比例
+>                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+>                    // 拿起当前颜色的画笔
+>                    this.ctx.fillStyle = this.color;
+>                    // 用当前颜色的画笔进行填充
+>                    this.ctx.fill();
+>                }
+>                if (this.character === "me" && this.playground.state === "fighting") {
+>                    // 如果当前的角色是本人, 则更新技能冷却
+>                    this.render_skill_coldtime();
+>                }
+>            }
+>        }
+>        ```
 >
->   ```javascript
->   class Settings {
->       constructor(root) {
->           <!-- 获取登录的权柄 -->
->           this.$login = this.$settings.find(".ac_game_settings_login");
->           <!-- 获取登录中的注册按钮的权柄 -->
->           this.$login_register = this.$login.find(".ac_game_settings_option");
->           <!-- 获取注册的权柄 -->
->           this.$register = this.$settings.find(".ac_game_settings_register");
->           <!-- 获取注册中的登录按钮的权柄 -->
->           this.$register_login = this.$register.find(".ac_game_settings_option");
->           <!-- 默认显示登录界面，因此，一开始将注册界面隐藏 -->
->           this.$register.hide();
->           this.start();
->       }
->       start() {
->           <!-- 添加监听事件 -->
->           this.add_listening_events();
->       }
->       add_listening_events() {
->           <!-- 添加登录的监听事件 -->
->           this.add_listening_events_login();
->           <!-- 添加注册的监听事件 -->
->           this.add_listening_events_register();
->       }
->       add_listening_events_login() {
->           <!-- 获取外部的权柄 -->
->           let outer = this;
->   		<!-- 点击注册按钮 -->
->           this.$login_register.click(function() {
->               <!-- 登录界面隐藏 -->
->               outer.$login.hide();
->               <!-- 注册界面显示 -->
->               outer.$register.show();
->           });
->       }
->       add_listening_events_register() {
->           <!-- 获取外部的权柄 -->
->           let outer = this;
->           <!-- 点击登录按钮 -->
->           this.$register_login.click(function() {
->               <!-- 注册界面隐藏 -->
->               outer.$register.hide();
->               <!-- 登录界面显示 -->
->               outer.$login.show();
->           });
->       }
->   }
->   ```
-
-#### 登录后台交互
-
-##### 编写 `VIEWS` 函数
-
->   创建 `acapp/game/views/settings/login.py`，写入以下内容
+>   2.   修改 `Acapp/Game/static/js/src/playground/zbase.js`
 >
->   ```python
->   from django.http import JsonResponse
->   from django.contrib.auth import authenticate, login
->   
->   def signin(request):
->       # 接收【前端】发送来的数据
->       data = request.GET
->       username = data.get('username')
->       password = data.get('password')
->   	# Django存储的是密码的哈希值，因此，使用内置函数
->   	# Django比较的是密码的哈希值，不是密码的值本身，先将输入的密码哈希，再与数据库中的哈希值进行比较，查看是否一致
->       user = authenticate(username = username, password = password)
->       if not user:
->           return JsonResponse({
->               'result': "用户名或者密码不正确"
->           })
->   	# login内置函数将登录的信息存储在浏览器的cookie里面
->       login(request, user)
->       return JsonResponse({
->           'result': "success"
->       })
->   ```
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                // 将玩家插入玩家列表
+>                // 宽度存的是比例
+>                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.2, "me", this.root.settings.username, this.root.settings.photo));
+>            }
+>        }
+>        ```
 
-##### 编写 `URL` 函数
-
->   修改 `acapp/game/urls/settings/index.py`
->
->   ```python
->   # 添加signin函数
->   from game.views.settings.login import signin
->   
->   urlpatterns = [
->       # 添加相对应的路由
->       path('login/', signin, name = 'settings_login')
->   ]
->   ```
-
-##### 前端调用 `signin` 函数
-
->   修改 `acapp/game/static/js/src/settings/zbase.js`
->
->   ```javascript
->   class Settings {
->       constructor(root) {
->           <!-- 获取登录用户名的权柄 -->
->           this.$login_username = this.$login.find(".ac_game_settings_username input");
->           <!-- 获取登录密码的权柄 -->
->           this.$login_password = this.$login.find(".ac_game_settings_password input");
->           <!-- 获取登录按钮的权柄 -->
->           this.$login_submit = this.$login.find(".ac_game_settings_submit");
->           <!-- 获取登录错误信息的权柄 -->
->           this.$login_error_message = this.$login.find(".ac_game_settings_error_messages");
->           <!-- 获取登录中的注册按钮的权柄 -->
->           this.$login_register = this.$login.find(".ac_game_settings_option");
->           <!-- 将登录界面隐藏 -->
->           this.$login.hide();
->           this.$register = this.$settings.find(".ac_game_settings_register");
->           this.$register_login = this.$register.find(".ac_game_settings_option");
->           <!-- 将注册界面隐藏 -->
->           this.$register.hide();
->           this.start();
->       }
->       start() {
->           this.add_listening_events();
->           this.getinfo_web();
->       }
->       add_listening_events() {
->           this.add_listening_events_login();
->       }
->       add_listening_events_login() {
->           let outer = this;
->           <!-- 点击登录按钮 -->
->           this.$login_submit.click(function() {
->               outer.login_on_remote();
->           });
->       }
->       login_on_remote() {
->           let outer = this;
->           <!-- 获取用户名 -->
->           let username = this.$login_username.val();
->           <!-- 获取密码 -->
->           let password = this.$login_password.val();
->           <!-- 清空错误信息 -->
->           this.$login_error_message.empty();
->           $.ajax({
->               url: 'https://app1164.acapp.acwing.com.cn/settings/login/',
->               type: 'GET',
->               data: {
->                   username: username,
->                   password: password
->               },
->               success: function(resp) {
->                   <!-- 成功登录 -->
->                   if (resp.result === "success") {
->                       <!-- 重载页面 -->
->                       location.reload();
->                   }
->                   else {
->                       <!-- 打印错误信息 -->
->                       outer.$login_error_message.html(resp.result);
->                   }
->               }
->           });
->       }
->       <!-- 将settings页面进行隐藏 -->
->       hide() {
->           this.$settings.hide();
->       }
->   }
->   ```
-
-#### 登出后台交互
-
-##### 编写 `VIEWS` 函数
-
->   修改 `acapp/game/views/settings/logout.py`
->
->   ```python
->   from django.http import JsonResponse
->   # 导入登出函数
->   from django.contrib.auth import logout
->   
->   def signout(request):
->       # request.user是系统内嵌的函数，查找当前登录的用户，如果当前没有用户登录
->       # 返回匿名用户
->       user = request.user
->       # 如果用户没有登录，则正常返回
->       if not user.is_authenticated:
->           return JsonResponse({
->               'result': "success"
->           })
->       # 如果用户处于登录状态，则退出登录，之后再正常返回
->       logout(request)
->       return JsonResponse({
->           'result': "success"
->       })
->   ```
-
-##### 编写 `URL` 函数
-
->   修改 `acapp/game/urls/settings/index.py`
->
->   ```python
->   # 导入视图函数
->   from game.views.settings.logout import signout
->   
->   urlpatterns = [
->       # 添加路由
->       path('logout/', signout, name = 'settings_logout')
->   ]
->   ```
-
-##### 前端调用 `signout` 函数
-
->   修改 `acapp/game/static/js/src/settings/zbase.js`
->
->   ```javascript
->   <!-- 添加登出函数 -->
->   logout_on_remote() {
->       <!-- 如果当前登录的平台是ACAPP，则直接返回即可，因为ACAPP不是退出登录而是关闭界面 -->
->   	if (this.platform === 'ACAPP') return false;
->   	$.ajax({
->   		url: 'https://app149.acapp.acwing.com.cn/settings/logout/',
->   		type: 'GET',
->   		success: function(resp) {
->   			console.log(resp);
->   			if (resp.result === 'success') {
->                   <!-- 刷新界面 -->
->   				location.reload();
->   			}
->   		}
->   	});
->   }
->   ```
->
->   绑定登出点击事件，修改 `acapp/game/static/js/src/menu/zbase.js`
->
->   ```javascript
->   class AcGameMenu {
->       constructor(root) {
->           this.root = root;
->           this.$menu = $(`
->               <div class="ac_game_menu">
->               		<!-- 将设置修改成退出 -->
->                       <div class="ac_game_menu_field_item ac_game_menu_field_item_settings">
->                           退出
->                       </div>
->                   </div>
->               </div>
->           `);
->           <!-- 获取设置的权柄 -->
->           this.$settings = this.$menu.find(".ac_game_menu_field_item_settings");
->       }
->       add_listening_events() {
->           let outer = this;
->           <!-- 点击设置按钮 -->
->           this.$settings.click(function() {
->               outer.root.settings.logout_on_remote();
->           });
->       }
->   }
->   ```
-
-#### 注册后台交互
-
-##### 编写 `VIEWS` 函数
-
->   修改 `acapp/game/views/settings/register.py`
->
->   ```python
->   from django.http import JsonResponse
->   from django.contrib.auth import login
->   from django.contrib.auth.models import User
->   from game.models.player.player import Player
->   
->   def register(request):
->       data = request.GET
->       # 获取用户名，否则，返回空
->       # strip()去除前后空格
->       username = data.get('username', '').strip()
->       # 获取密码，否则，返回空
->       # strip()去除前后空格
->       password = data.get('password', '').strip()
->       # 获取确认密码，否则，返回空
->       # strip()去除前后空格
->       password_confirm = data.get('password_confirm', '').strip()
->       if not username or not password or not password_confirm:
->           return JsonResponse({
->               'result': '用户名或者密码不能为空'
->           })
->       if password != password_confirm:
->           return JsonResponse({
->               'result': '两次密码不一致'
->           })
->       if User.objects.filter(username = username).exists():
->           return JsonResponse({
->               'result': '用户名已存在'
->           })
->       user = User(username = username)
->       user.set_password(password)
->       # 将新创建的用户进行保存
->       user.save()
->       # 创建user的其他属性
->       Player.objects.create(
->           user = user,
->           photo = 'https://ss0.baidu.com/-Po3dSag_xI4khGko9WTAnF6hhy/baike/pic/item/4afbfbedab64034f930bfd5eafc379310b551da7.jpg')
->       # 将新用户注册到后台页面
->       login(request, user)
->       return JsonResponse({
->           'result': 'success'
->       })
->   ```
-
-##### 编写 `URL` 函数
-
->   修改路由 `acapp/game/urls/settings/index.py`
->
->   ```python
->   # 导入注册视图
->   from game.views.settings.register import register
->   
->   urlpatterns = [
->       # 添加注册路由
->       path('register/', register, name = 'settings_register')
->   ]
->   ```
-
-##### 前端调用 `register` 函数
-
->   修改前端页面 `acapp/game/static/js/src/settings/zbase.js`
->
->   ```javascript
->   class Settings {
->       constructor(root) {
->           this.$settings = $(`
->               <div class = "ac_game_settings">
->                   <div class = "ac_game_settings_register">
->                   	<!-- 设置两个类名 -->
->                   	<!-- 第一个类名：方便调整格式 -->
->                   	<!-- 第二个类名：方便找到权柄并且便于后台获取获取 -->
->                       <div class = "ac_game_settings_password ac_game_settings_password_first">
->                           <div class = "ac_game_settings_item">
->                               <input type = "password" placeholder = "密码">
->                           </div>
->                       </div>
->                       <!-- 设置两个类名 -->
->                   	<!-- 第一个类名：方便调整格式 -->
->                   	<!-- 第二个类名：方便找到权柄并且便于后台获取获取 -->
->                       <div class = "ac_game_settings_password ac_game_settings_password_second">
->                           <div class = "ac_game_settings_item">
->                               <input type = "password" placeholder = "确认密码">
->                           </div>
->                       </div>
->                   </div>
->               </div>
->           `);
->           <!-- 获取各种权柄 -->
->           this.$register = this.$settings.find(".ac_game_settings_register");
->           this.$register_username = this.$register.find(".ac_game_settings_username input");
->           this.$register_password = this.$register.find(".ac_game_settings_password_first input");
->           this.$register_password_confirm = this.$register.find(".ac_game_settings_password_second input");
->           this.$register_submit = this.$register.find(".ac_game_settings_submit");
->           this.$register_error_message = this.$register.find(".ac_game_settings_error_messages");
->           this.$register_login = this.$register.find(".ac_game_settings_option");
->           this.$register.hide();
->           this.start();
->       }
->       add_listening_events_register() {
->           <!-- 点击注册按钮 -->
->           this.$register_submit.click(function() {
->               outer.register_on_remote();
->           });
->       }
->       register_on_remote() {
->           let outer = this;
->           let username = this.$register_username.val();
->           let password = this.$register_password.val();
->           let password_confirm = this.$register_password_confirm.val();
->           this.$register_error_message.empty();
->           $.ajax({
->               url: 'https://app1164.acapp.acwing.com.cn/settings/register/',
->               type: 'GET',
->               data: {
->                   username: username,
->                   password: password,
->                   password_confirm: password_confirm
->               },
->               success: function(resp) {
->                   console.log(resp);
->                   if (resp.result === 'success') {
->                       <!-- 重新加载页面 -->
->                       location.reload();
->                   }
->                   else {
->                       <!-- 打印错误信息 -->
->                       outer.$register_error_message.html(resp.result);
->                   }
->               }
->           })
->       }
->   }
->   ```
+## 网页端一键登录
 
 ### `OAuth2` 协议
 
-#### 步骤详解
+>   1.   步骤详解
+>
+>        ![2110029](img/2110029.png)
+>
+>   2.   注意事项
+>
+>        >   `token` 令牌只有需要拿用户名和密码的时候才有用，因为，第一次拿完之后会将信息存储在系统的数据库里面，下次，直接查询数据库即可
 
->   ![2110029](https://gitee.com/peter95535/image-bed/raw/master/img/2110029.png)
+### `Redis` 教程
 
-##### 注意事项
 
->   `token` 令牌只有需要拿用户名和密码的时候才有用，因为，第一次拿完之后会将信息存储在系统的数据库里面，下次，直接查询数据库即可
+
+## `Acapp` 端一键登录
 
 ### `Redis` 教程
 
@@ -3269,15 +3744,15 @@
 >            ```python
 >            from channels.generic.websocket import AsyncWebsocketConsumer
 >            import json
->                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >            class MultiPlayer(AsyncWebsocketConsumer):
 >                async def connect(self):
 >                    await self.accept()
 >                    print('accept')
->                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >                    self.room_name = "room"
 >                    await self.channel_layer.group_add(self.room_name, self.channel_name)
->                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >                async def disconnect(self, close_code):
 >                    print('disconnect')
 >                    await self.channel_layer.group_discard(self.room_name, self.channel_name);
@@ -3287,11 +3762,11 @@
 >                    data = json.loads(text_data)
 >                    print(data)
 >            ```
->                                                                                                                                                                        
+>                                                                                                                                                                                                                                
 >        +   启动 `django_channels`
->                                                                                                                                                                    
+>                                                                                                                                                                                                                            
 >            在 `~/acapp` 目录下执行：
->                                                                                                                                                                    
+>                                                                                                                                                                                                                            
 >            ```bash
 >            daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
 >            ```
@@ -3471,7 +3946,7 @@ class MultiPlayerSocket {
 >        ```python
 >        from django.conf import settings # 导入全局设置
 >        from django.core.cache import cache # 导入redis数据库
->                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                  
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            async def connect(self):
 >                self.room_name = None
@@ -5027,14 +5502,14 @@ class MultiPlayerSocket {
 >
 >        ```c++
 >        namespace cpp match_service // 命名空间
->                                                                                                       
+>                                                                                                                                                                             
 >        // 定义玩家的结构体
 >        struct User {
 >            1: i32 id,
 >            2: string name,
 >            3: i32 score
 >        }
->                                                                                                       
+>                                                                                                                                                                             
 >        // 定义类
 >        service Match {
 >            /**
@@ -5247,38 +5722,38 @@ class MultiPlayerSocket {
 >        from match_client.match import Match
 >        from match_client.match.ttypes import User
 >        from sys import stdin
->                                                                                             
+>                                                                                                                                                                   
 >        def operate(op, user_id, username, score):
 >            # Make socket
 >            transport = TSocket.TSocket('127.0.0.1', 9090)
->                                                                                             
+>                                                                                                                                                                   
 >            # Buffering is critical. Raw sockets are very slow
 >            transport = TTransport.TBufferedTransport(transport)
->                                                                                             
+>                                                                                                                                                                   
 >            # Wrap in a protocol
 >            protocol = TBinaryProtocol.TBinaryProtocol(transport)
->                                                                                             
+>                                                                                                                                                                   
 >            # Create a client to use the protocol encoder
 >            client = Match.Client(protocol)
->                                                                                             
+>                                                                                                                                                                   
 >            # Connect!
 >            transport.open()
->                                                                                             
+>                                                                                                                                                                   
 >            user = User(user_id, username, score)
->                                                                                             
+>                                                                                                                                                                   
 >            if op == "add":
 >                client.add_user(user, "")
 >            elif op == "remove":
 >                client.remove_user(user, "")
->                                                                                             
+>                                                                                                                                                                   
 >            # Close!
 >            transport.close()
->                                                                                             
+>                                                                                                                                                                   
 >        def main():
 >            for line in stdin:
 >                op, user_id, username, score = line.split(' ')
 >                operate(op, int(user_id), username, int(score))
->                                                                                             
+>                                                                                                                                                                   
 >        if __name__ == "__main__":
 >            main()
 >        ```
@@ -5432,11 +5907,11 @@ class MultiPlayerSocket {
 >
 >        ```shell
 >        #! /bin/bash
->                                                               
+>                                                                                                                                     
 >        JS_PATH=/home/django/acapp/game/static/js
 >        JS_PATH_DIST=${JS_PATH}/dist
 >        JS_PATH_SRC=${JS_PATH}/src
->                                                               
+>                                                                                                                                     
 >        # 将结果过一遍terser -c -m即可
 >        find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat | terser -c -m > ${JS_PATH_DIST}/game.js
 >        echo yes | python3 manage.py collectstatic
@@ -5659,6 +6134,27 @@ class MultiPlayerSocket {
 >   ```
 >
 >   
+
+# 坑
+
+## `get` 不到数据
+
+>   1.   问题描述
+>
+>        `The view Game.views.settings.getinfo.getinfo didn't return an HttpResponse object. It returned None instead.`
+>
+>   2.   问题原因
+>
+>        输入的网址有问题 `https://app2370.acapp.acwing.com.cn/settings/getinfo/` 没传参数啊, 兄弟
+>
+>   3.   解决方案
+>
+>        +   传参数 `https://app2370.acapp.acwing.com.cn/settings/getinfo/?platform=WEB`
+>        +   在 `getinfo_web` 里面打印结果即可
+>
+>   4.   来自菜🐶的牢骚
+>
+>        **垃圾代码,debug一上午**
 
 # 注意事项
 
