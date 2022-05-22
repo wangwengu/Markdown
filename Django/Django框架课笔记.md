@@ -158,7 +158,7 @@
 >        ```python
 >        from django.urls import path
 >        from Game.views.index import index # 导入index函数
->                       
+>                                                                    
 >        urlpatterns = [
 >            path('', index, name='index') # 添加路由
 >        ]
@@ -208,7 +208,7 @@
 >
 >        ```shell
 >       #! /bin/bash
->                     
+>                                                         
 >        JS_PATH=/home/django/Acapp/Game/static/js # js路径
 >                                                                                                  JS_PATH_DIST=${JS_PATH}/dist # 压缩文件夹
 >        JS_PATH_SRC=${JS_PATH}/src # 源文件夹
@@ -1818,9 +1818,9 @@
 >
 >        ```shell
 >        #! /bin/bash
->                                 
+>                                                                              
 >        ROOT_PATH=/home/django/Acapp # 定义项目根目录
->                                 
+>                                                                              
 >        # 先执行python3 manage.py collectstatic命令
 >        # 再输入yes
 >        echo yes | python3 manage.py collectstatic
@@ -2000,7 +2000,7 @@
 >      ```python
 >      from django.http import JsonResponse
 >      from Game.models.player.player import Player # 导入Player表
->                     
+>                                                                  
 >      # 获取acapp上的信息
 >      def getinfo_acapp(request):
 >          # 获取玩家
@@ -2011,7 +2011,7 @@
 >              'username': player.user.username,
 >              'photo': player.photo
 >          })
->                     
+>                                                                  
 >      # 获取web上的信息
 >      def getinfo_web(request):
 >          # 获取用户
@@ -2029,7 +2029,7 @@
 >                  'username': player.user.username,
 >                  'photo': player.photo
 >              })
->                     
+>                                                                  
 >      # 获取信息
 >      def getinfo(request):
 >          # 获取平台是ACAPP端还是WEB端
@@ -2060,7 +2060,7 @@
 >     from django.urls import path
 >     # 导入getinfo函数
 >     from Game.views.settings.getinfo import getinfo
->                  
+>                                                      
 >     urlpatterns = [
 >         # 添加路径
 >         path('getinfo/', getinfo, name='settings_getinfo')
@@ -2286,7 +2286,7 @@
 >            /* 禁止用户鼠标点选 */
 >            user-select: none;
 >        }
->             
+>                                                          
 >        .ac_game_settings_login {
 >            height: 45vh;
 >            width: 20vw;
@@ -2298,7 +2298,7 @@
 >            /* 圆角 */
 >            border-radius: 5px;
 >        }
->             
+>                                                          
 >        .ac_game_settings_title {
 >            color: white;
 >            font-size: 3vh;
@@ -2306,32 +2306,32 @@
 >            padding-top: 2vh;
 >            margin-bottom: 2vh;
 >        }
->             
+>                                                          
 >        .ac_game_settings_username {
 >            display: block;
 >            height: 7vh;
 >        }
->             
+>                                                          
 >        .ac_game_settings_password {
 >            display: block;
 >            height: 7vh;
 >        }
->             
+>                                                          
 >        .ac_game_settings_submit {
 >            display: block;
 >            height: 7vh;
 >        }
->             
+>                                                          
 >        .ac_game_settings_acwing {
 >            display: block;
 >            height: 7vh;
 >        }
->             
+>                                                          
 >        .ac_game_settings_item {
 >            width: 100%;
 >            height: 100%;
 >        }
->             
+>                                                          
 >        .ac_game_settings_item > input {
 >            width: 90%;
 >            line-height: 3vh;
@@ -2340,7 +2340,7 @@
 >            left: 50%;
 >            transform: translate(-50%, -50%);
 >        }
->             
+>                                                          
 >        .ac_game_settings_item > button {
 >            color: white;
 >            width: 90%;
@@ -2352,7 +2352,7 @@
 >            background-color: #4CAF50;
 >            border-radius: 5px;
 >        }
->             
+>                                                          
 >        .ac_game_settings_error_message {
 >            color: red;
 >            font-size: 0.8vh;
@@ -2360,7 +2360,7 @@
 >            float: left;
 >            padding-left: 1vw;
 >        }
->             
+>                                                          
 >        .ac_game_settings_option {
 >            color: white;
 >            font-size: 2vh;
@@ -2369,7 +2369,7 @@
 >            padding-right: 1vw;
 >            cursor: pointer;
 >        }
->             
+>                                                          
 >        .ac_game_settings_acwing > img {
 >            position: relative;
 >            top: 50%;
@@ -2378,14 +2378,14 @@
 >            cursor: pointer;
 >            display: block;
 >        }
->             
+>                                                          
 >        .ac_game_settings_acwing > div {
 >            color: white;
 >            font-size: 1.5vh;
 >            text-align: center;
 >            display: block;
 >        }
->             
+>                                                          
 >        .ac_game_settings_register {
 >            height: 51vh;
 >            width: 20vw;
@@ -2457,7 +2457,7 @@
 >        ```python
 >        from django.http import JsonResponse
 >        from django.contrib.auth import authenticate, login
->             
+>                                                          
 >        def signin(request):
 >            # 获取数据
 >            data = request.GET
@@ -2489,7 +2489,7 @@
 >        ```python
 >        # 导入signin函数
 >        from Game.views.settings.login import signin
->             
+>                                                          
 >        urlpatterns = [
 >            # 添加login路径
 >            path('login/', signin, name='settings_login'),
@@ -2497,8 +2497,6 @@
 >        ```
 
 #### 编写前端代码
-
-##### 编写 `JS`
 
 >   1.   修改 `Acapp/Game/static/js/src/settings/zbase.js`
 >
@@ -2558,7 +2556,7 @@
 >        ```python
 >        from django.http import JsonResponse
 >        from django.contrib.auth import logout
->             
+>                                                          
 >        def signout(request):
 >            # 获取用户
 >            user = request.user
@@ -2582,7 +2580,7 @@
 >        ```python
 >        # 导入signout函数
 >        from Game.views.settings.logout import signout
->             
+>                                                          
 >        urlpatterns = [
 >            # 添加logout路径
 >            path('logout/', signout, name='settings_logout'),
@@ -2647,7 +2645,7 @@
 >        from django.contrib.auth import login
 >        from django.contrib.auth.models import User
 >        from Game.models.player.player import Player
->        
+>                                                     
 >        def register(request):
 >            data = request.GET
 >            # 获取用户名,获取不到, 返回""
@@ -2692,7 +2690,7 @@
 >        ```python
 >        # 导入register函数
 >        from Game.views.settings.register import register
->        
+>                                                     
 >        urlpatterns = [
 >            # 添加register路径
 >            path('register/', register, name='settings_register'),
@@ -2828,19 +2826,13 @@
 
 ### `Redis` 教程
 
-
-
-## `Acapp` 端一键登录
-
-### `Redis` 教程
-
 #### `Django` 配置 `redis`
 
 >   1.   在 `Django` 中集成 `redis` 也叫内存数据库，存储的是键值对
 >
 >        +   安装 `redis` ，执行命令 `pip3 install django_redis` 进行安装
 >
->        +   配置 `acapp/acapp/settings.py` 文件，写入内容
+>        +   配置 `Acapp/Acapp/settings.py` 文件，写入内容
 >
 >            ```python
 >            # 注意粘贴的位置，位于# Database的位置，也就是数据库的位置
@@ -2866,11 +2858,11 @@
 >
 >   4.   重启服务 `uwsgi`即可，使得 `redis` 对 `Django` 项目生效
 
-#### `redis` 的基本操作
+#### 基本操作
 
 >   1.   执行命令 `python3 manage.py shell`，打开 `django` 后台
 >
->        ```python
+>        ```shell
 >        # 导入缓存包
 >        from django.core.cache import cache
 >        # 查询所有的键keys，支持正则表达式
@@ -2888,818 +2880,483 @@
 >        cache.delete('wyp')
 >        ```
 
-### 网页端 `AcWing` 一键登录
+### [讲义](https://www.acwing.com/blog/content/12466/)
 
-#### [讲义](https://www.acwing.com/blog/content/12466/)
+### 申请授权码
 
-#### 给用户添加 `openid` 属性
+#### 编写后端代码
 
->   1.   修改 `acapp/game/models/player/player.py`
+##### 编写 `VIEWS`
+
+>   1.   修改 `Acapp/Game/views/settings/acwing/web/apply_code.py`
 >
 >        ```python
->        # 添加openid属性
->        # 第一个参数：默认值
->        # 第二个参数：最大长度
->        # 第三个参数：空
->        # 第四个参数：空
->        openid = models.CharField(default = '', max_length = 50, blank = True, null = True)
+>        from django.http import JsonResponse
+>        from urllib.parse import quote
+>        from random import randint
+>        from django.core.cache import cache # 导入redis数据库
+>                                                
+>        def get_state(): # 获取8位随机数
+>            res = ""
+>            for i in range(8):
+>                res += str(randint(0, 9))
+>            return res
+>                                                
+>        def apply_code(request):
+>            # app编号
+>            appid = "2370"
+>            # 重定向地址
+>            redirect_uri = quote("https://app2370.acapp.acwing.com.cn/settings/acwing/web/receive_code")
+>            # 请求的参数
+>            scope = "userinfo"
+>            # 获取当前请求的时间戳
+>            state = get_state()
+>            # 有效期2个小时
+>            cache.set(state, True, 7200)
+>            # 申请授权码的地址
+>            apply_code_url = "https://www.acwing.com/third_party/api/oauth2/web/authorize/"
+>            # 返回信息
+>            return JsonResponse({
+>                'result': "success",
+>                'apply_code_url': apply_code_url + "?appid=%s&redirect_uri=%s&scope=%s&state=%s" % (appid, redirect_uri, scope, state)
+>            })
 >        ```
->
->   2.   将修改注册到 `Django` 后台，返回到 `acapp/`，执行如下命令
+
+##### 编写 `URL`
+
+>   1.   编写 `Acapp/Game/urls/settings/index.py`
 >
 >        ```python
->        # 准备做迁移，准备工作
->        python3 manage.py makemigrations
->        # 迁移
->        python3 manage.py migrate
+>        from django.urls import path, include
+>        urlpatterns = [
+>            # 添加acwing的路径
+>            path('acwing/', include('Game.urls.settings.acwing.index')),
+>        ]
 >        ```
 >
->   3.   务必记得重启服务器
-
-#### 申请用户信息
-
-##### 编写申请用户信息的 `VIEWS`
-
->   修改 `acapp/game/views/settings/acwing/web/apply_code.py`
+>   2.   编写 `Acapp/Game/urls/settings/acwing/index.py`
 >
->   ```python
->   from django.http import JsonResponse
->   # 导入编码库
->   from urllib.parse import quote
->   # 导入随机数库
->   from random import randint
->   # 导入redis相关库
->   from django.core.cache import cache
->   
->   # 随机生成8位随机数
->   def get_state():
->       res = ''
->       for i in range(8):
->           res += str(randint(0, 9))
->       return res
->   
->   # 申请授权码code的函数
->   def apply_code(request):
->       # 用户id
->       appid = '1164'
->       # 重定向地址
->       # 一开始会报错，因为还没写receive_code
->       # 但是逻辑就是这么个逻辑
->       redirect_uri = quote('https://app1164.acapp.acwing.com.cn/settings/acwing/web/receive_code/')
->       # 返回用户信息
->       scope = 'userinfo'
->       # 接收8位随机数
->       state = get_state()
->       # 设置有效期
->       cache.set(state, True, 7200)
->       # 申请授权码的API
->       apply_code_url = 'https://www.acwing.com/third_party/api/oauth2/web/authorize/'
->       return JsonResponse({
->           'result': "success",
->           # 拼接地址
->           'apply_code_url': apply_code_url + '?appid=%s&redirect_uri=%s&scope=%s&state=%s' % (appid, redirect_uri, scope, state)
->       })
->   ```
->
+>        ```python
+>        from django.urls import path
+>        # 导入web的apply_code函数
+>        from Game.views.settings.acwing.web.apply_code import apply_code as web_apply_code
+>                                           
+>        urlpatterns = [
+>            # 添加路由
+>            path('web/apply_code/', web_apply_code, name='settings_acwing_web_apply_code'),
+>        ]
+>        ```
 
-##### 编写申请用户信息的 `URL`
+#### 编写前端代码
 
->   修改 `acapp/game/urls/settings/acwing/index.py`
->
->   ```python
->   # 导入include函数
->   from django.urls import path
->   # 导入申请授权码的函数apply_code
->   from game.views.settings.acwing.web.apply_code import apply_code as web_apply_code
->   
->   urlpatterns = [
->       # 添加申请授权码的路由
->       path('web/apply_code/', web_apply_code, name = 'settings_acwing_web_apply_code')
->   ]
->   ```
->
->   修改 `acapp/game/urls/settings/index.py`
->
->   ```python
->   # 导入include函数
->   from django.urls import path, include
->   
->   urlpatterns = [
->       # 添加web的路由
->       path('acwing/', include('game.urls.settings.acwing.index'))
->   ]
->   ```
-
-##### 前端调用申请用户信息的函数
-
->   ```javascript
->   class Settings {
->       constructor(root) {
->           <!-- 找到AcWing一键登录的按钮 -->
->           this.$acwing_login = this.$settings.find(".ac_game_settings_acwing img")
->       }
->       add_listening_events() {
->           <!-- 添加外部权柄 -->
->           let outer = this;
->           <!-- 点击AcWing一键登录按钮 -->
->           this.$acwing_login.click(function() {
->               <!-- 触发一键登录函数 -->
->               outer.acwing_login();
->           });
->       }
->       <!-- 一键登录函数 -->
->       acwing_login() {
->           <!-- 返回ajax信息 -->
->           $.ajax({
->               <!-- 请求的url -->
->               url: 'https://app149.acapp.acwing.com.cn/settings/acwing/web/apply_code',
->               type: 'GET',
->               success: function(resp) {
->                   console.log(resp);
->                   if (resp.result === 'success') {
->                       <!-- 如果成功，返回重定向的网址 -->
->                       window.location.replace(resp.apply_code_url)
->                   }
->               }
->           })
->       }
->   }
->   ```
-
-#### 接收用户信息
-
-##### 编写接收用户信息的 `VIEWS`
-
->   修改 `acapp/game/views/settings/acwing/web/receive_code.py`
->
->   ```python
->   import requests
->   from django.shortcuts import redirect
->   from django.core.cache import cache
->   from django.contrib.auth.models import User
->   from game.models.player.player import Player
->   from django.contrib.auth import login
->   from random import randint
->   
->   def receive_code(request):
->       # 获取数据
->       data = request.GET
->       # 获取授权码
->       code = data.get('code')
->       # 获取状态
->       state = data.get('state')
->       # 如果当前请求来源于别的地方，则直接忽略
->       if not cache.has_key(state):
->           return redirect('index')
->       # 将当前状态删掉
->       cache.delete(state)
->       # 获取access_token的API地址
->       apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
->       # 参数
->       params = {
->           'appid': '1164',
->           'secret': '023a763448e444ae80815e8dc107fa8f',
->           'code': code
->       }
->       # 转成json格式
->       access_token_res = requests.get(apply_access_token_url, params = params).json()
->       # 提取access_token
->       access_token = access_token_res['access_token']
->       # 提取openid
->       openid = access_token_res['openid']
->       # 获取用户
->       players = Player.objects.filter(openid = openid)
->       # 如果用户已经存在
->       if players.exists():
->           # 直接登录即可
->           login(request, players[0].user)
->           # 重定向到首页
->           return redirect('index')
->       # 获取userinfo的API接口
->       get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
->       # 参数
->       params = {
->           'access_token': access_token,
->           'openid': openid
->       }
->       # 转成json格式
->       userinfo_res = requests.get(get_userinfo_url, params = params).json()
->       # 提取用户名
->       username = userinfo_res['username']
->       # 提取用户头像
->       photo = userinfo_res['photo']
->       # 如果用户已经存在【授权的账号的名称和当前网站的用户名重复】，则随机添加某个数，防止冲突
->       while User.objects.filter(username = username).exists():
->           username += str(randint(0, 9))
->     	# 创建用户的基本信息
->       user = User.objects.create(username = username)
->       # 创建用户的附加信息
->       player = Player.objects.create(user = user, photo = photo, openid = openid)
->       # 使用新创建的用户进行登录
->       login(request, user)
->       # 返回重定向的网址
->       # 'index'对应【acapp/game/urls/index.py】中的路由的第一项，name=index
->       return redirect('index')
->   ```
-
-##### 编写接收用户信息的 `URL`
-
->   修改 `acapp/game/urls/settings/acwing/index.py`
->
->   ```python
->   # 导入接收授权码的函数receive_code
->   from game.views.settings.acwing.receive_code import receive_code as web_receive_code
->   
->   urlpatterns = [
->       # 添加接收授权码的路由
->       path('web/receive_code/', web_receive_code, name = 'settings_acwing_web_receive_code')
->   ]
->   ```
-
-### 网站 `Acapp` 的一键登录
-
-#### [讲义](https://www.acwing.com/blog/content/12467/)
-
-#### 申请用户信息
-
-##### 编写申请用户信息的 `VIEWS`
-
->   修改 `acapp/game/views/settings/acwing/acapp/apply_code.py` 函数
->
->   ```python
->   from django.http import JsonResponse
->   from urllib.parse import quote
->   from random import randint
->   from django.core.cache import cache
->   
->   def get_state():
->       res = ''
->       for i in range(8):
->           res += str(randint(0, 9))
->       return res
->   
->   def apply_code(request):
->       appid = '1164'
->       redirect_uri = quote('https://app1164.acapp.acwing.com.cn/settings/acwing/acapp/receive_code')
->       scope = 'userinfo'
->       state = get_state()
->       cache.set(state, True, 7200)
->       return JsonResponse({
->           'result': "success",
->           'appid': appid,
->           'redirect_uri': redirect_uri,
->           'scope': scope,
->           'state': state
->       })
->   ```
-
-##### 编写申请用户信息的 `URL`
-
->   修改路由 `acapp/game/urls/settings/acwing/index.py`
->
->   ```python
->   from django.urls import path
->   from game.views.settings.acwing.acapp.apply_code import apply_code as acapp_apply_code
->   
->   urlpatterns = [
->       path('acapp/apply_code/', acapp_apply_code, name = 'settings_acwing_acapp_apply_code')
->   ]
->   ```
-
-##### 前端调用申请用户信息的函数
-
->   修改 `acapp/game/statis/js/src/settings/zbase.js`
->
->   ```javascript
->   class Settings {
->       start() {
->           <!-- 如果是ACAPP端 -->
->           if (this.platform === 'ACAPP') {
->               this.getinfo_acapp();
->           }
->           else {
->               <!-- 先获取信息 -->
->               this.getinfo_web();
->               this.add_listening_events();
->           }
->       }
->       <!-- acapp_login登录函数 -->
->       acapp_login(appid, redirect_uri, scope, state) {
->           let outer = this;
->          	<!-- 注意写法this.root. -->
->           this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
->               console.log(resp);
->               if (resp.result === "success") {
->                   outer.username = resp.username;
->                   outer.photo = resp.photo;
->                   <!-- 隐藏登录界面 -->
->                   outer.hide();
->                   <!-- 显示菜单界面 -->
->                   outer.root.menu.show();
->               }
->           });
->       }
->       getinfo_acapp() {
->           let outer = this;
->           $.ajax({
->               url: 'https://app1164.acapp.acwing.com.cn/settings/acwing/acapp/apply_code',
->               type: 'GET',
->               success: function(resp) {
->                   if (resp.result === "success") {
->                       outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
->                   }
->               }
->           });
->       }
->   }
->   ```
-
-#### 接收用户信息
-
-##### 编写接收用户信息的 `VIEWS`
-
->   修改 `acapp/game/views/settings/acwing/acapp/receive_code.py`
->
->   ```python
->   import requests
->   from django.shortcuts import redirect
->   from django.core.cache import cache
->   from django.contrib.auth.models import User
->   from game.models.player.player import Player
->   from django.contrib.auth import login
->   from random import randint
->   from django.http import JsonResponse
->   
->   def receive_code(request):
->       data = request.GET
->       # 如果授权失败【含有errcode】
->       if 'errcode' in data:
->           return JsonResponse({
->               'result': 'apply failed',
->               'errcode': data['errcode'],
->               'errmsg': data['errmsg']
->           })
->      	# 获取授权码
->       code = data.get('code')
->       # 获取状态
->       state = data.get('state')
->       # 如果密钥
->       if not cache.has_key(state):
->           return JsonResponse({
->               'result': 'state not exist'
->           })
->       # 删除密钥
->       cache.delete(state)
->       # 获取token的url
->       apply_access_token_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
->   	# 参数
->       params = {
->           'appid': '149',
->           'secret': '023a763448e444ae80815e8dc107fa8f',
->           'code': code
->       }
->       # access_token结果
->       access_token_res = requests.get(apply_access_token_url, params = params).json()
->       # 获取令牌
->       access_token = access_token_res['access_token']
->       # 获取openid
->       openid = access_token_res['openid']
->       # 筛选用户
->       players = Player.objects.filter(openid = openid)
->       # 如果用户存在，以列表的形式返回结果
->       # 如果用户不存在，返回空列表
->       if players.exists():
->           # 取出符合条件的第一个元素
->           player = players[0]
->           return JsonResponse({
->               'result': 'success',
->               'username': player.user.username,
->               'photo': player.photo
->           })
->       # 获取用户信息的api接口
->       get_userinfo_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
->       params = {
->           'access_token': access_token,
->           'openid': openid
->       }
->       # 请求
->       userinfo_res = requests.get(get_userinfo_url, params = params).json()
->       username = userinfo_res['username']
->       photo = userinfo_res['photo']
->       # 处理重名的问题
->       while User.objects.filter(username = username).exists():
->           username += str(randint(0, 9))
->     	# 创建新用户的基本信息
->       user = User.objects.create(username = username)
->       # 创建新用户的附加信息
->       player = Player.objects.create(user = user, photo = photo, openid = openid)
->       # 返回信息
->       return JsonResponse({
->           'result': 'success',
->           'username': player.user.username,
->           'photo': player.photo
->       })
->   ```
-
-##### 编写接收用户信息的 `URL`
-
->   修改路由 `acapp/game/urls/settings/acwing/index.py`
->
->   ```python
->   from django.urls import path
->   from game.views.settings.acwing.acapp.receive_code import receive_code as acapp_receive_code
->   
->   urlpatterns = [
->       path('acapp/receive_code/', acapp_receive_code, name = 'settings_acwing_acapp_receive_code')
->   ]
->   ```
-
-#### end
-
-## 实现联机对战
-
-### 统一单位
-
-#### 原因
-
-
-
-#### 统一界面的比例
-
->   1.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>   1.   修改 `Acapp/Game/static/js/src/settings/zbase.js`
 >
 >        ```javascript
->        class AcGamePlayground {
->            constructor(root) {
->                <!-- 添加此行 -->
->                this.root.$ac_game.append(this.$playground);
->                this.$playground.show();
->                <!-- 添加 start 函数 -->
->                this.start();
+>        class Settings {
+>            // acwing一键登录
+>            acwing_login() {
+>                $.ajax({
+>                    // 请求访问的地址
+>                    url: "https://app2370.acapp.acwing.com.cn/settings/acwing/web/apply_code",
+>                    type: "GET", // GET类型
+>                    success: function(resp) {
+>                        // 成功, 则跳转申请应用码的网址
+>                        // Location.replace()方法以给定的URL来替换当前的资源
+>                        if (resp.result === "success") {
+>                            window.location.replace(resp.apply_code_url);
+>                        }
+>                    }
+>                })
 >            }
->            start() {
+>        }
+>        ```
+
+### 接收授权码
+
+#### 编写后端代码
+
+
+
+##### 编写 `VIEWS`
+
+>   1.   修改 `Acapp/Game/views/settings/acwing/web/receive_code.py`
+>
+>        ```python
+>        import requests
+>        from django.shortcuts import redirect
+>        from django.core.cache import cache
+>        from django.contrib.auth.models import User
+>        from django.contrib.auth import login
+>        from random import randint
+>        from Game.models.player.player import Player
+>                                           
+>        def receive_code(request):
+>            data = request.GET # 获取数据
+>            code = data.get('data') # 获取授权码
+>            state = data.get('state') # 获取状态
+>            if not cache.has_key(state): # 如果是非法请求, 则直接返回主页即可
+>                return redirect('index')
+>            cache.delete(state) # 用完即删除此次请求
+>            # 申请令牌的地址
+>            apply_access_token_url = "https://www.acwing.com/third_party/api/oauth2/access_token/"
+>            # 申请令牌的参数
+>            params = {
+>                # 编号
+>                'appid': "2370",
+>                # 密钥
+>                'secret': "5d78af10e553492db10290e28ffce791",
+>                # 授权码
+>                'code': code
+>            }
+>            # 申请令牌, 将结果变成json()数据
+>            access_token_res = requests.get(apply_access_token_url, params=params).json()
+>            # 获取token
+>            access_token = access_token_res['access_token']
+>            # 获取openid
+>            openid = access_token_res['openid']
+>            # 获取玩家
+>            players = Player.objects.filter(openid=openid)
+>            # 如果当前玩家存在
+>            if players.exists():
+>                # 使用当前玩家进行登录
+>                login(request, players[0].user)
+>                # 返回首页
+>                return redirect('index')
+>            # 获取用户信息的地址
+>            get_userinfo_url = "https://www.acwing.com/third_party/api/meta/identity/getinfo/"
+>            # 参数
+>            params = {
+>                # 令牌
+>                'access_token': access_token,
+>                # 编号
+>                'openid': openid
+>            }
+>            # 用户信息, 将结果变成json数据
+>            userinfo_res = requests.get(get_userinfo_url, params=params).json()
+>            # 获取用户名
+>            username = userinfo_res['username']
+>            # 获取照片
+>            photo = userinfo_res['photo']
+>            # 如果玩家已经存在, 则随机添加字符串, 直至不一样为止
+>            while User.objects.filter(username=username).exists():
+>                username += str(randint(0, 9))
+>            # 创建用户
+>            user = User.objects.create(username=username)
+>            # 创建玩家
+>            player = Player.objects.create(user=user, photo=photo, openid=openid)
+>            # 用新玩家登录
+>            login(request, user)
+>            # 返回主页
+>            return redirect('index')
+>        ```
+
+##### 编写 `URL`
+
+>   1.   修改 `Acapp/Game/urls/settings/acwing/index.py`
+>
+>        ```python
+>        # 导入web的receive_code函数
+>        from Game.views.settings.acwing.web.receive_code import receive_code as web_receive_code
+>                                           
+>        urlpatterns = [
+>            # 添加路由
+>            path('web/receive_code/', web_receive_code, name='settings_acwing_web_receive_code'),
+>        ]
+>        ```
+
+#### 编写前端代码
+
+>   1.   调用流程
+>
+>        ![5171445](img/5171445.png)
+>
+>        无须直接调用
+
+## `Acapp` 端一键登录
+
+### 申请授权码
+
+#### 编写后端代码
+
+##### 编写 `VIEWS`
+
+>   1.   修改 `Acapp/Game/views/settings/acwing/acapp/apply_code.py`
+>
+>        ```python
+>        from django.http import JsonResponse
+>        from urllib.parse import quote
+>        from random import randint
+>        from django.core.cache import cache
+>                                      
+>        def get_state():
+>            res = ""
+>            for i in range(8): # 随机8位数
+>                res += str(randint(0, 9))
+>            return res
+>                                      
+>        def apply_code(request):
+>            appid = "2370" # 应用编号
+>            # 回调函数的地址
+>            redirect_uri = quote("https://app2370.acapp.acwing.com.cn/settings/acwing/acapp/receive_code/")
+>            # 范围
+>            scope = "userinfo"
+>            # 获取时间戳
+>            state = get_state()
+>            # 有效期2个小时
+>            cache.set(state, True, 7200)
+>            # 返回数据
+>            return JsonResponse({
+>                'result': "success",
+>                'appid': appid,
+>                'redirect_uri': redirect_uri,
+>                'scope': scope,
+>                'state': state,
+>            })
+>        ```
+
+##### 编写 `URL`
+
+>   1.   修改 `Acapp/Game/urls/settings/acwing/index.py`
+>
+>        ```python
+>        # 导入acapp的apply_code函数
+>        from Game.views.settings.acwing.acapp.apply_code import apply_code as acapp_apply_code
+>                                      
+>        urlpatterns = [
+>            # 添加路由
+>            path('acapp/apply_code/', acapp_apply_code, name='settings_acwing_acapp_apply_code'),
+>        ]
+>        ```
+
+#### 编写前端代码
+
+>   1.   修改 `Acapp/Game/static/js/src/settings/zbase.js`
+>
+>        ```javascript
+>        class Settings {
+>            acapp_login(appid, redirect_uri, scope, state) {
 >                let outer = this;
->                <!-- 当页面大小发生变动的时候，触发此函数 -->
->                $(window).resize(function() {
->                    outer.resize();
+>                // 调用API
+>                this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
+>                    // 成功
+>                    if (resp.result === "success") {
+>                        // 获取用户名
+>                        outer.username = username;
+>                        // 获取密码
+>                        outer.photo = resp.photo;
+>                        // 隐藏当前界面
+>                        outer.hide();
+>                        // 显示菜单界面
+>                        outer.root.menu.show();
+>                    }
 >                });
 >            }
->            resize() {
->                console.log("resize");
->                <!-- 获取宽度 -->
->                this.width = this.$playground.width();
->                <!-- 获取高度 -->
->                this.height = this.$playground.height();
->                <!-- 获取单位 -->
->                let unit = Math.min(this.width / 16, this.height / 9);
->                <!-- 宽度占16个单位 -->
->                this.width = unit * 16;
->                <!-- 高度占9个单位 -->
->                this.height = unit * 9;
->                <!-- 记录下规模 -->
->                this.scale = this.height;
->            }
->            show() {
->                this.resize();
->                <!-- 删除此行 -->
->                <!-- this.root.$ac_game.append(this.$playground); -->
->            }
->        }
->        ```
->
->   2.   修改 `acapp/game/static/js/src/playground/game_map/zbase.js`
->
->        ```javascript
->        class GameMap extends AcGameObject {
->            <!-- 添加 resize 函数-->
->            resize() {
->                this.ctx.canvas.width = this.playground.width;
->                this.ctx.canvas.height = this.playground.height;
->            }
->        }
->        ```
->
->   3.   修改 `acapp/game/static/js/src/playground/zbase.js`
->
->        ```javascript
->        class AcGamePlayground {
->            resize() {
->                <!-- 如果有地图，则更新下地图的大小 -->
->                if (this.game_map) this.game_map.resize();
->            }
->        }
->        ```
->
->   4.   修改 `acapp/game/static/css/game.css`
->
->        ```css
->        /* 修改 playground 的背景颜色 */
->        .ac_game_playground {
->            background-color: gray;
->        }
->        
->        /* 画布居中 */
->        .ac_game_playground > canvas {
->            position: relative;
->            top: 50%;
->            left: 50%;
->            transform: translate(-50%, -50%);
->        }
->        ```
->
->   5.   修改 `acapp/game/static/js/src/playground/game_map/zbase.js`
->
->        ```javascript
->        class GameMap extends AcGameObject {
->            resize() {
->                <!-- 涂一层黑色的蒙版，防止出现渐变色 -->
->                this.ctx.fillStyle = "rgba(0, 0, 0, 1)";
->                this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
->            }
->        }
->        ```
-
-#### 统一玩家的比例
-
->   1.   修改 `acapp/game/static/js/src/playground/zbase.js`
->
->        ```javascript
->        class AcGamePlayground {
->            show() {
->                <!-- 将玩家比例修改成相对比例，➗ scale -->
->                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.2, true));
->                for (let i = 0; i < 10; i ++ ) {
->                    this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.2, false));
->                }
->            }
->        }
->        ```
->
->   2.   修改 `acapp/game/static/js/src/playground/`
->
->        ````javascript
->        class Player extends AcGameObject {
->            constructor(playground, x, y, radius, color, speed, is_me) {
->                <!-- 将绝对值设置为相对值的1% -->
->                this.eps = 0.01;
->            }
->            start() {
->                if (this.is_me) {
->                    this.add_listening_events();
->                }
->                else {
->                    <!-- 将绝对值修改成相对值 -->
->                    let tx = Math.random() * this.playground.width / this.playground.scale;
->                    let ty = Math.random() * this.playground.height / this.playground.scale;
->                    this.move_to(tx, ty);
->                }
->            }
->            add_listening_events() {
->                this.playground.game_map.$canvas.mousedown(function(e) {
->                    if (e.which == 3) {
->                        <!-- 将绝对值修改成相对值 -->
->                        outer.move_to((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale);
->                    }
->                    else if (e.which == 1) {
->                        if (outer.cur_skill === "fireball") {
->                            <!-- 将绝对值修改成相对值 -->
->                            outer.shoot_fireball((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale);
+>            getinfo_acapp() {
+>                let outer = this;
+>                $.ajax({
+>                    // 申请授权码的地址
+>                    url: "https://app2370.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+>                    type: "GET",
+>                    success: function(resp) {
+>                        // 成功
+>                        if (resp.result === "success") {
+>                            let appid = resp.appid;
+>                            let redirect_uri = resp.redirect_uri;
+>                            let scope = resp.scope;
+>                            let state = resp.state;
+>                            // 调用登录函数
+>                            outer.acapp_login(appid, redirect_uri, scope, state);
 >                        }
 >                    }
 >                });
 >            }
->            <!-- 将 update 函数进行拆分 -->
->            update() {
->                this.update_move();
->                this.render();
->            }
->            update_move() { // 只更新玩家移动
->                this.spent_time += this.timedelta / 1000;
->                if (!this.is_me && this.spent_time > 5 && Math.random() < 1 / 180.0) {
->                    let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
->                    let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 2;
->                    let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 2;
->                    this.shoot_fireball(tx, ty);
->                }
->                <!-- 大于 this.eps -->
->                if (this.damage_speed > this.eps) {
->                    this.vx = this.vy = this.move_length = 0;
->                    this.x += this.damage_x + this.damage_speed * this.timedelta / 1000;
->                    this.y += this.damage_y + this.damage_speed * this.timedelta / 1000;
->                    this.damage_speed *= this.friction;
->                }
->                else {
->                    <!-- 移动的长度小于this.eps -->
->                    if (this.move_length < this.eps) {
->                        this.move_length = this.vx = this.vy = 0;
->                        if (!this.is_me) {
->                            <!-- 将绝对值修改成相对值 -->
->                            let tx = Math.random() * this.playground.width / this.playground.scale;
->                            let ty = Math.random() * this.playground.height / this.playground.scale;
->                            this.move_to(tx, ty);
->                        }
->                    }
->                    else {
->                        let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
->                        this.x += this.vx * moved;
->                        this.y += this.vy * moved;
->                        this.move_length -= moved;
->                    }
->                }
->            }
->            render() {
->                <!-- 记录比例 -->
->                let scale = this.playground.scale;
->                if (this.is_me) {
->                    <!-- 将相对值修改成绝对值 -->
->                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
->                    <!-- 将相对值修改成绝对值 -->
->                    this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
->                }
->                else {
->                    <!-- 将相对值修改成绝对值 -->
->                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
->                }
->            }
->        }
->        ````
-
-#### 统一技能的比例
-
->   1.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
->
->        ```javascript
->        class FireBall extends AcGameObject {
->            constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) {
->                <!-- 将极限值修改为原来的1% -->
->                this.eps = 0.01;
->            }
->            render() {
->                <!-- 记录下规模 -->
->                let scale = this.playground.scale;
->                <!-- 将相对位置修改为绝对位置 -->
->                this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
->            }
->        }
->        ```
->
->   2.   修改 `acapp/game/static/js/src/playground/particle/zbase.js`
->
->        ```javascript
->        class Particle extends AcGameObject {
->            constructor(playground, x, y, radius, vx, vy, color, speed, move_length) {
->                <!-- 值修改为相对值的1% -->
->                this.eps = 0.01;
->            }
->            render() {
->                <!-- 将相对值修改为绝对值 -->
->                let scale = this.playground.scale;
->                this.ctx.beginPath();
->                <!-- 将相对值修改为绝对值 -->
->                this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
->            }
 >        }
 >        ```
 
-### 添加多人模式
+### 接收授权码
 
->   1.   修改 `acapp/game/static/js/src/menu/zbase.js`
+#### 编写后端代码
+
+##### 编写 `JS`
+
+>   1.   修改 `Acapp/Game/views/settings/acwing/acapp/receive_code.py`
+>
+>        ```python
+>        import requests
+>        from django.http import JsonResponse
+>        from django.core.cache import cache
+>        # 导入用户
+>        from django.contrib.auth.models import User
+>        from random import randint
+>        # 导入玩家
+>        from Game.models.player.player import Player
+>                                 
+>        def receive_code(request):
+>            # 获取数据
+>            data = request.GET
+>            # 如果请求错误
+>            if "errcode" in data:
+>                # 返回数据
+>                return JsonResponse({
+>                    'result': "apply failed",
+>                    'errcode': data['errcode'],
+>                    'errmsg': data['errmsg'],
+>                })
+>            # 获取授权码
+>            code = data.get('code')
+>            # 获取时间戳
+>            state = data.get('state')
+>            # 如果没有此时间戳, 如果请求来自别处, 则返回
+>            if not cache.has_key(state):
+>                return JsonResponse({
+>                    'result': "state not exists",
+>                })
+>            # 删除此时间戳
+>            cache.delete(state)
+>            # 申请令牌的地址
+>            apply_access_token_url = "https://www.acwing.com/third_party/api/oauth2/access_token/"
+>            # 参数
+>            params = {
+>                'appid': "2370",
+>                'secret': "5d78af10e553492db10290e28ffce791",
+>                'code': code,
+>            }
+>            # 申请的结果
+>            access_token_res = requests.get(apply_access_token_url, params=params).json()
+>            # 获取token
+>            access_token = access_token_res['access_token']
+>            # 获取openid
+>            openid = access_token_res['openid']
+>            # 根据id获取玩家
+>            players = Player.objects.filter(openid=openid)
+>            # 如果玩家存在, 则直接返回信息
+>            if players.exists():
+>                # 取出第一名玩家
+>                player = players[0]
+>                return JsonResponse({
+>                    'result': "success",
+>                    'username': player.user.username,
+>                    'photo': player.photo,
+>                })
+>            # 获取用户信息地址
+>            get_userinfo_url = "https://www.acwing.com/third_party/api/meta/identity/getinfo/"
+>            # 参数
+>            params = {
+>                'access_token': access_token,
+>                'openid': openid,
+>            }
+>            # 用户信息
+>            userinfo_res = requests.get(get_userinfo_url, params=params).json()
+>            # 用户名
+>            username = userinfo_res['username']
+>            # 头像
+>            photo = userinfo_res['photo']
+>            # 用户存在, 则添加随机字符
+>            while User.objects.filter(username=username).exists():
+>                username += str(randint(0, 9))
+>            # 获取用户
+>            user = User.objects.create(username=username)
+>            # 获取玩家
+>            player = Player.objects.create(user=user, photo=photo, openid=openid)
+>            # 返回结果
+>            return JsonResponse({
+>                'result': "success",
+>                'username': player.user.username,
+>                'photo': player.photo,
+>            })
+>        ```
+
+##### 编写 `URL`
+
+>   1.   修改 `Acapp/Game/urls/settings/acwing/index.py`
+>
+>        ```python
+>        # 导入acapp的receive_code函数
+>        from Game.views.settings.acwing.acapp.receive_code import receive_code as acapp_receive_code
+>                                 
+>        urlpatterns = [
+>            # 添加路由
+>            path('acapp/receive_code/', acapp_receive_code, name='settings_acwing_acapp_receive_code'),
+>        ]
+>        ```
+
+#### 编写前端代码
+
+>   1.   在 `apply_code` 里通过回调函数会隐性调用, 不会显氏调用
+
+# 实现联机对战
+
+## 添加多人模式
+
+>   1.   修改 `Acapp/Game/static/js/src/menu/zbase.js`
 >
 >        ```javascript
 >        class AcGameMenu {
 >            constructor(root) {
->                this.$multi_mode = this.$menu.find(".ac_game_menu_field_item_multi_mode");
+>                // 找到多人模式的权柄
+>                this.$multi_mode = this.$menu.find('.ac_game_menu_field_item_multi_mode');
 >            }
 >            add_listening_events() {
->                let outer = this;
->                this.$single_mode.click(function() {
->                    outer.hide();
->                    <!-- 添加单人模式参数 -->
->                    outer.root.playground.show("signle mode");
->                });
+>                // 点击多人模式时, 触发此函数
 >                this.$multi_mode.click(function() {
->                    outer.hide();
->                    <!-- 添加多人模式参数 -->
->                    outer.root.playground.show("multi mode");
->                });
->                this.$settings.click(function() {
->                    outer.root.settings.logout_on_remote();
+>                    outer.hide(); // 隐藏菜单界面
+>                    outer.root.playground.show("multi mode"); // 显示玩家界面
 >                });
 >            }
 >        }
 >        ```
->
->   2.   修改 `acapp/game/static/js/src/playground/zbase.js`
->
->        ```javascript
->        class AcGamePlayground {
->            <!-- 添加模式识别 -->
->            show(mode) {
->                this.width = this.$playground.width();
->                this.height = this.$playground.height();
->                this.game_map = new GameMap(this);
->                <!-- resize要将地图map一起resize -->
->                this.resize();
->                this.players = [];
->                <!-- 如果角色是本人，则显示"me" -->
->                <!-- 传入用户名和密码 -->
->                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
->                if (mode === "signle mode") {
->                    for (let i = 0; i < 10; i ++ ) {
->                        <!-- 如果角色是机器人，则显示"robot" -->
->                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
->                    }
->                }
->                else if (mode === "multi mode") {
->                    
->                }
->            }
->        }
->        ```
->
->   3.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
->
->        ```javascript
->        class Player extends AcGameObject {
->            constructor(playground, x, y, radius, color, speed, character, username, photo) {
->                this.character = character;
->                this.username = username;
->                this.photo = photo;
->                if (this.character !== "robot") {
->                    this.img = new Image();
->                    this.img.src = this.photo;
->                }
->            }
->            start() {
->                if (this.character === "me") {
->                    this.add_listening_events();
->                }
->                else {
->                    let tx = Math.random() * this.playground.width / this.playground.scale;
->                    let ty = Math.random() * this.playground.height / this.playground.scale;
->                    this.move_to(tx, ty);
->                }
->            }
->            render() {
->                let scale = this.playground.scale;
->                <!-- 如果不是机器人 -->
->                if (this.character !== "robot") {
->                    this.ctx.save();
->                    this.ctx.beginPath();
->                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
->                    this.ctx.stroke();
->                    this.ctx.clip();
->                    this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
->                    this.ctx.restore();
->                }
->                else {
->                    this.ctx.beginPath();
->                    this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
->                    this.ctx.fillStyle = this.color;
->                    this.ctx.fill();
->                }
->            }
->        }
->        ```
 
-### 联机
-
-#### 准备工作
+## 准备工作
 
 >   1.   [讲义](https://www.acwing.com/blog/content/12692/)
 >
->   2.   具体步骤
+>   2.   相关配置
 >
 >        +   安装 `channels_redis`
 >
 >            +   `pip install channels_redis`
 >
->        +   配置 `acapp/acapp/asgi.py`
+>        +   配置 `Acapp/Acapp/asgi.py`
 >
 >            ```python
+>            """
+>            ASGI config for Acapp project.
+>            
+>            It exposes the ASGI callable as a module-level variable named ``application``.
+>            
+>            For more information on this file, see
+>            https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
+>            """
+>            
 >            import os
->
+>            import django
+>            # 注意路径
+>            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Acapp.settings')
+>            django.setup()
 >            from channels.auth import AuthMiddlewareStack
 >            from channels.routing import ProtocolTypeRouter, URLRouter
 >            from django.core.asgi import get_asgi_application
->            from game.routing import websocket_urlpatterns
->
->            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'acapp.settings')
->
+>            from channels.layers import get_channel_layer
+>            # 注意路径
+>            from Game.routing import websocket_urlpatterns
+>            
+>            channel_layer = get_channel_layer()
+>            # 判断路由类型
 >            application = ProtocolTypeRouter({
->                "http": get_asgi_application(),
+>                "http": get_asgi_application(), # http走这条
+>                # websocket走这条
 >                "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
 >            })
 >            ```
 >
->        +   配置 `acapp/acapp/settings.py`
+>        +   配置 `Acapp/Acapp/settings.py`
 >
 >            +   在 `INSTALLED_APPS` 中添加 `channels`，添加后如下所示：
 >
 >                ```python
->                INSTALLED_APPS = [ 
+>                INSTALLED_APPS = [
 >                    'channels',
->                    'game.apps.GameConfig',
+>                    'Game.apps.GameConfig',
 >                    'django.contrib.admin',
 >                    'django.contrib.auth',
 >                    'django.contrib.contenttypes',
@@ -3712,7 +3369,8 @@
 >            +   然后在文件末尾添加：
 >
 >                ```python
->                ASGI_APPLICATION = 'acapp.asgi.application'
+>                # 注意路径
+>                ASGI_APPLICATION = 'Acapp.asgi.application'
 >                CHANNEL_LAYERS = {
 >                    "default": {
 >                        "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -3723,56 +3381,131 @@
 >                }
 >                ```
 >
->        +   配置 `acapp/game/routing.py`
->
->            这一部分的作用相当于 `http` 的 `urls` 
->            内容如下：
->
->            ```python
->            from django.urls import path
->
->            websocket_urlpatterns = [
->            ]
->            ```
->
->        +   编写 `acapp/game/consumers`
->
->            这一部分的作用相当于 `http` 的 `views`
->
->            参考示例：
->
->            ```python
->            from channels.generic.websocket import AsyncWebsocketConsumer
->            import json
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
->            class MultiPlayer(AsyncWebsocketConsumer):
->                async def connect(self):
->                    await self.accept()
->                    print('accept')
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
->                    self.room_name = "room"
->                    await self.channel_layer.group_add(self.room_name, self.channel_name)
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
->                async def disconnect(self, close_code):
->                    print('disconnect')
->                    await self.channel_layer.group_discard(self.room_name, self.channel_name);
->            
->            
->                async def receive(self, text_data):
->                    data = json.loads(text_data)
->                    print(data)
->            ```
->                                                                                                                                                                                                                                
->        +   启动 `django_channels`
->                                                                                                                                                                                                                            
->            在 `~/acapp` 目录下执行：
->                                                                                                                                                                                                                            
->            ```bash
->            daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
->            ```
->
 
-#### `websockt` 交互
+## `Demo`
+
+### 编写后端代码
+
+#### 编写 `VIEWS`
+
+>   1.   修改 `Acapp/Game/consumers/multiplayer/index.py`
+>
+>        这一部分的作用相当于 `http` 的 `views`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            # 请求Websocket连接
+>            async def connect(self):
+>                # 接收Websocket连接
+>                await self.accept()
+>                # 接收之后, 打印相关信息
+>                print('Accept')
+>                # 房间号
+>                self.room_name = "room"
+>                # 组的概念
+>                # 将当前请求加入到同一个组当中
+>                # 组内可以群发消息等等
+>                # 参数: 房间名, 组名
+>                await self.channel_layer.group_add(self.room_name, self.channel_name)
+>        
+>            # 当用户刷新或者其他原因掉线, 则会调用此函数
+>            # 但是, 此函数不准, 比如用户突然停电, 则函数不会被触发
+>            async def disconnect(self, close_code):
+>                print('disconnect')
+>                # 向对应房间名和组名发送断开连接的消息
+>                await self.channel_layer.group_discard(self.room_name, self.channel_name)
+>        
+>            # 接收信息
+>            async def receive(self, text_data):
+>                # 解析数据
+>                data = json.loads(text_data)
+>                # 打印
+>                print(data)
+>        ```
+
+#### 编写 `URL`
+
+>   1.   修改 `Acapp/Game/routing.py`
+>
+>        这一部分的作用相当于 `http` 的 `urls`
+>
+>        ```python
+>        from django.urls import path
+>        # 导入Multiplayer函数
+>        from Game.consumers.multiplayer.index import MultiPlayer
+>        
+>        websocket_urlpatterns = [
+>            # 添加路由
+>            path('wss/multiplayer/', MultiPlayer.as_asgi(), name='wss_multiplayer'),
+>        ]
+>        ```
+
+### 编写前端代码
+
+>   1.   创建 `Acapp/Game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            constructor(playground) {
+>                this.playground = playground;
+>                // 注意: 此地的路径一定要严格对应
+>                // routing中的url是wss/multiplayer/
+>                // 则这里必须严格一致, 缺个/都不行
+>                this.ws = new WebSocket("wss://app2370.acapp.acwing.com.cn/wss/multiplayer/");
+>            }
+>        }
+>        ```
+>
+>   2.   在 `Acapp/Game/static/js/src/playground/zbase.js` 里将 `WebSocket` 创建出来
+>
+>        ```javascript
+>        class AcGamePlayground {
+>            show(mode) {
+>                // 如果是单人模式, 则创建机器人
+>                if (mode === "single mode") {
+>                    // 最后的属性要表明是机器人
+>                    for(let i = 0; i < 5; i ++ ) {
+>                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.2, "robot"));
+>                    }
+>                } else if (mode === "multi mode") { // 如果是多人模式
+>                    // 创建对应的WebSocket类
+>                    this.mps = new MultiPlayerSocket(this);
+>                }
+>            }
+>        }
+>        ```
+>
+>   3.   启动 `django_channels`
+>
+>        在 `~/Acapp/` 目录下执行:
+>
+>        ```bash
+>        # 注意命令运行文件名称 Acapp
+>        daphne -b 0.0.0.0 -p 5015 Acapp.asgi:application
+>        ```
+
+## `websocket` 交互
+
+### 同步玩家
+
+#### 编写后端代码
+
+##### 编写 `VIEWS`
+
+
+
+##### 编写 `URL`
+
+
+
+### 编写前端代码
+
+
+
+### `websockt` 交互
 
 >   1.   创建 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
 >
@@ -3946,7 +3679,7 @@ class MultiPlayerSocket {
 >        ```python
 >        from django.conf import settings # 导入全局设置
 >        from django.core.cache import cache # 导入redis数据库
->                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                               
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            async def connect(self):
 >                self.room_name = None
@@ -5502,14 +5235,14 @@ class MultiPlayerSocket {
 >
 >        ```c++
 >        namespace cpp match_service // 命名空间
->                                                                                                                                                                             
+>                                                                                                                                                                                                                          
 >        // 定义玩家的结构体
 >        struct User {
 >            1: i32 id,
 >            2: string name,
 >            3: i32 score
 >        }
->                                                                                                                                                                             
+>                                                                                                                                                                                                                          
 >        // 定义类
 >        service Match {
 >            /**
@@ -5722,38 +5455,38 @@ class MultiPlayerSocket {
 >        from match_client.match import Match
 >        from match_client.match.ttypes import User
 >        from sys import stdin
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >        def operate(op, user_id, username, score):
 >            # Make socket
 >            transport = TSocket.TSocket('127.0.0.1', 9090)
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >            # Buffering is critical. Raw sockets are very slow
 >            transport = TTransport.TBufferedTransport(transport)
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >            # Wrap in a protocol
 >            protocol = TBinaryProtocol.TBinaryProtocol(transport)
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >            # Create a client to use the protocol encoder
 >            client = Match.Client(protocol)
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >            # Connect!
 >            transport.open()
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >            user = User(user_id, username, score)
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >            if op == "add":
 >                client.add_user(user, "")
 >            elif op == "remove":
 >                client.remove_user(user, "")
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >            # Close!
 >            transport.close()
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >        def main():
 >            for line in stdin:
 >                op, user_id, username, score = line.split(' ')
 >                operate(op, int(user_id), username, int(score))
->                                                                                                                                                                   
+>                                                                                                                                                                                                                
 >        if __name__ == "__main__":
 >            main()
 >        ```
@@ -5907,11 +5640,11 @@ class MultiPlayerSocket {
 >
 >        ```shell
 >        #! /bin/bash
->                                                                                                                                     
+>                                                                                                                                                                                  
 >        JS_PATH=/home/django/acapp/game/static/js
 >        JS_PATH_DIST=${JS_PATH}/dist
 >        JS_PATH_SRC=${JS_PATH}/src
->                                                                                                                                     
+>                                                                                                                                                                                  
 >        # 将结果过一遍terser -c -m即可
 >        find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat | terser -c -m > ${JS_PATH_DIST}/game.js
 >        echo yes | python3 manage.py collectstatic
@@ -6200,7 +5933,7 @@ class MultiPlayerSocket {
 >
 >   4.   启动 `django_channels` 服务
 >
->        ```django
->        daphne -b 0.0.0.0 -p 5015 acapp.asgi:application
+>        ```bash
+>        daphne -b 0.0.0.0 -p 5015 Acapp.asgi:application
 >        ```
 

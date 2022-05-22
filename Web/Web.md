@@ -195,9 +195,226 @@
 >   </body>
 >   ```
 
-### 音频和视频
+### 音频
 
+>   1.   第一种方式
+>
+>        ```html
+>        <!-- controls控制音频出现 -->
+>        <audio controls src="/audios/bgm1.mp3">Audios</audio>
+>        ```
+>
+>   2.   第二种方式
+>
+>        ```html
+>        <audio controls>
+>            <!-- 如果第一个显示不出来, 则显示第二个, 依次类推 -->
+>            <source src="/audios/bgm2.mp3" type="audio/mpeg">
+>            <source src="/audios/bgm3.mp3" type="audio/mpeg">
+>        </audio>
+>        ```
 
+### 视频
+
+>   1.   第一种方式
+>
+>        ```html
+>        <!-- 显示控制栏、宽度、地址 -->
+>        <video controls width="300" src="/videos/video1.mp4">视频</video>
+>        ```
+>
+>   2.   第二种方式
+>
+>        ```html
+>        <!-- 第一个不能播放, 则播放第二个, 以此类推 -->
+>        <video controls width="300">
+>            <source src="/videos/video1.mp4" type="video/mp4">
+>            <source src="/videos/video2.mp4" type="video/mp4">
+>        </video>
+>        ```
+
+### 超链接
+
+>   1.   用法
+>
+>        ```html
+>        <!-- 跳转的地址 -->
+>        <!-- 新标签页打开 -->
+>        <a href="https://www.acwing.com" target="_blank">
+>            <img width="30" src="/images/logo.png" alt="logo">
+>        </a>
+>        ```
+
+### 表单
+
+>   1.   用法
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="zh-CN">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <meta name="keywords" content="算法,计算机,人工智能">
+>            <meta name="description" content="组队刷怪">
+>            <link rel="icon" href="/images/logo.png">
+>            <title>Web应用课</title>
+>        </head>
+>        <body>
+>            <!-- action表示点击提交按钮之后, 跳转到某个表单 -->
+>            <!-- 注意: 参数也会进行传递 -->
+>            <form action="/about.html">
+>                <!-- label用于绑定input标签 -->
+>                <!-- 绑定的是ID -->
+>                <label for="username">用户名</label>
+>                <!-- type填写的是类型 -->
+>                <!-- required表示当前字段必须填写 -->
+>                <!-- placeholder提示符 -->
+>                <!-- name在url中会做名称, 看下图 -->
+>                <input type="text" required placeholder="用户名" maxlength="10" minlength="3" name="username" id="username">
+>                <br>
+>                <label for="age">年龄</label>
+>                <input type="number" placeholder="年龄" name="age" id="age">
+>                <br>
+>                <label for="email">邮箱</label>
+>                <input type="email" placeholder="邮箱" name="email" id="email">
+>                <br>
+>                <label for="">密码</label>
+>                <input type="password" required placeholder="密码" name="password" id="password">
+>                <br>
+>                <!-- 当类型是选框的时候, 所有name一样的值都必须归为同一组, 即同一组只能选择一个 -->
+>                <label for="cpp">c++</label>
+>                <input type="radio" name="lang" value="c++" id="cpp">
+>                <br>
+>                <label for="java">java</label>
+>                <input type="radio" name="lang" id="java">
+>                <br>
+>                <label for="python">python</label>
+>                <input type="radio" name="lang" id="python">
+>                <br>
+>                <!-- 文本域 -->
+>                <textarea type="textarea" rows="10" cols="30" name="comment" id="comment"></textarea>
+>                <br>
+>                <select value="lang">
+>                    <!-- 默认选择第一个 -->
+>                    <option value="java">java</option>
+>                    <option value="python">python</option>
+>                    <option value="c++">c++</option>
+>                </select>
+>                <button type="submit">提交</button>
+>            </form>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   图片 `1`
+>
+>        ![5172110](img/5172110.png)
+>
+>        图片 `2`
+>
+>        ![5172115](img/5172115.png)
+
+### 列表
+
+>   1.   用法
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="zh-CN">
+>             
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <meta name="keywords" content="算法,计算机,人工智能">
+>            <meta name="description" content="组队刷怪">
+>            <link rel="icon" href="/images/logo.png">
+>            <title>Web应用课</title>
+>        </head>
+>             
+>        <body>
+>            <!-- 每个ol或者ul里面都需要有li标签 -->
+>            <ol>
+>                <li>
+>                    chinese
+>                    <ul>
+>                        <li>Beijing</li>
+>                    </ul>
+>                    <ul>
+>                        <li>Shanghai</li>
+>                    </ul>
+>                    <ul>
+>                        <li>Guangzhou</li>
+>                    </ul>
+>                </li>
+>                <li>
+>                    english
+>                    <ul>
+>                        <li>New York</li>
+>                    </ul>
+>                    <ul>
+>                        <li>London</li>
+>                    </ul>
+>                    <ul>
+>                        <li>Pari</li>
+>                    </ul>
+>                </li>
+>            </ol>
+>        </body>
+>             
+>        </html>
+>        ```
+
+### 表格
+
+>   1.   用法
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <table>
+>                <!-- 表格标题 -->
+>                <caption>成绩单</caption>
+>                <!-- 标题栏 -->
+>                <thead>
+>                    <!-- 每一行使用tr包裹起来 -->
+>                    <tr>
+>                        <th>姓名</th>
+>                        <th>语文</th>
+>                        <th>数学</th>
+>                        <th>英语</th>
+>                    </tr>
+>                </thead>
+>                <!-- 正文 -->
+>                <tbody>
+>                    <tr>
+>                        <td>wyp</td>
+>                        <td>100</td>
+>                        <td>100</td>
+>                        <td>100</td>
+>                    </tr>
+>                    <tr>
+>                        <td>sarah</td>
+>                        <td>101</td>
+>                        <td>101</td>
+>                        <td>101</td>
+>                    </tr>
+>                </tbody>
+>            </table>
+>        </body>
+>        </html>
+>        ```
+
+### 语义标签
+
+>   
 
 # `CSS`
 
