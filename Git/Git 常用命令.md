@@ -11,7 +11,7 @@
 
 # Git暂存区
 
-> 1. 撤销此次提交 `git rm -r --cached 文件名`
+> 1. 撤销此次<font style="color: red">提交</font> `git rm -r --cached 文件名`
 >
 >    + `.` 代表所有文件
 >    + 否则填写具体文件名即可
@@ -36,9 +36,16 @@
 >        + 解决方案
 >
 >          > 先 `git add .` 更新文件 在重新操作即可
->          >
-> 2. 将所有.o文件移出暂存区 `git restore --stage *.o`
-> 3. 将可执行文件main移出暂存区 `git restore --stage main`
+>
+> 2. 撤销此次 `git add .` 的操作, 用如下命令重置
+>
+>    ```bash
+>    git reset .
+>    ```
+>
+> 3. 将所有.o文件移出暂存区 `git restore --stage *.o`
+>
+> 4. 将可执行文件main移出暂存区 `git restore --stage main`
 
 # Git版本和拉取
 
@@ -84,7 +91,7 @@
 > 3. 忽略某些文件夹或者文件 创建`.gitignore`文件
 >    + 忽略文件夹`**/__pycache__` 忽略__pycache__文件夹
 >    + 忽略文件`*.swp` 忽略所有后缀名为swp的文件
->      + `<font style="color:red">`**忽略多个文件时，一行写一个，不能在一行里面填写**`</font>`
+>      + <font style="color:red">**忽略多个文件时，一行写一个，不能在一行里面填写**</font>
 
 ## 使用HTTP提交（推荐）
 

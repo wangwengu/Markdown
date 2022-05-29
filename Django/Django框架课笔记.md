@@ -158,7 +158,7 @@
 >        ```python
 >        from django.urls import path
 >        from Game.views.index import index # 导入index函数
->                                                                    
+>                                                                                                                 
 >        urlpatterns = [
 >            path('', index, name='index') # 添加路由
 >        ]
@@ -208,7 +208,7 @@
 >
 >        ```shell
 >       #! /bin/bash
->                                                         
+>                                                                                             
 >        JS_PATH=/home/django/Acapp/Game/static/js # js路径
 >                                                                                                  JS_PATH_DIST=${JS_PATH}/dist # 压缩文件夹
 >        JS_PATH_SRC=${JS_PATH}/src # 源文件夹
@@ -1818,9 +1818,9 @@
 >
 >        ```shell
 >        #! /bin/bash
->                                                                              
+>                                                                                                                           
 >        ROOT_PATH=/home/django/Acapp # 定义项目根目录
->                                                                              
+>                                                                                                                           
 >        # 先执行python3 manage.py collectstatic命令
 >        # 再输入yes
 >        echo yes | python3 manage.py collectstatic
@@ -2000,7 +2000,7 @@
 >      ```python
 >      from django.http import JsonResponse
 >      from Game.models.player.player import Player # 导入Player表
->                                                                  
+>                                                                                                               
 >      # 获取acapp上的信息
 >      def getinfo_acapp(request):
 >          # 获取玩家
@@ -2011,7 +2011,7 @@
 >              'username': player.user.username,
 >              'photo': player.photo
 >          })
->                                                                  
+>                                                                                                               
 >      # 获取web上的信息
 >      def getinfo_web(request):
 >          # 获取用户
@@ -2029,7 +2029,7 @@
 >                  'username': player.user.username,
 >                  'photo': player.photo
 >              })
->                                                                  
+>                                                                                                               
 >      # 获取信息
 >      def getinfo(request):
 >          # 获取平台是ACAPP端还是WEB端
@@ -2060,7 +2060,7 @@
 >     from django.urls import path
 >     # 导入getinfo函数
 >     from Game.views.settings.getinfo import getinfo
->                                                      
+>                                                                                          
 >     urlpatterns = [
 >         # 添加路径
 >         path('getinfo/', getinfo, name='settings_getinfo')
@@ -2286,7 +2286,7 @@
 >            /* 禁止用户鼠标点选 */
 >            user-select: none;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_login {
 >            height: 45vh;
 >            width: 20vw;
@@ -2298,7 +2298,7 @@
 >            /* 圆角 */
 >            border-radius: 5px;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_title {
 >            color: white;
 >            font-size: 3vh;
@@ -2306,32 +2306,32 @@
 >            padding-top: 2vh;
 >            margin-bottom: 2vh;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_username {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_password {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_submit {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_acwing {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_item {
 >            width: 100%;
 >            height: 100%;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_item > input {
 >            width: 90%;
 >            line-height: 3vh;
@@ -2340,7 +2340,7 @@
 >            left: 50%;
 >            transform: translate(-50%, -50%);
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_item > button {
 >            color: white;
 >            width: 90%;
@@ -2352,7 +2352,7 @@
 >            background-color: #4CAF50;
 >            border-radius: 5px;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_error_message {
 >            color: red;
 >            font-size: 0.8vh;
@@ -2360,7 +2360,7 @@
 >            float: left;
 >            padding-left: 1vw;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_option {
 >            color: white;
 >            font-size: 2vh;
@@ -2369,7 +2369,7 @@
 >            padding-right: 1vw;
 >            cursor: pointer;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_acwing > img {
 >            position: relative;
 >            top: 50%;
@@ -2378,14 +2378,14 @@
 >            cursor: pointer;
 >            display: block;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_acwing > div {
 >            color: white;
 >            font-size: 1.5vh;
 >            text-align: center;
 >            display: block;
 >        }
->                                                          
+>                                                                                                       
 >        .ac_game_settings_register {
 >            height: 51vh;
 >            width: 20vw;
@@ -2457,7 +2457,7 @@
 >        ```python
 >        from django.http import JsonResponse
 >        from django.contrib.auth import authenticate, login
->                                                          
+>                                                                                                       
 >        def signin(request):
 >            # 获取数据
 >            data = request.GET
@@ -2489,7 +2489,7 @@
 >        ```python
 >        # 导入signin函数
 >        from Game.views.settings.login import signin
->                                                          
+>                                                                                                       
 >        urlpatterns = [
 >            # 添加login路径
 >            path('login/', signin, name='settings_login'),
@@ -2556,7 +2556,7 @@
 >        ```python
 >        from django.http import JsonResponse
 >        from django.contrib.auth import logout
->                                                          
+>                                                                                                       
 >        def signout(request):
 >            # 获取用户
 >            user = request.user
@@ -2580,7 +2580,7 @@
 >        ```python
 >        # 导入signout函数
 >        from Game.views.settings.logout import signout
->                                                          
+>                                                                                                       
 >        urlpatterns = [
 >            # 添加logout路径
 >            path('logout/', signout, name='settings_logout'),
@@ -2645,7 +2645,7 @@
 >        from django.contrib.auth import login
 >        from django.contrib.auth.models import User
 >        from Game.models.player.player import Player
->                                                     
+>                                                                                                  
 >        def register(request):
 >            data = request.GET
 >            # 获取用户名,获取不到, 返回""
@@ -2690,7 +2690,7 @@
 >        ```python
 >        # 导入register函数
 >        from Game.views.settings.register import register
->                                                     
+>                                                                                                  
 >        urlpatterns = [
 >            # 添加register路径
 >            path('register/', register, name='settings_register'),
@@ -2895,13 +2895,13 @@
 >        from urllib.parse import quote
 >        from random import randint
 >        from django.core.cache import cache # 导入redis数据库
->                                                
+>                                                                                             
 >        def get_state(): # 获取8位随机数
 >            res = ""
 >            for i in range(8):
 >                res += str(randint(0, 9))
 >            return res
->                                                
+>                                                                                             
 >        def apply_code(request):
 >            # app编号
 >            appid = "2370"
@@ -2940,7 +2940,7 @@
 >        from django.urls import path
 >        # 导入web的apply_code函数
 >        from Game.views.settings.acwing.web.apply_code import apply_code as web_apply_code
->                                           
+>                                                                                        
 >        urlpatterns = [
 >            # 添加路由
 >            path('web/apply_code/', web_apply_code, name='settings_acwing_web_apply_code'),
@@ -2989,7 +2989,7 @@
 >        from django.contrib.auth import login
 >        from random import randint
 >        from Game.models.player.player import Player
->                                           
+>                                                                                        
 >        def receive_code(request):
 >            data = request.GET # 获取数据
 >            code = data.get('data') # 获取授权码
@@ -3057,7 +3057,7 @@
 >        ```python
 >        # 导入web的receive_code函数
 >        from Game.views.settings.acwing.web.receive_code import receive_code as web_receive_code
->                                           
+>                                                                                        
 >        urlpatterns = [
 >            # 添加路由
 >            path('web/receive_code/', web_receive_code, name='settings_acwing_web_receive_code'),
@@ -3087,13 +3087,13 @@
 >        from urllib.parse import quote
 >        from random import randint
 >        from django.core.cache import cache
->                                      
+>                                                                                   
 >        def get_state():
 >            res = ""
 >            for i in range(8): # 随机8位数
 >                res += str(randint(0, 9))
 >            return res
->                                      
+>                                                                                   
 >        def apply_code(request):
 >            appid = "2370" # 应用编号
 >            # 回调函数的地址
@@ -3121,7 +3121,7 @@
 >        ```python
 >        # 导入acapp的apply_code函数
 >        from Game.views.settings.acwing.acapp.apply_code import apply_code as acapp_apply_code
->                                      
+>                                                                                   
 >        urlpatterns = [
 >            # 添加路由
 >            path('acapp/apply_code/', acapp_apply_code, name='settings_acwing_acapp_apply_code'),
@@ -3190,7 +3190,7 @@
 >        from random import randint
 >        # 导入玩家
 >        from Game.models.player.player import Player
->                                 
+>                                                                              
 >        def receive_code(request):
 >            # 获取数据
 >            data = request.GET
@@ -3273,7 +3273,7 @@
 >        ```python
 >        # 导入acapp的receive_code函数
 >        from Game.views.settings.acwing.acapp.receive_code import receive_code as acapp_receive_code
->                                 
+>                                                                              
 >        urlpatterns = [
 >            # 添加路由
 >            path('acapp/receive_code/', acapp_receive_code, name='settings_acwing_acapp_receive_code'),
@@ -3382,7 +3382,11 @@
 >                ```
 >
 
-## `Demo`
+## `WebSocket Demo`
+
+### 流程图
+
+![5222125](img/5222125.png)
 
 ### 编写后端代码
 
@@ -3395,7 +3399,7 @@
 >        ```python
 >        import json
 >        from channels.generic.websocket import AsyncWebsocketConsumer
->        
+>                                                     
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            # 请求Websocket连接
 >            async def connect(self):
@@ -3406,18 +3410,18 @@
 >                # 房间号
 >                self.room_name = "room"
 >                # 组的概念
->                # 将当前请求加入到同一个组当中
+>                # 将当前请求加入到同一个组(WebSocket)当中
 >                # 组内可以群发消息等等
 >                # 参数: 房间名, 组名
 >                await self.channel_layer.group_add(self.room_name, self.channel_name)
->        
+>                                                     
 >            # 当用户刷新或者其他原因掉线, 则会调用此函数
 >            # 但是, 此函数不准, 比如用户突然停电, 则函数不会被触发
 >            async def disconnect(self, close_code):
 >                print('disconnect')
 >                # 向对应房间名和组名发送断开连接的消息
 >                await self.channel_layer.group_discard(self.room_name, self.channel_name)
->        
+>                                                     
 >            # 接收信息
 >            async def receive(self, text_data):
 >                # 解析数据
@@ -3436,7 +3440,7 @@
 >        from django.urls import path
 >        # 导入Multiplayer函数
 >        from Game.consumers.multiplayer.index import MultiPlayer
->        
+>                                                     
 >        websocket_urlpatterns = [
 >            # 添加路由
 >            path('wss/multiplayer/', MultiPlayer.as_asgi(), name='wss_multiplayer'),
@@ -3491,90 +3495,70 @@
 
 ### 同步玩家
 
+#### 流程图
+
+
+
 #### 编写后端代码
+
+##### 配置文件
+
+>   1.   修改 `Acapp/Acapp/settings.py`
+>
+>        ```python
+>        # 最后一行添加
+>        ROOM_CAPACITY = 3 # 每个房间的人数上限为3个人
+>        ```
+>
+>   2.   修改 `Acapp/Game/static/js/src/playground/ac_game_object/zbase.js`
+>
+>        ```javascript
+>        class AcGameObject {
+>            // 创建唯一编号
+>            create_uuid() {
+>                let res = "";
+>                // 随机生成8位字符串, 作为唯一身份认证
+>                for (let i = 0; i < 8; i ++ ) {
+>                    // 生成0~10内的整数
+>                    let x = parseInt(Math.floor(Math.random() * 10));
+>                    res += x;
+>                }
+>                return res;
+>            }
+>        }
+>        ```
 
 ##### 编写 `VIEWS`
 
-
+>   1.   修改 `Acapp/Game/consumers/multiplayer/index.py`
+>
+>        ```python
+>                       
+>        ```
 
 ##### 编写 `URL`
 
-
-
-### 编写前端代码
-
-
-
-### `websockt` 交互
-
->   1.   创建 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->        ```javascript
->        class MultiPlayerSocket {
->            constructor(playground) {
->                this.playground = playground;
->                <!-- 创建 websocket 连接 -->
->                this.ws = new WebSocket("wss://app1164.acapp.acwing.com.cn/wss/multiplayer/");
->            }
->        }
->        ```
->
->   2.   修改 `acapp/game/routing.py`
+>   1.   修改 `Acapp/Game/routing.py`
 >
 >        ```python
 >        from django.urls import path
->        from game.consumers.multiplayer.index import MultiPlayer
->        
->        # 添加路由
+>        # 导入Multiplayer函数
+>        from Game.consumers.multiplayer.index import MultiPlayer
+>                            
 >        websocket_urlpatterns = [
->            path("wss/multiplayer/", MultiPlayer.as_asgi(), name = "wss_multiplayer")
+>            # 添加路由
+>            path('wss/multiplayer/', MultiPlayer.as_asgi(), name='wss_multiplayer'),
 >        ]
 >        ```
->
->   3.   修改 `acapp/game/consumers/multiplayer/index.py`
->
->        ```python
->        import json
->        from channels.generic.websocket import AsyncWebsocketConsumer
->                       
->        class MultiPlayer(AsyncWebsocketConsumer):
->            async def connect(self):
->                await self.accept()
->                print('accept')
->                       
->                self.room_name = "room"
->                await self.channel_layer.group_add(self.room_name, self.channel_name)
->        	# 注意此函数的用法
->            async def disconnect(self, close_code):
->                print('disconnect')
->                await self.channel_layer.group_discard(self.room_name, self.channel_name)
->               	async def receive(self, text_data):
->                      data = json.loads(text_data)
->                 print(data)
+
+#### 编写前端代码
+
 >   
->   4.   修改 `acapp/game/static/js/src/playground/zbase.js`
->   
->     ```javascript
->        class AcGamePlayground {
->         show(mode) {
->                if (mode === "signle mode") {
->                    for (let i = 0; i < 10; i ++ ) {
->                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
->                    }
->                }
->                else if (mode === "multi mode") {
->                    <!-- 点击多人模式，创建 websocket 连接 -->
->                    this.mps = new MultiPlayerSocket(this);
->                }
->            }
->            hide() {
->                this.$playground.hide();
->            }
->        }
->     ```
->   
+
+### `websockt` 交互
+
 >   5.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->   
+>
 >     ```javascript
 >        class MultiPlayerSocket {
 >         <!-- 创建用户的函数 -->
@@ -3586,23 +3570,23 @@
 >        }
 >     ```
 >   
->   6.   修改 `acapp/game/static/js/src/playground/zbase.js`
+>6.   修改 `acapp/game/static/js/src/playground/zbase.js`
 >   
 >     ```javascript
 >        class AcGamePlayground {
->         show(mode) {
+>              show(mode) {
 >                let outer = this;
 >                if (mode === "signle mode") {
 >                    for (let i = 0; i < 10; i ++ ) {
 >                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
 >                    }
->                }
+>             }
 >                else if (mode === "multi mode") {
->                    this.mps = new MultiPlayerSocket(this);
+>                 this.mps = new MultiPlayerSocket(this);
 >                   	<!-- 判断是否连接 -->
 >                    this.mps.ws.onopen = function() {
 >                        <!-- 如果已经连接，则调用创建玩家的函数 -->
->                        outer.mps.send_create_player();
+>                                            outer.mps.send_create_player();
 >                    };
 >                }
 >            }
@@ -3679,7 +3663,7 @@ class MultiPlayerSocket {
 >        ```python
 >        from django.conf import settings # 导入全局设置
 >        from django.core.cache import cache # 导入redis数据库
->                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                            
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            async def connect(self):
 >                self.room_name = None
@@ -5235,14 +5219,14 @@ class MultiPlayerSocket {
 >
 >        ```c++
 >        namespace cpp match_service // 命名空间
->                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                       
 >        // 定义玩家的结构体
 >        struct User {
 >            1: i32 id,
 >            2: string name,
 >            3: i32 score
 >        }
->                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                       
 >        // 定义类
 >        service Match {
 >            /**
@@ -5455,38 +5439,38 @@ class MultiPlayerSocket {
 >        from match_client.match import Match
 >        from match_client.match.ttypes import User
 >        from sys import stdin
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >        def operate(op, user_id, username, score):
 >            # Make socket
 >            transport = TSocket.TSocket('127.0.0.1', 9090)
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >            # Buffering is critical. Raw sockets are very slow
 >            transport = TTransport.TBufferedTransport(transport)
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >            # Wrap in a protocol
 >            protocol = TBinaryProtocol.TBinaryProtocol(transport)
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >            # Create a client to use the protocol encoder
 >            client = Match.Client(protocol)
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >            # Connect!
 >            transport.open()
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >            user = User(user_id, username, score)
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >            if op == "add":
 >                client.add_user(user, "")
 >            elif op == "remove":
 >                client.remove_user(user, "")
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >            # Close!
 >            transport.close()
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >        def main():
 >            for line in stdin:
 >                op, user_id, username, score = line.split(' ')
 >                operate(op, int(user_id), username, int(score))
->                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                             
 >        if __name__ == "__main__":
 >            main()
 >        ```
@@ -5640,11 +5624,11 @@ class MultiPlayerSocket {
 >
 >        ```shell
 >        #! /bin/bash
->                                                                                                                                                                                  
+>                                                                                                                                                                                                                               
 >        JS_PATH=/home/django/acapp/game/static/js
 >        JS_PATH_DIST=${JS_PATH}/dist
 >        JS_PATH_SRC=${JS_PATH}/src
->                                                                                                                                                                                  
+>                                                                                                                                                                                                                               
 >        # 将结果过一遍terser -c -m即可
 >        find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat | terser -c -m > ${JS_PATH_DIST}/game.js
 >        echo yes | python3 manage.py collectstatic

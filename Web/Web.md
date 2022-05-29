@@ -17,9 +17,7 @@
 
 # `HTML`
 
-## `HTML`基础标签
-
-### `HTML`文件结构
+## `HTML`文件结构
 
 1.   文档结构
 
@@ -90,7 +88,7 @@
      >   </body>
      >   ```
 
-### 文本标签
+## 文本标签
 
 1.   绝大部分文本标签可以看成带有 `css` 样式的 `div` 或者 `span` 标签
 
@@ -170,7 +168,7 @@
      >   </body>
      >   ```
 
-### 图片标签
+## 图片标签
 
 >   常用属性: `width`、`height`、`src`、`alt`
 >
@@ -195,7 +193,7 @@
 >   </body>
 >   ```
 
-### 音频
+## 音频
 
 >   1.   第一种方式
 >
@@ -214,7 +212,7 @@
 >        </audio>
 >        ```
 
-### 视频
+## 视频
 
 >   1.   第一种方式
 >
@@ -233,7 +231,7 @@
 >        </video>
 >        ```
 
-### 超链接
+## 超链接
 
 >   1.   用法
 >
@@ -245,7 +243,7 @@
 >        </a>
 >        ```
 
-### 表单
+## 表单
 
 >   1.   用法
 >
@@ -315,14 +313,14 @@
 >
 >        ![5172115](img/5172115.png)
 
-### 列表
+## 列表
 
 >   1.   用法
 >
 >        ```html
 >        <!DOCTYPE html>
 >        <html lang="zh-CN">
->             
+>                            
 >        <head>
 >            <meta charset="UTF-8">
 >            <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -331,7 +329,7 @@
 >            <link rel="icon" href="/images/logo.png">
 >            <title>Web应用课</title>
 >        </head>
->             
+>                            
 >        <body>
 >            <!-- 每个ol或者ul里面都需要有li标签 -->
 >            <ol>
@@ -361,11 +359,11 @@
 >                </li>
 >            </ol>
 >        </body>
->             
+>                            
 >        </html>
 >        ```
 
-### 表格
+## 表格
 
 >   1.   用法
 >
@@ -412,11 +410,734 @@
 >        </html>
 >        ```
 
-### 语义标签
+## 语义标签
 
->   
+>   1.   用法
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <!-- 头部内容 -->
+>            <header>
+>                <h3>我的收藏</h3>
+>                <!-- 导航栏 -->
+>                <nav>
+>                    <ul>
+>                        <li><a href="">编辑</a></li>
+>                        <li><a href="">联系我</a></li>
+>                        <li><a href="">关于我</a></li>
+>                    </ul>
+>                </nav>
+>            </header>
+>            <hr>
+>            <!-- 正文 -->
+>            <section>
+>                <h4>图片</h4>
+>                <!-- 代表一段独立内容 -->
+>                <!-- 通常与<figcaption>配合使用 -->
+>                <figure>
+>                    <img width="100" src="/images/logo.png" alt="logo">
+>                    <!-- 通常作为figure的标注 -->
+>                    <figcaption>logo</figcaption>
+>                </figure>
+>                <figure>
+>                    <img width="100" src="/images/mountain.jpeg" alt="mountain">
+>                    <figcaption>mountain</figcaption>
+>                </figure>
+>            </section>
+>            <section>
+>                <h4>文章</h4>
+>                <article>
+>                    <h5>背影</h5>
+>                    <p>背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影</p>
+>                    <p>背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影背影</p>
+>                </article>
+>            </section>
+>            <hr>
+>            <!-- 页脚 -->
+>            <footer>
+>                &copy;2000-2022 wyp 版权所有
+>            </footer>
+>        </body>
+>        </html>
+>        ```
+
+## 特殊符号
+
+>   | HTML源代码 | 显示结果 |          描述          |
+>   | :--------: | :------: | :--------------------: |
+>   |   `&lt;`   |    <     |   小于号或者显示标记   |
+>   |   `&gt;`   |    >     |   大于号或者显示标记   |
+>   |  `&amp;`   |    &     | 可用于显示其他特殊字符 |
+>   |  `&quot;`  |    “     |          引号          |
+>   |  `&reg;`   |    ®     |         已注册         |
+>   |  `&copy;`  |    ©     |          版权          |
+>   | `&trade;`  |    ™     |          商标          |
+>   |  `&nbsp;`  |          |      不断行的空白      |
 
 # `CSS`
+
+## 样式定义方式
+
+### 行内样式表
+
+>   1.   用法:
+>
+>        ```html
+>        <body>
+>            <!-- 注意点: 必须带单位, 因为width可能有多个单位, 例如: vh, em等等 -->
+>            <div style="width: 100px; height: 100px; background-color: red">侬好</div>
+>        </body>
+>        ```
+
+### 内部样式表
+
+>   1.   用法
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <title>Document</title>
+>            <!-- 定义内部样式表 -->
+>            <style type="text/css">
+>                /* 修改所有的div类 */
+>                div {
+>                    width: 50px;
+>                    height: 50px;
+>                    background-color: lightblue;
+>                }
+>             
+>                /* 所有所有类名为div_color的 */
+>                .div_color {
+>                    background-color: lightcoral;
+>                }
+>             
+>                /* 修饰所有类名为div_size的 */
+>                .div_size {
+>                    width: 100px;
+>                    height: 100px;
+>                }
+>            </style>
+>        </head>
+>        <body>
+>            <div class="div_size">你好</div>
+>            <br>
+>            <div>侬好</div>
+>            <br>
+>            <!-- 可以定义多个类名, 使用空格隔开即可 -->
+>            <div class="div_color div_size">Hello</div>
+>        </body>
+>        </html>
+>        ```
+
+### 外部样式表
+
+>   1.   用法
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <!-- 可以链接多个css文件 -->
+>            <!-- 后面的css会覆盖掉前面的css, 原因: 按照顺序执行 -->
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div class="div_size">你好</div>
+>            <br>
+>            <div>侬好</div>
+>            <br>
+>            <!-- 可以定义多个类名, 使用空格隔开即可 -->
+>            <div class="div_color div_size">Hello</div>
+>        </body>
+>        </html>
+>        ```
+
+## 选择器
+
+### 标签选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>div 1</div>
+>            <div>div 2</div>
+>            <div>div 3</div>
+>            <p>p 1</p>
+>            <p>p 2</p>
+>            <p>p 3</p>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.    `css`
+>
+>        ```css
+>        div {
+>            width: 100px;
+>            height: 100px;
+>            margin-bottom: 10px;
+>            background-color: lightblue;
+>        }
+>             
+>        p {
+>            width: 100px;
+>            height: 100px;
+>            background-color: lightcoral;
+>        }
+>        ```
+
+### `ID` 选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>div 1</div>
+>            <div>div 2</div>
+>            <div id="mydiv">div 3</div>
+>            <p>p 1</p>
+>            <p id="myp">p 2</p>
+>            <p>p 3</p>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        #mydiv {
+>            background-color: brown;
+>        }
+>             
+>        #myp {
+>            background-color: purple;
+>        }
+>        ```
+
+### 类选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <!-- 具有两个类: 既具有颜色类又具有尺寸类 -->
+>            <!-- 
+>                注意: 
+>                    1. 其有两个执行顺序
+>                        -> div标签内嵌的顺序, 即 color_tag ===> size_tag
+>                        -> 外部样式表定义的顺序, 即 size_tag ===> color_tag
+>                    2. 应该以哪个作为标准??
+>                        答: 以外部样式表的顺序作为标准, 即 size_tag的优先级 > color_tag的优先级
+>            -->
+>            <div class="color_tag size_tag">div 1</div>
+>            <div>div 2</div>
+>            <div>div 3</div>
+>            <!-- 具有颜色类 -->
+>            <p class="color_tag">p 1</p>
+>            <p>p 2</p>
+>            <!-- 具有尺寸类 -->
+>            <p class="size_tag">p 3</p>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        .size_tag {
+>            width: 200px;
+>            height: 200px;
+>        }
+>             
+>        .color_tag {
+>            background-color: lightblue;
+>        }
+>        ```
+
+### 伪类选择器
+
+#### 链接伪类选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <a href="/about.html">about</a>
+>            <br>
+>            <button>按钮</button>
+>            <br>
+>            <input type="text">
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            width: 100px;
+>            height: 100px;
+>            margin-bottom: 10px;
+>            background-color: lightblue;
+>        }
+>             
+>        p {
+>            width: 100px;
+>            height: 100px;
+>            background-color: lightcoral;
+>        }
+>             
+>        /* 链接访问前的样式 */
+>        a:link {
+>            /* 设置字体的颜色 */
+>            color: aquamarine;
+>        }
+>             
+>        /* 链接访问过后的样式 */
+>        a:visited {
+>            /* 设置字体的颜色 */
+>            color: purple;
+>        }
+>             
+>        /* 鼠标悬停的样式 */
+>        a:hover {
+>            /* 设置字体的颜色 */
+>            color: blue;
+>        }
+>             
+>        /* 鼠标长按的样式 */
+>        a:active {
+>            /* 设置字体的颜色 */
+>            color: coral;
+>        }
+>             
+>        /* 鼠标悬停的样式 */
+>        button:hover {
+>            /* 设置字体的颜色 */
+>            color: white;
+>            /* 设置背景颜色 */
+>            background-color: deepskyblue;
+>        }
+>             
+>        /* 鼠标悬停的样式 */
+>        input:hover {
+>            /* 改变宽度 */
+>            width: 250px;
+>        }
+>             
+>        /* 聚焦后的样式 */
+>        input:focus {
+>            /* 放大1.2倍 */
+>            transform: scale(1.2);
+>            /* 过渡时间: 200毫秒 */
+>            transition: 200ms;
+>        }
+>        ```
+
+#### 位置伪类选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>div 1</div>
+>            <p>p 1</p>
+>            <p>p 2</p>
+>            <p>p 3</p>
+>            <p>p 4</p>
+>            <p>p 5</p>
+>            <p>p 6</p>
+>            <p>p 7</p>
+>            <p>p 8</p>
+>            <p>p 9</p>
+>            <p>p 10</p>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```c++
+>        div {
+>            width: 50px;
+>            height: 50px;
+>            margin-bottom: 10px;
+>        }
+>             
+>        /*
+>            nth:child()求的是其父标签的第i个孩子是否满足条件
+>            如: p:nth-child(even)求的是所有偶数标签
+>            第一个标签是div
+>            第二个标签是p, 其是父标签body的第二个标签了, 是偶数, 故应用此样式
+>            第三个标签是p, 其是父标签body的第三个标签了, 是奇数, 故不应用此样式
+>            ...
+>            最终, 应用此样式对应的是p中的1, 3, 5, ..., 是奇数, 而不是偶数
+>            原因: 不是以p为基准, 而是以其父节点body为标准, 从上往下开始数, 1, 2, ...
+>        */
+>        p:nth-child(even) {
+>            width: 50px;
+>            height: 50px;
+>            background-color: lightcoral;
+>        }
+>        ```
+
+#### 目标伪类选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <!-- 链接指向对应的id标签 -->
+>            <a href="#btn">链接</a>
+>            <div>div 1</div>
+>            <div>div 2</div>
+>            <div>div 3</div>
+>            <div>div 4</div>
+>            <div>div 5</div>
+>            <div>div 6</div>
+>            <div id="btn">div 7</div>
+>            <div>div 8</div>
+>            <div>div 9</div>
+>            <div>div 10</div>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```c++
+>        div {
+>            width: 150px;
+>            height: 150px;
+>            margin-bottom: 10px;
+>            background-color: lightblue;
+>        }
+>             
+>        /* 当页面的url指向该元素时, 触发此样式 */
+>        /* 页面地址: http://127.0.0.1:5500/index.html#btn */
+>        /* 地址含有#btn即为指向该元素, 否则, 没有 */
+>        #btn:target {
+>            transform: scale(1.5);
+>            transition: 2s;
+>            background-color: purple;
+>        }
+>        ```
+
+### 复合选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div class="big">div 1</div>
+>            <div>div 2</div>
+>            <div class="big color">div 3</div>
+>            <p>p 1</p>
+>            <p class="big">p 2</p>
+>            <p>p 3</p>
+>            <p>p 4</p>
+>            <ul>
+>                <li>
+>                    1
+>                    <ul>
+>                        <li>1.1</li>
+>                        <li>1.2</li>
+>                        <li>1.3</li>
+>                    </ul>
+>                </li>
+>                <li>
+>                    2
+>                </li>
+>                <li>
+>                    3
+>                </li>
+>            </ul>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        /* 同时选中div标签和p标签 */
+>        div,
+>        p {
+>            width: 100px;
+>            height: 100px;
+>            margin-bottom: 10px;
+>            background-color: lightblue;
+>        }
+>        
+>        /* 选中p标签中类名为big的元素 */
+>        p.big {
+>            width: 200px;
+>            height: 200px;
+>        }
+>        
+>        /* 选中div标签中类名同时为big和color的元素 */
+>        div.big.color {
+>            background-color: purple;
+>        }
+>        
+>        /*  
+>            选择紧紧跟着p标签的p标签, 必须是直系父子关系
+>            注意: 第一个p标签不会产生效果, 因此, 第一个p标签的父亲并不是p标签
+>        */
+>        p + p {
+>            background-color: red;
+>        }
+>        
+>        /* 选择ul下的所有li标签, 不管是否是直系血亲 */
+>        ul li {
+>            color: red;
+>        }
+>        
+>        /* 选择li下的ul下的li, 注意: 必须是直系血亲, 即: 只能是父子关系, 不可越辈分 */
+>        li > ul > li {
+>            color: lightblue;
+>        }
+>        ```
+
+### 通配符选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <input type="text" id="">
+>            <input type="number" name="" id="">
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        /* 给所有标签设置样式 */
+>        * {
+>            background-color: lightblue;
+>        }
+>        
+>        /* 给具有id属性的input标签设置背景颜色 */
+>        input[id] {
+>            background-color: blue;
+>        }
+>        
+>        /* 给具有type属性并且type属性值为number的标签设置背景颜色 */
+>        input[type=number] {
+>            background-color: purple;
+>        }
+>        ```
+
+### 伪元素选择器
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <h2>悯农</h2>
+>            <h2>咏柳</h2>
+>            <h2>滕王阁序</h2>
+>            <h2>静夜思</h2>
+>            <p>锄禾日当午,</p>
+>            <p>汗滴禾下土。</p>
+>            <p>谁知盘中餐,</p>
+>            <p>粒粒皆辛苦。</p>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        /* 给每一行的第一个字母添加颜色 */
+>        p::first-letter {
+>            color: red;
+>        }
+>        
+>        /* 给第一行的文字添加颜色 */
+>        p::first-line {
+>            color: purple;
+>        }
+>        
+>        /* 鼠标框选的时候, 字体颜色为红色, 背景颜色为浅绿色 */
+>        p::selection {
+>            color: red;
+>            background-color: lightblue;
+>        }
+>        
+>        /* 在h2标签的前面添加《 */
+>        h2::before {
+>            content: "《";
+>        }
+>        
+>        /* 在h2标签的后面添加》 */
+>        h2::after {
+>            content: "》";
+>        }
+>        ```
+
+### 样式渲染优先级
+
+>   1.   先来先到
+>
+>   2.   范围越小, 权值越高, 具体而言:
+>
+>        `!important` `>` 行内样式 `>` ID选择器 `>` 类与伪类选择器 `>` 标签选择器 `>` 通用选择器
+
+## 颜色
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <p>p 1</p>
+>            <p>p 2</p>
+>            <p>p 3</p>
+>            <p>p 4</p>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        /* 使用系统预设的颜色 */
+>        p:first-child {
+>            color: red;
+>        }
+>        
+>        /* 使用十六进制设置颜色 */
+>        p:nth-child(2) {
+>            /* 第一种方式 */
+>            color: #ADD8E6;
+>            /* 第二种方式, 其等价于#AABBCC */
+>            color: #ABC;
+>        }
+>        
+>        /* 使用rgb方式设置颜色, (red, green, blue) */
+>        p:nth-child(3) {
+>            color: rgb(173, 216, 230);
+>        }
+>        
+>        /* 使用rgba方式设置颜色, 最后的参数是透明度 */
+>        p:nth-child(4) {
+>            color: rgba(0, 255, 255, 1);
+>        }
+>        ```
+
+## 文本
+
+
+
+
 
 # `JS`
 
