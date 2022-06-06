@@ -84,7 +84,48 @@
 
 >   1.   `cp -r A B` 将 `A` 文件夹复制到 `B` 文件夹下, 记得添加 `-r` 参数
 
-## 
+# 配置相关
+
+## 配置 `SSH`
+
+> 1. 进入容器 `docker attach 容器名`
+> 2. 执行命令 `apt-get update`
+> 3. 执行命令 `apt-get upgrade`
+> 4. 安装VIM  `apt-get install vim`
+>     + 选择地区 `Asia`
+>     + 选择地区 `Shanghai`
+> 5. 安装SSH服务器 `apt-get install openssh-server`
+> 6. 设置密码 `passwd`
+> 7. 修改配置文件
+>     + 进入配置文件 `vim /etc/ssh/sshd_config`
+>     + 注释此行 `PermitRootLogin prohibit-password`
+>     + 添加此行 `PermitRootLogin yes`
+>     + 保存退出
+> 8. 重启SSH配置文件 `/etc/init.d/ssh restart`
+> 9. SSH登录即可 `ssh root@IP地址 -p 端口号`
+
+## 配置 `uwsgi`
+
+
+
+## 配置代理
+
+### Parallel虚拟机
+
+>   1.   系统 `Ubuntu22.04`
+>   2.   
+
+# 软件相关
+
+## 安装应用商店
+
+>   1.   在命令行输入
+>
+>        `sudo snap install snap-store`
+
+## 安装火狐浏览器
+
+>   1.   在应用商店搜索 `FireFox` 即可
 
 # 报错汇总
 

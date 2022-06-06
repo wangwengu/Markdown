@@ -320,7 +320,7 @@
 >        ```html
 >        <!DOCTYPE html>
 >        <html lang="zh-CN">
->                            
+>                                           
 >        <head>
 >            <meta charset="UTF-8">
 >            <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -329,7 +329,7 @@
 >            <link rel="icon" href="/images/logo.png">
 >            <title>Web应用课</title>
 >        </head>
->                            
+>                                           
 >        <body>
 >            <!-- 每个ol或者ul里面都需要有li标签 -->
 >            <ol>
@@ -359,7 +359,7 @@
 >                </li>
 >            </ol>
 >        </body>
->                            
+>                                           
 >        </html>
 >        ```
 
@@ -517,12 +517,12 @@
 >                    height: 50px;
 >                    background-color: lightblue;
 >                }
->             
+>                            
 >                /* 所有所有类名为div_color的 */
 >                .div_color {
 >                    background-color: lightcoral;
 >                }
->             
+>                            
 >                /* 修饰所有类名为div_size的 */
 >                .div_size {
 >                    width: 100px;
@@ -604,7 +604,7 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->             
+>                            
 >        p {
 >            width: 100px;
 >            height: 100px;
@@ -643,7 +643,7 @@
 >        #mydiv {
 >            background-color: brown;
 >        }
->             
+>                            
 >        #myp {
 >            background-color: purple;
 >        }
@@ -692,7 +692,7 @@
 >            width: 200px;
 >            height: 200px;
 >        }
->             
+>                            
 >        .color_tag {
 >            background-color: lightblue;
 >        }
@@ -733,37 +733,37 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->             
+>                            
 >        p {
 >            width: 100px;
 >            height: 100px;
 >            background-color: lightcoral;
 >        }
->             
+>                            
 >        /* 链接访问前的样式 */
 >        a:link {
 >            /* 设置字体的颜色 */
 >            color: aquamarine;
 >        }
->             
+>                            
 >        /* 链接访问过后的样式 */
 >        a:visited {
 >            /* 设置字体的颜色 */
 >            color: purple;
 >        }
->             
+>                            
 >        /* 鼠标悬停的样式 */
 >        a:hover {
 >            /* 设置字体的颜色 */
 >            color: blue;
 >        }
->             
+>                            
 >        /* 鼠标长按的样式 */
 >        a:active {
 >            /* 设置字体的颜色 */
 >            color: coral;
 >        }
->             
+>                            
 >        /* 鼠标悬停的样式 */
 >        button:hover {
 >            /* 设置字体的颜色 */
@@ -771,13 +771,13 @@
 >            /* 设置背景颜色 */
 >            background-color: deepskyblue;
 >        }
->             
+>                            
 >        /* 鼠标悬停的样式 */
 >        input:hover {
 >            /* 改变宽度 */
 >            width: 250px;
 >        }
->             
+>                            
 >        /* 聚焦后的样式 */
 >        input:focus {
 >            /* 放大1.2倍 */
@@ -825,7 +825,7 @@
 >            height: 50px;
 >            margin-bottom: 10px;
 >        }
->             
+>                            
 >        /*
 >            nth:child()求的是其父标签的第i个孩子是否满足条件
 >            如: p:nth-child(even)求的是所有偶数标签
@@ -883,7 +883,7 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->             
+>                            
 >        /* 当页面的url指向该元素时, 触发此样式 */
 >        /* 页面地址: http://127.0.0.1:5500/index.html#btn */
 >        /* 地址含有#btn即为指向该元素, 否则, 没有 */
@@ -947,18 +947,18 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->        
+>                       
 >        /* 选中p标签中类名为big的元素 */
 >        p.big {
 >            width: 200px;
 >            height: 200px;
 >        }
->        
+>                       
 >        /* 选中div标签中类名同时为big和color的元素 */
 >        div.big.color {
 >            background-color: purple;
 >        }
->        
+>                       
 >        /*  
 >            选择紧紧跟着p标签的p标签, 必须是直系父子关系
 >            注意: 第一个p标签不会产生效果, 因此, 第一个p标签的父亲并不是p标签
@@ -966,12 +966,12 @@
 >        p + p {
 >            background-color: red;
 >        }
->        
+>                       
 >        /* 选择ul下的所有li标签, 不管是否是直系血亲 */
 >        ul li {
 >            color: red;
 >        }
->        
+>                       
 >        /* 选择li下的ul下的li, 注意: 必须是直系血亲, 即: 只能是父子关系, 不可越辈分 */
 >        li > ul > li {
 >            color: lightblue;
@@ -1006,12 +1006,12 @@
 >        * {
 >            background-color: lightblue;
 >        }
->        
+>                       
 >        /* 给具有id属性的input标签设置背景颜色 */
 >        input[id] {
 >            background-color: blue;
 >        }
->        
+>                       
 >        /* 给具有type属性并且type属性值为number的标签设置背景颜色 */
 >        input[type=number] {
 >            background-color: purple;
@@ -1052,23 +1052,23 @@
 >        p::first-letter {
 >            color: red;
 >        }
->        
+>                       
 >        /* 给第一行的文字添加颜色 */
 >        p::first-line {
 >            color: purple;
 >        }
->        
+>                       
 >        /* 鼠标框选的时候, 字体颜色为红色, 背景颜色为浅绿色 */
 >        p::selection {
 >            color: red;
 >            background-color: lightblue;
 >        }
->        
+>                       
 >        /* 在h2标签的前面添加《 */
 >        h2::before {
 >            content: "《";
 >        }
->        
+>                       
 >        /* 在h2标签的后面添加》 */
 >        h2::after {
 >            content: "》";
@@ -1113,7 +1113,7 @@
 >        p:first-child {
 >            color: red;
 >        }
->        
+>                       
 >        /* 使用十六进制设置颜色 */
 >        p:nth-child(2) {
 >            /* 第一种方式 */
@@ -1121,12 +1121,12 @@
 >            /* 第二种方式, 其等价于#AABBCC */
 >            color: #ABC;
 >        }
->        
+>                       
 >        /* 使用rgb方式设置颜色, (red, green, blue) */
 >        p:nth-child(3) {
 >            color: rgb(173, 216, 230);
 >        }
->        
+>                       
 >        /* 使用rgba方式设置颜色, 最后的参数是透明度 */
 >        p:nth-child(4) {
 >            color: rgba(0, 255, 255, 1);
@@ -1134,6 +1134,488 @@
 >        ```
 
 ## 文本
+
+### `text-align`
+
+>   1.   简介
+>
+>        `text-align` `CSS` 属性定义行内内容（例如文字）如何相对它的块父元素对齐。`text-align` 并不控制块元素自己的对齐，只控制它的行内内容的对齐
+>
+>   2.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <h3>悯农</h3>
+>            <div>
+>                锄禾日当午，<br>
+>                汗滴禾下土。<br>
+>                谁知盘中餐，<br>
+>                粒粒皆辛苦。
+>            </div>
+>        </body>
+>        </html>
+>        ```
+>
+>   3.   `css`
+>
+>        ```c++
+>        h3 {
+>            /* 文字居中 */
+>            text-align: center;
+>        }
+>        
+>        div {
+>            /* 文字居中 */
+>            text-align: center;
+>        }
+>        ```
+>
+>   4.   注意事项
+>
+>        +   如果父节点定义了文字的排版, 子节点会继承格式
+
+### `line-height`
+
+>   1.   简介
+>
+>        `line-height` `CSS` 属性用于设置多行元素的空间量，如多行文本的间距。对于块级元素，它指定元素行盒（`line boxes`）的最小高度。对于非替代的 `inline` 元素，它用于计算行盒（`line box`）的高度
+>
+>   2.   知识点补充:长度单位
+>
+>        | 单位  | 描述                                                     |
+>        | ----- | -------------------------------------------------------- |
+>        | `px`  | 设备上的像素点                                           |
+>        | `%`   | 相对于<font style="color: red">父元素</font>的百分比     |
+>        | `em`  | 相对于<font style="color: red">当前元素</font>的字体大小 |
+>        | `rem` | 相对于<font style="color: red">根元素</font>的字体大小   |
+>        | `vw`  | 相对于<font style="color: red">视窗宽度</font>的百分比   |
+>        | `vh`  | 相对于<font style="color: red">视窗高度</font>的百分比   |
+>
+>   3.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>
+>                锄禾日当午
+>            </div>
+>        </body>
+>        </html>
+>        ```
+>
+>   4.   `css`
+>
+>        ```css
+>        div {
+>            text-align: center;
+>            /* 窗口宽度的50% */
+>            width: 50vw;
+>            /* 窗口高度的10% */
+>            height: 10vh;
+>            /* 设置背景颜色 */
+>            background-color: lightblue;
+>            /* 行高设置为宽度, 则可以让文字水平居中 */
+>            line-height: 10vh;
+>        }
+>        ```
+
+### `letter-spacing`
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>
+>                锄禾日当午
+>            </div>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            /* 设置字与字之间的距离, 为1.5倍的字符 */
+>            letter-spacing: 1.5em;
+>        }
+>        ```
+
+### `text-indent`
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>
+>                锄禾日当午
+>            </div>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            /* 缩进2个字符 */
+>            text-indent: 2em;
+>        }
+>        ```
+
+### `text-decoration`
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <a href="">联系我们</a>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        a {
+>            /* 取消链接的下划线 */
+>            text-decoration: none;
+>        }
+>        ```
+
+### `text-shadow`
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>锄禾日当午</div>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            /* 给文字设置阴影 */
+>            /* 参数: x坐标, y坐标, 模糊效果, 颜色 */
+>            /* 注意: 阴影可以设置多个, 不一定非要一个 */
+>            text-shadow: 
+>            5px 5px 2px red,
+>            -5px -5px 2px  gray
+>            ;
+>        }
+>        ```
+
+## 字体
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>锄禾日当午</div>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            /* 字体大小 */
+>            font-size: 24px;
+>            /* 字体样式: 斜体 */
+>            font-style: italic;
+>            /* 字体粗细: 范围(1~1000), 注意: 无单位 */
+>            font-weight: 600;
+>            /* 设置字体 */
+>            font-family: Courier;
+>        }
+>        ```
+
+## 背景
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div></div>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            /* 宽度 */
+>            width: 200px;
+>            /* 高度 */
+>            height: 200px;
+>            /* 设置背景颜色 */
+>            background-color: lightblue;
+>            /* 背景图片 */
+>            background-image: url('/static/images/mountain.jpeg');
+>            /* 是否拉伸 */
+>            background-repeat: no-repeat;
+>            /* 背景图片大小 */
+>            /* cover表示全部覆盖 */
+>            background-size: cover;
+>            /* 设置背景初始的位置:水平位置, 垂直位置 */
+>            background-position: 10px 50px;
+>            /* 固定在屏幕的绝对位置 */
+>            background-attachment: fixed;
+>        }
+>        ```
+
+## 边框
+
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div></div><br>
+>            <div></div><br>
+>            <div></div>
+>            <table>
+>                <tbody>
+>                    <tr>
+>                        <td></td>
+>                        <td></td>
+>                        <td></td>
+>                    </tr>
+>                    <tr>
+>                        <td></td>
+>                        <td></td>
+>                        <td></td>
+>                    </tr>
+>                    <tr>
+>                        <td></td>
+>                        <td></td>
+>                        <td></td>
+>                    </tr>
+>                </tbody>
+>            </table>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            /* 宽度 */
+>            width: 100px;
+>            /* 高度 */
+>            height: 100px;
+>            /* 背景颜色 */
+>            background-color: lightblue;
+>            /* 边框的样式, 实线 */
+>            border-style: solid;
+>            /* 边框的宽度 */
+>            border-width: 5px;
+>            /* 边框的颜色 */
+>            border-color: black gray green blue;
+>            /* 边框的圆角半径 */
+>            border-radius: 50%;
+>        }
+>        
+>        td {
+>            /* 宽度 */
+>            width: 50px;
+>            /* 高度 */
+>            height: 50px;
+>            /* 边框的样式 */
+>            border-style: solid;
+>        }
+>        
+>        table {
+>            /* 单元格之间是否进行合并还是分隔 */
+>            border-collapse: collapse;
+>        }
+>        ```
+
+## 元素展示格式
+
+>   +   `display`
+>       +   `block`
+>           +   独占一行
+>           +   `width`、`height`、`margin`、`padding` 均可控制
+>               +   内边距 `padding` 会更改元素的大小
+>           +   `width` 默认 `100%`
+>       +   `inline`
+>           +   可以共占一行
+>           +   `width`与`height`无效，水平方向的`margin`与`padding`有效，竖直方向的`margin`与`padding`无效
+>           +   `width`默认为本身内容宽度
+>       +   `inline-block`
+>           +   可以共占一行
+>           +   `width`、`height`、`margin`、`padding`均可控制
+>           +   `width`默认为本身内容宽度
+>   +   `white-space`
+>       +   `CSS` 属性是用来设置如何处理元素中的 空白 (`en-US`)
+>   +   `text-overflow`
+>       +   `CSS` 属性确定如何向用户发出未显示的溢出内容信号。它可以被剪切，显示一个省略号或显示一个自定义字符串
+>   +   `overflow`
+>       +   `CSS`属性 `overflow` 定义当一个元素的内容太大而无法适应 块级格式化上下文 时候该做什么。它是 `overflow-x` 和 `overflow-y` 的 简写属性
+>
+>   1.   `html` 小白鼠
+>
+>        ```html
+>        <!DOCTYPE html>
+>        <html lang="en">
+>        <head>
+>            <meta charset="UTF-8">
+>            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+>            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+>            <link rel="stylesheet" href="/static/css/style.css">
+>            <title>Document</title>
+>        </head>
+>        <body>
+>            <div>离离原上草</div>
+>            <span>一岁一枯荣一岁一枯荣一岁一枯荣一岁一枯荣一岁一枯荣一岁一枯荣一岁一枯荣一岁一枯荣一岁一枯荣一岁一枯荣</span>
+>            <img src="/static/images/logo.png" alt="">
+>            <div>
+>        int main() {
+>            int a, b;
+>            cin >> a >> b;
+>            return 0;
+>        }
+>            </div>
+>        </body>
+>        </html>
+>        ```
+>
+>   2.   `css`
+>
+>        ```css
+>        div {
+>            /* 宽度 */
+>            width: 800px;
+>            /* 高度 */
+>            height: 500px;
+>            /* 外边距 */
+>            margin: 10px;
+>            /* 内边距 */
+>            padding: 20px;
+>            /* 背景颜色 */
+>            background-color: lightblue;
+>            /* 强行修改成行内元素 */
+>            display: inline;
+>            /* 设置空白 */
+>            white-space: pre;
+>        }
+>        
+>        span {
+>            /* 设置宽度 */
+>            width: 50px;
+>            /* 设置高度 */
+>            height: 100px;
+>            /* 设置左外边距 */
+>            margin-left: 50px;
+>            /* 设置左内边距 */
+>            padding-left: 20px;
+>            /* 设置背景颜色 */
+>            background-color: gray;
+>            /* 强行修改成块状元素 */
+>            display: block;
+>            /* 当元素的内容超出元素的大小 */
+>            overflow: hidden;
+>            /* 如何处理超出的内容元素 */
+>            text-overflow: ellipsis;
+>        }
+>        
+>        img {
+>            /* 宽度 */
+>            width: 50px;
+>            /* 高度 */
+>            height: 50px;
+>            /* 外边距 */
+>            margin: 5px;
+>            /* 内边距 */
+>            padding: 20px;
+>        }
+>        ```
 
 
 

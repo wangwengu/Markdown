@@ -17949,6 +17949,10 @@ $O(m)$
 
 ### 匈牙利算法
 
+#### 原理
+
+>   1.   步骤和原理在 [AcWing 861. 二分图的最大匹配](#AcWing 861. 二分图的最大匹配) 的手写稿
+
 #### [AcWing 861. 二分图的最大匹配](https://www.acwing.com/problem/content/863/)
 
 **题目描述**
@@ -17998,7 +18002,14 @@ $O(m)$
 
 **手写稿**
 
-![4182143](img/4182143.png)
+>   1.   题解
+>
+>        ![4182143](img/4182143.png)
+>
+>   2.   补充
+>
+>        ![641346](img/641346.png)
+>
 
 **代码**
 
@@ -18244,23 +18255,66 @@ $O(n^2)$
 
 **手写稿**
 
-
+![660847](img/660847.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+using namespace std;
+const int N = 110;
+int n, m, k;
+int st[N], match[N];
+int g[N][N];
+bool dfs(int u) {
+    for (int i = 1; i < m; i ++ )
+        // 如果当前点i没有被访问过并且从u到i有一条边
+        if (!st[i] && g[u][i]) {
+            st[i] = true;
+            if (!match[i] || dfs(match[i])) {
+                match[i] = u;
+                return true;
+            }
+        }
+    return false;
+}
+int main() {
+    while (scanf("%d%d%d", &n, &m, &k), n) {
+        memset(match, 0, sizeof match);
+        memset(g, 0, sizeof g);
+        for (int i = 0; i < k; i ++ ) {
+            int c, a, b;
+            scanf("%d%d%d", &c, &a, &b);
+            // 如果处于模式0, 则直接返回, 不需要任何代价
+            if (!a || !b) continue;
+            // 标记边
+            g[a][b] = true;
+        }
+        int res = 0;
+        for (int i = 1; i < n; i ++ ) {
+            // 每次都初始化数组
+            memset(st, 0, sizeof st);
+            // 如果当前点i可以匹配到对象, 则匹配数量 ++
+            if (dfs(i)) res ++;
+        }
+        cout << res << endl;
+    }
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(nVE)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`最小点覆盖`、`匈牙利算法`、`最大匹配数`
 
 **缝合怪**
 
@@ -18302,23 +18356,79 @@ $O(n^2)$
 
 **手写稿**
 
-
+![661056](img/661056.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <cstring>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+const int N = 110;
+int n, m, k;
+int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+PII match[N][N];
+int g[N][N], st[N][N];
+bool dfs(int x, int y) {
+    // 遍历8个方向
+    for (int i = 0; i < 8; i ++ ) {
+        int tx = x + dx[i];
+        int ty = y + dy[i];
+        // 如果越界或者当前格子是坏格子或者当前格子已被访问过, 则continue;
+        if (tx < 1 || tx > n || ty < 1 || ty > m || g[tx][ty] || st[tx][ty]) continue;
+        // 标记当前格子已被访问过
+        st[tx][ty] = true;
+        PII t = match[tx][ty];
+        // 如果点(tx, ty)没被访问过或者其被访问过但是其能够找到备胎
+        if (t.x == 0 || dfs(t.x, t.y)) {
+            // 标记
+            match[tx][ty] = {x, y};
+            return true;
+        }
+    }
+    return false;
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &k);
+    for (int i = 0; i < k; i ++ ) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        // 标记坏格子
+        g[a][b] = 1;
+    }
+    int res = 0;
+    // 枚举所有坐标和x + y为偶数的格子
+    for (int i = 1; i <= n; i ++ ) {
+        for (int j = 1; j <= m; j ++ ) {
+            // 如果坐标和为奇数或者当前格子是坏格子, 则continue;
+            if ((i + j) & 1 || g[i][j]) continue;
+            // 初始化st数组
+            memset(st, 0, sizeof st);
+            // 如果点(i, j)可以成功找到对象, 则匹配数 ++
+            if (dfs(i, j)) res ++;
+        }
+    }
+    // 总点数 - 坏点 - 最小点覆盖数
+    cout << n * m - k - res << endl;
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(n^2VE)$
 
 **空间复杂度**
 
-
+$O(n^2)$
 
 **标签**
 
-
+`最大独立集`、`二分图`、`匈牙利算法`
 
 **缝合怪**
 
@@ -20488,7 +20598,9 @@ public:
 
 ## 二叉树
 
-### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+### 二叉树
+
+#### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 **题目描述**
 
@@ -20591,7 +20703,7 @@ public:
 
 `dfs`、`数据结构`
 
-### [LeetCode 331. 验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
+#### [LeetCode 331. 验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
 
 **题目描述**
 
@@ -20667,6 +20779,198 @@ public:
 **标签**
 
 `二叉树`、`dfs`
+
+### 二叉搜索树
+
+#### [LeetCode 501. 二叉搜索树中的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
+
+**题目描述**
+
+>   给你一个含重复值的二叉搜索树`（BST）`的根节点 `root` ，找出并返回 `BST` 中的所有 **众数**（即，出现频率最高的元素）。
+>
+>   如果树中有不止一个众数，可以按 任意顺序 返回。
+>
+>   假定 `BST` 满足如下定义：
+>
+>   结点左子树中所含节点的值 **小于等于** 当前节点的值
+>   结点右子树中所含节点的值 **大于等于** 当前节点的值
+>   左子树和右子树都是二叉搜索树
+
+**示例 1**
+
+>   输入：`root = [1,null,2,2]`
+>   输出：`[2]`
+
+**示例 2**
+
+>   输入：`root = [0]`
+>   输出：`[0]`
+
+**提示**
+
+>   +   $树中节点的数目在范围 [1, 10^4] 内$
+>   +   $-10^5 <= Node.val <= 10^5$
+
+**进阶**
+
+>   你可以不使用额外的空间吗？（假设由递归产生的隐式调用栈的开销不被计算在内）
+
+**手写稿**
+
+![641950](img/641950.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> ans;
+    int Mxcnt = 0, cnt = 0, last;
+    void dfs(TreeNode* root) {
+        // 空子树直接返回
+        if (!root) return;
+        // 遍历左子树
+        dfs(root -> left);
+        // 如果和上一个数相等, 则 cnt ++
+        if (root -> val == last) cnt ++;
+        else {
+            // 更新上一个数
+            last = root -> val;
+            // 更新个数
+            cnt = 1;
+        }
+        // 如果当前数的个数大于全局最大数, 则更新
+        if (cnt > Mxcnt) {
+            // 更新最大数
+            Mxcnt = cnt;
+            // 更新答案数组
+            ans = {last};
+        }
+        // 答案多一个数
+        else if (cnt == Mxcnt) ans.push_back(last);
+        // 遍历右子树
+        dfs(root -> right);
+        return;
+    }
+    vector<int> findMode(TreeNode* root) {
+        dfs(root);
+        return ans;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`二叉搜索树`
+
+**缝合怪**
+
+
+
+#### [LeetCode 530. 二叉搜索树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/)
+
+**题目描述**
+
+>   给你一个二叉搜索树的根节点 `root` ，返回 树中任意两不同节点值之间的最小差值 。
+>
+>   差值是一个正数，其数值等于两值之差的绝对值。
+
+**示例 1**
+
+>   输入：`root = [4,2,6,1,3]`
+>   输出：`1`
+
+**示例 2**
+
+>   输入：`root = [1,0,48,null,null,12,49]`
+>   输出：`1`
+
+**提示**
+
+>   +   $树中节点的数目范围是 [2, 10^4]$
+>   +   $0 <= Node.val <= 10^5$
+
+注意
+
+>   本题与 [LeetCode 783.](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/) 相同
+
+**手写稿**
+
+![642104](img/642104.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int ans = 1e9, last, is_first = true;
+    void dfs(TreeNode* root) {
+        // 空树返回
+        if (!root) return;
+        // 遍历左子树
+        dfs(root -> left);
+        // 如果是第一个数, 则标记
+        if (is_first) is_first = false;
+        // 如果不是第一个数, 则更新最小差值
+        else ans = min(ans, abs(root -> val - last));
+        // 更新上一个数
+        last = root -> val;
+        // 遍历右子树
+        dfs(root -> right);
+        return;
+    }
+    int getMinimumDifference(TreeNode* root) {
+        dfs(root);
+        return ans;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`二叉搜索树`
+
+**缝合怪**
+
+
 
 # 并查集
 

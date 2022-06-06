@@ -37,21 +37,3 @@
 >    ```dockerfile
 >    docker run -p 20000:22 -p 8000:8000 -p 80:80 -p 443:443 --name CONTAINER_NAME -itd django_lesson:1.1
 >    ```
-
-# SSH 登录问题
-
-> 1. 进入容器 `docker attach 容器名`
-> 2. 执行命令 `apt-get update`
-> 3. 执行命令 `apt-get upgrade`
-> 4. 安装VIM  `apt-get install vim`
->    + 选择地区 `Asia`
->    + 选择地区 `Shanghai`
-> 5. 安装SSH服务器 `apt-get install openssh-server`
-> 6. 设置密码 `passwd`
-> 7. 修改配置文件
->    + 进入配置文件 `vim /etc/ssh/sshd_config`
->    + 注释此行 `PermitRootLogin prohibit-password`
->    + 添加此行 `PermitRootLogin yes`
->    + 保存退出
-> 8. 重启SSH配置文件 `/etc/init.d/ssh restart`
-> 9. SSH登录即可 `ssh root@IP地址 -p 端口号`
