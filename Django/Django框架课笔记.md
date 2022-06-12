@@ -158,7 +158,7 @@
 >        ```python
 >        from django.urls import path
 >        from Game.views.index import index # 导入index函数
->                                                                                                                                                    
+>                                                                                                                                                         
 >        urlpatterns = [
 >            path('', index, name='index') # 添加路由
 >        ]
@@ -208,7 +208,7 @@
 >
 >        ```shell
 >       #! /bin/bash
->                                                                                                                         
+>                                                                                                                             
 >        JS_PATH=/home/django/Acapp/Game/static/js # js路径
 >                                                                                                  JS_PATH_DIST=${JS_PATH}/dist # 压缩文件夹
 >        JS_PATH_SRC=${JS_PATH}/src # 源文件夹
@@ -1818,9 +1818,9 @@
 >
 >        ```shell
 >        #! /bin/bash
->                                                                                                                                                              
+>                                                                                                                                                                   
 >        ROOT_PATH=/home/django/Acapp # 定义项目根目录
->                                                                                                                                                              
+>                                                                                                                                                                   
 >        # 先执行python3 manage.py collectstatic命令
 >        # 再输入yes
 >        echo yes | python3 manage.py collectstatic
@@ -2000,7 +2000,7 @@
 >      ```python
 >      from django.http import JsonResponse
 >      from Game.models.player.player import Player # 导入Player表
->                                                                                                                                                  
+>                                                                                                                                                       
 >      # 获取acapp上的信息
 >      def getinfo_acapp(request):
 >          # 获取玩家
@@ -2011,7 +2011,7 @@
 >              'username': player.user.username,
 >              'photo': player.photo
 >          })
->                                                                                                                                                  
+>                                                                                                                                                       
 >      # 获取web上的信息
 >      def getinfo_web(request):
 >          # 获取用户
@@ -2029,7 +2029,7 @@
 >                  'username': player.user.username,
 >                  'photo': player.photo
 >              })
->                                                                                                                                                  
+>                                                                                                                                                       
 >      # 获取信息
 >      def getinfo(request):
 >          # 获取平台是ACAPP端还是WEB端
@@ -2060,7 +2060,7 @@
 >     from django.urls import path
 >     # 导入getinfo函数
 >     from Game.views.settings.getinfo import getinfo
->                                                                                                                      
+>                                                                                                                          
 >     urlpatterns = [
 >         # 添加路径
 >         path('getinfo/', getinfo, name='settings_getinfo')
@@ -2286,7 +2286,7 @@
 >            /* 禁止用户鼠标点选 */
 >            user-select: none;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_login {
 >            height: 45vh;
 >            width: 20vw;
@@ -2298,7 +2298,7 @@
 >            /* 圆角 */
 >            border-radius: 5px;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_title {
 >            color: white;
 >            font-size: 3vh;
@@ -2306,32 +2306,32 @@
 >            padding-top: 2vh;
 >            margin-bottom: 2vh;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_username {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_password {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_submit {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_acwing {
 >            display: block;
 >            height: 7vh;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_item {
 >            width: 100%;
 >            height: 100%;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_item > input {
 >            width: 90%;
 >            line-height: 3vh;
@@ -2340,7 +2340,7 @@
 >            left: 50%;
 >            transform: translate(-50%, -50%);
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_item > button {
 >            color: white;
 >            width: 90%;
@@ -2352,7 +2352,7 @@
 >            background-color: #4CAF50;
 >            border-radius: 5px;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_error_message {
 >            color: red;
 >            font-size: 0.8vh;
@@ -2360,7 +2360,7 @@
 >            float: left;
 >            padding-left: 1vw;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_option {
 >            color: white;
 >            font-size: 2vh;
@@ -2369,7 +2369,7 @@
 >            padding-right: 1vw;
 >            cursor: pointer;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_acwing > img {
 >            position: relative;
 >            top: 50%;
@@ -2378,14 +2378,14 @@
 >            cursor: pointer;
 >            display: block;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_acwing > div {
 >            color: white;
 >            font-size: 1.5vh;
 >            text-align: center;
 >            display: block;
 >        }
->                                                                                                                                          
+>                                                                                                                                               
 >        .ac_game_settings_register {
 >            height: 51vh;
 >            width: 20vw;
@@ -2457,7 +2457,7 @@
 >        ```python
 >        from django.http import JsonResponse
 >        from django.contrib.auth import authenticate, login
->                                                                                                                                          
+>                                                                                                                                               
 >        def signin(request):
 >            # 获取数据
 >            data = request.GET
@@ -2489,7 +2489,7 @@
 >        ```python
 >        # 导入signin函数
 >        from Game.views.settings.login import signin
->                                                                                                                                          
+>                                                                                                                                               
 >        urlpatterns = [
 >            # 添加login路径
 >            path('login/', signin, name='settings_login'),
@@ -2556,7 +2556,7 @@
 >        ```python
 >        from django.http import JsonResponse
 >        from django.contrib.auth import logout
->                                                                                                                                          
+>                                                                                                                                               
 >        def signout(request):
 >            # 获取用户
 >            user = request.user
@@ -2580,7 +2580,7 @@
 >        ```python
 >        # 导入signout函数
 >        from Game.views.settings.logout import signout
->                                                                                                                                          
+>                                                                                                                                               
 >        urlpatterns = [
 >            # 添加logout路径
 >            path('logout/', signout, name='settings_logout'),
@@ -2645,7 +2645,7 @@
 >        from django.contrib.auth import login
 >        from django.contrib.auth.models import User
 >        from Game.models.player.player import Player
->                                                                                                                                     
+>                                                                                                                                          
 >        def register(request):
 >            data = request.GET
 >            # 获取用户名,获取不到, 返回""
@@ -2690,7 +2690,7 @@
 >        ```python
 >        # 导入register函数
 >        from Game.views.settings.register import register
->                                                                                                                                     
+>                                                                                                                                          
 >        urlpatterns = [
 >            # 添加register路径
 >            path('register/', register, name='settings_register'),
@@ -2895,13 +2895,13 @@
 >        from urllib.parse import quote
 >        from random import randint
 >        from django.core.cache import cache # 导入redis数据库
->                                                                                                                                
+>                                                                                                                                     
 >        def get_state(): # 获取8位随机数
 >            res = ""
 >            for i in range(8):
 >                res += str(randint(0, 9))
 >            return res
->                                                                                                                                
+>                                                                                                                                     
 >        def apply_code(request):
 >            # app编号
 >            appid = "2370"
@@ -2940,7 +2940,7 @@
 >        from django.urls import path
 >        # 导入web的apply_code函数
 >        from Game.views.settings.acwing.web.apply_code import apply_code as web_apply_code
->                                                                                                                           
+>                                                                                                                                
 >        urlpatterns = [
 >            # 添加路由
 >            path('web/apply_code/', web_apply_code, name='settings_acwing_web_apply_code'),
@@ -2989,7 +2989,7 @@
 >        from django.contrib.auth import login
 >        from random import randint
 >        from Game.models.player.player import Player
->                                                                                                                           
+>                                                                                                                                
 >        def receive_code(request):
 >            data = request.GET # 获取数据
 >            code = data.get('data') # 获取授权码
@@ -3057,7 +3057,7 @@
 >        ```python
 >        # 导入web的receive_code函数
 >        from Game.views.settings.acwing.web.receive_code import receive_code as web_receive_code
->                                                                                                                           
+>                                                                                                                                
 >        urlpatterns = [
 >            # 添加路由
 >            path('web/receive_code/', web_receive_code, name='settings_acwing_web_receive_code'),
@@ -3087,13 +3087,13 @@
 >        from urllib.parse import quote
 >        from random import randint
 >        from django.core.cache import cache
->                                                                                                                      
+>                                                                                                                           
 >        def get_state():
 >            res = ""
 >            for i in range(8): # 随机8位数
 >                res += str(randint(0, 9))
 >            return res
->                                                                                                                      
+>                                                                                                                           
 >        def apply_code(request):
 >            appid = "2370" # 应用编号
 >            # 回调函数的地址
@@ -3121,7 +3121,7 @@
 >        ```python
 >        # 导入acapp的apply_code函数
 >        from Game.views.settings.acwing.acapp.apply_code import apply_code as acapp_apply_code
->                                                                                                                      
+>                                                                                                                           
 >        urlpatterns = [
 >            # 添加路由
 >            path('acapp/apply_code/', acapp_apply_code, name='settings_acwing_acapp_apply_code'),
@@ -3190,7 +3190,7 @@
 >        from random import randint
 >        # 导入玩家
 >        from Game.models.player.player import Player
->                                                                                                                 
+>                                                                                                                      
 >        def receive_code(request):
 >            # 获取数据
 >            data = request.GET
@@ -3273,7 +3273,7 @@
 >        ```python
 >        # 导入acapp的receive_code函数
 >        from Game.views.settings.acwing.acapp.receive_code import receive_code as acapp_receive_code
->                                                                                                                 
+>                                                                                                                      
 >        urlpatterns = [
 >            # 添加路由
 >            path('acapp/receive_code/', acapp_receive_code, name='settings_acwing_acapp_receive_code'),
@@ -3399,7 +3399,7 @@
 >        ```python
 >        import json
 >        from channels.generic.websocket import AsyncWebsocketConsumer
->                                                                                        
+>                                                                                             
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            # 请求Websocket连接
 >            async def connect(self):
@@ -3414,14 +3414,14 @@
 >                # 组内可以群发消息等等
 >                # 参数: 房间名, 组名
 >                await self.channel_layer.group_add(self.room_name, self.channel_name)
->                                                                                        
+>                                                                                             
 >            # 当用户刷新或者其他原因掉线, 则会调用此函数
 >            # 但是, 此函数不准, 比如用户突然停电, 则函数不会被触发
 >            async def disconnect(self, close_code):
 >                print('disconnect')
 >                # 向对应房间名和组名发送断开连接的消息
 >                await self.channel_layer.group_discard(self.room_name, self.channel_name)
->                                                                                        
+>                                                                                             
 >            # 接收信息
 >            async def receive(self, text_data):
 >                # 解析数据
@@ -3440,7 +3440,7 @@
 >        from django.urls import path
 >        # 导入Multiplayer函数
 >        from Game.consumers.multiplayer.index import MultiPlayer
->                                                                                        
+>                                                                                             
 >        websocket_urlpatterns = [
 >            # 添加路由
 >            path('wss/multiplayer/', MultiPlayer.as_asgi(), name='wss_multiplayer'),
@@ -3541,13 +3541,13 @@
 >        from channels.generic.websocket import AsyncWebsocketConsumer
 >        from django.conf import settings
 >        from django.core.cache import cache
->                                 
+>                                      
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            # 请求Websocket连接
 >            async def connect(self):
 >                # 接收Websocket连接
 >                await self.accept()
->                                 
+>                                      
 >            # 当用户刷新或者其他原因掉线, 则会调用此函数
 >            # 但是, 此函数不准, 比如用户突然停电, 则函数不会被触发
 >            async def disconnect(self, close_code):
@@ -3555,7 +3555,7 @@
 >                if self.room_name:
 >                    # 向对应房间名和组名发送断开连接的消息
 >                    await self.channel_layer.group_discard(self.room_name, self.channel_name)
->                                 
+>                                      
 >            # 创建玩家
 >            async def create_player(self, data):
 >                # 房间名
@@ -3628,12 +3628,12 @@
 >                        'photo': data['photo'], # 新玩家的头像
 >                    }
 >                )
->                                     
+>                                          
 >            # 服务器广播之后, 得需要有个接收函数, 看!!就是此函数了
 >            async def group_send_event(self, data):
 >                # 将信息直接发送给前端即可
 >                await self.send(text_data=json.dumps(data))
->                                 
+>                                      
 >            # 接收信息
 >            async def receive(self, text_data):
 >                # 加载数据
@@ -3654,7 +3654,7 @@
 >        from django.urls import path
 >        # 导入Multiplayer函数
 >        from Game.consumers.multiplayer.index import MultiPlayer
->                                                               
+>                                                                    
 >        websocket_urlpatterns = [
 >            # 添加路由
 >            path('wss/multiplayer/', MultiPlayer.as_asgi(), name='wss_multiplayer'),
@@ -3782,7 +3782,7 @@
 >        from channels.generic.websocket import AsyncWebsocketConsumer
 >        from django.conf import settings
 >        from django.core.cache import cache
->                            
+>                                 
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            # 同步移动函数
 >            async def move_to(self, data):
@@ -3797,7 +3797,7 @@
 >                        'ty': data['ty'], # 移动的y坐标
 >                    }
 >                )
->                            
+>                                 
 >            # 接收信息
 >            async def receive(self, text_data):
 >                # 加载数据
@@ -3932,7 +3932,7 @@
 >        from channels.generic.websocket import AsyncWebsocketConsumer
 >        from django.conf import settings
 >        from django.core.cache import cache
->             
+>                  
 >        class MultiPlayer(AsyncWebsocketConsumer):
 >            # 发射子弹
 >            async def shoot_fireball(self, data):
@@ -3954,12 +3954,12 @@
 >                        'ball_uuid': data['ball_uuid'],
 >                    }
 >                )
->             
+>                  
 >            # 服务器广播之后, 得需要有个接收函数, 看!!就是此函数了
 >            async def group_send_event(self, data):
 >                # 将信息直接发送给前端即可
 >                await self.send(text_data=json.dumps(data))
->             
+>                  
 >            # 接收信息
 >            async def receive(self, text_data):
 >                # 加载数据
@@ -4104,632 +4104,188 @@
 
 ### 同步伤害
 
+#### 编写后端代码
 
+##### 编写`VIEWS`
+
+>   1.   修改 `Acapp/Game/consumers/multiplayer/index.py`
+>
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        from django.conf import settings
+>        from django.core.cache import cache
+>        
+>        class MultiPlayer(AsyncWebsocketConsumer):
+>            # 攻击
+>            async def attack(self, data):
+>                # 如果房间不存在, 则直接返回
+>                if not self.room_name:
+>                    return
+>                # 获取房间内的玩家
+>                players = cache.get(self.room_name)
+>                # 如果玩家不存在, 则直接返回
+>                if not players:
+>                    return
+>                # 遍历每个玩家
+>                for player in players:
+>                    # 如果当前玩家就是被击中的那个人, 则对其造成伤害
+>                    if player['uuid'] == data['attackee_uuid']:
+>                        # 玩家减少25血量
+>                        player['hp'] -= 25
+>                # 统计剩余玩家的数量
+>                remain_cnt = 0
+>                # 遍历每个玩家
+>                for player in players:
+>                    # 如果血量大于0, 说明存活玩家数量 ++
+>                    if player['hp'] > 0:
+>                        remain_cnt += 1
+>                # 如果存活玩家数量多于1个
+>                if remain_cnt > 1:
+>                    # 如果该房间还存在, 则更新房间内玩家的信息
+>                    if self.room_name:
+>                        # 有效期1个小时
+>                        cache.set(self.room_name, players, 3600)
+>                # 向房间内的玩家群发消息
+>                await self.channel_layer.group_send(
+>                    # 房间名
+>                    self.room_name,
+>                    {
+>                        # 接收信息的函数名
+>                        'type': "group_send_event",
+>                        # 表明是攻击事件
+>                        'event': "attack",
+>                        # 身份证号
+>                        'uuid': data['uuid'],
+>                        # 被攻击者的身份证号
+>                        'attackee_uuid': data['attackee_uuid'],
+>                        # 被攻击的x方向
+>                        'x': data['x'],
+>                        # 被攻击的y方向
+>                        'y': data['y'],
+>                        # 被攻击的角度
+>                        'angle': data['angle'],
+>                        # 被攻击的伤害
+>                        'damage': data['damage'],
+>                        # 火球的身份证号
+>                        'ball_uuid': data['ball_uuid'],
+>                    }
+>                )
+>        
+>            # 接收信息
+>            async def receive(self, text_data):
+>                # 加载数据
+>                data = json.loads(text_data)
+>                # 获取事件
+>                event = data['event']
+>                # 告诉服务器, 当前是创建玩家事件
+>                if event == 'create_player':
+>                    # 调用创建玩家函数
+>                    await self.create_player(data)
+>                # 告诉服务器, 我移动了
+>                elif event == 'move_to':
+>                    # 调用移动函数
+>                    await self.move_to(data)
+>                # 告诉服务器, 我发射子弹了
+>                elif event == 'shoot_fireball':
+>                    # 调用发射子弹函数
+>                    await self.shoot_fireball(data)
+>                # 告诉服务器, 我击中了某个人
+>                elif event == 'attack':
+>                    # 调用攻击函数
+>                    await self.attack(data)
+>        ```
+
+#### 编写前端代码
+
+>   1.   修改 `Acapp/Game/static/js/src/playground/socket/multiplayer/zbase.js`
+>
+>        ```javascript
+>        class MultiPlayerSocket {
+>            receive() {
+>                let outer = this;
+>                // 当接收到服务器发送(send函数和group_send函数)来的消息之后, 自动触发此函数
+>                this.ws.onmessage = function(e) {
+>                    // 解析json数据
+>                    let data = JSON.parse(e.data);
+>                    // 获取唯一身份证号uuid
+>                    let uuid = data.uuid;
+>                    // 如果uuid等于outer.uuid, 说明消息是自己发送的, 则直接返回即可, 不需要进行处理
+>                    if (uuid === outer.uuid) return false;
+>                    // 获取事件
+>                    let event = data.event;
+>                    // 如果是创建玩家的事件
+>                    if (event === "create_player") {
+>                        // 调用相关函数
+>                        outer.receive_create_player(uuid, data.username, data.photo);
+>                    }
+>                    // 如果是移动事件
+>                    else if (event === "move_to") {
+>                        // 调用移动函数
+>                        outer.receive_move_to(uuid, data.tx, data.ty);
+>                    }
+>                    //  如果是发射子弹事件
+>                    else if (event === "shoot_fireball") {
+>                        // 调用接收子弹函数
+>                        outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
+>                    }
+>                    // 如果是攻击事件
+>                    else if (event === "attack") {
+>                        // 调用接收攻击函数
+>                        outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.bull_uuid);
+>                    }
+>                };
+>            }
+>        
+>            // 发送攻击函数
+>            send_attack(attackee_uuid, x, y, angle, damage, ball_uuid) {
+>                // 获取外部权柄
+>                let outer = this;
+>                // 向服务器发送消息
+>                this.ws.send(JSON.stringify({
+>                    // 表明是攻击事件
+>                    'event': "attack",
+>                    // 攻击者身份证号
+>                    'uuid': outer.uuid,
+>                    // 被攻击者身份证号
+>                    'attackee_uuid': attackee_uuid,
+>                    // x坐标
+>                    'x': x,
+>                    // y坐标
+>                    'y': y,
+>                    // 角度
+>                    'angle': angle,
+>                    // 伤害
+>                    'damage': damage,
+>                    // 火球的唯一ID
+>                    'ball_uuid': ball_uuid,
+>                }));
+>            }
+>        
+>            // 接收攻击函数
+>            receive_attack(uuid, attackee_uuid, x, y, angle, damage, ball_uuid) {
+>                // 根据身份证号获取攻击者
+>                let attacker = this.get_player(uuid);
+>                // 根据身份证号获取被攻击者
+>                let attackee = this.get_player(attackee_uuid);
+>                // 如果攻击者和被攻击者都存在
+>                if (attacker && attackee) {
+>                    // 调用被攻击者的接收伤害的函数
+>                    attackee.receive_attack(x, y, angle, damage, ball_uuid, attacker);
+>                }
+>            }
+>        }
+>        ```
+>
+>   2.   
 
 ### 同步技能
 
 
 
-### `websockt` 交互
-
->   5.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->     ```javascript
->        class MultiPlayerSocket {
->         <!-- 创建用户的函数 -->
->            send_create_player() {
->                this.ws.send(JSON.stringify({
->                    'message': "Hello acapp server"
->                }));
->            }
->        }
->     ```
->   
->6.   修改 `acapp/game/static/js/src/playground/zbase.js`
->   
->     ```javascript
->        class AcGamePlayground {
->              show(mode) {
->                let outer = this;
->                if (mode === "signle mode") {
->                    for (let i = 0; i < 10; i ++ ) {
->                        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
->                    }
->             }
->                else if (mode === "multi mode") {
->                 this.mps = new MultiPlayerSocket(this);
->                   	<!-- 判断是否连接 -->
->                    this.mps.ws.onopen = function() {
->                        <!-- 如果已经连接，则调用创建玩家的函数 -->
->                                            outer.mps.send_create_player();
->                    };
->                }
->            }
->        }
->     ```
-
-#### 编写同步函数
-
-##### 给每个用户进行唯一编号
-
-修改 `acapp/game/static/js/src/playground/ac_game_object/zbase.js`
-
-```javascript
-class AcGameObject {
-    constructor() {
-        this.uuid = this.create_uuid();
-    }
-    create_uuid() { // 创建唯一ID
-        let res = "";
-        for (let i = 0; i < 8; i ++ ) {
-          	// random()返回0~1之间的数
-          	// 相同的概率是10的八次方分之一, 可以忽略不计
-            let x = parseInt(Math.floor(Math.random() * 10)); 
-            res += x;
-        }
-        return res;
-    }
-}
-```
-
-修改 `acapp/game/static/js/src/playground/zbase.js`
-
-```javascript
-show(mode) {
-  	if (mode === "signle mode") {
-      	for (let i = 0; i < 10; i ++ ) {}
- 		}
-		else if (mode === "multi mode") {
-      	// 当前用户总是第一个被➕的, 下标为0
-				this.mps.uuid = this.players[0].uuid; // 配置uuid
-		}
-}
-```
-
-修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
-
-```javascript
-class MultiPlayerSocket {
-    send_create_player() {
-        let outer = this;
-        this.ws.send(JSON.stringify({
-            // 测试uuid是否传输正确
-            'event': "create_player",
-            'uuid': this.uuid
-        }));
-    }
-}
-```
-
-##### 让当前玩家出现在其他玩家的页面
-
-设定每个房间的人数上限
-
->   1.   通用性的设置一般在全局的 `settings.py` 里设置, 修改 `acapp/acapp/settings.py`
->
->        ```python
->        # 最后一行添加
->        # 每个房间限制3个人
->        ROOT_CAPACITY = 3
->        ```
->
->   2.   修改 `acapp/game/consumers/multiplayer/index.py`
->
->        ```python
->        from django.conf import settings # 导入全局设置
->        from django.core.cache import cache # 导入redis数据库
->                                                                                                                                                                                                                                                                                                                                                                                               
->        class MultiPlayer(AsyncWebsocketConsumer):
->            async def connect(self):
->                self.room_name = None
->                # 最多准许开1000个房间
->                for i in range(1000):
->                    # 获取房间名
->                    name = 'room-%d' % (i)
->                    # 如果没有此房间或者房间人数小于3人
->                    if not cache.has_key(name) or len(cache.get(name)) < settings.ROOM_CAPACITY:
->                        self.room_name = name
->                        break
->                # 如果房间名为空, 说明不存在此房间, 直接返回即可
->                if not self.room_name:
->                    return
->                await self.accept()
->                # 如果没有此房间, 则创建此房间
->                if not cache.has_key(self.room_name):
->                    cache.set(self.room_name, [], 3600) # 有效期1个小时
->                # 向当前房间的其他人进行广播
->                for player in cache.get(self.room_name):
->                    # 发送消息
->                    await self.send(text_data = json.dumps({
->                        'event': "create_player",
->                        'uuid': player['uuid']
->                        'photo': player['photo']
->                    }))
->                await self.channel_layer.group_add(self.room_name, self.channel_name)
->        ```
-
-**创建玩家**
-
->   1.   修改 `acapp/game/consumers/multiplayer/index.py`
->
->        ```python
->        import json
->        from channels.generic.websocket import AsyncWebsocketConsumer
->        from django.conf import settings # 导入全局设置
->        from django.core.cache import cache # 导入redis数据库
->
->        class MultiPlayer(AsyncWebsocketConsumer):
->            async def create_player(self, data): # 创建玩家
->                # 获取当前房间内的所有玩家
->                players = cache.get(self.room_name)
->                # 添加当前玩家的信息
->                players.append({
->                    'uuid': data['uuid'],
->                    'username': data['username'],
->                    'photo': data['photo']
->                })
->                # 更新当前房间的信息
->                cache.set(self.room_name, players, 3600) # 有效期1个小时
->                # 广播, 将更新的信息发送给其他人
->                await self.channel_layer.group_send(
->                    self.room_name, # 房间号
->                    { # 发送其他信息
->                        'type': "group_create_player", # [‼type的值就是接收信息的函数名‼️]
->                        'event': "create_player", # 表明事件是创建用户
->                        'uuid': data['uuid'], # 发送唯一ID
->                        'username': data['username'], # 发送用户名
->                        'photo': data['photo'] # 发送头像
->                    }
->                )
->
->            async def group_create_player(self, data): # 函数名就是type的值, 必须一一对应
->                await self.send(text_data = json.dumps(data)) # 将信息发送给前端
->
->            async def receive(self, text_data):
->                # 接收数据
->                data = json.loads(text_data)
->                # 获取事件名称
->                event = data['event']
->                # 如果是创建玩家的事件
->                if event == "create_player":
->                    # 创建玩家即可
->                    await self.create_player(data)
->        ```
->
->   2.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->        ```javascript
->        class MultiPlayerSocket {
->            constructor(playground) {
->                this.start(); // 添加启动函数
->            }
->            start() {
->                this.receive(); // 接收后端发送的信息
->            }
->            receive() { // 接收后端发送的信息
->                let outer = this;
->                this.ws.onmessage = function(e) {
->                    let data = JSON.parse(e.data); // 解析JSON数据
->                    let uuid = data.uuid; // 获取uuid
->                    if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
->                    let event = data.event; // 获取事件
->                    if (event === 'create_player') { // 创建玩家
->                        outer.receive_create_player(uuid, data.username, data.photo);
->                    }
->                };
->            }
->            receive_create_player(uuid, username, photo) { // 创建玩家
->                let player = new Player( // 创建新玩家, 输入相关参数
->                    this.playground,
->                    this.playground.width / 2 / this.playground.scale,
->                    0.5,
->                    0.05,
->                    'white',
->                    0.15,
->                    'enemy',
->                    username,
->                    photo
->                );
->                player.uuid = uuid;
->                this.playground.players.push(player); // 将新玩家加入
->            }
->        }
->        ```
->        
->        修改 `acapp/game/static/js/src/playground/player/zbase.js`
->        
->        ```javascript
->        start() {
->                if (this.character === "me") {
->                    this.add_listening_events();
->                }
->                else if (this.character === "robot"){ // 只有机器人会随机移动
->                    let tx = Math.random() * this.playground.width / this.playground.scale;
->                    let ty = Math.random() * this.playground.height / this.playground.scale;
->                    this.move_to(tx, ty);
->                }
->            }
->        ```
->        
-
-##### 同步移动
-
->   1.   修改 `acapp/game/static/js/src/settings/zbase.js`
->
->        ```javascript
->        class Settings {
->            logout_on_remote() {
->                if (this.platform === 'ACAPP') {
->                    this.root.AcWingOS.api.window.close(); // 点击退出按钮, 关闭窗口
->                }
->                else {
->                    $.ajax({
->                        url: 'https://app1164.acapp.acwing.com.cn/settings/logout/',
->                        type: 'GET',
->                        success: function(resp) {
->                            console.log(resp);
->                            if (resp.result === 'success') {
->                                location.reload();
->                            }
->                        }
->                    });
->                }
->            }
->        }
->        ```
->
->   2.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->        ```javascript
->        class MultiPlayerSocket {
->            receive() { // 接收后端发送的信息
->                    if (event === "create_player") { // 创建玩家
->                        outer.receive_create_player(uuid, data.username, data.photo);
->                    }
->                    else if (event === "move_to") { // 如果需要移动, 则调用移动函数
->                        outer.receive_move_to(uuid, data.tx, data.ty);
->                    }
->                };
->            }
->            get_player(uuid) { // 根据uuid找到对应玩家
->                let players = this.playground.players;
->                for (let i = 0; i < players.length; i ++ ) {
->                    let player = players[i];
->                    if (player.uuid === uuid) {
->                        return player;
->                    }
->                }
->                return null;
->            }
->            send_move_to(tx, ty) { // 发送移动指令
->                let outer = this;
->                this.ws.send(JSON.stringify({
->                    'event': "move_to",
->                    'uuid': outer.uuid,
->                    'tx': tx,
->                    'ty': ty
->                }));
->            }
->            receive_move_to(uuid, tx, ty) { // 接收移动指令
->                let player = this.get_player(uuid); // 根据uuid找到相对应的玩家
->                if (player) { // 如果玩家还活着, 则调用此函数
->                    player.move_to(tx, ty);
->                }
->            }
->        }
->        ```
->
->   3.   修改 `acapp/game/consumers/multiplayer/index.py`
->
->        ```python
->        import json
->        from channels.generic.websocket import AsyncWebsocketConsumer
->        from django.conf import settings # 导入全局设置
->        from django.core.cache import cache # 导入redis数据库
->        
->        class MultiPlayer(AsyncWebsocketConsumer):
->            async def create_player(self, data): # 创建玩家
->                # 获取当前房间内的所有玩家
->                players = cache.get(self.room_name)
->                # 添加当前玩家的信息
->                players.append({
->                    'uuid': data['uuid'],
->                    'username': data['username'],
->                    'photo': data['photo']
->                })
->                # 更新当前房间的信息
->                cache.set(self.room_name, players, 3600) # 有效期1个小时
->                # 广播, 将更新的信息发送给其他人
->                await self.channel_layer.group_send(
->                    self.room_name, # 房间号
->                    { # 发送其他信息
->                        # 修改名称
->                        'type': "group_send_event", # [‼type的值就是接收信息的函数名‼️]
->                        'event': "create_player", # 表明事件是创建用户
->                        'uuid': data['uuid'], # 发送唯一ID
->                        'username': data['username'], # 发送用户名
->                        'photo': data['photo'] # 发送头像
->                    }
->                )
->            # 修改名称
->            async def group_send_event(self, data): # 函数名就是type的值, 必须一一对应
->                await self.send(text_data = json.dumps(data)) # 将信息发送给前端
->        
->            async def move_to(self, data): # 创建move_to函数
->                await self.channel_layer.group_send( # 群发消息
->                    self.room_name, # 发送房间名
->                    { # 发送具体信息
->                        'type': "group_send_event",
->                        'event': "move_to",
->                        'uuid': data['uuid'],
->                        'tx': data['tx'],
->                        'ty': data['ty']
->                    }
->                )
->        
->            async def receive(self, text_data): # 创建接收函数
->                # 接收数据
->                data = json.loads(text_data)
->                # 获取事件名称
->                event = data['event']
->                # 如果是创建玩家的事件
->                if event == "create_player":
->                    # 创建玩家即可
->                    await self.create_player(data)
->                elif event == "move_to": # 如果是移动事件
->                    await self.move_to(data)
->        ```
->
->   4.   修改 `acapp/game/static/js/src/playground/zbase.js`
->
->        ```javascript
->        class AcGamePlayground {
->            show(mode) {
->                // 记录模式
->                this.mode = mode;
->            }
->        }
->        ```
->
->   5.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
->
->        ```javascript
->        class Player extends AcGameObject {
->            add_listening_events() {
->                let outer = this;
->                this.playground.game_map.$canvas.on("contextmenu", function() {
->                    return false;
->                });
->                this.playground.game_map.$canvas.mousedown(function(e) {
->                    const rect = outer.ctx.canvas.getBoundingClientRect();
->                    if (e.which == 3) {
->                        let tx = (e.clientX - rect.left) / outer.playground.scale;
->                        let ty = (e.clientY - rect.top) / outer.playground.scale;
->                        outer.move_to(tx, ty);
->                        // 如果监测到当前的模式是多人模式, 则广播移动即可
->                        if (outer.playground.mode === "multi mode") {
->                            outer.playground.mps.send_move_to(tx, ty);
->                        }
->                    }
->                    else if (e.which == 1) {
->                        if (outer.cur_skill === "fireball") {
->                            outer.shoot_fireball((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale);
->                        }
->                        outer.cur_skill = null;
->                    }
->                });
->                $(window).keydown(function(e) {
->                    if (e.which == 81) {
->                        outer.cur_skill = "fireball";
->                        return true;
->                    }
->                });
->            }
->        }
->        ```
-
 ##### 同步攻击
 
->   1.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
->
->        ```javascript
->        class Player extends AcGameObject {
->            constructor(playground, x, y, radius, color, speed, character, username, photo) {
->                this.fireballs = []; // 存下每个人发射的子弹
->            }
->            shoot_fireball(tx, ty) {
->                // 记录下来发射的子弹
->                let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
->                return fireball; // 将子弹返回
->            }
->        }
->        ```
->
->   2.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->        ```javascript
->        class MultiPlayerSocket {
->            send_shoot_fireball(tx, ty, ball_uuid) { // 发送火球的信息
->                let outer = this;
->                this.ws.send(JSON.stringify({ // 传入各种信息
->                    'event': "shoot_fireball",
->                    'uuid': outer.uuid,
->                    'tx': tx,
->                    'ty': ty,
->                    'ball_uuid': ball_uuid
->                }));
->            }
->            receive_shoot_fireball(uuid, tx, ty, ball_uuid) { // 接收火球的信息
->                let player = this.get_player(uuid); // 根据uuid找到玩家
->                if (player) { // 如果玩家还活着
->                    let fireball = player.shoot_fireball(tx, ty); // 发送火球
->                    fireball.uuid = ball_uuid; // 统一uuid
->                }
->            }
->        }
->        ```
->
->   3.   修改 `acapp/static/js/src/playground/player/zbase.js`
->
->        ```javascript
->        class Player extends AcGameObject {
->            destory_fireball(uuid) { // 根据uuid删除火球
->                for (let i = 0; i < this.fireballs.length; i ++ ) { // 遍历所有火球
->                    let fireball = this.fireballs[i];
->                    if (fireball.uuid === uuid) { // 如果uuid相等, 则删除当前火球
->                        fireball.destory();
->                        break;
->                    }
->                }
->            }
->        }
->        ```
->
->   4.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
->
->        ```javascript
->        class FireBall extends AcGameObject {
->            update() {
->                if (this.move_length < this.eps) {
->                    this.destory();
->                    return false;
->                }
->                this.update_move(); // 进行拆分, 拆分成update_move();
->                this.update_attack(); // 进行拆分, 拆分成update_attack();
->                this.render();
->            }
->            update_move() {
->                let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
->                this.x += this.vx * moved;
->                this.y += this.vy * moved;
->                this.move_length -= moved;
->            }
->            update_attack() {
->                for (let i = 0; i < this.playground.players.length; i ++ ) {
->                    let player = this.playground.players[i];
->                    if (this.player !== player && this.is_collision(player)) {
->                        this.attack(player);
->                        break;
->                    }
->                }
->            }
->            on_destory() { // 在火球类中将火球删掉
->                let fireballs = this.player.fireballs;
->                for (let i = 0; i < fireballs.length; i ++ ) {
->                    if (fireballs[i] === this) { // 如果相等, 则删掉即可
->                        fireballs.splice(i, 1);
->                        break;
->                    }
->                }
->            }
->        }
->        ```
->
->   5.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->        ```javascript
->        class MultiPlayerSocket {
->            receive() { // 接收后端发送的信息
->                let outer = this;
->                this.ws.onmessage = function(e) {
->                    let data = JSON.parse(e.data); // 解析JSON数据
->                    let uuid = data.uuid; // 获取uuid
->                    if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
->                    let event = data.event; // 获取事件
->                    if (event === "create_player") { // 创建玩家
->                        outer.receive_create_player(uuid, data.username, data.photo);
->                    }
->                    else if (event === "move_to") { // 如果需要移动, 则调用移动函数
->                        outer.receive_move_to(uuid, data.tx, data.ty);
->                    }
->                    else if (ev ent === "shoot_fireball") { // 如果是发射炮弹, 则调用发射炮弹函数
->                        outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
->                    }
->                };
->            }
->        }
->        ```
->
->   6.   修改 `acapp/game/consumers/multiplayer/index.py`
->
->        ```python
->        import json
->        from channels.generic.websocket import AsyncWebsocketConsumer
->        from django.conf import settings # 导入全局设置
->        from django.core.cache import cache # 导入redis数据库
->        
->        class MultiPlayer(AsyncWebsocketConsumer):
->            async def shoot_fireball(self, data): # 发射火球函数
->                await self.channel_layer.group_send(
->                    self.room_name,
->                    {
->                        'type': "group_send_event",
->                        'event': "shoot_fireball",
->                        'uuid': data['uuid'],
->                        'tx': data['tx'],
->                        'ty': data['ty'],
->                        'ball_uuid': data['ball_uuid']
->                    }
->                )
->        
->            async def receive(self, text_data):
->                # 接收数据
->                data = json.loads(text_data)
->                # 获取事件名称
->                event = data['event']
->                # 如果是创建玩家的事件
->                if event == "create_player":
->                    # 创建玩家即可
->                    await self.create_player(data)
->                elif event == "move_to": # 如果是移动事件
->                    await self.move_to(data)
->                elif event == "shoot_fireball": # 如果是发射火球
->                    await self.shoot_fireball(data)
->        ```
->
->   7.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
->
->        ```javascript
->        class Player extends AcGameObject {
->            add_listening_events() {
->                let outer = this;
->                this.playground.game_map.$canvas.on("contextmenu", function() {
->                    return false;
->                });
->                this.playground.game_map.$canvas.mousedown(function(e) {
->                    const rect = outer.ctx.canvas.getBoundingClientRect();
->                    if (e.which == 3) {
->                        let tx = (e.clientX - rect.left) / outer.playground.scale;
->                        let ty = (e.clientY - rect.top) / outer.playground.scale;
->                        outer.move_to(tx, ty);
->                        if (outer.playground.mode === "multi mode") {
->                            outer.playground.mps.send_move_to(tx, ty);
->                        }
->                    }
->                    else if (e.which == 1) {
->                        let tx = (e.clientX - rect.left) / outer.playground.scale;
->                        let ty = (e.clientY - rect.top) / outer.playground.scale;
->                        if (outer.cur_skill === "fireball") {
->                            let fireball = outer.shoot_fireball(tx, ty);
->                            // 如果是多人模式, 则调用广播发射炮弹函数
->                            if (outer.playground.mode === "multi mode") {
->                                outer.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
->                            }
->                        }
->                        outer.cur_skill = null;
->                    }
->                });
->                $(window).keydown(function(e) {
->                    if (e.which == 81) {
->                        outer.cur_skill = "fireball";
->                        return true;
->                    }
->                });
->            }
->        }
->        ```
->
->   8.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
+>   1.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
 >
 >        ```javascript
 >        class FireBall extends AcGameObject {
@@ -4743,13 +4299,13 @@ class MultiPlayerSocket {
 >                if (this.player.character !== "enemy") {
 >                    this.update_attack();
 >                }
->                this.render();
+>             this.render();
 >            }
->        }
+>     }
 >        ```
->
->   9.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
->
+>   
+>   2.   修改 `acapp/game/static/js/src/playground/player/zbase.js`
+>   
 >        ```javascript
 >        class Player extends AcGameObject {
 >            // 接收被攻击的信息
@@ -4761,117 +4317,117 @@ class MultiPlayerSocket {
 >            }
 >        }
 >        ```
->
->   10.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
->
->         ```javascript
->         class MultiPlayerSocket {
->             receive() { // 接收后端发送的信息
->                 let outer = this;
->                 this.ws.onmessage = function(e) {
->                     let data = JSON.parse(e.data); // 解析JSON数据
->                     let uuid = data.uuid; // 获取uuid
->                     if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
->                     let event = data.event; // 获取事件
->                     if (event === "create_player") { // 创建玩家
->                         outer.receive_create_player(uuid, data.username, data.photo);
->                     }
->                     else if (event === "move_to") { // 如果需要移动, 则调用移动函数
->                         outer.receive_move_to(uuid, data.tx, data.ty);
->                     }
->                     else if (event === "shoot_fireball") { // 如果是发射炮弹, 则调用发射炮弹函数
->                         outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
->                     }
->                     else if (event === "attack") { // 如果是攻击, 则调用接收攻击函数
->                         outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
->                     }
->                 };
+>   
+>   3.   修改 `acapp/game/static/js/src/playground/socket/multiplayer/zbase.js`
+>   
+>        ```javascript
+>        class MultiPlayerSocket {
+>            receive() { // 接收后端发送的信息
+>             let outer = this;
+>                this.ws.onmessage = function(e) {
+>                 let data = JSON.parse(e.data); // 解析JSON数据
+>                    let uuid = data.uuid; // 获取uuid
+>                    if (uuid === outer.uuid) return false; // 如果uuid相等的话, 说明是自己发的, 则直接跳过即可
+>                    let event = data.event; // 获取事件
+>                    if (event === "create_player") { // 创建玩家
+>                        outer.receive_create_player(uuid, data.username, data.photo);
+>                    }
+>                    else if (event === "move_to") { // 如果需要移动, 则调用移动函数
+>                        outer.receive_move_to(uuid, data.tx, data.ty);
+>                    }
+>                    else if (event === "shoot_fireball") { // 如果是发射炮弹, 则调用发射炮弹函数
+>                        outer.receive_shoot_fireball(uuid, data.tx, data.ty, data.ball_uuid);
+>                    }
+>                    else if (event === "attack") { // 如果是攻击, 则调用接收攻击函数
+>                     outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
+>                    }
+>             };
+>            }
+>            send_attack(attackee_uuid, x, y, angle, damage, ball_uuid) { // 发送攻击信息
+>                let outer = this;
+>                this.ws.send(JSON.stringify({ // 发送各类信息
+>                    'event': "attack",
+>                    'uuid': outer.uuid,
+>                    'attackee_uuid': attackee_uuid,
+>                    'x': x,
+>                    'y': y,
+>                    'angle': angle,
+>                    'damage': damage,
+>                    'ball_uuid': ball_uuid
+>                }));
+>            }
+>            // 接收攻击信息
+>            receive_attack(uuid, attackee_uuid, x, y, angle, damage, ball_uuid) {
+>                // 根据uuid找到攻击者
+>                let attacker = this.get_player(uuid);
+>               	// 根据attackee_uuid找到被攻击者
+>                let attackee = this.get_player(attackee_uuid);
+>               	// 如果攻击者和被攻击者都活着
+>                if (attacker && attackee) {
+>                  	// 接收信息
+>                    attackee.receive_attack(x, y, angle, damage, ball_uuid, attacker);
+>                }
+>            }
+>        }
+>        ```
+>   
+>   4.   修改 `acapp/game/consumers/multiplayer/index.py`
+>   
+>        ```python
+>        import json
+>        from channels.generic.websocket import AsyncWebsocketConsumer
+>        from django.conf import settings # 导入全局设置
+>        from django.core.cache import cache # 导入redis数据库
+>        
+>     class MultiPlayer(AsyncWebsocketConsumer):
+>            async def attack(self, data): # 攻击函数
+>             await self.channel_layer.group_send( # 广播攻击函数
+>                    self.room_name, # 传输具体信息
+>                    {
+>                        'type': "group_send_event",
+>                        'event': "attack",
+>                        'uuid': data['uuid'],
+>                        'attackee_uuid': data['attackee_uuid'],
+>                        'x': data['x'],
+>                        'y': data['y'],
+>                        'angle': data['angle'],
+>                        'damage': data['damage'],
+>                        'ball_uuid': data['ball_uuid']
+>                    }
+>                )
+>        
+>            async def receive(self, text_data):
+>                # 接收数据
+>                data = json.loads(text_data)
+>                # 获取事件名称
+>                event = data['event']
+>                # 如果是创建玩家的事件
+>                if event == "create_player":
+>                    # 创建玩家即可
+>                 await self.create_player(data)
+>                elif event == "move_to": # 如果是移动事件
+>                 await self.move_to(data)
+>                elif event == "shoot_fireball": # 如果是发射火球
+>                    await self.shoot_fireball(data)
+>                elif event == "attack": # 如果是攻击
+>                    await self.attack(data)
+>        ```
+>        
+>   5.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
+>   
+>        ```javascript
+>        class FireBall extends AcGameObject {
+>            attack(player) {
+>                let angle = Math.atan2(player.y - this.y, player.x - this.x);
+>                player.is_attacked(angle, this.damage);
+>                // 如果是多人模式, 则发送攻击
+>                if (this.playground.mode === "multi mode") {
+>                    this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
+>                }
+>                this.destory();
+>            }
 >             }
->             send_attack(attackee_uuid, x, y, angle, damage, ball_uuid) { // 发送攻击信息
->                 let outer = this;
->                 this.ws.send(JSON.stringify({ // 发送各类信息
->                     'event': "attack",
->                     'uuid': outer.uuid,
->                     'attackee_uuid': attackee_uuid,
->                     'x': x,
->                     'y': y,
->                     'angle': angle,
->                     'damage': damage,
->                     'ball_uuid': ball_uuid
->                 }));
->             }
->             // 接收攻击信息
->             receive_attack(uuid, attackee_uuid, x, y, angle, damage, ball_uuid) {
->                 // 根据uuid找到攻击者
->                 let attacker = this.get_player(uuid);
->                	// 根据attackee_uuid找到被攻击者
->                 let attackee = this.get_player(attackee_uuid);
->                	// 如果攻击者和被攻击者都活着
->                 if (attacker && attackee) {
->                   	// 接收信息
->                     attackee.receive_attack(x, y, angle, damage, ball_uuid, attacker);
->                 }
->             }
->         }
->         ```
->
->   11.   修改 `acapp/game/consumers/multiplayer/index.py`
->
->         ```python
->         import json
->         from channels.generic.websocket import AsyncWebsocketConsumer
->         from django.conf import settings # 导入全局设置
->         from django.core.cache import cache # 导入redis数据库
->         
->         class MultiPlayer(AsyncWebsocketConsumer):
->             async def attack(self, data): # 攻击函数
->                 await self.channel_layer.group_send( # 广播攻击函数
->                     self.room_name, # 传输具体信息
->                     {
->                         'type': "group_send_event",
->                         'event': "attack",
->                         'uuid': data['uuid'],
->                         'attackee_uuid': data['attackee_uuid'],
->                         'x': data['x'],
->                         'y': data['y'],
->                         'angle': data['angle'],
->                         'damage': data['damage'],
->                         'ball_uuid': data['ball_uuid']
->                     }
->                 )
->         
->             async def receive(self, text_data):
->                 # 接收数据
->                 data = json.loads(text_data)
->                 # 获取事件名称
->                 event = data['event']
->                 # 如果是创建玩家的事件
->                 if event == "create_player":
->                     # 创建玩家即可
->                     await self.create_player(data)
->                 elif event == "move_to": # 如果是移动事件
->                     await self.move_to(data)
->                 elif event == "shoot_fireball": # 如果是发射火球
->                     await self.shoot_fireball(data)
->                 elif event == "attack": # 如果是攻击
->                     await self.attack(data)
->         ```
->
->   12.   修改 `acapp/game/static/js/src/playground/skill/fireball/zbase.js`
->
->         ```javascript
->         class FireBall extends AcGameObject {
->             attack(player) {
->                 let angle = Math.atan2(player.y - this.y, player.x - this.x);
->                 player.is_attacked(angle, this.damage);
->                 // 如果是多人模式, 则发送攻击
->                 if (this.playground.mode === "multi mode") {
->                     this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
->                 }
->                 this.destory();
->             }
->         }
->         ```
+>        ```
 
 #### 小 `bug` 修复
 
@@ -5774,14 +5330,14 @@ class MultiPlayerSocket {
 >
 >        ```c++
 >        namespace cpp match_service // 命名空间
->                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                               
 >        // 定义玩家的结构体
 >        struct User {
 >            1: i32 id,
 >            2: string name,
 >            3: i32 score
 >        }
->                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                               
 >        // 定义类
 >        service Match {
 >            /**
@@ -5994,38 +5550,38 @@ class MultiPlayerSocket {
 >        from match_client.match import Match
 >        from match_client.match.ttypes import User
 >        from sys import stdin
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >        def operate(op, user_id, username, score):
 >            # Make socket
 >            transport = TSocket.TSocket('127.0.0.1', 9090)
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >            # Buffering is critical. Raw sockets are very slow
 >            transport = TTransport.TBufferedTransport(transport)
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >            # Wrap in a protocol
 >            protocol = TBinaryProtocol.TBinaryProtocol(transport)
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >            # Create a client to use the protocol encoder
 >            client = Match.Client(protocol)
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >            # Connect!
 >            transport.open()
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >            user = User(user_id, username, score)
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >            if op == "add":
 >                client.add_user(user, "")
 >            elif op == "remove":
 >                client.remove_user(user, "")
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >            # Close!
 >            transport.close()
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >        def main():
 >            for line in stdin:
 >                op, user_id, username, score = line.split(' ')
 >                operate(op, int(user_id), username, int(score))
->                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                     
 >        if __name__ == "__main__":
 >            main()
 >        ```
@@ -6179,11 +5735,11 @@ class MultiPlayerSocket {
 >
 >        ```shell
 >        #! /bin/bash
->                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                       
 >        JS_PATH=/home/django/acapp/game/static/js
 >        JS_PATH_DIST=${JS_PATH}/dist
 >        JS_PATH_SRC=${JS_PATH}/src
->                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                       
 >        # 将结果过一遍terser -c -m即可
 >        find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat | terser -c -m > ${JS_PATH_DIST}/game.js
 >        echo yes | python3 manage.py collectstatic
