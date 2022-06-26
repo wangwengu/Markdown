@@ -223,6 +223,271 @@ public:
 
 ### 归并排序
 
+#### 二路归并
+
+##### [AcWing 787. 归并排序](https://www.acwing.com/problem/content/789/)
+
+**题目描述**
+
+>   给定你一个长度为 `n` 的整数数列。
+>
+>   请你使用归并排序对这个数列按照从小到大进行排序。
+>
+>   并将排好序的数列按顺序输出。
+
+**输入格式**
+
+>   输入共两行，第一行包含整数 `n`。
+>
+>   第二行包含 `n` 个整数（所有整数均在 $1∼10^9$ 范围内），表示整个数列。
+
+**输出格式**
+
+>   输出共一行，包含 `n` 个整数，表示排好序的数列。
+
+**数据范围**
+
+>   +   $1≤n≤100000$
+
+**输入样例**
+
+```c++
+5
+3 1 2 4 5
+```
+
+**输出样例**
+
+```c++
+1 2 3 4 5
+```
+
+**手写稿**
+
+![6200929](img/6200929.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n;
+int g[N], tmp[N];
+void merge(int l, int r) {
+    // 如果区间内只有一个数或者一个数都没有, 则此区间有序
+    if (l >= r) return;
+    // 取中点
+    int mid = l + r >> 1;
+    // 合并左区间
+    merge(l, mid);
+    // 合并右区间
+    merge(mid + 1, r);
+    // 归并排序的基本步骤
+    int i = l, j = mid + 1, cnt = 0;
+    while (i <= mid && j <= r) {
+        if (g[i] < g[j]) tmp[cnt ++ ] = g[i ++ ];
+        else tmp[cnt ++ ] = g[j ++ ];
+    }
+    while (i <= mid) tmp[cnt ++ ] = g[i ++ ];
+    while (j <= r) tmp[cnt ++ ] = g[j ++ ];
+    for (int i = l, k = 0; i <= r; i ++) g[i] = tmp[k ++];
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ ) scanf("%d", &g[i]);
+    merge(0, n - 1);
+    for (int i = 0; i < n; i ++ ) cout << g[i] << " ";
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`归并排序`
+
+**缝合怪**
+
+
+
+##### [AcWing 788. 逆序对的数量](https://www.acwing.com/problem/content/description/790/)
+
+**题目描述**
+
+>   给定一个长度为 `n` 的整数数列，请你计算数列中的逆序对的数量。
+>
+>   逆序对的定义如下：对于数列的第 `i` 个和第 `j` 个元素，如果满足 `i<j` 且 `a[i]>a[j]`，则其为一个逆序对；否则不是。
+
+**输入格式**
+
+>   第一行包含整数 `n`，表示数列的长度。
+>
+>   第二行包含 `n` 个整数，表示整个数列。
+
+**输出格式**
+
+>   输出一个整数，表示逆序对的个数。
+
+**数据范围**
+
+>   +   $1≤n≤100000，$
+>   +   $数列中的元素的取值范围 [1,10^9]。$
+
+**输入样例**
+
+```c++
+6
+2 3 4 5 6 1
+```
+
+**输出样例**
+
+```c++
+5
+```
+
+**手写稿**
+
+![6201237](img/6201237.png)
+
+**代码一: 归并排序**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+int n;
+LL res;
+int g[N], tmp[N];
+void merge(int l, int r) {
+    // 如果区间最多有一个值, 则说明有序
+    if (l >= r) return;
+    // 取中点
+    int mid = l + r >> 1;
+    merge(l, mid);
+    merge(mid + 1, r);
+    // 合并两个有序数组即可
+    int i = l, j = mid + 1, cnt = 0;
+    while (i <= mid && j <= r) {
+        // 逆序对必须是严格大于(不能包含等于)
+        if (g[i] <= g[j]) tmp[cnt ++ ] = g[i ++ ];
+        else {
+            res += mid - i + 1;
+            tmp[cnt ++ ] = g[j ++ ];
+        }
+    }
+    while (i <= mid) tmp[cnt ++ ] = g[i ++ ];
+    while (j <= r) tmp[cnt ++ ] = g[j ++ ];
+    for (int i = l, k = 0; i <= r; i ++) g[i] = tmp[k ++];
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ ) scanf("%d", &g[i]);
+    merge(0, n - 1);
+    printf("%lld\n", res);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**代码二: 树状数组**
+
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+int n;
+int g[N], tr[N];
+vector<int> vec;
+// 离散化
+int get(int x) {
+    int l = 0, r = vec.size() - 1;
+    while (l < r) {
+        int mid = l + r >> 1;
+        if (vec[mid] >= x) r = mid;
+        else l = mid + 1;
+    }
+    // 下标从1开始
+    return r + 1;
+}
+// 树状数组lowbit操作
+int lowbit(int x) {
+    return x & -x;
+}
+// 树状数组add操作
+void add(int x, int c) {
+    // 每次 += lowbit(i)
+    for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
+    return;
+}
+// 树状数组sum操作
+int sum(int x) {
+    int res = 0;
+    // 每次 -= lowbit(i)
+    for (int i = x; i; i -= lowbit(i)) res += tr[i];
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        vec.push_back(g[i]);
+    }
+    // 排序
+    sort(vec.begin(), vec.end());
+    // 去重
+    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+    LL res = 0;
+    for (int i = 1; i <= n; i ++ ) {
+        // 将g[i]当作树状数组下标
+        int y = get(g[i]);
+        // 求解在g[1 ~ i]中, 值g[i]大于y的数字个数
+        res += sum(vec.size()) - sum(y);
+        // 个数 += 1
+        add(y, 1);
+    }
+    printf("%lld\n", res);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`归并排序`、`树状数组`
+
+**缝合怪**
+
+[保序离散化](#AcWing 802. 区间和)、[P1908 逆序对](#P1908 逆序对)
+
 #### 多路归并
 
 ##### [LeetCode 355. 设计推特](https://leetcode-cn.com/problems/design-twitter/)
@@ -23846,27 +24111,88 @@ int main() {
 
 **手写稿**
 
-
+>   1.   同缝合怪中链接的题目, 代码可以完全拿过来用, 具体讲解在链接的那个题目中
+>   2.   注意: 本题是 $5 \times 10^5$ 不是 $1 \times 10^5$
 
 **代码**
 
-
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+typedef long long LL;
+const int N = 500010;
+int n;
+int g[N], tr[N];
+vector<int> vec;
+// 离散化
+int get(int x) {
+    int l = 0, r = vec.size() - 1;
+    while (l < r) {
+        int mid = l + r >> 1;
+        if (vec[mid] >= x) r = mid;
+        else l = mid + 1;
+    }
+    // 下标从1开始
+    return r + 1;
+}
+// 树状数组lowbit操作
+int lowbit(int x) {
+    return x & -x;
+}
+// 树状数组add操作
+void add(int x, int c) {
+    // 每次 += lowbit(i)
+    for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
+    return;
+}
+// 树状数组sum操作
+int sum(int x) {
+    int res = 0;
+    // 每次 -= lowbit(i)
+    for (int i = x; i; i -= lowbit(i)) res += tr[i];
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        vec.push_back(g[i]);
+    }
+    // 排序
+    sort(vec.begin(), vec.end());
+    // 去重
+    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+    LL res = 0;
+    for (int i = 1; i <= n; i ++ ) {
+        // 将g[i]当作树状数组下标
+        int y = get(g[i]);
+        // 求解在g[1 ~ i]中, 值g[i]大于y的数字个数
+        res += sum(vec.size()) - sum(y);
+        // 个数 += 1
+        add(y, 1);
+    }
+    printf("%lld\n", res);
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(nlog_n)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`树状数组`、`离散化`
 
 **缝合怪**
 
-
+[AcWing 788. 逆序对的数量](#AcWing 788. 逆序对的数量)
 
 ### [AcWing 241. 楼兰图腾](https://www.acwing.com/problem/content/243/)
 
@@ -23920,13 +24246,14 @@ int main() {
 
 **手写稿**
 
-> 1. 使用 `g[i]` 表示原数组；`tr[i]` 表示在树状数组中<font style="color: red">下标为 `i` </font>的位置上有一个数字，使用 `1` 做标记；如果下标为 `i` 的位置上没有数字，使用 `0` 做标记，由于数组初始化为 `0`，因此，不需要再额外做标记 ；`great[i]` 表示 `g` 数组中比 `g[i]` 大的数字的个数；`lesser[i]` 表示 `g` 数组中比 `g[i]` 小的数字的个数
+> 1. 使用 `g[i]` 表示原数组；`tr[i]` 表示`1, 2, 3, ...,i` 中数字出现的次数；
 > 2. 以 `g` 数组的每一个下标 `i` 为索引，寻找 `i` 左边比 `g[i]` 大的数字的个数和 `i` 右边比 `g[i]` 大的数字的个数，根据乘法原理，两者即可求得 $\vee$ 的个数；同理，求得 $\wedge$ 的个数
 > 3. 两次遍历【<font style="color: red">极易混淆需重点阅读</font>】
 >     + 第一次遍历【<font style="color: red">从前往后</font>】
 >         + 在当前情况（从前往后）下，`great[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之前</font>的所有数字当中比 `g[i]` <font style="color: red">大</font> 的数字的个数；`less[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之前</font>的所有数字当中比 `g[i]` <font style="color: red">小 </font>的数字的个数
 >     + 第二次遍历【<font style="color: red">从后往前</font>】
 >         + 在当前情况（从后往前）下，`great[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之后</font>的所有数字当中比 `g[i]` <font style="color: red">大</font> 的数字的个数；`less[i]` 表示 `g` 数组中所有下标在 `i` <font style="color: red">之后</font>的所有数字当中比 `g[i]` <font style="color: red">小</font> 的数字的个数
+> 4. ![6210920](img/6210920.png)
 
 **代码**
 
@@ -23937,7 +24264,7 @@ using namespace std;
 typedef long long LL;
 const int N = 200010;
 int n;
-int g[N], tr[N], great[N], lesser[N];
+int g[N], tr[N], great[N], low[N];
 int lowbit(int x) {
     return x & -x;
 }
@@ -23946,9 +24273,9 @@ void add(int x, int c) {
     return;
 }
 int sum(int x) {
-    int res = 0; 
-    for (int i = x; i; i -= lowbit(i)) res += tr[i];
-    return res;
+    int sum = 0; 
+    for (int i = x; i; i -= lowbit(i)) sum += tr[i];
+    return sum;
 }
 int main() {
     scanf("%d", &n);
@@ -23958,8 +24285,9 @@ int main() {
         int y = g[i];
         // great[i]表示在【下标】i【之前】的所有数字当中比y【大】的数字的个数
         great[i] = sum(n) - sum(y);
-        // lesser[i]表示在【下标】i【之前】的所有数字当中比y【小】的数字的个数
-        lesser[i] = sum(y - 1);
+        // low[i]表示在【下标】i【之前】的所有数字当中比y【小】的数字的个数
+        low[i] = sum(y);
+        // 树状数组tr[i]的含义: 在1, 2, 3, ..., i中, 数字出现的次数
         // 在下标为y的位置上添加1，表示在下标为y的位置上有一个数字
         add(y, 1);
     }
@@ -23971,8 +24299,9 @@ int main() {
         int y = g[i];
         // sum(n) - sum(y) 表示在【下标】为i【之后】的所有数字当中比y【大】的数字的个数
         res1 += great[i] * (LL)(sum(n) - sum(y));
-        // sum(y - 1) 表示在【下标】为i【之后】的所有数字当中比y【小】的数字的个数
-        res2 += lesser[i] * (LL)sum(y - 1);
+        // sum(y) 表示在【下标】为i【之后】的所有数字当中比y【小】的数字的个数
+        res2 += low[i] * (LL)sum(y);
+        // 树状数组tr[i]的含义: 在1, 2, 3, ..., i中, 数字出现的次数
         // 在下标为y的位置上添加1，表示在下标为y的位置上有一个数字
         add(y, 1);
     }
@@ -24041,8 +24370,8 @@ Q 2
 **步骤**
 
 > 1. 树状数组可以解决的问题：
->     + 区间求和
->     + 单点更新
+>     + 单点修改
+>     + 区间查询
 >
 > 2. 本题的要求有两个操作
 >
@@ -24050,11 +24379,11 @@ Q 2
 >
 >     + 将题目中的两个操作变成树状数组的经典操作
 >
->         + 第一个操作是数列中的第 `l ～ r` 个数字都加上 `d`，分若干个步骤将其转化为树状数组的经典操作之一即单点更新
->             + 第 `l ～ r` 个数字添加 `d`，由差分数组 `tr` 可知，`tr[l] += d，tr[r + 1] -= d` 即可完成操作，对应树状数组经典操作的单点更新
+>         + 第一个操作是数列中的第 `l ～ r` 个数字都加上 `d`，分若干个步骤将其转化为树状数组的经典操作之一即单点修改
+>             + 第 `l ～ r` 个数字添加 `d`，由树状数组（差分数组） `tr` 可知，`tr[l] += d，tr[r + 1] -= d` 即可完成操作，对应树状数组经典操作的单点修改
 >
->         + 第二个操作是查询数列中的第 `x` 个数字，分若干个步骤将其转化为树状数组的经典操作之一即区间求和
->             + 修改第 `x` 个数字，由差分数组 `tr` 可知，`sum[1 ~ x]` 即为第 `x` 个数字的值，对应树状数组的区间求和操作
+>         + 第二个操作是查询数列中的第 `x` 个数字，分若干个步骤将其转化为树状数组的经典操作之一即区间查询
+>             + 修改第 `x` 个数字，由树状数组（差分数组） `tr` 可知，`sum[1 ~ x]` 即为第 `x` 个数字的值，对应树状数组（差分数组）的区间查询操作
 
 **代码**
 
@@ -24088,7 +24417,7 @@ int main() {
     while (m -- ) {
         scanf("%s", op);
         if (op[0] == 'C') {
-            int l, r, d;
+            int l, r, d, x;
             scanf("%d%d%d", &l, &r, &d);
             // tr[l] += d;
             add(l, d);
@@ -24096,7 +24425,6 @@ int main() {
             add(r + 1, -d);
         }
         else {
-            int x;
             scanf("%d", &x);
             // 求和
             cout << sum(x) << endl;
@@ -24160,7 +24488,7 @@ Q 2 4
 
 **手写稿**
 
-![1292230](img/1292230.png)
+![6251102](img/6251102.png)
 
 **代码**
 
@@ -24171,54 +24499,72 @@ typedef long long LL;
 const int N = 100010;
 int n, m;
 int g[N];
+// 使用long long类型
 LL tr1[N], tr2[N];
+// lowbit操作
 int lowbit(int x) {
     return x & -x;
 }
+// 注意： 使用long long类型【i * b可能会爆int】
 void add(LL tr[], int x, LL c) {
     for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
     return;
 }
-LL sum(LL tr[], LL x) {
-    LL res = 0;
-    for (int i = x; i; i -= lowbit(i)) res += tr[i];
-    return res;
+// 注意：使用long long类型
+LL sum(LL tr[], int x) {
+    // 注意：使用long long类型
+    LL sum = 0;
+    for (int i = x; i; i -= lowbit(i)) sum += tr[i];
+    return sum;
 }
-LL prefix_sum(int x) {
-    return sum(tr1, x) * (x + 1) - sum(tr2, x);
+// 注意：使用long long类型
+LL pre_fix(int x) {
+    return (x + 1) * sum(tr1, x) - sum(tr2, x);
 }
 int main() {
     scanf("%d%d", &n, &m);
-    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
     for (int i = 1; i <= n; i ++ ) {
-        int b = g[i] - g[i - 1];
-        // 第一个数组tr1存的是红+紫
+        scanf("%d", &g[i]);
+        LL b = g[i] - g[i - 1];
         add(tr1, i, b);
-        // 第二个数组tr2存的是紫
+        // i * b可能会爆int, 使用long long类型
         add(tr2, i, (LL)i * b);
     }
-    while (m -- ) {
+    for (int i = 0; i < m; i ++ ) {
         char op[2];
+        int l, r, d;
         scanf("%s", op);
         if (op[0] == 'C') {
-            int l, r, d;
             scanf("%d%d%d", &l, &r, &d);
-            add(tr1, l, d), add(tr2, l, l * d);
-            add(tr1, r + 1, -d), add(tr2, r + 1, (r + 1) * -d);
+            add(tr1, l, d);
+            add(tr1, r + 1, -d);
+            add(tr2, l, l * d);
+            add(tr2, r + 1, (r + 1) * -d);
         }
         else {
-            int l, r;
             scanf("%d%d", &l, &r);
-            cout << prefix_sum(r) - prefix_sum(l - 1) << endl;
+            printf("%lld\n", pre_fix(r) - pre_fix(l - 1));
         }
     }
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `树状数组`
+
+**缝合怪**
+
+
 
 ### [AcWing 244. 谜一样的牛](https://www.acwing.com/problem/content/245/)
 
@@ -24267,18 +24613,18 @@ int main() {
 
 **手写稿**
 
-![1301406](img/1301406.png)
+![6252158](img/6252158.png)
 
 **步骤**
 
-> 1. `h[i]` 代表在第 `i` 头牛之前有 `h[i]` 头牛比当前第 `i` 头牛矮
-> 2. 从后往前遍历，在剩下的数字（包括当前数字）当中寻找第 `h[i] + 1` 小的数字即可
+> 1. `g[i]` 代表在第 `i` 头牛之前有 `g[i]` 头牛比当前第 `i` 头牛矮
+> 2. 从后往前遍历，在剩下的数字（包括当前数字）当中寻找第 `g[i] + 1` 小的数字即可
 > 3. 样例模拟（从后往前）
 >     + 初始化：牛的高度可选择范围 `1，2，3，4，5`（不一定有序）
->     + 第一步：倒数第一个数字是 `0`，代表在牛的高度可选择范围`[1, 2, 3, 4, 5]`内有 `0` 头牛比自己矮，即在牛的高度可选择范围`[1, 2, 3, 4, 5]`内寻找第 `1(h[i] + 1)` 小的高度的牛，即为 `1`，此时，剩下的牛的高度选择可为 `2，3，4，5`
->     + 第二步：倒数第二个数字是 `1`，代表在牛的高度可选择范围`[2, 3, 4, 5]`内有 `1` 头牛比自己矮，即在牛的高度可选择范围`[2, 3, 4, 5]`内寻找第 `2(h[i] + 1)` 小的高度的牛，即为 `3`，此时，剩下的牛的高度选择可为 `2，4，5`
->     + 第三步：倒数第三个数字是 `2`，代表在牛的高度可选择范围`[2, 4, 5]`内有 `2` 头牛比自己矮，即在牛的高度可选择范围`[2, 4, 5]`内寻找第 `3(h[i] + 1)` 小的高度的牛，即为 `5`，此时，剩下的牛的高度选择可为 `2，4`
->     + 第四步：倒数第四个数字是 `1`，代表在牛的高度可选择范围`[2, 4]`内有 `1` 头牛比自己矮，即在牛的高度可选择范围`[2, 4]`内寻找第 `2(h[i] + 1)` 小的高度的牛，即为 `4`，此时，剩下的牛的高度可选择为 `2`
+>     + 第一步：倒数第一个数字是 `0`，代表在牛的高度可选择范围`[1, 2, 3, 4, 5]`内有 `0` 头牛比自己矮，即在牛的高度可选择范围`[1, 2, 3, 4, 5]`内寻找第 `1(g[i] + 1)` 小的高度的牛，即为 `1`，此时，剩下的牛的高度选择可为 `2，3，4，5`
+>     + 第二步：倒数第二个数字是 `1`，代表在牛的高度可选择范围`[2, 3, 4, 5]`内有 `1` 头牛比自己矮，即在牛的高度可选择范围`[2, 3, 4, 5]`内寻找第 `2(g[i] + 1)` 小的高度的牛，即为 `3`，此时，剩下的牛的高度选择可为 `2，4，5`
+>     + 第三步：倒数第三个数字是 `2`，代表在牛的高度可选择范围`[2, 4, 5]`内有 `2` 头牛比自己矮，即在牛的高度可选择范围`[2, 4, 5]`内寻找第 `3(g[i] + 1)` 小的高度的牛，即为 `5`，此时，剩下的牛的高度选择可为 `2，4`
+>     + 第四步：倒数第四个数字是 `1`，代表在牛的高度可选择范围`[2, 4]`内有 `1` 头牛比自己矮，即在牛的高度可选择范围`[2, 4]`内寻找第 `2(g[i] + 1)` 小的高度的牛，即为 `4`，此时，剩下的牛的高度可选择为 `2`
 >     + 第五步：剩下的牛的高度为 `2`，故答案为 `[2, 4, 5, 3, 1]`
 > 4. 实现方式：树状数组 + 二分
 >     + 树状数组 `tr[i]` 表示高度为 `i` 是否可以使用，`1` 代表可使用，否则，不可使用
@@ -24295,49 +24641,69 @@ int main() {
 using namespace std;
 const int N = 100010;
 int n;
-int h[N], tr[N], ans[N];
+int g[N], tr[N], res[N];
 int lowbit(int x) {
     return x & -x;
 }
+// 更新
 void add(int x, int c) {
     for (int i = x; i <= n; i += lowbit(i)) tr[i] += c;
     return;
 }
+// 区间求和模板
 int sum(int x) {
-    int res = 0;
-    for (int i = x; i; i -= lowbit(i)) res += tr[i];
-    return res;
+    int sum = 0;
+    for (int i = x; i; i -= lowbit(i)) sum += tr[i];
+    return sum;
 }
 int main() {
     scanf("%d", &n);
-    // 下标从2开始，因为第一头牛前面没有比它矮的，默认为0，题目中已经标注
-    for (int i = 2; i <= n; i ++ ) scanf("%d", &h[i]);
-    // 每头牛初始化为1，表明当前这头牛的高度i可以被使用【未被剔除】
-    for (int i = 1; i <= n; i ++ ) add(i, 1);
-    for (int i = n; i; i --) {
-        // 寻找i前面的第h[i]小的数，算上当前值，故寻找第h[i] + 1个数字
-        int k = h[i] + 1;
-        // 二分的是牛的高度，即查看当前牛的高度是否满足答案
+    // 初始化树状数组
+    // tr[1] = 1表示索引为1的数值还未被用过
+    add(1, 1);
+    for (int i = 2; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        // 初始化树状数组
+        // tr[i] = 1表示索引为i的数值还未被用过
+        add(i, 1);
+    }
+    int cnt = 0;
+    // 倒序枚举
+    for (int i = n; i; i -- ) {
+        // 二分答案
         int l = 1, r = n;
         while (l < r) {
             int mid = l + r >> 1;
-            // mid代表牛的高度
-            if (sum(mid) >= k) r = mid;
+            // 手写稿解释
+            if (sum(mid) >= g[i] + 1) r = mid;
             else l = mid + 1;
         }
-        // 将结果加入答案
-        ans[i] = r;
-        // 将已经加入答案的数字进行排除
+        // 表示r已经被使用过
         add(r, -1);
+        // 存入答案
+        res[++ cnt] = r;
     }
-    for (int i = 1; i <= n; i ++ ) cout << ans[i] << endl;
+    // 倒序输出
+    for (int i = cnt; i; i -- ) cout << res[i] << endl;
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `树状数组`
+
+**缝合怪**
+
+
 
 ### [LeetCode 307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
 
@@ -24449,9 +24815,19 @@ public:
  */
 ```
 
+**时间复杂度**
+
+$O(log_n)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `树状数组`
+
+**缝合怪**
 
 
 
