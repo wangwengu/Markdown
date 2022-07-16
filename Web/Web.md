@@ -320,7 +320,7 @@
 >        ```html
 >        <!DOCTYPE html>
 >        <html lang="zh-CN">
->                                           
+>                                                
 >        <head>
 >            <meta charset="UTF-8">
 >            <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -329,7 +329,7 @@
 >            <link rel="icon" href="/images/logo.png">
 >            <title>Web应用课</title>
 >        </head>
->                                           
+>                                                
 >        <body>
 >            <!-- 每个ol或者ul里面都需要有li标签 -->
 >            <ol>
@@ -359,7 +359,7 @@
 >                </li>
 >            </ol>
 >        </body>
->                                           
+>                                                
 >        </html>
 >        ```
 
@@ -517,12 +517,12 @@
 >                    height: 50px;
 >                    background-color: lightblue;
 >                }
->                            
+>                                 
 >                /* 所有所有类名为div_color的 */
 >                .div_color {
 >                    background-color: lightcoral;
 >                }
->                            
+>                                 
 >                /* 修饰所有类名为div_size的 */
 >                .div_size {
 >                    width: 100px;
@@ -604,7 +604,7 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->                            
+>                                 
 >        p {
 >            width: 100px;
 >            height: 100px;
@@ -643,7 +643,7 @@
 >        #mydiv {
 >            background-color: brown;
 >        }
->                            
+>                                 
 >        #myp {
 >            background-color: purple;
 >        }
@@ -692,7 +692,7 @@
 >            width: 200px;
 >            height: 200px;
 >        }
->                            
+>                                 
 >        .color_tag {
 >            background-color: lightblue;
 >        }
@@ -733,37 +733,37 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->                            
+>                                 
 >        p {
 >            width: 100px;
 >            height: 100px;
 >            background-color: lightcoral;
 >        }
->                            
+>                                 
 >        /* 链接访问前的样式 */
 >        a:link {
 >            /* 设置字体的颜色 */
 >            color: aquamarine;
 >        }
->                            
+>                                 
 >        /* 链接访问过后的样式 */
 >        a:visited {
 >            /* 设置字体的颜色 */
 >            color: purple;
 >        }
->                            
+>                                 
 >        /* 鼠标悬停的样式 */
 >        a:hover {
 >            /* 设置字体的颜色 */
 >            color: blue;
 >        }
->                            
+>                                 
 >        /* 鼠标长按的样式 */
 >        a:active {
 >            /* 设置字体的颜色 */
 >            color: coral;
 >        }
->                            
+>                                 
 >        /* 鼠标悬停的样式 */
 >        button:hover {
 >            /* 设置字体的颜色 */
@@ -771,13 +771,13 @@
 >            /* 设置背景颜色 */
 >            background-color: deepskyblue;
 >        }
->                            
+>                                 
 >        /* 鼠标悬停的样式 */
 >        input:hover {
 >            /* 改变宽度 */
 >            width: 250px;
 >        }
->                            
+>                                 
 >        /* 聚焦后的样式 */
 >        input:focus {
 >            /* 放大1.2倍 */
@@ -825,7 +825,7 @@
 >            height: 50px;
 >            margin-bottom: 10px;
 >        }
->                            
+>                                 
 >        /*
 >            nth:child()求的是其父标签的第i个孩子是否满足条件
 >            如: p:nth-child(even)求的是所有偶数标签
@@ -883,7 +883,7 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->                            
+>                                 
 >        /* 当页面的url指向该元素时, 触发此样式 */
 >        /* 页面地址: http://127.0.0.1:5500/index.html#btn */
 >        /* 地址含有#btn即为指向该元素, 否则, 没有 */
@@ -947,18 +947,18 @@
 >            margin-bottom: 10px;
 >            background-color: lightblue;
 >        }
->                       
+>                            
 >        /* 选中p标签中类名为big的元素 */
 >        p.big {
 >            width: 200px;
 >            height: 200px;
 >        }
->                       
+>                            
 >        /* 选中div标签中类名同时为big和color的元素 */
 >        div.big.color {
 >            background-color: purple;
 >        }
->                       
+>                            
 >        /*  
 >            选择紧紧跟着p标签的p标签, 必须是直系父子关系
 >            注意: 第一个p标签不会产生效果, 因此, 第一个p标签的父亲并不是p标签
@@ -966,12 +966,12 @@
 >        p + p {
 >            background-color: red;
 >        }
->                       
+>                            
 >        /* 选择ul下的所有li标签, 不管是否是直系血亲 */
 >        ul li {
 >            color: red;
 >        }
->                       
+>                            
 >        /* 选择li下的ul下的li, 注意: 必须是直系血亲, 即: 只能是父子关系, 不可越辈分 */
 >        li > ul > li {
 >            color: lightblue;
@@ -1006,12 +1006,12 @@
 >        * {
 >            background-color: lightblue;
 >        }
->                       
+>                            
 >        /* 给具有id属性的input标签设置背景颜色 */
 >        input[id] {
 >            background-color: blue;
 >        }
->                       
+>                            
 >        /* 给具有type属性并且type属性值为number的标签设置背景颜色 */
 >        input[type=number] {
 >            background-color: purple;
@@ -1052,23 +1052,23 @@
 >        p::first-letter {
 >            color: red;
 >        }
->                       
+>                            
 >        /* 给第一行的文字添加颜色 */
 >        p::first-line {
 >            color: purple;
 >        }
->                       
+>                            
 >        /* 鼠标框选的时候, 字体颜色为红色, 背景颜色为浅绿色 */
 >        p::selection {
 >            color: red;
 >            background-color: lightblue;
 >        }
->                       
+>                            
 >        /* 在h2标签的前面添加《 */
 >        h2::before {
 >            content: "《";
 >        }
->                       
+>                            
 >        /* 在h2标签的后面添加》 */
 >        h2::after {
 >            content: "》";
@@ -1113,7 +1113,7 @@
 >        p:first-child {
 >            color: red;
 >        }
->                       
+>                            
 >        /* 使用十六进制设置颜色 */
 >        p:nth-child(2) {
 >            /* 第一种方式 */
@@ -1121,12 +1121,12 @@
 >            /* 第二种方式, 其等价于#AABBCC */
 >            color: #ABC;
 >        }
->                       
+>                            
 >        /* 使用rgb方式设置颜色, (red, green, blue) */
 >        p:nth-child(3) {
 >            color: rgb(173, 216, 230);
 >        }
->                       
+>                            
 >        /* 使用rgba方式设置颜色, 最后的参数是透明度 */
 >        p:nth-child(4) {
 >            color: rgba(0, 255, 255, 1);
@@ -1500,7 +1500,7 @@
 >            /* 边框的圆角半径 */
 >            border-radius: 50%;
 >        }
->        
+>             
 >        td {
 >            /* 宽度 */
 >            width: 50px;
@@ -1509,7 +1509,7 @@
 >            /* 边框的样式 */
 >            border-style: solid;
 >        }
->        
+>             
 >        table {
 >            /* 单元格之间是否进行合并还是分隔 */
 >            border-collapse: collapse;
@@ -1585,7 +1585,7 @@
 >            /* 设置空白 */
 >            white-space: pre;
 >        }
->        
+>             
 >        span {
 >            /* 设置宽度 */
 >            width: 50px;
@@ -1604,7 +1604,7 @@
 >            /* 如何处理超出的内容元素 */
 >            text-overflow: ellipsis;
 >        }
->        
+>             
 >        img {
 >            /* 宽度 */
 >            width: 50px;
@@ -1617,7 +1617,24 @@
 >        }
 >        ```
 
+## 内边距与外边距
 
+>   1.   ![761721](img/761721.png)
+>
+>   2.   `margin` 属性
+>
+>        `margin` 属性为给定元素设置所有四个（上下左右）方向的外边距属性。
+>
+>        +   可以接受`1~4`个值（上、右、下、左的顺序）
+>        +   可以分别指明四个方向：`margin-top`、`margin-right`、`margin-bottom`、`margin-left`
+>        +   可取值
+>            +   `length`：固定值
+>            +   `percentage`：相对于包含块的宽度，以百分比值为外边距。
+>            +   `auto`：让浏览器自己选择一个合适的外边距。有时，在一些特殊情况下，该值可以使元素居中。
+>                外边距重叠
+>
+>        +   块的上外边距(`margin-top`)和下外边距(`margin-bottom`)有时合并(折叠)为单个边距，其大小为单个边距的最大值(或如果它们相等，则仅为其中一个)，这种行为称为边距折叠。
+>        +   父元素与后代元素：父元素没有上边框和`padding`时，后代元素的`margin-top`会溢出，溢出后父元素的`margin-top`会与后代元素取最大值。
 
 
 

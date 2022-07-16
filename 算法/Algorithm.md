@@ -24837,6 +24837,416 @@ $O(n)$
 
 ![1310947](img/1310947.png)
 
+### [P3372 【模板】线段树 1](https://www.luogu.com.cn/problem/P3372)
+
+**题目描述**
+
+>   如题，已知一个数列，你需要进行下面两种操作：
+>
+>   1. 将某区间每一个数加上 $k$。
+>   2. 求出某区间每一个数的和。
+
+**输入格式**
+
+>   第一行包含两个整数 $n, m$，分别表示该数列数字的个数和操作的总个数。
+>
+>   第二行包含 $n$ 个用空格分隔的整数，其中第 $i$ 个数字表示数列第 $i$ 项的初始值。
+>
+>   接下来 $m$ 行每行包含 $3$ 或 $4$ 个整数，表示一个操作，具体如下：
+>
+>   1. `1 x y k`：将区间 $[x, y]$ 内每个数加上 $k$。
+>   2. `2 x y`：输出区间 $[x, y]$ 内每个数的和。
+
+**输出格式**
+
+>   输出包含若干行整数，即为所有操作 `2` 的结果。
+
+**样例输入**
+
+```c++
+5 5
+1 5 4 2 3
+2 2 4
+1 2 3 2
+2 3 4
+1 1 5 1
+2 1 4
+```
+
+**样例输出**
+
+```c++
+11
+8
+20
+```
+
+**提示**
+
+>   +   对于 $30\%$ 的数据：$n \le 8$，$m \le 10$。  
+>   +   对于 $70\%$ 的数据：$n \le {10}^3$，$m \le {10}^4$。  
+>   +   对于 $100\%$ 的数据：$1 \le n, m \le {10}^5$。
+>
+>   +   保证任意时刻数列中任意元素的和在 $[-2^{63}, 2^{63})$ 内。
+
+**样例解释**
+
+![](img/2251.jpeg)
+
+**手写稿**
+
+![6292021](img/6292021.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+int n, m;
+LL g[N];
+struct Tree {
+    int l, r;
+    LL add, sum;
+}tr[N * 4];
+void pushup(Tree& u, Tree& l, Tree& r) {
+    // 更新区间和
+    u.sum = l.sum + r.sum;
+    return;
+}
+void pushup(int u) {
+    // 重载pushdown操作
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
+    return;
+}
+void pushdown(int u) {
+    // 简化操作
+    auto& root = tr[u], &left = tr[u << 1], &right = tr[u << 1 | 1];
+    // 如果存在懒标记
+    if (root.add) {
+        // 更新左孩子的懒标记[手写稿解释]
+        left.add += root.add;
+        // 更新左孩子的区间和[手写稿解释]
+        left.sum += (left.r - left.l + 1) * root.add;
+        // 更新右孩子的懒标记
+        right.add += root.add;
+        // 更新右孩子的区间和
+        right.sum += (right.r - right.l + 1) * root.add;
+        // 将根结点的懒标记干掉
+        root.add = 0;
+    }
+    return;
+}
+// 建树
+void build(int u, int l, int r) {
+    if (l == r) {
+        tr[u] = {l, r, 0, g[l]};
+        return;
+    }
+    tr[u] = {l, r};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    // 记得更新父节点的信息
+    pushup(u);
+    return;
+}
+// 查询操作
+Tree query(int u, int l, int r) {
+    // 如果查询的区间完全包裹住线段树区间, 则直接返回
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    // 记得先pushdown, 将懒标记下放到左右孩子[手写稿解释]
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间完全在左边
+    if (r <= mid) return query(u << 1, l, r);
+    // 区间完全在右边
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    // 区间横跨左右两边
+    else {
+        // 左边
+        auto left = query(u << 1, l, r);
+        // 右边
+        auto right = query(u << 1 | 1, l, r);
+        Tree p;
+        // 使用新节点更新线段树属性
+        pushup(p, left, right);
+        return p;
+    }
+}
+// 修改操作
+void modify(int u, int l, int r, int d) {
+    // 如果查询的区间完全包裹住线段树区间, 则进行更新
+    // 懒标记不需要再进行下放[手写稿解释]
+    if (tr[u].l >= l && tr[u].r <= r) {
+        // 更新懒标记
+        tr[u].add += d;
+        // 更新区间和, 注意: 使用long long类型
+        tr[u].sum += (LL)(tr[u].r - tr[u].l + 1) * d;
+        return;
+    }
+    // 懒标记下放[手写稿解释]
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间完全在左边
+    if (r <= mid) modify(u << 1, l, r, d);
+    // 区间完全在右边
+    else if (l > mid) modify(u << 1 | 1, l, r, d);
+    // 区间横跨左右两边
+    else {
+        // 修改左边
+        modify(u << 1, l, r, d);
+        // 修改右边
+        modify(u << 1 | 1, l, r, d);
+    }
+    // 更新父节点信息[手写稿解释]
+    pushup(u);
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    // 建树
+    build(1, 1, n);
+    for (int i = 0; i < m; i ++ ) {
+        int k, l, r, d;
+        scanf("%d", &k);
+        if (k == 1) {
+            scanf("%d%d%d", &l, &r, &d);
+            modify(1, l, r, d);
+        }
+        else {
+            scanf("%d%d", &l, &r);
+            // 注意: 使用long long类型
+            printf("%lld\n", query(1, l, r).sum);
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`线段树`、`区间求和`、`懒标记`
+
+**缝合怪**
+
+
+
+### [P3373 【模板】线段树 2](https://www.luogu.com.cn/problem/P3373)
+
+**题目描述**
+
+>   如题，已知一个数列，你需要进行下面三种操作：
+>
+>   - 将某区间每一个数乘上 $x$
+>
+>   - 将某区间每一个数加上 $x$
+>
+>   - 求出某区间每一个数的和
+
+**输入格式**
+
+>   第一行包含三个整数 $n,m,p$，分别表示该数列数字的个数、操作的总个数和模数。
+>
+>   第二行包含 $n$ 个用空格分隔的整数，其中第 $i$ 个数字表示数列第 $i$ 项的初始值。
+>
+>   接下来 $m$ 行每行包含若干个整数，表示一个操作，具体如下：
+>
+>   操作 $1$： 格式：`1 x y k`  含义：将区间 $[x,y]$ 内每个数乘上 $k$
+>
+>   操作 $2$： 格式：`2 x y k`  含义：将区间 $[x,y]$ 内每个数加上 $k$
+>
+>   操作 $3$： 格式：`3 x y`  含义：输出区间 $[x,y]$ 内每个数的和对 $p$ 取模所得的结果
+
+**输出格式**
+
+>   输出包含若干行整数，即为所有操作 $3$ 的结果。
+
+**样例输入**
+
+```c++
+5 5 38
+1 5 4 2 3
+2 1 4 1
+3 2 5
+1 2 4 2
+2 3 5 5
+3 1 4
+```
+
+**样例输出**
+
+```c++
+17
+2
+```
+
+**提示**
+
+>   +   对于 $30\%$ 的数据：$n \le 8$，$m \le 10$   
+>   +   对于 $70\%$ 的数据：$n \le 10^3 $，$ m \le 10^4$   
+>   +   对于 $100\%$ 的数据：$ n \le 10^5$，$ m \le 10^5$
+>
+>   +   除样例外，$p = 571373$
+>   +   （数据已经过加强^\_^）
+
+**样例说明**
+
+>   ![](img/2255.jpeg)
+>
+>   故输出应为 $17$、$2$（ $40 \bmod 38 = 2$ ）
+
+**手写稿**
+
+![741132](img/741132.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+int n, m, p;
+int g[N];
+struct Tree {
+    int l, r, add, mul;
+    // 注意: 使用long long类型
+    LL sum;
+}tr[N * 4];
+// [手写稿之情况一]
+void eval(Tree &u, int add, int mul) {
+    // 记得取模
+    u.add = ((LL)u.add * mul + add) % p;
+    u.mul = (LL)u.mul * mul % p;
+    u.sum = (u.sum * mul + (LL)(u.r - u.l + 1) * add) % p;
+    return;
+}
+void pushup(Tree &u, Tree &l, Tree &r) {
+    // 记得取模
+    u.sum = (l.sum + r.sum) % p;
+    return;
+}
+void pushup(int u) {
+    // 重载pushup操作
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
+    return;
+}
+void pushdown(int u) {
+    auto &root = tr[u], &left = tr[u << 1], &right = tr[u << 1 | 1];
+    // 将懒标记下放到左孩子
+    eval(tr[u << 1], tr[u].add, tr[u].mul);
+    // 将懒标记下放到右孩子
+    eval(tr[u << 1 | 1], tr[u].add, tr[u].mul);
+    // 清空懒标记, add = 0, mul = 1
+    root.add = 0;
+    root.mul = 1;
+    return;
+}
+void build(int u, int l, int r) {
+    if (l == r) {
+        tr[u] = {l, r, 0, 1, g[l]};
+        return;
+    }
+    // [手写稿解释]
+    tr[u] = {l, r, 0, 1, 0};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    pushup(u);
+    return;
+}
+void modify(int u, int l, int r, int add, int mul) {
+    if (tr[u].l >= l && tr[u].r <= r) {
+        eval(tr[u], add, mul);
+        return;
+    }
+    // 下方懒标记
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) modify(u << 1, l, r, add, mul);
+    // 区间全部在右边
+    else if (l > mid) modify(u << 1 | 1, l, r, add, mul);
+    else {
+        // 区间横跨左右两边
+        modify(u << 1, l, r, add, mul);
+        modify(u << 1 | 1, l, r, add, mul);
+    }
+    // 使用子节点更新父节点信息
+    pushup(u);
+    return;
+}
+Tree query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    // 下方懒标记
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) return query(u << 1, l, r);
+    // 区间全部在右边
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    else {
+        // 区间横跨左右两边
+        auto left = query(u << 1, l, r);
+        auto right = query(u << 1 | 1, l, r);
+        Tree p;
+        pushup(p, left, right);
+        return p;
+    }
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &p);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    // 建树
+    build(1, 1, n);
+    for (int i = 0; i < m; i ++ ) {
+        int t, k, x, y;
+        scanf("%d", &t);
+        if (t == 1) {
+            scanf("%d%d%d", &x, &y, &k);
+            modify(1, x, y, 0, k);
+        }
+        else if(t == 2) {
+            scanf("%d%d%d", &x, &y, &k);
+            modify(1, x, y, k, 1);
+        }
+        else {
+            scanf("%d%d", &x, &y);
+            // 记得取模
+            printf("%lld\n", query(1, x, y).sum % p);
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`线段树`、`懒标记`
+
+**缝合怪**
+
+
+
 ### [AcWing 1275. 最大数](https://www.acwing.com/problem/content/1277/)
 
 **题目描述**
@@ -24907,9 +25317,15 @@ A 99
 
 > 最后的序列是 `97,14,60,96`。
 
-**备注**
+**手写稿**
 
-![2111618](img/2111618.png)
+>   1.   原手写稿
+>
+>        ![2111618](img/2111618.png)
+>
+>   2.   补充
+>
+>        ![6271011](img/6271011.png)
 
 **代码**
 
@@ -24918,13 +25334,22 @@ A 99
 using namespace std;
 const int N = 200010;
 int n, m, p;
-struct Node {
-    int l, r, Max; // Max是区间[l, r]的最大值
-}tr[N * 4];
-void build(int u, int l, int r) { // u当前节点的下标，[l, r]是区间左右端点
+struct Tree {
+    int l, r, Max;
+}tr[N * 4]; // 四倍空间
+void pushup(int u) {
+    // 用儿子节点更新当前节点, [手写稿解释]
+    tr[u].Max = max(tr[u << 1].Max, tr[u << 1 | 1].Max);
+    return;
+}
+// 建树
+void build(int u, int l, int r) {
+    // 更新当前点的区间
     tr[u] = {l, r};
-    // 区间只有一个数字
-    if (l == r) return;
+    // 越界, 则返回
+    // 注意: l == r在上一行已经搞过了, 也可直接返回
+    if (l >= r) return;
+    // 中点
     int mid = l + r >> 1;
     // 左子树
     build(u << 1, l, mid);
@@ -24932,69 +25357,80 @@ void build(int u, int l, int r) { // u当前节点的下标，[l, r]是区间左
     build(u << 1 | 1, mid + 1, r);
     return;
 }
+// 查询
 int query(int u, int l, int r) {
-    // 如果线段树的区间完全包含在所查询区间的内部，则直接返回最大值即可
+    // 如果线段树中的区间包含在要查询的区间内部, 则直接返回线段树的属性
     if (tr[u].l >= l && tr[u].r <= r) return tr[u].Max;
+    // 线段树区间中点
     int mid = tr[u].l + tr[u].r >> 1;
-    int Max = 0;
     /**
     	问题：为啥不判断两个区间不相交的情况？
     	回答：查看备注
     */
-    // 如果左边区间有重合，则查询左边
+    // 区间只位于左部分
     // 至于为啥不能写成query(u << 1, l, mid)，查看原理的样例模拟即可知晓
-    if (l <= mid) Max = query(u << 1, l, r);
-    // 如果右边区间有重合，则查询右边
+    if (r <= mid) return query(u << 1, l, r);
+    // 区间只位于右部分
     // 至于为啥不能写成query(u << 1, l, mid)，查看原理的样例模拟即可知晓
-    if (r > mid) Max = max(Max, query(u << 1 | 1, l, r));
-    return Max;
-}
-// 由子节点更新父节点
-void pushup(int u) {
-    tr[u].Max = max(tr[u << 1].Max, tr[u << 1 | 1].Max);
-    return;
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    // 区间横跨左右区间
+    else {
+        // 只返回一个值, 不需要使用结构体进行返回
+        int left = query(u << 1, l, r);
+        int right = query(u << 1 | 1, l, r);
+        return max(left, right);
+    }
 }
 void modify(int u, int x, int c) {
-    // 如果到达叶子结点即区间左右端点都是x，则修改值即可
-    // 由于只有一个值，因此，区间最大值即为当前值本身
-    if (tr[u].l == x && tr[u].r == x) tr[u].Max = c;
-    else {
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 和左边有交集
-        if (x <= mid) modify(u << 1, x, c);
-        // 和右边有交集
-        if (x > mid) modify(u << 1 | 1, x, c);
-        // 由子节点更新父节点
-        pushup(u);
+    // 如果到达根节点, 则直接更新, 返回
+    if (tr[u].l == x && tr[u].r == x) {
+        tr[u].Max = c;
+        return;
     }
+    // 线段树区间中点
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 左区间有交集
+    if (x <= mid) modify(u << 1, x, c);
+    // 右区间有交集
+    if (x > mid) modify(u << 1 | 1, x, c);
+    // [手写稿进一步解释]
+    pushup(u);
     return;
 }
 int main() {
     scanf("%d%d", &m, &p);
-    // 最多有m个操作，因此，区间右端点为m
+    // 建树
     build(1, 1, m);
-    int x, last = 0;
-    char op[2];
-    while (m -- ) {
+    int a = 0;
+    for (int i = 0; i < m; i ++ ) {
+        char op[2];
+        int x;
         scanf("%s%d", op, &x);
         if (op[0] == 'Q') {
-            // 查询最后x个数字的最大值，其区间为[n - x + 1, n]
-            last = query(1, n - x + 1, n);
-            cout << last << endl;
+            a = query(1, n - x + 1, n);
+            cout << a << endl;
         }
-        else {
-            // 修改第n + 1个值
-            modify(1, n + 1, (x + 0LL + last) % p);
-            n ++;
-        }
+        else modify(1, ++ n, (x + 0LL + a) % p);
     }
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$mlog_n$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `线段树`
+
+**缝合怪**
+
+
 
 ### [AcWing 245. 你能回答这些问题吗](https://www.acwing.com/problem/content/246/)
 
@@ -25045,95 +25481,92 @@ int main() {
 
 **手写稿**
 
-![2111320](img/2111320.jpg)
+![6281028](img/6281028.png)
 
 **代码**
 
 ```c++
 #include <iostream>
 using namespace std;
-const int N = 500010;
-struct Node {
-    int l, r; // 区间左右端点
-    int maxSum; // 最大连续子区间和
-    int lMaxSum, rMaxSum; // 最大前缀和和最大后缀和
-    int sum; // 区间和
+const int N = 500010, INF = 1e9;
+int n, m, g[N];
+struct Tree {
+    int l, r;
+    // 最大前缀和、最大后缀和、最大连续区间和、区间和
+    int MaxPreSum, MaxPostSum, MaxSucSum, sum;
 }tr[N * 4];
-int n, m;
-int g[N];
-void pushup(Node& u, Node& l, Node& r) {
-    u.maxSum = max(max(l.maxSum, r.maxSum), l.rMaxSum + r.lMaxSum);
-    u.lMaxSum = max(l.lMaxSum, l.sum + r.lMaxSum);
-    u.rMaxSum = max(r.rMaxSum, r.sum + l.rMaxSum);
+// [手写稿解释]
+void pushup(Tree& u, Tree& l, Tree& r) {
+    // 三部分取最大值
+    u.MaxSucSum = max(max(l.MaxSucSum, r.MaxSucSum), l.MaxPostSum + r.MaxPreSum);
+    // 两种情况
+    u.MaxPreSum = max(l.MaxPreSum, l.sum + r.MaxPreSum);
+    u.MaxPostSum = max(r.MaxPostSum, r.sum + l.MaxPostSum);
+    // 区间和
     u.sum = l.sum + r.sum;
     return;
 }
-// 由父节点更新子节点
 void pushup(int u) {
+    // 重载pushup操作
     pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
     return;
 }
 void build(int u, int l, int r) {
-    // 到达叶子节点[l, r]是下标，记录所有属性值
-    if (l == r) tr[u] = {l, r, g[l], g[l], g[l], g[l]};
-    else {
-        // 如果没有到达叶子结点，则只记录区间端点即可，别的值暂时无法得出
-        tr[u] = {l, r};
-        int mid = l + r >> 1;
-        build(u << 1, l, mid);
-        build(u << 1 | 1, mid + 1, r);
-        // 更新【父节点】中除了区间端点之外的其余属性值即可
-        pushup(u);
+    if (l == r) {
+        tr[u] = {l, r, g[l], g[l], g[l], g[l]};
+        return;
     }
+    // 注意: 区间端点必须记录!!
+    tr[u] = {l, r};
+    int mid = l + r >> 1;
+    // 左子树
+    build(u << 1, l, mid);
+    // 右子树
+    build(u << 1 | 1, mid + 1, r);
+    // 记得pushup操作, 即更新属性操作
+    pushup(u);
     return;
 }
-// 由于树状数组的节点是结构体，因此，返回值是节点【结构体】
-Node query(int u, int l, int r) {
+Tree query(int u, int l, int r) {
     if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 分三部分的原因: [手写稿]
+    if (r <= mid) return query(u << 1, l, r);
+    else if (l > mid) return query(u << 1 | 1, l, r);
     else {
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 区间查询区间可能不存在
-        // 如果查询的区间在线段树区间的左边
-        if (r <= mid) return query(u << 1, l, r);
-        // 如果查询的区间在线段树区间的右边
-        else if (l > mid) return query(u << 1 | 1, l, r);
-        else {
-            // 如果查询的区间和左右端点有交集
-            auto left = query(u << 1, l, r);
-            auto right = query(u << 1 | 1, l, r);
-            // 使用结构体节点
-            Node res;
-            pushup(res, left, right);
-            return res;
-        }
+        // 新开一个结构体的原因: [手写稿]
+        auto left = query(u << 1, l, r);
+        auto right = query(u << 1 | 1, l, r);
+        Tree p;
+        // 记得pushup操作, 即更新属性操作
+        pushup(p, left, right);
+        return p;
     }
 }
+// 模板
 void modify(int u, int x, int c) {
-    // 找到叶子节点
-    if (tr[u].l == x && tr[u].r == x) tr[u] = {x, x, c, c, c, c};
-    else {
-        // 根据题目描述修改的区间一定是合法区间，一定会有相交
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 如果和左区间有交集
-        if (x <= mid) modify(u << 1, x, c);
-        // 如果和右区间有交集
-        else modify(u << 1 | 1, x, c);
-        // 修改完记得更新父节点
-        pushup(u);
+    if (tr[u].l == x && tr[u].r == x) {
+        tr[u] = {x, x, c, c, c, c};
+        return;
     }
+    int mid = tr[u].l + tr[u].r >> 1;
+    if (x <= mid) modify(u << 1, x, c);
+    if (x > mid) modify(u << 1 | 1, x, c);
+    // 记得pushup操作, 即更新属性操作
+    pushup(u);
     return;
 }
 int main() {
     scanf("%d%d", &n, &m);
     for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    // 建树
     build(1, 1, n);
-    int k, x, y;
-    while (m -- ) {
+    for (int i = 0; i < m; i ++ ) {
+        int k, x, y;
         scanf("%d%d%d", &k, &x, &y);
         if (k == 1) {
-            // 如果左端点大于右端点，则交换端点即可
             if (x > y) swap(x, y);
-            cout << query(1, x, y).maxSum << endl;
+            cout << query(1, x, y).MaxSucSum << endl;
         }
         else modify(1, x, y);
     }
@@ -25141,9 +25574,233 @@ int main() {
 }
 ```
 
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `线段树`
+
+**缝合怪**
+
+
+
+### [P1890 gcd区间](https://www.luogu.com.cn/problem/P1890)
+
+**题目描述**
+
+>   给定一行`n`个正整数`a[1]..a[n]`。
+>
+>   `m`次询问，每次询问给定一个区间`[L,R]`，输出`a[L]..a[R]`的最大公因数。
+
+**输入格式**
+
+>   第一行两个整数`n，m`。
+>
+>   第二行`n`个整数表示`a[1]..a[n]`。
+>
+>   以下`m`行，每行`2`个整数表示询问区间的左右端点。
+>
+>   保证输入数据合法。
+
+**输出格式**
+
+>   共`m`行，每行表示一个询问的答案。
+
+**样例输入**
+
+```c++
+5 3
+4 12 3 6 7
+1 3
+2 3
+5 5
+```
+
+**样例输出**
+
+```c++
+1
+3
+7
+```
+
+**提示**
+
+>   +   对于$30\%$的数据，$n <= 100， m <= 10$
+>   +   对于$60\%$的数据，$m <= 1000$
+>   +   对于$100\%$的数据，$1 <= n <= 1000，1 <= m <= 1,000,000$
+>   +   $0 <$ 数字大小 $<= 1,000,000,000$
+
+**手写稿**
+
+![6282216](img/6282216.png)
+
+**代码一: 线段树**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1010;
+int n, m;
+int g[N];
+struct Tree {
+    int l, r, Maxd;
+}tr[N * 4];
+// 欧几里得算法
+int gcd(int a, int b) {
+    if (!b) return a;
+    return gcd(b, a % b);
+}
+// pushup操作
+void pushup(int u) {
+    // 更新最大公因数
+    tr[u].Maxd = gcd(tr[u << 1].Maxd, tr[u << 1 | 1].Maxd);
+    return;
+}
+void build(int u, int l, int r) {
+    if (l == r) {
+        tr[u] = {l, r, g[l]};
+        return;
+    }
+    tr[u] = {l, r};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    // 更新
+    pushup(u);
+    return;
+}
+int query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].Maxd;
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 第一种情况: 区间只在左边
+    if (r <= mid) return query(u << 1, l, r);
+    // 第二种情况: 区间只在右边
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    // 第三种情况: 区间横跨左右两边
+    else {
+        // 只需要返回一个值, 故, 不需要结构体
+        int left = query(u << 1, l, r);
+        int right = query(u << 1 | 1, l, r);
+        return gcd(left, right);
+    }
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    build(1, 1, n);
+    for (int i = 0; i < m; i ++ ) {
+        int l, r;
+        scanf("%d%d", &l, &r);
+        cout << query(1, l, r) << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**代码二: 差分 + 线段树**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 1010;
+int n, m;
+int g[N];
+struct Tree {
+    int l, r, Maxd, sum;
+}tr[N * 4];
+// 欧几里得算法
+int gcd(int a, int b) {
+    if (!b) return a;
+    return gcd(b, a % b);
+}
+// pushup操作
+void pushup(Tree& u, Tree& l, Tree& r) {
+    // 求解最大公因数
+    u.Maxd = gcd(l.Maxd, r.Maxd);
+    u.sum = l.sum + r.sum;
+    return;
+}
+void pushup(int u) {
+    // 重载运算符
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
+    return;
+}
+void build(int u, int l, int r) {
+    if (l == r) {
+        // 线段树存的是差分数组
+        int a = g[r] - g[r - 1];
+        tr[u] = {l, r, a, a};
+        return;
+    }
+    tr[u] = {l, r};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    // 更新
+    pushup(u);
+    return;
+}
+Tree query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) return query(u << 1, l, r);
+    // 区间全部在右边
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    // 区间横跨左右两边
+    else {
+        auto left = query(u << 1, l, r);
+        auto right = query(u << 1 | 1, l, r);
+        Tree p;
+        pushup(p, left, right);
+        return p;
+    }
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    build(1, 1, n);
+    for (int i = 0; i < m; i ++ ) {
+        int l, r;
+        scanf("%d%d", &l, &r);
+        // 防止越界
+        if (l + 1 <= r) printf("%d\n", abs(gcd(query(1, 1, l).sum, query(1, l + 1, r).Maxd)));
+        else printf("%d\n", abs(query(1, 1, l).sum));
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`线段树`
+
+**缝合怪**
+
+
 
 ### [AcWing 246. 区间最大公约数](https://www.acwing.com/problem/content/247/)
 
@@ -25198,7 +25855,8 @@ Q 2 4
 
 **手写稿**
 
-![2012309](img/2012309.jpg)
+>   1.   ![2012309](img/2012309.jpg)
+>   2.   补充题解位于[P1890 gcd区间](#P1890 gcd区间)手写稿的做法二
 
 **代码**
 
@@ -25207,106 +25865,129 @@ Q 2 4
 using namespace std;
 typedef long long LL;
 const int N = 500010;
-struct Node {
-    int l, r; // 区间左右端点
-    LL sum, d; // 区间和和区间的最大公约数
-}tr[N * 4];
 int n, m;
+// 注意: 使用long long类型
 LL g[N];
-// 注意类型LL
+struct Tree {
+    int l, r;
+    // 注意: 使用long long类型
+    LL Maxd, sum;
+}tr[N * 4]; // 四倍空间
+// 欧几里得算法
+// 注意: 使用long long类型
 LL gcd(LL a, LL b) {
     if (!b) return a;
     return gcd(b, a % b);
 }
-void pushup(Node& u, Node& l, Node& r) {
+// pushup操作
+void pushup(Tree& u, Tree& l, Tree& r) {
+    // 更新最大公约数
+    u.Maxd = gcd(l.Maxd, r.Maxd);
+    // 更新区间和
     u.sum = l.sum + r.sum;
-    u.d = gcd(l.d, r.d);
     return;
 }
 void pushup(int u) {
+    // 重载pushup函数
     pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
     return;
 }
+// 建树
 void build(int u, int l, int r) {
     if (l == r) {
-        // 注意类型LL
+        // 注意: long long类型
+        // 线段树存的是差分
         LL a = g[r] - g[r - 1];
         tr[u] = {l, r, a, a};
+        return;
     }
-    else {
-        tr[u] = {l, r};
-        int mid = l + r >> 1;
-        build(u << 1, l, mid);
-        build(u << 1 | 1, mid + 1, r);
-        // 注意更新下父节点u
-        pushup(u);
-    }
+    tr[u] = {l, r};
+    int mid = tr[u].l + tr[u].r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    // 更新
+    pushup(u);
     return;
 }
-Node query(int u, int l, int r) {
-    // 如果线段树中的区间包含在所查询区间的内部，则直接返回
+Tree query(int u, int l, int r) {
     if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) return query(u << 1, l, r);
+    // 区间全部在右边
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    // 区间横跨左右两边
     else {
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 如果查询区间出现在线段树区间的左边
-        if (r <= mid) return query(u << 1, l, r);
-        // 如果查询区间出现在线段树区间的右边
-        else if (l > mid) return query(u << 1 | 1, l, r);
-        else {
-            // 如果查询区间处于线段树区间的两边
-            auto left = query(u << 1, l, r);
-            auto right = query(u << 1 | 1, l, r);
-            Node res;
-            pushup(res, left, right);
-            return res;
-        }
+        // 左部分
+        auto left = query(u << 1, l, r);
+        // 右部分
+        auto right = query(u << 1 | 1, l, r);
+        // 新节点p
+        Tree p;
+        // 更新操作
+        pushup(p, left, right);
+        // 返回
+        return p;
     }
 }
 void modify(int u, int x, LL c) {
     if (tr[u].l == x && tr[u].r == x) {
-        // 注意类型LL
+        // 注意: 使用long long类型
+        // 更新的表达式解释[手写稿]
         LL a = tr[u].sum + c;
+        // 更新
         tr[u] = {x, x, a, a};
+        return;
     }
-    else {
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 如果数x位于左区间
-        if (x <= mid) modify(u << 1, x, c);
-        // 如果数x位于右区间
-        else modify(u << 1 | 1, x, c);
-        // 更新父节点u
-        pushup(u);
-    }
+    int mid = tr[u].l + tr[u].r >> 1;
+    if (x <= mid) modify(u << 1, x, c);
+    if (x > mid) modify(u << 1 | 1, x, c);
+    // 更新
+    pushup(u);
     return;
 }
 int main() {
     scanf("%d%d", &n, &m);
     for (int i = 1; i <= n; i ++ ) scanf("%lld", &g[i]);
     build(1, 1, n);
-    char op[2];
-    int l, r;
-    LL d;
-    while (m -- ) {
+    for (int i = 0; i < m; i ++ ) {
+        char op[2];
+        int l, r;
+        // 注意: 使用long long类型
+        LL d;
         scanf("%s", op);
-        if (op[0] == 'Q') {
-            scanf("%d%d", &l, &r);
-            // 注意最大公约数可能是负数，记得取绝对值
-            cout << abs(gcd(query(1, 1, l).sum, query(1, l + 1, r).d)) << endl; 
-        }
-        else {
+        if (op[0] == 'C') {
             scanf("%d%d%lld", &l, &r, &d);
             modify(1, l, d);
-            // 记得判断是否越界
+            // 注意: 以防越界, 进行越界判断
             if (r + 1 <= n) modify(1, r + 1, -d);
+        }
+        else {
+            scanf("%d%d", &l, &r);
+            // 注意: 以防越界, 进行越界判断
+            if (l + 1 <= r) printf("%lld\n", abs(gcd(query(1, 1, l).sum, query(1, l + 1, r).Maxd)));
+            else printf("%lld\n", abs(query(1, 1, l).sum));
         }
     }
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `差分`、`树状数组`
+
+**缝合怪**
+
+[P1890 gcd区间](#P1890 gcd区间)
 
 ### [AcWing 243. 一个简单的整数问题2](https://www.acwing.com/problem/content/244/)
 
@@ -25370,6 +26051,7 @@ Q 2 4
 >         + 第二步：更新相对应的信息
 >         + 第三步：将懒标记 `add` 设置为 `0`，表示已经下放完毕
 > 2. 注意 `pushdown` 和 `pushup` 的位置
+> 3. 更加详细的题解, 在 [P3372 【模板】线段树 1](#P3372 【模板】线段树 1)
 
 **代码**
 
@@ -25378,84 +26060,108 @@ Q 2 4
 using namespace std;
 typedef long long LL;
 const int N = 100010;
-struct Node {
-    int l, r;
-    LL sum; // 区间和
-    int add; // 懒标记
-}tr[N * 4];
 int n, m;
-int g[N];
+// 注意: 使用long long类型
+LL g[N];
+struct Tree {
+    int l, r;
+    // 注意: 使用long long类型
+    LL add, sum;
+}tr[N * 4];
+void pushup(Tree& u, Tree& l, Tree& r) {
+    // 更新区间和
+    u.sum = l.sum + r.sum;
+    return;
+}
 void pushup(int u) {
-    // 懒标记【不包含】当前节点
-    tr[u].sum = tr[u << 1].sum + tr[u << 1 | 1].sum;
+    // 重载pushup操作
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
     return;
 }
 void pushdown(int u) {
+    // 简化操作
     auto &root = tr[u], &left = tr[u << 1], &right = tr[u << 1 | 1];
-    // 如果有懒标记，则将懒标记进行下放
-    if (root.add) {
-        // 左孩子的懒标记进行累加，同时，区间和也需要累加
-        left.add += root.add, left.sum += (LL)(left.r - left.l + 1) * root.add;
-        // 右孩子的懒标记进行累加，同时，区间和也需要累加
-        right.add += root.add, right.sum += (LL)(right.r - right.l + 1) * root.add;
-        // 懒标记置为0
-        root.add = 0;
+    // 如果存在懒标记
+    if (tr[u].add) {
+        // 更新左孩子懒标记
+        left.add += root.add;
+        // 更新左孩子区间和
+        left.sum += (left.r - left.l + 1) * root.add;
+        // 更新右孩子懒标记
+        right.add += root.add;
+        // 更新右孩子区间和
+        right.sum += (right.r - right.l + 1) * root.add;
+        // 干掉懒标记
+        tr[u].add = 0;
     }
     return;
 }
+// 建树
 void build(int u, int l, int r) {
-    // 如果到达叶子结点，则更新相对应的信息
-    if (l == r) tr[u] = {l, r, g[l], 0};
-    else {
-        // 更新区间的左右端点信息
-        tr[u] = {l, r};
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 如果和左区间有交集，建立树状数组
-        build(u << 1, l, mid);
-        // 如果和右区间有交集，建立树状数组
-        build(u << 1 |1, mid + 1, r);
-        // 由子节点更新父节点
-        pushup(u);
+    if (l == r) {
+        tr[u] = {l, r, 0, g[l]};
+        return;
     }
+    tr[u] = {l, r};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    // 更新父节点属性
+    pushup(u);
     return;
 }
-void modify(int u, int l, int r, int d) {
-    // 如果树状数组区间的左右端点包含在要查询的区间内部，则直接更新相对应的信息
-    if (tr[u].l >= l && tr[u].r <= r) {
-        tr[u].sum += (LL)(tr[u].r - tr[u].l + 1) * d;
-        tr[u].add += d;
-    }
-    else { // 必须要进行分裂
-        // 分裂之前必须要进行pushdown操作，即下放懒标记操作
-        pushdown(u);
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 如果和左区间有交集
-        if (l <= mid) modify(u << 1, l, r, d);
-        // 如果和右区间有交集
-        if (r > mid) modify(u << 1 | 1, l, r, d);
-        // 由子节点信息更新父节点信息
-        pushup(u);
-    }
-    return;
-}
-LL query(int u, int l, int r) {
-    // 如果树状数组区间的左右端点包含在要查询的区间内部，则直接更新相对应的信息
-    if (tr[u].l >= l && tr[u].r <= r) return tr[u].sum;
-    // 要进行分裂
+Tree query(int u, int l, int r) {
+    // 如果要查询区间完全包裹住线段树区间, 则直接返回
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    // 下放懒标记
     pushdown(u);
     int mid = tr[u].l + tr[u].r >> 1;
-    LL sum = 0;
-    // 如果和左边区间有交集
-    if (l <= mid) sum += query(u << 1, l, r);
-    // 如果和右边区间有交集
-    if (r > mid) sum += query(u << 1 | 1, l, r);
-    return sum;
+    // 区间全部在左边
+    if (r <= mid) return query(u << 1, l, r);
+    // 区间全部在右边
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    // 区间横跨左右两边
+    else {
+        // 左
+        auto left = query(u << 1, l, r);
+        // 右
+        auto right = query(u << 1 | 1, l, r);
+        Tree p;
+        // 使用p接收两个孩子更新的结果
+        pushup(p, left, right);
+        return p;
+    }
+}
+void modify(int u, int l, int r, int d) {
+    // 如果要查询的区间完全包裹住线段树区间
+    if (tr[u].l >= l && tr[u].r <= r) {
+        // 更新懒标记
+        tr[u].add += d;
+        // 更新区间和
+        tr[u].sum += (tr[u].r - tr[u].l + 1) * d;
+        return;
+    }
+    // 下方懒标记
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) modify(u << 1, l, r, d);
+    // 区间全部在右边
+    else if (l > mid) modify(u << 1 | 1, l, r, d);
+    else {
+        // 区间横跨左右两边
+        modify(u << 1, l, r, d);
+        modify(u << 1 | 1, l, r, d);
+    }
+    // 更新, 只更新左边或只更新右边, 都算更新, 都需要pushup操作
+    pushup(u);
+    return;
 }
 int main() {
     scanf("%d%d", &n, &m);
-    for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
+    for (int i = 1; i <= n; i ++ ) scanf("%lld", &g[i]);
     build(1, 1, n);
-    while (m -- ) {
+    for (int i = 0; i < m; i ++ ) {
         char op[2];
         int l, r, d;
         scanf("%s", op);
@@ -25465,16 +26171,198 @@ int main() {
         }
         else {
             scanf("%d%d", &l, &r);
-            cout << query(1, l, r) << endl;
+            // 注意: 使用long long类型
+            printf("%lld\n", query(1, l, r).sum);
         }
     }
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `树状数组`、`懒标记`
+
+**缝合怪**
+
+[P3372 【模板】线段树 1](#P3372 【模板】线段树 1)
+
+
+
+### [P5490 【模板】扫描线](https://www.luogu.com.cn/problem/P5490)
+
+**题目描述**
+
+>   求 `n` 个矩形的面积并。
+
+**输入格式**
+
+>   第一行一个正整数 `n`。
+>
+>   接下来 `n` 行每行四个非负整数 $x_1, y_1, x_2, y_2$，表示一个矩形的左下角坐标为 $(x_1, y_1)$，右上角坐标为 $(x_2, y_2)$。
+
+**输出格式**
+
+>   一行一个正整数，表示 `n` 个矩形的并集覆盖的总面积。
+
+**输入样例**
+
+```c++
+2
+100 100 200 200
+150 150 250 255
+```
+
+**输出样例**
+
+```c++
+18000
+```
+
+**说明/提示**
+
+>   +   对于 $20\%$ 的数据，$1 \le n \le 1000$。
+>   +   对于 $100\%$ 的数据，$1 \le n \le {10}^5$，$0 \le x_1 < x_2 \le {10}^9$，$0 \le y_1 < y_2 \le {10}^9$。
+
+**手写稿**
+
+>   1.   扫描线动图演示
+>
+>        ![酱紫](img/eTuDjP.gif)
+>
+>   2.   题解
+>
+>        ![731135](img/731135.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+typedef long long LL;
+const int N = 100010;
+struct Segs {
+    int x, y1, y2, k;
+    // 按照x轴排序
+    bool operator < (const Segs &T) {
+        return x < T.x;
+    }
+}segs[N * 2];
+struct Tree {
+    // len区间的长度, cnt区间被覆盖的次数
+    int l, r, len, cnt;
+}tr[N * 8];
+int n;
+vector<int> points;
+// 有序离散化
+int get(int x) {
+    return lower_bound(points.begin(), points.end(), x) - points.begin();
+}
+void pushup(Tree &u, Tree &l, Tree &r) {
+    // 如果根节点已经被覆盖, 则直接计算其长度[手写稿解释公式]
+    if (u.cnt) u.len = points[u.r + 1] - points[u.l];
+    // 如果根节点没有被覆盖并且当前节点不是叶节点
+    // 则从其儿子节点得到父节点的len即可
+    else if (u.l != u.r) u.len = l.len + r.len;
+    // 否则, 长度为0
+    else u.len = 0;
+    return;
+}
+void pushup(int u) {
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
+    return;
+}
+void build(int u, int l, int r) {
+    if (l == r) {
+        // 手写稿解释
+        tr[u] = {l, r, 0, 0};
+        return;
+    }
+    tr[u] = {l, r};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    return;
+}
+void modify(int u, int l, int r, int c) {
+    if (tr[u].l >= l && tr[u].r <= r) {
+        tr[u].cnt += c;
+        // 手写稿解释
+        pushup(u);
+        return;
+    }
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) modify(u << 1, l, r, c);
+    // 区间全部在右边
+    else if (l > mid) modify(u << 1 | 1, l, r, c);
+    else {
+        // 区间横跨左右两边
+        modify(u << 1, l, r, c);
+        modify(u << 1 | 1, l, r, c);
+    }
+    // 更新父节点信息
+    pushup(u);
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0, j = 0; i < n; i ++ ) {
+        int x1, y1, x2, y2;
+        scanf("%d%d%d%d", &x1, &y1, &x2, &y2);
+        // 将每个看作一个点
+        segs[j ++ ] = {x1, y1, y2, 1};
+        segs[j ++ ] = {x2, y1, y2, -1};
+        // 记录y轴
+        points.push_back(y1);
+        points.push_back(y2);
+    }
+    // 排序
+    sort(points.begin(), points.end());
+    // 去重
+    points.erase(unique(points.begin(), points.end()), points.end());
+    // 建树, 每个点代表一个区间
+    build(1, 0, points.size() - 2);
+    // 将所有线段按照x轴排序
+    sort(segs, segs + n * 2);
+    // 注意: long long类型
+    LL res = 0;
+    for (int i = 0; i < n * 2; i ++ ) {
+        // 手写稿解释
+        if (i) res += (LL)tr[1].len * (segs[i].x - segs[i - 1].x);
+        // 手写稿解释
+        modify(1, get(segs[i].y1), get(segs[i].y2) - 1, segs[i].k);
+    }
+    printf("%lld\n", res);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(m)$
+
+**标签**
+
+`线段树`、`扫描线`
+
+**缝合怪**
+
+[AcWing 3068. 扫描线](#AcWing 3068. 扫描线)
 
 ### [AcWing 247. 亚特兰蒂斯](https://www.acwing.com/problem/content/249/)
 
@@ -25543,7 +26431,11 @@ Total explored area: 180.00
 
 **手写稿**
 
-![2071347](img/2071347.png)
+>   1.   本题题解看不懂的话, 请移步 [P5490 【模板】扫描线](#P5490 【模板】扫描线)
+>
+>   2.   题解
+>
+>        ![2071347](img/2071347.png)
 
 **疑点详解**
 
@@ -25553,13 +26445,13 @@ Total explored area: 180.00
 >
 > 1. 离散化的原因
 >
->     + 注意树状数组中的值就是下标，并且`y` 轴上的端点不一定是整数，有可能是小数，因此，为了防止出现小数的情况，故使用离散化处理
+>     + 注意线段树中的值就是下标，并且`y` 轴上的端点不一定是整数，有可能是小数，因此，为了防止出现小数的情况，故使用离散化处理
 >
 >     + 举例说明 `g = [1, 1.5, 2, 5]`
 >         + 如果不使用离散化，则不能计算 `g[1 ~ 1.5]` 的和
 >         + 如果使用离散化，则 `1，1.5，2，2.5` 所对应的下标为 `0，1，2，3` 都是整数，则可以计算
 >
-> 1. 树状数组中的节点的属性值 cnt 分类讨论的原因
+> 1. 线段树中节点的属性值 `cnt` 分类讨论的原因
 >
 >     ![2071546](img/2071546.png)
 
@@ -25567,97 +26459,138 @@ Total explored area: 180.00
 
 ```c++
 #include <iostream>
-#include <vector>
 #include <algorithm>
+#include <vector>
 using namespace std;
 const int N = 10010;
-struct Segment {
+struct Segs {
+    // 注意: 使用double类型
     double x, y1, y2;
-    // 表明当前线段是左边界还是右边界，左边界的权值为1，右边界的权值为-1
     int k;
-    bool operator < (Segment &T) { // 按照横坐标x进行排序
+    // 按照x轴进行排序
+    bool operator < (const Segs &T) const {
         return x < T.x;
     }
-}segs[N * 2]; // 1个矩形对应2个横坐标，因此，N个矩形对应2 * N个横坐标
-struct Node {
-    int l, r;
-    int cnt; // 当前区间被覆盖的层数
-    double len; // 当前y轴上大于1的区间长度，注意变量的类型
-}tr[N * 8]; // 左边界横坐标对应4N空间，右边界横坐标对应4N空间，共8N空间
+} segs[N * 2];
+struct Tree {
+    int l, r, cnt;
+    // 注意: 使用double类型
+    double len;
+}tr[N * 8];
 int n;
-vector<double> ys; // 存储y轴上所有的无重复的点，用来做离散化，注意变量类型
-// 查找大于等于y的数据的下标所在位置
-int find(double y) {
-    return lower_bound(ys.begin(), ys.end(), y) - ys.begin();
+// 使用double类型
+vector<double> points;
+int get(double x) {
+    int l = 0, r = points.size() - 1;
+    // 二分模板
+    while (l < r) {
+        int mid = l + r >> 1;
+        if (points[mid] >= x) r = mid;
+        else l = mid + 1;
+    }
+    return l;
+}
+void pushup(Tree &u, Tree &l, Tree &r) {
+    // 手写稿已解释
+    if (u.cnt) u.len = points[u.r + 1] - points[u.l];
+    else if (u.l != u.r) u.len = l.len + r.len;
+    else u.len = 0;
+    return;
 }
 void pushup(int u) {
-    // 如果当前线段树区间被覆盖，则当前区间的长度即为线段树的长度len
-    if (tr[u].cnt) tr[u].len = ys[tr[u].r + 1] - ys[tr[u].l];
-    else if (tr[u].l != tr[u].r) // 如果不是叶节点
-        tr[u].len = tr[u << 1].len + tr[u << 1 | 1].len;
-    else tr[u].len = 0; // 如果是叶节点记得初始化长度为0
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
     return;
 }
 void build(int u, int l, int r) {
-    // 初始化树状数组，不用管tr的区间问题，即使l != r也要进行初始化
-    tr[u] = {l, r, 0, 0};
-    if (l != r) {
-        int mid = l + r >> 1;
-        build(u << 1, l, mid);
-        build(u << 1 | 1, mid + 1, r);
+    if (l == r) {
+        tr[u] = {l, r, 0, 0};
+        return;
     }
+    tr[u] = {l, r};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
     return;
 }
-void modify(int u, int l, int r, int k) {
+void modify(int u, int l, int r, int c) {
     if (tr[u].l >= l && tr[u].r <= r) {
-        tr[u].cnt += k;
-        // 计算长度，因为k不一定为正数，如果cnt == 0，则需要通过当前根节点的子节点进行计算
+        tr[u].cnt += c;
+        // 手写稿已解释
         pushup(u);
+        return;
     }
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) modify(u << 1, l, r, c);
+    // 区间全部在右边
+    else if (l > mid) modify(u << 1 | 1, l, r, c);
+    // 区间横跨左右两边
     else {
-        int mid = tr[u].l + tr[u].r >> 1;
-        if (l <= mid) modify(u << 1, l, r, k);
-        if (r > mid) modify(u << 1 | 1, l, r, k);
-        // 计算长度，因为k不一定为正数，如果cnt == 0，则需要通过当前根节点的子节点进行计算
-        pushup(u);
+        modify(u << 1, l, r, c);
+        modify(u << 1 | 1, l, r, c);
     }
+    // 更新父节点信息
+    pushup(u);
     return;
 }
 int main() {
     int T = 0;
     while (scanf("%d", &n), n) {
-        ys.clear(); // 多组输入，注意每次清空ys里面的数据
+        // 多组输入, 每次都进行初始化
+        points.clear();
         for (int i = 0, j = 0; i < n; i ++ ) {
+            // 注意: 使用double类型
             double x1, y1, x2, y2;
             scanf("%lf%lf%lf%lf", &x1, &y1, &x2, &y2);
+            // 注意: y1 < y2, 看题目的图解, 而不是y2 < y1
+            // 存储入边线段
             segs[j ++ ] = {x1, y1, y2, 1};
+            // 存储出边线段
             segs[j ++ ] = {x2, y1, y2, -1};
-            ys.push_back(y1);
-            ys.push_back(y2);
+            // 存储每个点
+            points.push_back(y1);
+            points.push_back(y2);
         }
-        // 对于y轴上的点进行排序，方便去重处理
-        sort(ys.begin(), ys.end());
-        // 去重的前提是有序序列，因此，事先要排序，原因在于此
-        ys.erase(unique(ys.begin(), ys.end()), ys.end());
-        // 建立线段树，区间的个数等于点的个数减一，点的范围[0, n - 1],换算区间的话，再减一，区间的范围为[0, n - 2]
-        build(1, 0, ys.size() - 2);
-        // 对于segs进行排序
+        // 排序
+        sort(points.begin(), points.end());
+        // 去重
+        points.erase(unique(points.begin(), points.end()), points.end());
+        // 建树
+        build(1, 0, points.size() - 2);
+        // 按照x轴进行排序
         sort(segs, segs + n * 2);
-        // 计算总面积
+        // 注意: 使用long long类型
         double res = 0;
+        // 遍历x轴的每个点
         for (int i = 0; i < n * 2; i ++ ) {
-            if (i > 0) res += tr[1].len * (segs[i].x - segs[i - 1].x);
-            modify(1, find(segs[i].y1), find(segs[i].y2) - 1, segs[i].k);
+            // 从第二个点开始, 第一个点还没扫描到, 自然面积为0
+            if (i) res += tr[1].len * (segs[i].x - segs[i - 1].x);
+            // 区间修改
+            modify(1, get(segs[i].y1), get(segs[i].y2) - 1, segs[i].k);
         }
-        printf("Test case #%d\nTotal explored area: %.2lf\n\n", ++T, res);
+        printf("Test case #%d\n", ++ T);
+        // 保留两位小数
+        printf("Total explored area: %.2lf\n\n", res);
     }
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$O(nlog_m)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `树状数组`、`扫描线`
+
+**缝合怪**
+
+[P5490 【模板】扫描线](#P5490 【模板】扫描线)
 
 ### [AcWing 1277. 维护序列](https://www.acwing.com/problem/content/1279/)
 
@@ -25737,40 +26670,8 @@ int main() {
 
 **解题步骤**
 
-> 1. 线段树中维护五个信息
+> 1. 题解见 [P3373 【模板】线段树 2](#P3373 【模板】线段树 2)
 >
->     + 区间左右端点 `[l, r]`
->     + 区间和 `sum`
->     + 懒标记 `add` 和 `mul`，表示区间内的每个数字添加 `add` 和 乘以 `mul`
->
-> 2. 当线段树中的节点同时含有懒标记 `add` 和 `mul` 的时候，如何确定顺序，以方便好维护信息？
->
->     + 分两种情况：先 `add` 在 `mul` 和先 `mul` 再 `add`
->
->         + 第一种情况：先 `add` 再 `mul`
->
->             ![2081729](img/2081729.png)
->
->         + 第二种情况：先 `mul` 再 `add`
->
->             ![2081730](img/2081730.png)
->
->         + 综上所述，顺序应该为先 `mul` 再 `add` 即可
->
->     + 确定完顺序之后，按照顺序先 `mul` 再 `add` 的操作，进行分析，查看值的变化
->
->         ![2082022](img/2082022.png)
->
->         + 备注
->             + `x ✖️ mul + add` 是原来的数，也就是区间和 `sum`
->             + 按照顺序先 `mul` 再 `add`，以方便区分变量，故使用 `mul'` 和 `add'` 来表示即可
->
-> 3. 使用先 `mul` 再 `add` 的顺序简化区间加和区间乘操作
->
->     + 区间加
->         + 令 `mul = 1，add = d` 即可
->     + 区间乘
->         + 令 `mul = d，add = 0` 即可
 
 **代码**
 
@@ -25779,109 +26680,665 @@ int main() {
 using namespace std;
 typedef long long LL;
 const int N = 100010;
-struct Node {
-    int l, r; // 左右区间
-    LL sum; // 区间和
-    int mul, add; // 区间乘懒标记mul和区间加懒标记add
-}tr[N * 4];
 int n, m, p;
 int g[N];
-void eval(Node& root, int mul, int add) {
-    // 原理查看解析
-    root.sum = (root.sum * mul + (LL)(root.r - root.l + 1) * add) % p;
-    root.mul = (LL)root.mul * mul % p;
-    root.add = ((LL)root.add * mul + add) % p;
+struct Tree {
+    int l, r, add, mul;
+    // 注意: 使用long long类型
+    LL sum;
+}tr[N * 4];
+void eval(Tree &u, int add, int mul) {
+    // 注意: 转成long long类型
+    // [手写稿情况1]
+    u.add = ((LL)u.add * mul + add) % p;
+    u.mul = (LL)u.mul * mul % p;
+    u.sum = (u.sum * mul + (LL)(u.r - u.l + 1) * add) % p;
+    return;
+}
+void pushup(Tree &u, Tree &l, Tree &r) {
+    // 注意: 取模
+    u.sum = (l.sum + r.sum) % p;
     return;
 }
 void pushup(int u) {
-    // 记得取模
-    tr[u].sum = (tr[u << 1].sum + tr[u << 1 | 1].sum) % p;
+    // 重载pushup操作
+    pushup(tr[u], tr[u << 1], tr[u << 1 | 1]);
     return;
 }
 void pushdown(int u) {
-    eval(tr[u << 1], tr[u].mul, tr[u].add);
-    eval(tr[u << 1 | 1], tr[u].mul, tr[u].add);
-    // 记得将懒标记清空
-    tr[u].mul = 1, tr[u].add = 0;
+    auto &root = tr[u], &left = tr[u << 1], &right = tr[u << 1 | 1];
+    // 将懒标记下放给左孩子
+    eval(tr[u << 1], tr[u].add, tr[u]. mul);
+    // 将懒标记下放给右孩子
+    eval(tr[u << 1 | 1], tr[u].add, tr[u].mul);
+    // 清空懒标记
+    tr[u].add = 0;
+    tr[u].mul = 1;
     return;
 }
 void build(int u, int l, int r) {
-    if (l == r) tr[u] = {l, r, g[l], 1, 0};
-    else {
-        // sum先随便设置一个值
-        tr[u] = {l, r, 0, 1, 0};
-        int mid = tr[u].l + tr[u].r >> 1;
-        build(u << 1, l, mid);
-        build(u << 1 | 1, mid + 1, r);
-        pushup(u);
+    if (l == r) {
+        tr[u] = {l, r, 0, 1, g[l]};
+        return;
     }
+    // [手写稿解释]
+    tr[u] = {l, r, 0, 1, 0};
+    int mid = l + r >> 1;
+    build(u << 1, l, mid);
+    build(u << 1 | 1, mid + 1, r);
+    // 使用子节点信息更新父节点信息
+    pushup(u);
     return;
 }
-void modify(int u, int l, int r, int mul, int add) {
-    if (tr[u].l >= l && tr[u].r <= r) eval(tr[u], mul, add);
-    else { // 区间要进行分裂
-        // 懒标记下传
-        pushdown(u);
-        int mid = tr[u].l + tr[u].r >> 1;
-        // 左边有交集
-        if (l <= mid) modify(u << 1, l, r, mul, add);
-        // 右边有交集
-        if (r > mid) modify(u << 1 | 1, l, r, mul, add);
-        // 由子节点更新父节点
-        pushup(u);
+void modify(int u, int l, int r, int add, int mul) {
+    if (tr[u].l >= l && tr[u].r <= r) {
+        eval(tr[u], add, mul);
+        return;
     }
-    return;
-}
-int query(int u, int l, int r) {
-    if (tr[u].l >= l && tr[u].r <= r) return tr[u].sum;
-    // 查询的时候需要将懒标记下传
+    // 下放懒标记
     pushdown(u);
-    int sum = 0;
     int mid = tr[u].l + tr[u].r >> 1;
-    // 左边有交集
-    if (l <= mid) sum += query(u << 1, l, r);
-    // 右边有交集，记得取模
-    if (r > mid) sum = (sum + query(u << 1 | 1, l, r)) % p;
-    return sum;
+    // 区间全部在左边
+    if (r <= mid) modify(u << 1, l, r, add, mul);
+    // 区间全部在右边
+    else if (l > mid) modify(u << 1 | 1, l, r, add, mul);
+    else {
+        // 区间横跨左右两边
+        modify(u << 1, l, r, add, mul);
+        modify(u << 1 | 1, l, r, add, mul);
+    }
+    // 使用子节点信息更新父节点信息
+    pushup(u);
+    return;
+}
+Tree query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u];
+    // 下放懒标记
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    // 区间全部在左边
+    if (r <= mid) return query(u << 1, l, r);
+    // 区间全部在右边
+    else if (l > mid) return query(u << 1 | 1, l, r);
+    else {
+        // 区间横跨左右两边
+        auto left = query(u << 1, l, r);
+        auto right = query(u << 1 | 1, l, r);
+        Tree p;
+        // 使用p来接收结果
+        pushup(p, left, right);
+        return p;
+    }
 }
 int main() {
     scanf("%d%d", &n, &p);
     for (int i = 1; i <= n; i ++ ) scanf("%d", &g[i]);
-    // 建立线段树
+    // 建树
     build(1, 1, n);
     scanf("%d", &m);
-    while (m -- ) {
-        int num, l, r, k;
-        scanf("%d", &num);
-        // 区间乘
-        if (num == 1) {
-            scanf("%d%d%d", &l, &r, &k);
-            modify(1, l, r, k, 0);
+    for (int i = 0; i < m; i ++ ) {
+        int t, x, y, k;
+        scanf("%d", &t);
+        if (t == 1) {
+            scanf("%d%d%d", &x, &y, &k);
+            modify(1, x, y, 0, k);
         }
-        // 区间加
-        else if (num == 2) {
-            scanf("%d%d%d", &l, &r, &k);
-            modify(1, l, r, 1, k);
+        else if (t == 2) {
+            scanf("%d%d%d", &x, &y, &k);
+            modify(1, x, y, k, 1);
         }
-        // 区间查询
         else {
-            scanf("%d%d", &l, &r);
-            cout << query(1, l, r) << endl;
+            scanf("%d%d", &x, &y);
+            printf("%lld\n", query(1, x, y).sum);
         }
     }
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
 **标签**
 
 `线段树`
 
+**缝合怪**
+
+[P3373 【模板】线段树 2](#P3373 【模板】线段树 2)
 
 
 
+## 权值线段树
+
+### [P1168 中位数](https://www.luogu.com.cn/problem/P1168)
+
+**题目描述**
+
+>   给出一个长度为$N$的非负整数序列$A_i$，对于所有$1 ≤ k ≤ (N + 1) / 2$，输出$A_1, A_1 \sim A_3, …,A_1 \sim A_{2k - 1}$的中位数。即前$1,3,5,…$个数的中位数。
+
+**输入格式**
+
+>   第$1$行为一个正整数$N$，表示了序列长度。
+>
+>   第$2$行包含$N$个非负整数$A_i (A_i ≤ 10^9)$。
+
+**输出格式**
+
+>   共$(N + 1) / 2$行，第$i$行为$A_1, A_3, …, A_{2k - 1}$的中位数。
+
+**输入样例**
+
+```c++
+7
+1 3 5 7 9 11 6
+```
+
+**输出样例**
+
+```c++
+1
+3
+5
+6
+```
+
+**提示**
+
+>   +   对于$20\%$的数据，$N ≤ 100$；
+>   +   对于$40\%$的数据，$N ≤ 3000$；
+>
+>   +   对于$100\%$的数据，$N ≤ 100000$。
+
+**手写稿**
+
+![7151335](img/7151335.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+const int N = 100010;
+int n, idx;
+int g[N];
+vector<int> nums;
+struct Tree {
+    // 左、右儿子的下标和当前区间内含有的数总和
+    // 详细解释见手写稿
+    int l, r, cnt;
+}tr[N * 4];
+// 离散化
+int find(int x) {
+    return lower_bound(nums.begin(), nums.end(), x) - nums.begin();
+}
+// 建树
+int build(int l, int r) {
+    // 动态开点, 每次用的时候再新建节点
+    int u = ++ idx;
+    // 叶节点, 直接返回叶节点的下标
+    if (l == r) return u;
+    // 取中点
+    int mid = l + r >> 1;
+    // 左孩子
+    tr[u].l = build(l, mid);
+    // 右孩子
+    tr[u].r = build(mid + 1, r);
+    // 返回当前节点的下标
+    return u;
+}
+// 插入
+void insert(int u, int l, int r, int x) {
+    // 如果到达根节点, 则更新属性
+    if (l == x && r == x) {
+        // 数总和 ++
+        tr[u].cnt ++;
+        return;
+    }
+    // 取中点
+    int mid = l + r >> 1;
+    // 插入点全部位于左半部分
+    if (x <= mid) insert(tr[u].l, l, mid, x);
+    // 插入点全部位于右半部分
+    else insert(tr[u].r, mid + 1, r, x);
+    // 更新区间覆盖数总和
+    tr[u].cnt = tr[tr[u].l].cnt + tr[tr[u].r].cnt;
+    return;
+}
+// 查询
+int query(int u, int l, int r, int k) {
+    // 到达根节点, 说明找到, 直接返回
+    if (l == r) return r;
+    // 取中点
+    int mid = l + r >> 1;
+    // 手写稿解释
+    if (tr[tr[u].l].cnt >= k) return query(tr[u].l, l, mid, k);
+    return query(tr[u].r, mid + 1, r, k - tr[tr[u].l].cnt);
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        nums.push_back(g[i]);
+    }
+    // 排序
+    sort(nums.begin(), nums.end());
+    // 去重
+    nums.erase(unique(nums.begin(), nums.end()), nums.end());
+    // 建树
+    build(0, nums.size() - 1);
+    for (int i = 1; i <= n; i ++ ) {
+        // 更新一个, 查询一个, 不可全部更新完再进行查询
+        // 手写稿解释
+        insert(1, 0, nums.size() - 1, find(g[i]));
+        if (i & 1)
+            cout << nums[query(1, 0, nums.size() - 1, i + 1 >> 1)] << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`权值线段树`
+
+**缝合怪**
+
+[AcWing 255. 第K小数](#AcWing 255. 第K小数)
+
+## 主席树
+
+### [AcWing 255. 第K小数](https://www.acwing.com/problem/content/257/)
+
+**题目描述**
+
+>   给定长度为 `N` 的整数序列 `A`，下标为 `1∼N`。
+>
+>   现在要执行 `M` 次操作，其中第 `i` 次操作为给出三个整数 $l_i,r_i,k_i$，求 $A[l_i],A[l_{i+1}],…,A[r_i]$ (即 `A` 的下标区间 $[l_i,r_i]$)中第 $k_i$ 小的数是多少。
+
+**输入格式**
+
+>   第一行包含两个整数 `N` 和 `M`。
+>
+>   第二行包含 `N` 个整数，表示整数序列 `A`。
+>
+>   接下来 `M` 行，每行包含三个整数 $l_i,r_i,k_i$，用以描述第 `i` 次操作。
+
+**输出格式**
+
+>   对于每次操作输出一个结果，表示在该次操作中，第 `k` 小的数的数值。
+>
+>   每个结果占一行。
+
+**数据范围**
+
+>   +   $N≤10^5,M≤10^4,|A[i]|≤10^9$
+
+**输入样例**
+
+```c++
+7 3
+1 5 2 6 3 7 4
+2 5 3
+4 4 1
+1 7 3
+```
+
+**输出样例**
+
+```c++
+5
+6
+3
+```
+
+**手写稿**
+
+![7161355](img/7161355.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+const int N = 100010, M = 10010;
+int n, m, idx;
+int g[N], root[N];
+vector<int> nums;
+struct Tree {
+    // 左、右孩子的下标位置和区间内数字的数量
+    int l, r, cnt;
+}tr[N * 20]; // 手写稿解释
+// 离散化
+int find(int x) {
+    return lower_bound(nums.begin(), nums.end(), x) - nums.begin();
+}
+// 建树
+int build(int l, int r) {
+    // 新建节点
+    int u = ++ idx;
+    // 叶节点, 则直接返回叶节点的下标
+    if (l == r) return u;
+    int mid = l + r >> 1;
+    // 返回左子树的下标位置
+    tr[u].l = build(l, mid);
+    // 返回右子树的下标位置
+    tr[u].r = build(mid + 1, r);
+    // 返回根节点的下标位置
+    return u;
+}
+// 插入
+int insert(int p, int l, int r, int x) {
+    // 新建节点
+    int q = ++ idx;
+    // 将上个版本对应的节点复制到当前版本
+    tr[q] = tr[p];
+    // 叶节点
+    if (l == r) {
+        // 覆盖的个数 ++
+        tr[q].cnt ++;
+        // 返回根节点的下标位置
+        return q;
+    }
+    int mid = l + r >> 1;
+    // 区间全部在左部
+    if (x <= mid) tr[q].l = insert(tr[q].l, l, mid, x);
+    // 区间全部在右部
+    else tr[q].r = insert(tr[q].r, mid + 1, r, x);
+    // 更新覆盖的数量
+    tr[q].cnt = tr[tr[q].l].cnt + tr[tr[q].r].cnt;
+    return q;
+}
+// 查询操作
+int query(int p, int q, int l, int r, int k) {
+    // 叶节点, 则直接返回下标r
+    if (l == r) return r;
+    int mid = l + r >> 1;
+    // 手写稿解释
+    int cnt = tr[tr[q].l].cnt - tr[tr[p].l].cnt;
+    // 左边找
+    if (cnt >= k)
+        return query(tr[p].l, tr[q].l, l, mid, k);
+    // 右边找
+    return query(tr[p].r, tr[q].r, mid + 1, r, k - cnt);
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i]);
+        nums.push_back(g[i]);
+    }
+    // 排序
+    sort(nums.begin(), nums.end());
+    // 去重
+    nums.erase(unique(nums.begin(), nums.end()), nums.end());
+    // 0号版本
+    root[0] = build(0, nums.size() - 1);
+    for (int i = 1; i <= n; i ++ )
+        // 当前版本只和上个版本有联系
+        root[i] = insert(root[i - 1], 0, nums.size() - 1, find(g[i]));
+    for (int i = 0; i < m; i ++ ) {
+        int l, r, k;
+        scanf("%d%d%d", &l, &r, &k);
+        // query返回的是下标
+        cout << nums[query(root[l - 1], root[r], 0, nums.size() - 1, k)] << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`主席树`、`可持久化线段树`
+
+**缝合怪**
+
+[P1168 中位数](#P1168 中位数)
 
 ## `Trie`树
+
+### [AcWing 835. Trie字符串统计](https://www.acwing.com/problem/content/837/)
+
+**题目描述**
+
+>   维护一个字符串集合，支持两种操作：
+>
+>   1.  `I x` 向集合中插入一个字符串 `x`；
+>   2.  `Q x` 询问一个字符串在集合中出现了多少次。
+>
+>   共有 `N` 个操作，输入的字符串总长度不超过 $10^5$，字符串仅包含小写英文字母。
+
+**输入格式**
+
+>   第一行包含整数 `N`，表示操作数。
+>
+>   接下来 `N` 行，每行包含一个操作指令，指令为 `I x` 或 `Q x` 中的一种。
+
+**输出格式**
+
+>   对于每个询问指令 `Q x`，都要输出一个整数作为结果，表示 `x` 在集合中出现的次数。
+>
+>   每个结果占一行。
+
+**数据范围**
+
+>   +   $1≤N≤2∗10^4$
+
+**输入样例**
+
+```c++
+5
+I abc
+Q abc
+Q ab
+I ab
+Q ab
+```
+
+**输出样例**
+
+```c++
+1
+0
+1
+```
+
+**手写稿**
+
+![751511](img/751511.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n, idx; // idx指针
+int num[N];
+int tr[N][30];
+char op[2], str[N];
+void insert(char str[]) {
+    // 从根节点开始遍历[手写稿解释]
+    int u = 0;
+    // 遍历字符串
+    for (int i = 0; str[i]; i ++ ) {
+        int k = str[i] - 'a';
+        // 如果没有此儿子, 则进行编号
+        // [手写稿解释]
+        if (!tr[u][k]) tr[u][k] = ++ idx;
+        // 移动指针
+        u = tr[u][k];
+    }
+    // 打标记, 表明出现的次数
+    // [手写稿解释]
+    num[u] ++;
+    return;
+}
+int query(char str[]) {
+    // 从根节点开始遍历[手写稿解释]
+    int u = 0;
+    // 遍历所有字符
+    for (int i = 0; str[i]; i ++ ) {
+        int k = str[i] - 'a';
+        // 如果存在, 则更新指针
+        if (tr[u][k]) u = tr[u][k];
+        // 不存在, 说明不存在此字符串, 直接返回0即可
+        else return 0;
+    }
+    // 返回字符串存在的数量
+    return num[u];
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i ++ ) {
+        scanf("%s%s", op, str);
+        if (op[0] == 'I') insert(str);
+        else cout << query(str) << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`字典树`
+
+**缝合怪**
+
+
+
+### [AcWing 143. 最大异或对](https://www.acwing.com/problem/content/145/)
+
+**题目描述**
+
+>   在给定的 `N` 个整数 $A_1，A_2……A_N$ 中选出两个进行 `xor`（异或）运算，得到的结果最大是多少？
+
+**输入格式**
+
+>   第一行输入一个整数 `N`。
+>
+>   第二行输入 `N` 个整数 $A_1～A_N$。
+
+**输出格式**
+
+>   输出一个整数表示答案。
+
+**数据范围**
+
+>   +   $1≤N≤10^5,$
+>   +   $0≤A_i<2^{31}$
+
+**输入样例**
+
+```c++
+3
+1 2 3
+```
+
+**输出样例**
+
+```c++
+3
+```
+
+**手写稿**
+
+![760923](img/760923.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n, idx;
+// 数组空间大小, [手写稿]
+int tr[N * 32][2];
+void insert(int x) {
+    int u = 0;
+    // 从最高位向最低位进行遍历
+    for (int i = 31; i >= 0; i -- ) {
+        // 取到第x位的数字
+        int t = x >> i & 1;
+        if (!tr[u][t]) tr[u][t] = ++ idx;
+        u = tr[u][t];
+    }
+    return;
+}
+int query(int x) {
+    int u = 0, res = 0;
+    for (int i = 31; i >= 0; i -- ) {
+        int t = x >> i & 1;
+        if (tr[u][!t]) {
+            u = tr[u][!t];
+            res += 1 << i;
+        }
+        // [手写稿解释]
+        else u = tr[u][t];
+    }
+    return res;
+}
+int main() {
+    scanf("%d", &n);
+    int res = 0;
+    for (int i = 1, x; i <= n; i ++ ) {
+        scanf("%d", &x);
+        insert(x);
+        res = max(res, query(x));
+    }
+    printf("%d\n", res);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`字典树`
+
+**缝合怪**
+
+[AcWing 256. 最大异或和](#AcWing 256. 最大异或和)
 
 ### [LeetCode 212. 单词搜索 II](https://leetcode-cn.com/problems/word-search-ii/)
 
@@ -25979,1782 +27436,456 @@ public:
 
 `dfs`、`字典树`
 
-# 多叉树专题
+## 可持久化 `Trie`
 
-## 二叉树
-
-### 二叉树
-
-#### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+### [AcWing 256. 最大异或和](https://www.acwing.com/problem/content/258/)
 
 **题目描述**
 
-> 序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+>   给定一个非负整数序列 `a`，初始长度为 `N`。
 >
-> 请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+>   有 `M` 个操作，有以下两种操作类型：
 >
-> 提示: 输入输出格式与 `LeetCode` 目前使用的方式一致，详情请参阅 `LeetCode` 序列化二叉树的格式。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
-
-**示例 1**
-
-![img](img/serdeser.jpg)
-
-> 输入：`root = [1,2,3,null,null,4,5]`
-> 输出：`[1,2,3,null,null,4,5]`
-
-**示例 2**
-
-> 输入：`root = []`
-> 输出：`[]`
-
-**示例 3**
-
-> 输入：`root = [1]`
-> 输出：`[1]`
-
-**示例 4**
-
-> 输入：`root = [1,2]`
-> 输出：`[1,2]`
-
-**提示**
-
-> + $树中结点数在范围 [0, 10^4] 内$
-> + $-1000 <= Node.val <= 1000$
-
-**手写稿**
-
-![WX20220121-142021@2x](img/WX20220121-142021@2x.png)
-
-**代码**
-
-```c++
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
- * };
- */
-class Codec {
-public:
-    string str;
-    void dfs_s(TreeNode* root) {
-        if (!root) {
-            str += "#,";
-            return;
-        }
-        str += to_string(root -> val) + ",";
-        dfs_s(root -> left);
-        dfs_s(root -> right);
-        return;
-    }
-    // Encodes a tree to a single string.
-    string serialize(TreeNode* root) {
-        // 深搜
-        dfs_s(root);
-        return str;
-    }
-    TreeNode* dfs_d(string& data, int &u) {
-        if (data[u] == '#') {
-            // 跳过#和后面的,
-            u += 2;
-            return NULL;
-        }
-        int k = u;
-        while (data[u] != ',') u ++;
-        auto root = new TreeNode(stoi(data.substr(k, u - k)));
-        // 跳过,
-        u ++;
-        root -> left = dfs_d(data, u);
-        root -> right = dfs_d(data, u);
-        return root;
-    }
-    // Decodes your encoded data to tree.
-    TreeNode* deserialize(string data) {
-        int u = 0;
-        return dfs_d(data, u);
-    }
-};
-
-// Your Codec object will be instantiated and called as such:
-// Codec ser, deser;
-// TreeNode* ans = deser.deserialize(ser.serialize(root));
-```
-
-**标签**
-
-`dfs`、`数据结构`
-
-#### [LeetCode 331. 验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
-
-**题目描述**
-
->   序列化二叉树的一种方法是使用前序遍历。当我们遇到一个非空节点时，我们可以记录下这个节点的值。如果它是一个空节点，我们可以使用一个标记值记录，例如 `#`。
->
->   ```c++
->   	_9_
->    /   \
->   3     2
->   / \   / \
->   4   1  #  6
->   / \ / \   / \
->   # # # #   # #
->   ```
->
->   例如，上面的二叉树可以被序列化为字符串 `"9,3,4,#,#,1,#,#,2,#,6,#,#"`，其中 `#` 代表一个空节点。
->
->   给定一串以逗号分隔的序列，验证它是否是正确的二叉树的前序序列化。编写一个在不重构树的条件下的可行算法。
->
->   每个以逗号分隔的字符或为一个整数或为一个表示 `null` 指针的 `'#'` 。
->
->   你可以认为输入格式总是有效的，例如它永远不会包含两个连续的逗号，比如 `"1,,3"` 。
-
-**示例 1**
-
->   输入: `"9,3,4,#,#,1,#,#,2,#,6,#,#"`
->   输出: `true`
-
-**示例 2**
-
->   输入: `"1,#"`
->   输出: `false`
-
-**示例 3**
-
->   输入: `"9,#,#,1"`
->   输出: `false`
-
-**手写稿**
-
->   ![321113](img/321113-20220302123253489.png)
->
->   若代码不理解，建议模拟样例
-
-**代码**
-
-```c++
-class Solution {
-public:
-    int k = 0;
-    bool isValidSerialization(string s) {
-        // 以逗号,结尾
-        s += ',';
-        if (!dfs(s)) return false;
-        // 如果还没有计算到结尾，说明不符合条件，样例：3,#,#,1
-        return k == s.size();
-    }
-    bool dfs(string& s) {
-        // 如果已经到达元素结尾，返回false
-        if (k == s.size()) return false;
-        // 跳过#和,
-        if (s[k] == '#') return k += 2, true;
-        // 跳过数字
-        while (isdigit(s[k])) k ++ ;
-        // 跳过逗号
-        k ++ ;
-        // 遍历左子树和右子树
-        return dfs(s) && dfs(s);
-    }
-};
-```
-
-**标签**
-
-`二叉树`、`dfs`
-
-### 二叉搜索树
-
-#### [LeetCode 501. 二叉搜索树中的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
-
-**题目描述**
-
->   给你一个含重复值的二叉搜索树`（BST）`的根节点 `root` ，找出并返回 `BST` 中的所有 **众数**（即，出现频率最高的元素）。
->
->   如果树中有不止一个众数，可以按 任意顺序 返回。
->
->   假定 `BST` 满足如下定义：
->
->   结点左子树中所含节点的值 **小于等于** 当前节点的值
->   结点右子树中所含节点的值 **大于等于** 当前节点的值
->   左子树和右子树都是二叉搜索树
-
-**示例 1**
-
->   输入：`root = [1,null,2,2]`
->   输出：`[2]`
-
-**示例 2**
-
->   输入：`root = [0]`
->   输出：`[0]`
-
-**提示**
-
->   +   $树中节点的数目在范围 [1, 10^4] 内$
->   +   $-10^5 <= Node.val <= 10^5$
-
-**进阶**
-
->   你可以不使用额外的空间吗？（假设由递归产生的隐式调用栈的开销不被计算在内）
-
-**手写稿**
-
-![641950](img/641950.png)
-
-**代码**
-
-```c++
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
-class Solution {
-public:
-    vector<int> ans;
-    int Mxcnt = 0, cnt = 0, last;
-    void dfs(TreeNode* root) {
-        // 空子树直接返回
-        if (!root) return;
-        // 遍历左子树
-        dfs(root -> left);
-        // 如果和上一个数相等, 则 cnt ++
-        if (root -> val == last) cnt ++;
-        else {
-            // 更新上一个数
-            last = root -> val;
-            // 更新个数
-            cnt = 1;
-        }
-        // 如果当前数的个数大于全局最大数, 则更新
-        if (cnt > Mxcnt) {
-            // 更新最大数
-            Mxcnt = cnt;
-            // 更新答案数组
-            ans = {last};
-        }
-        // 答案多一个数
-        else if (cnt == Mxcnt) ans.push_back(last);
-        // 遍历右子树
-        dfs(root -> right);
-        return;
-    }
-    vector<int> findMode(TreeNode* root) {
-        dfs(root);
-        return ans;
-    }
-};
-```
-
-**时间复杂度**
-
-$O(n)$
-
-**空间复杂度**
-
-$O(n)$
-
-**标签**
-
-`二叉搜索树`
-
-**缝合怪**
-
-
-
-#### [LeetCode 530. 二叉搜索树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/)
-
-**题目描述**
-
->   给你一个二叉搜索树的根节点 `root` ，返回 树中任意两不同节点值之间的最小差值 。
->
->   差值是一个正数，其数值等于两值之差的绝对值。
-
-**示例 1**
-
->   输入：`root = [4,2,6,1,3]`
->   输出：`1`
-
-**示例 2**
-
->   输入：`root = [1,0,48,null,null,12,49]`
->   输出：`1`
-
-**提示**
-
->   +   $树中节点的数目范围是 [2, 10^4]$
->   +   $0 <= Node.val <= 10^5$
-
-注意
-
->   本题与 [LeetCode 783.](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/) 相同
-
-**手写稿**
-
-![642104](img/642104.png)
-
-**代码**
-
-```c++
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
-class Solution {
-public:
-    int ans = 1e9, last, is_first = true;
-    void dfs(TreeNode* root) {
-        // 空树返回
-        if (!root) return;
-        // 遍历左子树
-        dfs(root -> left);
-        // 如果是第一个数, 则标记
-        if (is_first) is_first = false;
-        // 如果不是第一个数, 则更新最小差值
-        else ans = min(ans, abs(root -> val - last));
-        // 更新上一个数
-        last = root -> val;
-        // 遍历右子树
-        dfs(root -> right);
-        return;
-    }
-    int getMinimumDifference(TreeNode* root) {
-        dfs(root);
-        return ans;
-    }
-};
-```
-
-**时间复杂度**
-
-$O(n)$
-
-**空间复杂度**
-
-$O(n)$
-
-**标签**
-
-`二叉搜索树`
-
-**缝合怪**
-
-
-
-# 字符串专题
-
-## KMP
-
-### [Leetode 214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
-
-**题目描述**
-
-> 给定一个字符串 s，你可以通过在字符串前面添加字符将其转换为回文串。找到并返回可以用这种方式转换的最短回文串。
-
-**示例 1**
-
-> 输入：`s = "aacecaaa"`
-> 输出：`"aaacecaaa"`
-
-**示例 2**
-
-> 输入：`s = "abcd"`
-> 输出：`"dcbabcd"`
-
-**提示**
-
-> + $0 <= s.length <= 5 * 10^4$
-> + $s$ 仅由小写英文字母组成
-
-**手写稿**
-
-![WechatIMG95](img/WechatIMG95.jpeg)
-
-**思路**
-
-> 1. 要想让 `c + a + b` 最短，则只要 `c` 和 `b` 最短即可，换句话说，让 `a` 最长即可
->
-> 2. 通过上述分析，问题转化为在原串`（a + b）`中寻找最长回文子串即可解决问题
->
-> 3. 通过以下步骤，寻找最长回文子串即可
->
->     + 将原串逆序复制一遍，用 `#` 连接，放在原串的后面
->
->         ![image-20220118072649711](img/image-20220118072649711.png)
->
->     + 寻找新串 `a + b + b + a` 的最长回文前缀即可，即 `KMP` 的 `next` 数组的含义
->
-> 4. 找出 `a` 之后，将 `a` 之后的部分，即 `b` 截取出来，逆序放到最前方
-
-**代码**
-
-```c++
-class Solution {
-public:
-    string shortestPalindrome(string s) {
-        string t = s;
-        t = ' ' + t + '#' + string(t.rbegin(), t.rend());
-        int n = t.size();
-        vector<int> ne(n + 5);
-        for (int i = 2, j = 0; i < n; i ++ ) {
-            while (j && t[i] != t[j + 1]) j = ne[j];
-            if (t[i] == t[j + 1]) j ++;
-            ne[i] = j;
-        }
-        t = s.substr(ne[n - 1]);
-        return string(t.rbegin(), t.rend()) + s;
-    }
-};
-```
-
-**标签**
-
-`字符串`、`回文串`、`KMP`
-
-# 模拟题专题
-
-## 模拟
-
-### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
-
-**题目描述**
-
-> 你在和朋友一起玩 猜数字`（Bulls and Cows）`游戏，该游戏规则如下：
->
-> 写出一个秘密数字，并请朋友猜这个数字是多少。朋友每猜测一次，你就会给他一个包含下述信息的提示：
->
-> 猜测数字中有多少位属于数字和确切位置都猜对了（称为 "`Bulls`"，公牛），
-> 有多少位属于数字猜对了但是位置不对（称为 "`Cows`"，奶牛）。也就是说，这次猜测中有多少位非公牛数字可以通过重新排列转换成公牛数字。
-> 给你一个秘密数字 `secret` 和朋友猜测的数字 `guess` ，请你返回对朋友这次猜测的提示。
->
-> 提示的格式为 "`xAyB`" ，`x` 是公牛个数， `y` 是奶牛个数，`A` 表示公牛，`B` 表示奶牛。
->
-> 请注意秘密数字和朋友猜测的数字都可能含有重复数字。
-
-**示例 1**
-
-> 输入：`secret = "1807", guess = "7810"`
-> 输出：`"1A3B"`
-> 解释：数字和位置都对（公牛）用 `'|'` 连接，数字猜对位置不对（奶牛）的采用斜体加粗标识。
-> `"1807"
-> |
-> "7810"`
-
-**示例 2**
-
-> 输入：`secret = "1123", guess = "0111"`
-> 输出：`"1A1B"`
-> 解释：数字和位置都对（公牛）用 `'|'` 连接，数字猜对位置不对（奶牛）的采用斜体加粗标识。
-> `"1123"        "1123"
-> |      or     |
-> "0111"        "0111"`
-> 注意，两个不匹配的 `1` 中，只有一个会算作奶牛（数字猜对位置不对）。通过重新排列非公牛数字，其中仅有一个 `1` 可以成为公牛数字。
-
-**示例 3**
-
-> 输入：`secret = "1", guess = "0"`
-> 输出：`"0A0B"`
-
-**示例 4**
-
-> 输入：`secret = "1", guess = "1"`
-> 输出：`"1A0B"`
-
-**提示**
-
-> + $1 <= secret.length, guess.length <= 1000$
-> + $secret.length == guess.length$
-> + `secret` 和 `guess` 仅由数字组成
-
-**题解**
-
-> 1. 两次遍历；
-> 2. 第一次遍历数组并且统计公牛的次数，同时将不满足公牛的字符使用多重集合记录下来
-> 3. 第二次遍历数组并且利用多重集合统计奶牛的次数，注意一个数字只能对应一个数字，因此，如果比对成功需要将成功的字符从多重集合里面删除
-
-**代码**
-
-```c++
-class Solution {
-public:
-    string getHint(string s, string t) {
-        int a = 0, b = 0;
-        multiset<char> hash;
-        for (int i = 0; i < s.size(); i ++ ) {
-            if (s[i] == t[i]) a ++;
-            else hash.insert(s[i]);
-        }
-        for (int i = 0; i < s.size(); i ++ ) {
-            if (s[i] == t[i]) continue;
-            if (hash.count(t[i])) {
-                b ++;
-                hash.erase(hash.find(t[i]));
-            }
-        }
-        return to_string(a) + "A" + to_string(b) + "B";
-    }
-};
-```
-
-**标签**
-
-`模拟`
-
-### [LeetCode 273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
-
-**题目描述**
-
-> 将非负整数 num 转换为其对应的英文表示。
-
-**示例 1**
-
-> 输入：`num = 123`
-> 输出：`"One Hundred Twenty Three"`
-
-**示例 2**
-
-> 输入：`num = 12345`
-> 输出：`"Twelve Thousand Three Hundred Forty Five"`
-
-**示例 3**
-
-> 输入：`num = 1234567`
-> 输出：`"One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"`
-
-**示例 4**
-
-> 输入：`num = 1234567891`
-> 输出：`"One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven Thousand Eight Hundred Ninety One"`
-
-**提示**
-
-> + $0 <= num <= 2^{31} - 1$
-
-**手写稿**
-
-![1](img/1.png)
-
-**代码**
-
-```c++
-class Solution {
-public:
-    // 预处理数据
-    string nums0_19[20] = {
-        "Zero", "One", "Two", "Three", "Four", 
-        "Five", "Six", "Seven", "Eight", "Nine",
-        "Ten", "Eleven", "Twelve", "Thirteen",
-        "Fourteen", "Fifteen", "Sixteen", "Seventeen",
-        "Eighteen", "Nineteen"
-    };
-    string nums20_90[8] = {
-        "Twenty", "Thirty", "Forty", "Fifty",
-        "Sixty", "Seventy", "Eighty", "Ninety"
-    };
-    string nums1000_1e9[4] = {
-        "Billion ", "Million ", "Thousand ", ""
-    };
-    string get(int x) {
-        if (x == 0) return "Zero";
-        string res;
-        if (x >= 100) {
-            res += nums0_19[x / 100] + " Hundred ";
-            x %= 100;
-        }
-        if (x >= 20) {
-            res += nums20_90[x / 10 - 2] + " ";
-            x %= 10;
-        }
-        if (x) res += nums0_19[x] + " ";
-        return res;
-    }
-    string numberToWords(int num) {
-        if (num == 0) return "Zero";
-        string res;
-        for (int i = 1e9, j = 0; i >= 1; i /= 1000, j ++ )
-            if (num >= i) {
-                res += get(num / i) + nums1000_1e9[j];
-                num %= i;
-            }
-        // 注意空格问题
-        res.pop_back();
-        return res;
-    }
-};
-```
-
-**标签**
-
-`模拟`、`数字转换`、`中英文`
-
-### [AcWing 1473. A + B 格式](https://www.acwing.com/problem/content/1475/)
-
-**题目描述**
-
->   计算 `a + b` 并以标准格式输出总和----也就是说，从最低位开始每隔三位数加进一个逗号（千位分隔符），如果结果少于四位则不需添加。
+>   1.  `A x`：添加操作，表示在序列末尾添加一个数 `x`，序列的长度 `N` 增大 `1`。
+>   2.  `Q l r x`：询问操作，你需要找到一个位置 `p`，满足 `l≤p≤r`，使得：`a[p] xor a[p+1] xor … xor a[N] xor x` 最大，输出这个最大值。
 
 **输入格式**
 
->   共一行，包含两个整数 `a` 和 `b`。
+>   第一行包含两个整数 `N，M`，含义如问题描述所示。
+>
+>   第二行包含 `N` 个非负整数，表示初始的序列 `A`。
+>
+>   接下来 `M` 行，每行描述一个操作，格式如题面所述。
 
 **输出格式**
 
->   共一行，以标准格式输出 `a + b` 的和。
+>   每个询问操作输出一个整数，表示询问的答案。
+>
+>   每个答案占一行。
 
 **数据范围**
 
->   +   $−10^6≤a,b≤10^6$
+>   +   $N,M≤3×10^5,0≤a[i]≤10^7。$
 
 **输入样例**
 
 ```c++
--1000000 9
+5 5
+2 6 4 3 6
+A 1 
+Q 3 5 4 
+A 4 
+Q 5 7 0 
+Q 3 6 6 
 ```
 
 **输出样例**
 
 ```c++
--999,991
+4
+5
+6
 ```
 
 **手写稿**
 
->   1.   对 `a + b` 形成的字符串 `s`，进行遍历，使用 `t` 作为答案，分以下情况：
->        +   如果当前遍历的字符数量 `k` 已经达到 `3` 个，则判断是否还有下一个字符并且下一个字符是否是 `'-'`
->            +   如果条件成立，`t += ,` 并且，将 `k` 置 `0`
->            +   如果条件不成立，退出循环
->        +   反转 `t`，如果字符串 `s` 的第一个字符是 `'-'`，将其加入到答案即可
-
-**代码**
-
-```c++
-#include <iostream>
-#include <algorithm>
-using namespace std;
-int a, b;
-int main() {
-    cin >> a >> b;
-    string s = to_string(a + b);
-    string t;
-    for (int i = s.size() - 1, k = 0; i >= 0 && s[i] != '-'; i -- ) {
-        t += s[i];
-        k ++;
-        // 如果数量已经达到3个，并且，还有下一个字符或者下一个字符不是'-'
-        // 将其加入到答案，将k置0
-        if (k == 3 && i - 1 >= 0 && s[i - 1] != '-') t += ',', k = 0; 
-    }
-    // 反转t
-    reverse(t.begin(), t.end());
-    // 如果s的第一个字符是'-'，将其加入到答案
-    if (s[0] == '-') t = '-' + t;
-    cout << t << endl;
-    return 0;
-}
-```
-
-**时间复杂度**
-
-$O(n)$
-
-**空间复杂度**
-
-$O(1)$
-
-**标签**
-
-`模拟`
-
-**缝合怪**
-
-### [L1-049 天梯赛座位分配](https://pintia.cn/problem-sets/994805046380707840/problems/994805081289900032)
-
-**题目描述**
-
-> 天梯赛每年有大量参赛队员，要保证同一所学校的所有队员都不能相邻，分配座位就成为一件比较麻烦的事情。为此我们制定如下策略：假设某赛场有 `N` 所学校参赛，第 `i` 所学校有 `M[i]` 支队伍，每队 `10` 位参赛选手。令每校选手排成一列纵队，第 `i + 1` 队的选手排在第 `i` 队选手之后。从第 `1` 所学校开始，各校的第 `1` 位队员顺次入座，然后是各校的第 `2` 位队员…… 以此类推。如果最后只剩下 `1` 所学校的队伍还没有分配座位，则需要安排他们的队员隔位就坐。本题就要求你编写程序，自动为各校生成队员的座位号，从 `1` 开始编号。
-
-**输入格式**
-
-> 输入在一行中给出参赛的高校数 `N` （不超过`100`的正整数）；第二行给出 `N` 个不超过``10``的正整数，其中第 `i` 个数对应第 `i` 所高校的参赛队伍数，数字间以空格分隔。
-
-**输出格式**
-
-> 从第 `1` 所高校的第 `1` 支队伍开始，顺次输出队员的座位号。每队占一行，座位号间以 `1` 个空格分隔，行首尾不得有多余空格。另外，每所高校的第一行按“`#X`”输出该校的编号`X`，从 `1` 开始。
-
-**输入样例**
-
-```c++
-3
-3 4 2
-```
-
-**输出样例**
-
-```c++
-#1
-1 4 7 10 13 16 19 22 25 28
-31 34 37 40 43 46 49 52 55 58
-61 63 65 67 69 71 73 75 77 79
-#2
-2 5 8 11 14 17 20 23 26 29
-32 35 38 41 44 47 50 53 56 59
-62 64 66 68 70 72 74 76 78 80
-82 84 86 88 90 92 94 96 98 100
-#3
-3 6 9 12 15 18 21 24 27 30
-33 36 39 42 45 48 51 54 57 60
-```
-
-**手写稿**
-
-![462037](img/462037.png)
+![7131439](img/7131439.png)
 
 **代码**
 
 ```c++
 #include <iostream>
 using namespace std;
-const int N = 110;
-int n, m;
-int q[N];
-int g[N][N];
-int main() {
-    scanf("%d", &m);
-    for (int i = 0; i < m; i ++ ) {
-        scanf("%d", &q[i]);
-        n = max(n, q[i] * 10);
-    }
-    int num = 0;
-    int which = -1; // 记录上一个轮的最后一个报数的队伍的ID
-    for (int i = 0; i < n; i ++ )
-        for (int j = 0; j < m; j ++ ) {
-            if (i >= q[j] * 10) continue;
-            // 如果上一轮最后一个报数的队伍的ID和当前的队伍是同一个队伍
-            // 说明只剩下一个队伍, 需要隔位就做, ++ num
-            if (j == which) ++ num;
-            g[i][j] = ++ num;
-            which = j;
-        }
-    for (int i = 0; i < m; i ++ ) {
-        printf("#%d\n", i + 1);
-        for (int j = 0; j < q[i]; j ++ ) {
-            for (int k = 0; k < 10; k ++ ) {
-                cout << g[j * 10 + k][i];
-                if (k + 1 < 10) cout << ' ';
-            }
-            cout << endl;
-        }
-    }
-    return 0;
-}
-```
-
-**时间复杂度**
-
-$O(nm)$
-
-**空间复杂度**
-
-$O(n^2)$
-
-**标签**
-
-`模拟题`
-
-**缝合怪**
-
-
-
-### [LeetCode 38. 外观数列](https://leetcode-cn.com/problems/count-and-say/)
-
-**题目描述**
-
-> 给定一个正整数 `n` ，输出外观数列的第 `n` 项。
->
-> 「外观数列」是一个整数序列，从数字 `1` 开始，序列中的每一项都是对前一项的描述。
->
-> 你可以将其视作是由递归公式定义的数字字符串序列：
->
-> + `countAndSay(1) = "1"`
-> + `countAndSay(n)` 是对 `countAndSay(n - 1)` 的描述，然后转换成另一个数字字符串。
->
-> 前五项如下:
->
-> > 1.     `1`
-> > 2.     `11`
-> > 3.     `21`
-> > 4.     ``1211``
-> > 5.     `111221`
-> >
-> > 第一项是数字 `1` 
-> > 描述前一项，这个数是 `1` 即 “ 一 个 `1` ”，记作 "`11`"
-> > 描述前一项，这个数是 `11` 即 “ 二 个 `1` ” ，记作 "`21`"
-> > 描述前一项，这个数是 `21` 即 “ 一 个 `2` + 一 个 `1` ” ，记作 "`1211`"
-> > 描述前一项，这个数是 `1211` 即 “ 一 个 ``1`` + 一 个 `2` + 二 个 `1` ” ，记作 "`111221`"
->
->
-> 要 描述 一个数字字符串，首先要将字符串分割为 最小 数量的组，每个组都由连续的最多 相同字符 组成。然后对于每个组，先描述字符的数量，然后描述字符，形成一个描述组。要将描述转换为数字字符串，先将每组中的字符数量用数字替换，再将所有描述组连接起来。
->
-> 例如，数字字符串 "`3322251`" 的描述如下图：
->
-> ![img](img/1629874763-TGmKUh-image.png)
-
-**示例 1**
-
-> 输入：`n = 1`
-> 输出：`"1"`
-> 解释：这是一个基本样例。
-
-**示例 2**
-
-> 输入：`n = 4`
-> 输出：`"1211"`
-> 解释：
-> `countAndSay(1) = "1"`
-> `countAndSay(2) = 读 "1" = 一 个 1 = "11"`
-> `countAndSay(3) = 读 "11" = 二 个 1 = "21"`
-> `countAndSay(4) = 读 "21" = 一 个 2 + 一 个 1 = "12" + "11" = "1211"`
-
-**提示**
-
-> + $1 <= n <= 30$
-
-**手写稿**
-
->   1.   模拟即可
->   2.   注意事项: 看代码
-
-**代码**
-
-```c++
-class Solution {
-public:
-    string countAndSay(int n) {
-        string str = "1";
-        for (int i = 2; i <= n; i ++ ) {
-            string tmp;
-            for (int j = 0; j < str.size(); j ++ ) {
-                int k = j;
-                // 判断字符str[j]的个数
-                while (k < str.size() && str[k] == str[j]) k ++;
-                // (k - j)个字符str[j]
-                tmp += to_string(k - j) + str[j];
-                j = k - 1;
-            }
-            str = tmp;
-        }
-        return str;
-    }
-};
-```
-
-**时间复杂度**
-
-$O(nm), n是给定的正整数, m是生成字符串的长度$
-
-**空间复杂度**
-
-$O(m), m是生成字符串的最大长度$
-
-**标签**
-
-`模拟`
-
-**缝合怪**
-
-
-
-### [LeetCode 68. 文本左右对齐](https://leetcode-cn.com/problems/text-justification/)
-
-**题目描述**
-
->   给定一个单词数组 `words` 和一个长度 `maxWidth` ，重新排版单词，使其成为每行恰好有 `maxWidth` 个字符，且左右两端对齐的文本。
->
->   你应该使用 “贪心算法” 来放置给定的单词；也就是说，尽可能多地往每行中放置单词。必要时可用空格 ' ' 填充，使得每行恰好有 `maxWidth` 个字符。
->
->   要求尽可能均匀分配单词间的空格数量。如果某一行单词间的空格不能均匀分配，则左侧放置的空格数要多于右侧的空格数。
->
->   文本的最后一行应为左对齐，且单词之间不插入额外的空格。
->
->   注意:
->
->   单词是指由非空格字符组成的字符序列。
->   每个单词的长度大于 `0`，小于等于 `maxWidth`。
->   输入单词数组 `words` 至少包含一个单词。
-
-**示例 1**
-
->   输入: `words = ["This", "is", "an", "example", "of", "text", "justification."], maxWidth = 16`
->   输出:
->   `[
->     "This    is    an",
->     "example  of text",
->     "justification.  "
->   ]`
-
-**示例 2**
-
->   输入:`words = ["What","must","be","acknowledgment","shall","be"], maxWidth = 16`
->   输出:
->   `[
->    "What   must   be",
->    "acknowledgment  ",
->    "shall be        "
->   ]`
->   解释: 注意最后一行的格式应为 `"shall be    "` 而不是 `"shall     be"`,
->       因为最后一行应为左对齐，而不是左右两端对齐。       
->       第二行同样为左对齐，这是因为这行只包含一个单词。
-
-**示例 3**
-
->   输入:`words = ["Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"]，maxWidth = 20`
->   输出:
->   `[
->    "Science  is  what we",
->    "understand      well",
->    "enough to explain to",
->    "a  computer.  Art is",
->    "everything  else  we",
->    "do                  "
->   ]`
-
-**提示**
-
->   +   $1 <= words.length <= 300$
->   +   $1 <= words[i].length <= 20$
->   +   $words[i] 由小写英文字母和符号组成$
->   +   $1 <= maxWidth <= 100$
->   +   $words[i].length <= maxWidth$
-
-**手写稿**
-
->   1.   模拟, 分两步进行
->        +   左对齐
->        +   两端对齐
->   2.   `++ usednum <= leftnum` 解释
->        +   `usednum` 表示的含义是在多出来的空格中已经使用的个数
->        +   `leftnum` 表示多出来空格的总个数
->        +   假设 `leftnum = 0`
->        +   `usednum` 初始值为 `0`, 表示一个数字都没有被使用过
->        +   上式含义是用过一个数字之后如果小于等于总个数, 说明合法, 返回 `true(1)`, 否则, 返回 `false(0)`
-
-**代码**
-
-```c++
-class Solution {
-public:
-    vector<string> fullJustify(vector<string>& g, int Max) {
-        int n = g.size();
-        vector<string> res;
-        for (int i = 0; i < n; i ++ ) {
-            // spe含义为空格的数量
-            int j = i, len = 0, spe = 0;
-            string line;
-            while (j < n && len + spe + g[j].size() <= Max) {
-                len = len + spe + g[j].size();
-                spe = 1, j ++ ;
-            }
-            int wdnum = j - i; // 单词的数量
-            if (j == n || wdnum == 1) { // 到达最后一行活着本行只有一个单词, 左对齐
-                // 先输入一个单词
-                line = g[i];
-                for (int k = i + 1; k < j; k ++ ) line += ' ' + g[k];
-                // 将剩余的空格补齐
-                line += string(Max - line.size(), ' ');
-            }
-            else { // 两端对齐
-                // 空格的平均数量
-                int spenum = (Max - len + wdnum - 1) / (wdnum - 1);
-               	// 剩余空格的数量
-                int leftnum = (Max - len + wdnum - 1) % (wdnum - 1);
-                int usednum = 0; // 已经用过的空格的数量
-                line = g[i ++]; // 先输入一个单词
-                // 严格小于
-                // ++ usednum <= leftnum[手写稿解释原因]
-                while (line.size() < Max)
-                    line += string(spenum + (++ usednum <= leftnum), ' ') + g[i ++ ];
-            }
-            i = j - 1;
-            res.push_back(line);
-        }
-        return res;
-    }
-};
-```
-
-**时间复杂度**
-
-$O(n), n表示单词的数量$
-
-**空间复杂度**
-
-$O(n), n表示单词的总长度$
-
-**标签**
-
-`模拟`、`字符串`
-
-**缝合怪**
-
-
-
-## 阅读理解题
-
-### [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
-
-**题目描述**
-
-> 给你一个整数数组 `citations` ，其中 `citations[i]` 表示研究者的第 `i` 篇论文被引用的次数，`citations` 已经按照 升序排列 。计算并返回该研究者的 `h` 指数。
->
-> `h` 指数的定义：`h` 代表“高引用次数”（`high citations`），一名科研人员的 `h` 指数是指他（她）的 （`n` 篇论文中）总共有 `h` 篇论文分别被引用了至少 `h` 次。且其余的 `n - h` 篇论文每篇被引用次数 不超过 `h` 次。
->
-> 提示：如果 `h` 有多种可能的值，h 指数 是其中最大的那个。
->
-> 请你设计并实现对数时间复杂度的算法解决此问题。
-
-**示例 1**
-
-> 输入：`citations = [0,1,3,5,6]`
-> 输出：`3`
-> 解释：给定数组表示研究者总共有 `5` 篇论文，每篇论文相应的被引用了 `0, 1, 3, 5, 6` 次。
-> 由于研究者有 `3` 篇论文每篇 至少 被引用了 `3` 次，其余两篇论文每篇被引用 不多于 `3` 次，所以她的 `h` 指数是 `3` 。
-
-**示例 2**
-
-> 输入：`citations = [1,2,100]`
-> 输出：`2`
-
-**提示**
-
-> + $n == citations.length$
-> + $1 <= n <= 10^5$
-> + $0 <= citations[i] <= 1000$
-> + $citations 按 升序排列$
-
-**分析**
-
-> 1. 将数组从大到小排序，然后从前往后一次枚举每一个数字，如果当前数字 `g[i] >= n - i`，则找到答案
-> 2. 本题中由于按照从小到大排序的，所以做的时候需要进行坐标变换 `g[n - mid]` 表示的是从大到小的第 `mid` 个数字
-> 3. 本题中二分的是答案也就是 `H` 的值，最小是 `0`，最大是 `n`
-
-**代码**
-
-```c++
-class Solution {
-public:
-    int hIndex(vector<int>& g) {
-        int n = g.size(), l = 0, r = n;
-        while (l < r) {
-            int mid = l + r + 1 >> 1;
-            if (g[n - mid] >= mid) l = mid;
-            else r = mid - 1;
-        }
-        return l;
-    }
-};
-```
-
-**标签**
-
-`阅读理解`
-
-### [LeetCode 393. UTF-8 编码验证](https://leetcode-cn.com/problems/utf-8-validation/)
-
-**题目描述**
-
->   给定一个表示数据的整数数组 `data` ，返回它是否为有效的 `UTF-8` 编码。
->
->   `UTF-8` 中的一个字符可能的长度为 `1` 到 `4` 字节，遵循以下的规则：
->
->   +   对于 `1` 字节 的字符，字节的第一位设为 `0` ，后面 `7` 位为这个符号的 `unicode` 码。
->   +   对于 `n` 字节 的字符 (`n > 1`)，第一个字节的前 `n` 位都设为`1`，第 `n + 1` 位设为 `0` ，后面字节的前两位一律设为 `10` 。剩下的没有提及的二进制位，全部为这个符号的 `unicode` 码。
->
->   这是 `UTF-8` 编码的工作方式：
->
->   ```c++
->      Char. number range  |        UTF-8 octet sequence
->         (hexadecimal)    |              (binary)
->      --------------------+---------------------------------------------
->      0000 0000-0000 007F | 0xxxxxxx
->      0000 0080-0000 07FF | 110xxxxx 10xxxxxx
->      0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
->      0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
->   ```
->
->
->   注意：输入是整数数组。只有每个整数的 最低 `8` 个有效位 用来存储数据。这意味着每个整数只表示 `1` 字节的数据。
-
-**示例 1**
-
->   输入：`data = [197,130,1]`
->   输出：`true`
->   解释：数据表示字节序列:`11000101 10000010 00000001`。
->   这是有效的 `utf-8` 编码，为一个 `2` 字节字符，跟着一个 `1` 字节字符。
-
-**示例 2**
-
->   输入：`data = [235,140,4]`
->   输出：`false`
->   解释：数据表示 `8` 位的序列: `11101011 10001100 00000100`.
->   前 `3` 位都是 `1` ，第 `4` 位为 `0` 表示它是一个 `3` 字节字符。
->   下一个字节是开头为 `10` 的延续字节，这是正确的。
->   但第二个延续字节不以 `10` 开头，所以是不符合规则的。
-
-**提示**
-
->   +   $1 <= data.length <= 2 * 10^4$
->   +   $0 <= data[i] <= 255$
-
-**手写稿**
-
-![4241610](img/4241610.png)
-
-**代码**
-
-```c++
-class Solution {
-public:
-    int get(int x, int k) {
-        return x >> k & 1;
-    }
-    bool validUtf8(vector<int>& data) {
-        for (int i = 0; i < data.size(); i ++ ) {
-            // 如果是一个字节, 则跳过
-            if (!get(data[i], 7)) continue;
-            int k = 0;
-            // 查看当前字符占据的字节数
-            while (k <= 4 && get(data[i], 7 - k)) k ++ ;
-            if (k < 2 || k > 4) return false;
-           	// 查看之后的k个字节[包括当前位置]
-            for (int j = 1; j < k; j ++ )
-                // 不能越界
-                if (i + j < data.size() && get(data[i + j], 7) && !get(data[i + j], 6))
-                    continue;
-                else return false;
-            i += k - 1;
-        }
-        return true;
-    }
-};
-```
-
-**时间复杂度**
-
-$O(n)$
-
-**空间复杂度**
-
-$O(1)$
-
-**标签**
-
-`阅读理解题`
-
-**缝合怪**
-
-
-
-## 表达式求值
-
-### [LeetCode 224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
-
-**题目描述**
-
-> 给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
-
-**示例 1**
-
-> 输入：`s = "1 + 1"`
-> 输出：`2`
-
-**示例 2**
-
-> 输入：`s = " 2-1 + 2 "`
-> 输出：`3`
-
-**示例 3**
-
-> 输入：`s = "(1+(4+5+2)-3)+(6+8)"`
-> 输出：`23`
-
-**提示**
-
-> + $1 <= s.length <= 3 * 10^5$
-> + `s` 由数字`、'+'、'-'、'('、')'、`和 `' '` 组成
-> + `s` 表示一个有效的表达式
-
-**题解**
-
-> 1. 使用两个栈，一个是数字栈 `num` ，另一个是字符串栈 `oper`
-> 2. 遍历每一个字符，分以下五种情况：
->     + 如果遇到空格，直接 `continue`
->     + 如果遇到`(`，直接入栈 `oper`
->     + 如果遇到 `)` ，计算答案，直到 `oper` 栈顶为 `(` 的时候停止
->     + 如果遇到数字，则计算数字的大小，入栈 `num`<font style="color:red">**（注意数字不一定是一位数）**</font>
->     + 如果遇到 `+`，`-`，则继续进行如下判断：
->         + 如果当前值是第一位，例如 `+2`，则为了方便计算，在前面补一个 `0` 即可
->         + 如果当前位不是第一位并且前一位是括号，例如 `(+2)`，则为了方便，补一个 `0` 即可
->         + 除上述情况外，正常计算，直到栈为空或者遇到 `(` 的时候停止
-> 3. 如果栈中还有运算符，则继续计算，直到栈为空，答案就是栈顶元素
-
-**代码**
-
-```c++
-class Solution {
-public:
-    stack<int> num;
-    stack<char> oper;
-    void eval() {
-        int b = num.top(); num.pop();
-        int a = num.top(); num.pop();
-        char op = oper.top(); oper.pop();
-        if (op == '+') num.push(a + b);
-        else num.push(a - b);
-        return;
-    }
-    int calculate(string s) {
-        for (int i = 0; i < s.size(); i ++ ) {
-            if (s[i] == ' ') continue;
-            else if (s[i] == '(') oper.push(s[i]);
-            else if (s[i] == ')') {
-                while (oper.top() != '(') eval();
-                // 弹出左括号
-                oper.pop();
-            }
-            else if (isdigit(s[i])) {
-                int sum = 0;
-                while (i < s.size() && isdigit(s[i]))
-                    sum = sum * 10 + (s[i ++ ] - '0');
-                num.push(sum);
-                i --;
-            }
-            else {
-                // 处理特殊情况，如 +2 + a 或者 (-2 + a) 等类似情况
-                if (!i || s[i - 1] == '(') num.push(0);
-                while (oper.size() && oper.top() != '(') eval();
-                // 将当前括号入栈
-                oper.push(s[i]);
-            }
-        }
-        while (oper.size()) eval();
-        return num.top();
-    }
-};
-```
-
-**标签**
-
-`栈`、`表达式求值`
-
-### [LeetCode 282. 给表达式添加运算符](https://leetcode-cn.com/problems/expression-add-operators/)
-
-**题目描述**
-
-> 给定一个仅包含数字 `0-9` 的字符串 `num` 和一个目标值整数 `target` ，在 `num` 的数字之间添加 二元 运算符（不是一元）`+`、`-` 或 `*` ，返回所有能够得到目标值的表达式。
-
-**示例 1**
-
-> 输入: `num = "123", target = 6`
-> 输出: `["1+2+3", "1*2*3"] `
-
-**示例 2**
-
-> 输入: `num = "232", target = 8`
-> 输出: `["2*3+2", "2+3*2"]`
-
-**示例 3**
-
-> 输入: `num = "105", target = 5`
-> 输出: `["1*0+5","10-5"]`
-
-**示例 4**
-
-> 输入: `num = "00", target = 0`
-> 输出: `["0+0", "0-0", "0*0"]`
-
-**示例 5**
-
-> 输入: `num = "3456237490", target = 9191`
-> 输出: `[]`
-
-**提示**
-
-> + $1 <= num.length <= 10$
-> + $num 仅含数字$
-> + $-2^{31} <= target <= 2^{31} - 1$
-
-**手写稿**
-
-![w](img/w.png)
-
-**代码**
-
-```c++
-class Solution {
-public:
-    typedef long long LL;
-    string path;
-    vector<string> res;
-    // 保证答案不越界，但是不保证中间过程不越界
-    void dfs(string& num, int u, int len, LL a, LL b, LL target) {
-        if (u == num.size())
-            if (a == target) {
-                res.push_back(path.substr(0, len - 1));
-                return;
-            }
-        LL c = 0;
-        for (int i = u; i < num.size(); i ++ ) {
-            c = c * 10 + (num[i] - '0');
-            path[len ++ ] = num[i];
-            // 枚举第len位填写的运算符
-            // +
-            path[len] = '+';
-            dfs(num, i + 1, len + 1, a + b * c, 1, target);
-            if (i + 1 < num.size()) {
-                // -
-                path[len] = '-';
-                dfs(num, i + 1, len + 1, a + b * c, -1, target);
-                // *
-                path[len] = '*';
-                dfs(num, i + 1, len + 1, a, b * c, target);
-            }
-            // 不能有前导0
-            if (num[u] == '0') return;
-        }
-        return;
-    }
-    vector<string> addOperators(string num, int target) {
-        // 扩容
-        path.resize(100);
-        /*
-        	参数1: num字符串
-        	参数2: 当前枚举的是num中的哪位字符
-        	参数3: 答案字符串的长度
-        	参数4: a的值
-        	参数5: b的值
-        	参数6: 目标值
-        */
-        dfs(num, 0, 0, 0, 1, target);
-        return res;
-    }
-};
-```
-
-**标签**
-
-`dfs`、`表达式求值`
-
-## 高精度
-
-### 注意事项【必看】
-
->   1.   分析如下代码【以高精度加法为例】
->
->        ```c++
->        vector<int> add(vector<int>& A, vector<int>& B) {
->            vector<int> C;
->            // 进位
->            int t = 0;
->            for (int i = 0, j = 0; i < A.size() || j < B.size(); i ++, j ++ ) {
->                if (i < A.size()) t += A[i];
->                if (j < B.size()) t += B[i];
->                C.push_back(t % 10);
->                t /= 10;
->            }
->            // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
->            while (t) {
->                C.push_back(t % 10);
->                t /= 10;
->            }
->            // 逆序返回
->            return vector<int>(C.rbegin(), C.rend());
->        }
->        ```
->
->        +   问题如下
->
->            +   产生进位的时候，为啥要使用 `while(t)` 而不是 `if(t)` ?
->
->                >   1.   明确目标：`C` 中的<font style = "color: red">**每一个元素**</font>只能是<font style = "color: red">**一位数**</font>
->                >
->                >        +   为啥 `C` 中的每一个元素必须只能是一位数？
->                >
->                >            >   假设`A` 和 `B` 中的每一个元素有可能不是一位数，例如，`A = {2e9}, B = {2e9}`，调用 `add(A, B)`，此时，答案应为 ` 4e9`，由于，`C` 中的每一个元素都是 `int` 类型，此时就越界了，无法计算出正确答案，因此，`C` 中的每一个元素必须只能是一位数，这样就不会产生越界的问题，`long long` 和 `double` 等其他类型，都是会产生相似的问题
-
-### [AcWing 791. 高精度加法](https://www.acwing.com/problem/content/793/)
-
-**题目描述**
-
->   给定两个正整数（不含前导 `0`），计算它们的和。
-
-**输入格式**
-
->   共两行，每行包含一个整数。
-
-**输出格式**
-
->   共一行，包含所求的和。
-
-**数据范围**
-
->   +   $1≤整数长度≤100000$
-
-**输入样例**
-
-```c++
-12
-23
-```
-
-**输出样例**
-
-```c++
-35
-```
-
-**手写稿**
-
->   1.   模拟手算即可
->
->   2.   注意事项：
->
->        +   数字需要<font style = "color: red">**倒着存储**</font>，原因如下
->
->            ![392036](img/392036.png)
-
-**代码一：`vector` 存储**
-
-```c++
-#include <iostream>
-#include <vector>
-using namespace std;
-string a, b;
-vector<int> A, B;
-vector<int> add(vector<int>& A, vector<int>& B) {
-    vector<int> C;
-    // 进位
-    int t = 0;
-    for (int i = 0, j = 0; i < A.size() || j < B.size(); i ++, j ++ ) {
-        if (i < A.size()) t += A[i];
-        if (j < B.size()) t += B[i];
-        C.push_back(t % 10);
-        t /= 10;
-    }
-    // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
-    while (t) {
-        C.push_back(t % 10);
-        t /= 10;
-    }
-    // 逆序返回
-    return vector<int>(C.rbegin(), C.rend());
-}
-int main() {
-    cin >> a >> b;
-    for (int i = a.size() - 1; i >= 0; i -- ) A.push_back(a[i] - '0');
-    for (int i = b.size() - 1; i >= 0; i -- ) B.push_back(b[i] - '0');
-    vector<int> C = add(A, B);
-    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
-    return 0;
-}
-```
-
-**代码二：数组存储**
-
-```c++
-#include <iostream>
-using namespace std;
-const int N = 100005;
-string a, b;
-// 记录A数组长度，B数组长度和C数组长度
+const int N = 600010, M = N * 25;
 int n, m, idx;
-int A[N], B[N], C[N];
-void add(int A[], int B[]) {
-    // 进位
-    int t = 0;
-    for (int i = 0, j = 0; i < n || j < m; i ++, j ++ ) {
-        if (i < n) t += A[i];
-        if (j < m) t += B[i];
-        C[idx ++ ] = t % 10; 
-        t /= 10;
+int MaxId[M], root[N], s[N];
+int tr[M][2];
+void insert(int i, int k, int p, int q) {
+    // 遍历完所有位
+    if (k < 0) {
+        MaxId[q] = i;
+        return;
     }
-    // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
-    while (t) {
-        C[idx ++ ] = t % 10;
-        t /= 10;
-    }
-    // 逆序
-    for (int i = 0; i < idx / 2; i ++ ) swap(C[i], C[idx - 1 - i]);
+    // 取第k位数字
+    int v = s[i] >> k & 1;
+    // 如果前个版本存在, 则复制另个分支
+    if (p) tr[q][v ^ 1] = tr[p][v ^ 1];
+    // 指针 ++
+    tr[q][v] = ++ idx;
+    // 插入
+    insert(i, k - 1, tr[p][v], tr[q][v]);
+    // 取下标最大值
+    MaxId[q] = max(MaxId[tr[q][0]], MaxId[tr[q][1]]);
     return;
 }
+int query(int root, int C, int L) {
+    int u = root;
+    // 从高位到低位进行遍历
+    for (int i = 23; i >= 0; i -- ) {
+        // 取第i位的数字
+        int v = C >> i & 1;
+        // 手写稿解释
+        if (MaxId[tr[u][v ^ 1]] >= L) u = tr[u][v ^ 1];
+        else u = tr[u][v];
+    }
+    // MaxId存的是下标!!!
+    return C ^ s[MaxId[u]];
+}
 int main() {
-    cin >> a >> b;
-    n = a.size(), m = b.size();
-    for (int i = n - 1; i >= 0; i -- ) A[n - 1 - i] = a[i] - '0';
-    for (int i = m - 1; i >= 0; i -- ) B[m - 1 - i] = b[i] - '0';
-    add(A, B);
-    for (int i = 0; i < idx; i ++ ) cout << C[i];
+    scanf("%d%d", &n, &m);
+    MaxId[0] = -1;
+    // 根结点
+    root[0] = ++ idx;
+    // 数字下标, 总共的位数, 前个版本, 当前版本
+    insert(0, 23, 0, root[0]);
+    for (int i = 1, x; i <= n; i ++ ) {
+        scanf("%d", &x);
+        // 求前缀异或和
+        s[i] = s[i - 1] ^ x;
+        // 第i个版本的下标
+        root[i] = ++ idx;
+        // 插入
+        insert(i, 23, root[i - 1], root[i]);
+    }
+    // 遍历所有的询问
+    for (int i = 0; i < m; i ++ ) {
+        char op[2];
+        int l, r, x;
+        scanf("%s", op);
+        // 插入操作
+        if (op[0] == 'A') {
+            scanf("%d", &x);
+            ++ n;
+            // 求前缀异或和
+            s[n] = s[n - 1] ^ x;
+            // 第i个版本的下标
+            root[n] = ++ idx;
+            // 插入
+            insert(n, 23, root[n - 1], root[n]);
+        }
+        else {
+            scanf("%d%d%d", &l, &r, &x);
+            // 参数解释[手写稿]
+            cout << query(root[r - 1], s[n] ^ x, l - 1) << endl;
+        }
+    }
     return 0;
 }
 ```
 
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(m)$
+
 **标签**
 
-`高精度`、`高精度加法`
+`可持久化Trie`
 
-### [AcWing 792. 高精度减法](https://www.acwing.com/problem/content/794/)
+**缝合怪**
+
+[AcWing 143. 最大异或对](#AcWing 143. 最大异或对)
+
+## 平衡树
+
+### [AcWing 253. 普通平衡树](https://www.acwing.com/problem/content/255/)
 
 **题目描述**
 
->   给定两个正整数（不含前导 `0`），计算它们的差，计算结果可能为负数。
+>   您需要写一种数据结构（可参考题目标题），来维护一些数，其中需要提供以下操作：
+>
+>   1.  插入数值 `x`。
+>   2.  删除数值 `x`(若有多个相同的数，应只删除一个)。
+>   3.  查询数值 `x` 的排名(若有多个相同的数，应输出最小的排名)。
+>   4.  查询排名为 `x` 的数值。
+>   5.  求数值 `x` 的前驱(前驱定义为小于 `x` 的最大的数)。
+>   6.  求数值 `x` 的后继(后继定义为大于 `x` 的最小的数)。
+>
+>   **注意：** 数据保证查询的结果一定存在。
 
 **输入格式**
 
->   共两行，每行包含一个整数。
+>   第一行为 `n`，表示操作的个数。
+>
+>   接下来 `n` 行每行有两个数 `opt` 和 `x`，`opt` 表示操作的序号(`1≤opt≤6`)。
 
 **输出格式**
 
->   共一行，包含所求的差。
+>   对于操作 `3,4,5,6` 每行输出一个数，表示对应答案。
 
 **数据范围**
 
->   +   $1≤整数长度≤10^5$
+>   +   $1≤n≤100000,所有数均在 −10^7 到 10^7 内。$
 
 **输入样例**
 
 ```c++
-32
-11
+8
+1 10
+1 20
+1 30
+3 20
+4 2
+2 10
+5 25
+6 -1
 ```
 
 **输出样例**
-
-```c++
-21
-```
-
-**手写稿**
-
->   <font style = "color: red">**注意事项：**</font>
->
->   +   为了使得高精度模板统一，故<font style="color: red">**倒着存储**</font>
->   +   计算 `A - B` 的时候，为了写代码方便，规定 `A >= B`（手写写个判断函数 `cmp` ）
->   +   其余细节部分体现在代码中
-
-**代码**
-
-```c++
-#include <iostream>
-#include <vector>
-using namespace std;
-string a, b;
-vector<int> A, B;
-bool cmp(string &a, string &b) {
-    if (a.size() != b.size()) return a.size() >= b.size();
-    return a >= b;
-}
-vector<int> sub(vector<int>& A, vector<int>& B) {
-    vector<int> C;
-    int t = 0;
-    // 因为A >= B，因此，A的长度一定大于等于B的长度
-    for (int i = 0; i < A.size(); i ++ ) {
-        t = A[i] - t;
-        // 如果当前没有到达B的结尾
-        if (i < B.size()) t -= B[i];
-        C.push_back((t + 10) % 10);
-        if (t >= 0) t = 0;
-        else t = 1;
-    }
-    while (t) C.push_back(t % 10), t /= 10;
-    // 去掉前导0
-    while (C.size() > 1 && C.back() == 0) C.pop_back();
-    return vector<int>(C.rbegin(), C.rend());
-}
-int main() {
-    cin >> a >> b;
-    for (int i = a.size() - 1; i >= 0; i -- ) A.push_back(a[i] - '0');
-    for (int i = b.size() - 1; i >= 0; i -- ) B.push_back(b[i] - '0');
-    vector<int> C;
-    if (cmp(a, b)) // 如果 A >= B
-        C = sub(A, B);
-    else { // 如果 A < B
-        cout << "-";
-        C = sub(B, A);
-    }
-    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
-    return 0;
-}
-```
-
-**标签**
-
-`高精度`、`高精度减法`
-
-### [AcWing 793. 高精度乘法](https://www.acwing.com/problem/content/795/)
-
-**题目描述**
-
->   给定两个非负整数（不含前导 `0`） `A` 和 `B`，请你计算 `A×B` 的值。
-
-**输入格式**
-
->   共两行，第一行包含整数 `A`，第二行包含整数 `B`。
-
-**输出格式**
-
->   共一行，包含 `A×B` 的值。
-
-**数据范围**
-
->   +   $1≤A的长度≤100000,$
->   +   $0≤B≤10000$
-
-**输入样例**
 
 ```c++
 2
+20
+20
+20
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 265. 营业额统计](https://www.acwing.com/problem/content/267/)
+
+**题目描述**
+
+>   `Tiger` 最近被公司升任为营业部经理，他上任后接受公司交给的第一项任务便是统计并分析公司成立以来的营业情况。
+>
+>   `Tiger` 拿出了公司的账本，账本上记录了公司成立以来每天的营业额。
+>
+>   分析营业情况是一项相当复杂的工作。
+>
+>   由于节假日，大减价或者是其他情况的时候，营业额会出现一定的波动，当然一定的波动是能够接受的，但是在某些时候营业额突变得很高或是很低，这就证明公司此时的经营状况出现了问题。
+>
+>   经济管理学上定义了一种最小波动值来衡量这种情况。
+>
+>   设第 `i` 天的营业额为 $a_i$，则第 `i` 天(`i≥2`)的最小波动值 $f_i$ 被定义为：
+>   $$
+>   f_i=min_{1≤j<i}|a_i−a_j|
+>   $$
+>   当最小波动值越大时，就说明营业情况越不稳定。
+>
+>   而分析整个公司的从成立到现在营业情况是否稳定，只需要把每一天的最小波动值加起来就可以了。
+>
+>   你的任务就是编写一个程序帮助 `Tiger` 来计算这一个值。
+>
+>   第一天的最小波动值为第一天的营业额 $a_1$。
+
+**输入格式**
+
+>   第一行为正整数 `n`，表示该公司从成立一直到现在的天数。
+>
+>   接下来的 `n` 行每行有一个整数 $a_i$(有可能有负数) ，表示第 `i` 天公司的营业额。
+
+**输出格式**
+
+>   输出一个正整数，表示最小波动值的和。
+
+**数据范围**
+
+>   +   $1≤n≤32767,|a_i|≤10^6$
+
+**输入样例**
+
+```c++
+6
+5
+1
+2
+5
+4
+6
+```
+
+**输出样例**
+
+```c++
+12
+```
+
+**样例解释**
+
+>   在样例中，$5+|1−5|+|2−1|+|5−5|+|4−5|+|6−5|=5+4+1+0+1+1=12。$
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+## `AC`自动机
+
+### [AcWing 1282. 搜索关键词](https://www.acwing.com/problem/content/1284/)
+
+**题目描述**
+
+>   给定 `n` 个长度不超过 `50` 的由小写英文字母组成的单词，以及一篇长为 `m` 的文章。
+>
+>   请问，其中有多少个单词在文章中出现了。
+>
+>   **注意：每个单词不论在文章中出现多少次，仅累计 1 次。**
+
+**输入格式**
+
+>   第一行包含整数 `T`，表示共有 `T` 组测试数据。
+>
+>   对于每组数据，第一行一个整数 `n`，接下去 `n` 行表示 `n` 个单词，最后一行输入一个字符串，表示文章。
+
+**输出格式**
+
+>   对于每组数据，输出一个占一行的整数，表示有多少个单词在文章中出现。
+
+**数据范围**
+
+>   +   $1≤n≤10^4,$
+>   +   $1≤m≤10^6$
+
+**输入样例**
+
+```c++
+1
+5
+she
+he
+say
+shr
+her
+yasherhs
+```
+
+**输出样例**
+
+```c++
 3
+```
+
+**手写稿**
+
+
+
+**代码**
+
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
+
+**标签**
+
+
+
+**缝合怪**
+
+
+
+### [AcWing 1285. 单词](https://www.acwing.com/problem/content/1287/)
+
+**题目描述**
+
+>   某人读论文，一篇论文是由许多单词组成的。
+>
+>   但他发现一个单词会在论文中出现很多次，现在他想知道每个单词分别在论文中出现多少次。
+
+**输入格式**
+
+>   第一行一个整数 `N`，表示有多少个单词。
+>
+>   接下来 `N` 行每行一个单词，单词中只包含小写字母。
+
+**输出格式**
+
+>   输出 `N` 个整数，每个整数占一行，第 `i` 行的数字表示第 `i` 个单词在文章中出现了多少次。
+
+**数据范围**
+
+>   +   $1≤N≤200,$
+>   +   $所有单词长度的总和不超过 10^6。$
+
+**输入样例**
+
+```c++
+3
+a
+aa
+aaa
 ```
 
 **输出样例**
 
 ```c++
 6
-```
-
-**手写稿**
-
->   1.   为了写代码方便以及格式统一<font style = "color: red">**倒着存储**</font>
-
-**代码**
-
-```c++
-#include <iostream>
-#include <vector>
-using namespace std;
-string a;
-int b;
-vector<int> A;
-vector<int> mul(vector<int>& A, int b) {
-    vector<int> C;
-    int t = 0;
-    for (int i = 0; i < A.size(); i ++ ) {
-        t += A[i] * b;
-        C.push_back(t % 10);
-        t /= 10;
-    }
-    while (t) C.push_back(t % 10),t /= 10;
-    // 处理类似 1000 * 0 的情况
-    // 如果答案是0，则只保留一个
-    while (C.size() > 1 && C.back() == 0) C.pop_back();
-    return vector<int>(C.rbegin(), C.rend());
-}
-int main() {
-    cin >> a >> b;
-    for (int i = a.size() - 1;i >= 0; i -- ) A.push_back(a[i] - '0');
-    vector<int> C = mul(A, b);
-    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
-    return 0;
-}
-```
-
-**标签**
-
-`高精度`、`高精度乘法`
-
-### [AcWing 794. 高精度除法](https://www.acwing.com/problem/content/796/)
-
-**题目描述**
-
->   给定两个非负整数（不含前导 `0`） `A，B`，请你计算 `A/B` 的商和余数。
-
-**输入格式**
-
->   共两行，第一行包含整数 `A`，第二行包含整数 `B`。
-
-**输出格式**
-
->   共两行，第一行输出所求的商，第二行输出所求余数。
-
-**数据范围**
-
->   +   $1≤A的长度≤100000,$
->   +   $1≤B≤10000,$
->   +   $B 一定不为 0$
-
-**输入样例**
-
-```c++
-7
-2
-```
-
-**输出样例**
-
-```c++
 3
 1
 ```
 
 **手写稿**
 
->   1.   <font style = "color: red">**注意事项：**</font>
->        +   除法是<font style = "color: red">正着存储</font>，因为除法是从<font style = "color: red">最高位</font>开始计算，而加减乘都是从<font style = "color: red">最低位</font>开始计算
->        +   其余细节在代码中
+
 
 **代码**
 
-```c++
-#include <iostream>
-#include <vector>
-using namespace std;
-string a;
-int b, re;
-vector<int> A;
-vector<int> divide(vector<int>& A, int b) {
-    vector<int> C;
-    int t = 0;
-    for (int i = 0; i < A.size(); i ++ ) {
-        t = t * 10 + A[i];
-        // /b和%b不是/10和%10
-        C.push_back(t / b);
-        t %= b;
-    }
-    re = t;
-    // 反转方便除去千岛0
-    C = vector<int>(C.rbegin(), C.rend());
-    while (C.size() > 1 && C.back() == 0) C.pop_back();
-    // 再次反转
-    return vector<int>(C.rbegin(), C.rend());
-}
-int main() {
-    cin >> a >> b;
-    // 正着存储
-    for (int i = 0; i < a.size(); i ++ ) A.push_back(a[i] - '0');
-    vector<int> C = divide(A, b);
-    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
-    cout << endl << re << endl;
-    return 0;
-}
-```
+
+
+**时间复杂度**
+
+
+
+**空间复杂度**
+
+
 
 **标签**
 
-`高精度`、`高精度除法`
+
+
+**缝合怪**
+
+
 
 # 数学
 
@@ -29592,7 +29723,7 @@ $O(1)$
 
 **手写稿**
 
-![3161121](img/3161121.png)
+![6301255](img/6301255.png)
 
 **代码**
 
@@ -29603,43 +29734,41 @@ $O(1)$
 #define x first
 #define y second
 using namespace std;
-typedef long long LL;
 typedef pair<int, int> PII;
-const int N = 1010, INF = 0x3f3f3f3f;
+typedef long long LL;
+const int N = 1010, INF = 2e9;
 int n;
 PII l[N], r[N];
 vector<int> points;
 LL merge_segs(int a, int b) {
     vector<PII> segs;
-    // 遍历每个矩形
-    for (int i = 1; i <= n; i ++ )
-        // 如果当前矩形将分割成的长条完全包裹在内
+    // 遍历所有点对
+    for (int i = 0; i < n; i ++ )
+        // 矩形的宽度大于等于扫描线的宽度[手写稿解释]
         if (l[i].x <= a && r[i].x >= b)
-            // 记录此区间【y轴方向】
             segs.push_back({l[i].y, r[i].y});
     // 区间合并模板
-    // 排序
     sort(segs.begin(), segs.end());
-    LL height = 0;
     int L = -INF, R = -INF;
-    for (auto& [l, r] : segs)
-        if (R < l) {
-            height += ((LL)R - L);
-            L = l, R = r;
+    // 注意: long long类型
+    LL res = 0;
+    // 遍历所有区间
+    for (int i = 0; i < segs.size(); i ++ ) {
+        if (R >= segs[i].x) R = max(R, segs[i].y);
+        else {
+            // 注意: long long类型
+            res += (LL)(R - L) * (b - a);
+            L = segs[i].x;
+            R = segs[i].y;
         }
-        else R = max(R, r);
-    // 记得将最后一段的长度添加上
-    height += (R - L);
-    // 计算答案即可
-    return height * (b - a);
+    }
+    // 注意: long long类型
+    return res + (LL)(R - L) * (b - a);
 }
 int main() {
     scanf("%d", &n);
-    for (int i = 1; i <= n; i ++ ) {
-        // 记录矩形左边的x坐标和y坐标
-        // 记录矩形右边的x坐标和y坐标
+    for (int i = 0; i < n; i ++ ) {
         scanf("%d%d%d%d", &l[i].x, &l[i].y, &r[i].x, &r[i].y);
-        // 统计所有的横坐标
         points.push_back(l[i].x);
         points.push_back(r[i].x);
     }
@@ -29647,13 +29776,12 @@ int main() {
     sort(points.begin(), points.end());
     // 去重
     points.erase(unique(points.begin(), points.end()), points.end());
-    // 可能会越界，使用LL
+    // 注意: long long类型
     LL res = 0;
-    // 遍历每个区间
+    // 遍历所有横坐标
     for (int i = 1; i < points.size(); i ++ )
-        // 统计总和
         res += merge_segs(points[i - 1], points[i]);
-    cout << res << endl;
+    printf("%lld\n", res);
     return 0;
 }
 ```
@@ -29672,7 +29800,7 @@ $O(n)$
 
 **缝合怪**
 
-[AcWing 803. 区间合并](#AcWing 803. 区间合并)
+[AcWing 803. 区间合并](#AcWing 803. 区间合并)、[P5490 【模板】扫描线](#P5490 【模板】扫描线)
 
 #### [AcWing 2801. 三角形面积并](https://www.acwing.com/problem/content/2803/)
 
@@ -29840,7 +29968,1782 @@ public:
 
 `扫描线`
 
+# 多叉树专题
 
+## 二叉树
+
+### 二叉树
+
+#### [LeetCode 297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+
+**题目描述**
+
+> 序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+>
+> 请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+>
+> 提示: 输入输出格式与 `LeetCode` 目前使用的方式一致，详情请参阅 `LeetCode` 序列化二叉树的格式。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
+
+**示例 1**
+
+![img](img/serdeser.jpg)
+
+> 输入：`root = [1,2,3,null,null,4,5]`
+> 输出：`[1,2,3,null,null,4,5]`
+
+**示例 2**
+
+> 输入：`root = []`
+> 输出：`[]`
+
+**示例 3**
+
+> 输入：`root = [1]`
+> 输出：`[1]`
+
+**示例 4**
+
+> 输入：`root = [1,2]`
+> 输出：`[1,2]`
+
+**提示**
+
+> + $树中结点数在范围 [0, 10^4] 内$
+> + $-1000 <= Node.val <= 1000$
+
+**手写稿**
+
+![WX20220121-142021@2x](img/WX20220121-142021@2x.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Codec {
+public:
+    string str;
+    void dfs_s(TreeNode* root) {
+        if (!root) {
+            str += "#,";
+            return;
+        }
+        str += to_string(root -> val) + ",";
+        dfs_s(root -> left);
+        dfs_s(root -> right);
+        return;
+    }
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        // 深搜
+        dfs_s(root);
+        return str;
+    }
+    TreeNode* dfs_d(string& data, int &u) {
+        if (data[u] == '#') {
+            // 跳过#和后面的,
+            u += 2;
+            return NULL;
+        }
+        int k = u;
+        while (data[u] != ',') u ++;
+        auto root = new TreeNode(stoi(data.substr(k, u - k)));
+        // 跳过,
+        u ++;
+        root -> left = dfs_d(data, u);
+        root -> right = dfs_d(data, u);
+        return root;
+    }
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        int u = 0;
+        return dfs_d(data, u);
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec ser, deser;
+// TreeNode* ans = deser.deserialize(ser.serialize(root));
+```
+
+**标签**
+
+`dfs`、`数据结构`
+
+#### [LeetCode 331. 验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
+
+**题目描述**
+
+>   序列化二叉树的一种方法是使用前序遍历。当我们遇到一个非空节点时，我们可以记录下这个节点的值。如果它是一个空节点，我们可以使用一个标记值记录，例如 `#`。
+>
+>   ```c++
+>   	_9_
+>    /   \
+>   3     2
+>   / \   / \
+>   4   1  #  6
+>   / \ / \   / \
+>   # # # #   # #
+>   ```
+>
+>   例如，上面的二叉树可以被序列化为字符串 `"9,3,4,#,#,1,#,#,2,#,6,#,#"`，其中 `#` 代表一个空节点。
+>
+>   给定一串以逗号分隔的序列，验证它是否是正确的二叉树的前序序列化。编写一个在不重构树的条件下的可行算法。
+>
+>   每个以逗号分隔的字符或为一个整数或为一个表示 `null` 指针的 `'#'` 。
+>
+>   你可以认为输入格式总是有效的，例如它永远不会包含两个连续的逗号，比如 `"1,,3"` 。
+
+**示例 1**
+
+>   输入: `"9,3,4,#,#,1,#,#,2,#,6,#,#"`
+>   输出: `true`
+
+**示例 2**
+
+>   输入: `"1,#"`
+>   输出: `false`
+
+**示例 3**
+
+>   输入: `"9,#,#,1"`
+>   输出: `false`
+
+**手写稿**
+
+>   ![321113](img/321113-20220302123253489.png)
+>
+>   若代码不理解，建议模拟样例
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int k = 0;
+    bool isValidSerialization(string s) {
+        // 以逗号,结尾
+        s += ',';
+        if (!dfs(s)) return false;
+        // 如果还没有计算到结尾，说明不符合条件，样例：3,#,#,1
+        return k == s.size();
+    }
+    bool dfs(string& s) {
+        // 如果已经到达元素结尾，返回false
+        if (k == s.size()) return false;
+        // 跳过#和,
+        if (s[k] == '#') return k += 2, true;
+        // 跳过数字
+        while (isdigit(s[k])) k ++ ;
+        // 跳过逗号
+        k ++ ;
+        // 遍历左子树和右子树
+        return dfs(s) && dfs(s);
+    }
+};
+```
+
+**标签**
+
+`二叉树`、`dfs`
+
+### 二叉搜索树
+
+#### [LeetCode 501. 二叉搜索树中的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
+
+**题目描述**
+
+>   给你一个含重复值的二叉搜索树`（BST）`的根节点 `root` ，找出并返回 `BST` 中的所有 **众数**（即，出现频率最高的元素）。
+>
+>   如果树中有不止一个众数，可以按 任意顺序 返回。
+>
+>   假定 `BST` 满足如下定义：
+>
+>   结点左子树中所含节点的值 **小于等于** 当前节点的值
+>   结点右子树中所含节点的值 **大于等于** 当前节点的值
+>   左子树和右子树都是二叉搜索树
+
+**示例 1**
+
+>   输入：`root = [1,null,2,2]`
+>   输出：`[2]`
+
+**示例 2**
+
+>   输入：`root = [0]`
+>   输出：`[0]`
+
+**提示**
+
+>   +   $树中节点的数目在范围 [1, 10^4] 内$
+>   +   $-10^5 <= Node.val <= 10^5$
+
+**进阶**
+
+>   你可以不使用额外的空间吗？（假设由递归产生的隐式调用栈的开销不被计算在内）
+
+**手写稿**
+
+![641950](img/641950.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> ans;
+    int Mxcnt = 0, cnt = 0, last;
+    void dfs(TreeNode* root) {
+        // 空子树直接返回
+        if (!root) return;
+        // 遍历左子树
+        dfs(root -> left);
+        // 如果和上一个数相等, 则 cnt ++
+        if (root -> val == last) cnt ++;
+        else {
+            // 更新上一个数
+            last = root -> val;
+            // 更新个数
+            cnt = 1;
+        }
+        // 如果当前数的个数大于全局最大数, 则更新
+        if (cnt > Mxcnt) {
+            // 更新最大数
+            Mxcnt = cnt;
+            // 更新答案数组
+            ans = {last};
+        }
+        // 答案多一个数
+        else if (cnt == Mxcnt) ans.push_back(last);
+        // 遍历右子树
+        dfs(root -> right);
+        return;
+    }
+    vector<int> findMode(TreeNode* root) {
+        dfs(root);
+        return ans;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`二叉搜索树`
+
+**缝合怪**
+
+
+
+#### [LeetCode 530. 二叉搜索树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/)
+
+**题目描述**
+
+>   给你一个二叉搜索树的根节点 `root` ，返回 树中任意两不同节点值之间的最小差值 。
+>
+>   差值是一个正数，其数值等于两值之差的绝对值。
+
+**示例 1**
+
+>   输入：`root = [4,2,6,1,3]`
+>   输出：`1`
+
+**示例 2**
+
+>   输入：`root = [1,0,48,null,null,12,49]`
+>   输出：`1`
+
+**提示**
+
+>   +   $树中节点的数目范围是 [2, 10^4]$
+>   +   $0 <= Node.val <= 10^5$
+
+注意
+
+>   本题与 [LeetCode 783.](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/) 相同
+
+**手写稿**
+
+![642104](img/642104.png)
+
+**代码**
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int ans = 1e9, last, is_first = true;
+    void dfs(TreeNode* root) {
+        // 空树返回
+        if (!root) return;
+        // 遍历左子树
+        dfs(root -> left);
+        // 如果是第一个数, 则标记
+        if (is_first) is_first = false;
+        // 如果不是第一个数, 则更新最小差值
+        else ans = min(ans, abs(root -> val - last));
+        // 更新上一个数
+        last = root -> val;
+        // 遍历右子树
+        dfs(root -> right);
+        return;
+    }
+    int getMinimumDifference(TreeNode* root) {
+        dfs(root);
+        return ans;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`二叉搜索树`
+
+**缝合怪**
+
+
+
+# 字符串专题
+
+## KMP
+
+### [Leetode 214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
+
+**题目描述**
+
+> 给定一个字符串 s，你可以通过在字符串前面添加字符将其转换为回文串。找到并返回可以用这种方式转换的最短回文串。
+
+**示例 1**
+
+> 输入：`s = "aacecaaa"`
+> 输出：`"aaacecaaa"`
+
+**示例 2**
+
+> 输入：`s = "abcd"`
+> 输出：`"dcbabcd"`
+
+**提示**
+
+> + $0 <= s.length <= 5 * 10^4$
+> + $s$ 仅由小写英文字母组成
+
+**手写稿**
+
+![WechatIMG95](img/WechatIMG95.jpeg)
+
+**思路**
+
+> 1. 要想让 `c + a + b` 最短，则只要 `c` 和 `b` 最短即可，换句话说，让 `a` 最长即可
+>
+> 2. 通过上述分析，问题转化为在原串`（a + b）`中寻找最长回文子串即可解决问题
+>
+> 3. 通过以下步骤，寻找最长回文子串即可
+>
+>     + 将原串逆序复制一遍，用 `#` 连接，放在原串的后面
+>
+>         ![image-20220118072649711](img/image-20220118072649711.png)
+>
+>     + 寻找新串 `a + b + b + a` 的最长回文前缀即可，即 `KMP` 的 `next` 数组的含义
+>
+> 4. 找出 `a` 之后，将 `a` 之后的部分，即 `b` 截取出来，逆序放到最前方
+
+**代码**
+
+```c++
+class Solution {
+public:
+    string shortestPalindrome(string s) {
+        string t = s;
+        t = ' ' + t + '#' + string(t.rbegin(), t.rend());
+        int n = t.size();
+        vector<int> ne(n + 5);
+        for (int i = 2, j = 0; i < n; i ++ ) {
+            while (j && t[i] != t[j + 1]) j = ne[j];
+            if (t[i] == t[j + 1]) j ++;
+            ne[i] = j;
+        }
+        t = s.substr(ne[n - 1]);
+        return string(t.rbegin(), t.rend()) + s;
+    }
+};
+```
+
+**标签**
+
+`字符串`、`回文串`、`KMP`
+
+# 模拟题专题
+
+## 模拟
+
+### [LeetCode 299. 猜数字游戏](https://leetcode-cn.com/problems/bulls-and-cows/)
+
+**题目描述**
+
+> 你在和朋友一起玩 猜数字`（Bulls and Cows）`游戏，该游戏规则如下：
+>
+> 写出一个秘密数字，并请朋友猜这个数字是多少。朋友每猜测一次，你就会给他一个包含下述信息的提示：
+>
+> 猜测数字中有多少位属于数字和确切位置都猜对了（称为 "`Bulls`"，公牛），
+> 有多少位属于数字猜对了但是位置不对（称为 "`Cows`"，奶牛）。也就是说，这次猜测中有多少位非公牛数字可以通过重新排列转换成公牛数字。
+> 给你一个秘密数字 `secret` 和朋友猜测的数字 `guess` ，请你返回对朋友这次猜测的提示。
+>
+> 提示的格式为 "`xAyB`" ，`x` 是公牛个数， `y` 是奶牛个数，`A` 表示公牛，`B` 表示奶牛。
+>
+> 请注意秘密数字和朋友猜测的数字都可能含有重复数字。
+
+**示例 1**
+
+> 输入：`secret = "1807", guess = "7810"`
+> 输出：`"1A3B"`
+> 解释：数字和位置都对（公牛）用 `'|'` 连接，数字猜对位置不对（奶牛）的采用斜体加粗标识。
+> `"1807"
+> |
+> "7810"`
+
+**示例 2**
+
+> 输入：`secret = "1123", guess = "0111"`
+> 输出：`"1A1B"`
+> 解释：数字和位置都对（公牛）用 `'|'` 连接，数字猜对位置不对（奶牛）的采用斜体加粗标识。
+> `"1123"        "1123"
+> |      or     |
+> "0111"        "0111"`
+> 注意，两个不匹配的 `1` 中，只有一个会算作奶牛（数字猜对位置不对）。通过重新排列非公牛数字，其中仅有一个 `1` 可以成为公牛数字。
+
+**示例 3**
+
+> 输入：`secret = "1", guess = "0"`
+> 输出：`"0A0B"`
+
+**示例 4**
+
+> 输入：`secret = "1", guess = "1"`
+> 输出：`"1A0B"`
+
+**提示**
+
+> + $1 <= secret.length, guess.length <= 1000$
+> + $secret.length == guess.length$
+> + `secret` 和 `guess` 仅由数字组成
+
+**题解**
+
+> 1. 两次遍历；
+> 2. 第一次遍历数组并且统计公牛的次数，同时将不满足公牛的字符使用多重集合记录下来
+> 3. 第二次遍历数组并且利用多重集合统计奶牛的次数，注意一个数字只能对应一个数字，因此，如果比对成功需要将成功的字符从多重集合里面删除
+
+**代码**
+
+```c++
+class Solution {
+public:
+    string getHint(string s, string t) {
+        int a = 0, b = 0;
+        multiset<char> hash;
+        for (int i = 0; i < s.size(); i ++ ) {
+            if (s[i] == t[i]) a ++;
+            else hash.insert(s[i]);
+        }
+        for (int i = 0; i < s.size(); i ++ ) {
+            if (s[i] == t[i]) continue;
+            if (hash.count(t[i])) {
+                b ++;
+                hash.erase(hash.find(t[i]));
+            }
+        }
+        return to_string(a) + "A" + to_string(b) + "B";
+    }
+};
+```
+
+**标签**
+
+`模拟`
+
+### [LeetCode 273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
+
+**题目描述**
+
+> 将非负整数 num 转换为其对应的英文表示。
+
+**示例 1**
+
+> 输入：`num = 123`
+> 输出：`"One Hundred Twenty Three"`
+
+**示例 2**
+
+> 输入：`num = 12345`
+> 输出：`"Twelve Thousand Three Hundred Forty Five"`
+
+**示例 3**
+
+> 输入：`num = 1234567`
+> 输出：`"One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"`
+
+**示例 4**
+
+> 输入：`num = 1234567891`
+> 输出：`"One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven Thousand Eight Hundred Ninety One"`
+
+**提示**
+
+> + $0 <= num <= 2^{31} - 1$
+
+**手写稿**
+
+![1](img/1.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    // 预处理数据
+    string nums0_19[20] = {
+        "Zero", "One", "Two", "Three", "Four", 
+        "Five", "Six", "Seven", "Eight", "Nine",
+        "Ten", "Eleven", "Twelve", "Thirteen",
+        "Fourteen", "Fifteen", "Sixteen", "Seventeen",
+        "Eighteen", "Nineteen"
+    };
+    string nums20_90[8] = {
+        "Twenty", "Thirty", "Forty", "Fifty",
+        "Sixty", "Seventy", "Eighty", "Ninety"
+    };
+    string nums1000_1e9[4] = {
+        "Billion ", "Million ", "Thousand ", ""
+    };
+    string get(int x) {
+        if (x == 0) return "Zero";
+        string res;
+        if (x >= 100) {
+            res += nums0_19[x / 100] + " Hundred ";
+            x %= 100;
+        }
+        if (x >= 20) {
+            res += nums20_90[x / 10 - 2] + " ";
+            x %= 10;
+        }
+        if (x) res += nums0_19[x] + " ";
+        return res;
+    }
+    string numberToWords(int num) {
+        if (num == 0) return "Zero";
+        string res;
+        for (int i = 1e9, j = 0; i >= 1; i /= 1000, j ++ )
+            if (num >= i) {
+                res += get(num / i) + nums1000_1e9[j];
+                num %= i;
+            }
+        // 注意空格问题
+        res.pop_back();
+        return res;
+    }
+};
+```
+
+**标签**
+
+`模拟`、`数字转换`、`中英文`
+
+### [AcWing 1473. A + B 格式](https://www.acwing.com/problem/content/1475/)
+
+**题目描述**
+
+>   计算 `a + b` 并以标准格式输出总和----也就是说，从最低位开始每隔三位数加进一个逗号（千位分隔符），如果结果少于四位则不需添加。
+
+**输入格式**
+
+>   共一行，包含两个整数 `a` 和 `b`。
+
+**输出格式**
+
+>   共一行，以标准格式输出 `a + b` 的和。
+
+**数据范围**
+
+>   +   $−10^6≤a,b≤10^6$
+
+**输入样例**
+
+```c++
+-1000000 9
+```
+
+**输出样例**
+
+```c++
+-999,991
+```
+
+**手写稿**
+
+>   1.   对 `a + b` 形成的字符串 `s`，进行遍历，使用 `t` 作为答案，分以下情况：
+>        +   如果当前遍历的字符数量 `k` 已经达到 `3` 个，则判断是否还有下一个字符并且下一个字符是否是 `'-'`
+>            +   如果条件成立，`t += ,` 并且，将 `k` 置 `0`
+>            +   如果条件不成立，退出循环
+>        +   反转 `t`，如果字符串 `s` 的第一个字符是 `'-'`，将其加入到答案即可
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int a, b;
+int main() {
+    cin >> a >> b;
+    string s = to_string(a + b);
+    string t;
+    for (int i = s.size() - 1, k = 0; i >= 0 && s[i] != '-'; i -- ) {
+        t += s[i];
+        k ++;
+        // 如果数量已经达到3个，并且，还有下一个字符或者下一个字符不是'-'
+        // 将其加入到答案，将k置0
+        if (k == 3 && i - 1 >= 0 && s[i - 1] != '-') t += ',', k = 0; 
+    }
+    // 反转t
+    reverse(t.begin(), t.end());
+    // 如果s的第一个字符是'-'，将其加入到答案
+    if (s[0] == '-') t = '-' + t;
+    cout << t << endl;
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`模拟`
+
+**缝合怪**
+
+### [L1-049 天梯赛座位分配](https://pintia.cn/problem-sets/994805046380707840/problems/994805081289900032)
+
+**题目描述**
+
+> 天梯赛每年有大量参赛队员，要保证同一所学校的所有队员都不能相邻，分配座位就成为一件比较麻烦的事情。为此我们制定如下策略：假设某赛场有 `N` 所学校参赛，第 `i` 所学校有 `M[i]` 支队伍，每队 `10` 位参赛选手。令每校选手排成一列纵队，第 `i + 1` 队的选手排在第 `i` 队选手之后。从第 `1` 所学校开始，各校的第 `1` 位队员顺次入座，然后是各校的第 `2` 位队员…… 以此类推。如果最后只剩下 `1` 所学校的队伍还没有分配座位，则需要安排他们的队员隔位就坐。本题就要求你编写程序，自动为各校生成队员的座位号，从 `1` 开始编号。
+
+**输入格式**
+
+> 输入在一行中给出参赛的高校数 `N` （不超过`100`的正整数）；第二行给出 `N` 个不超过``10``的正整数，其中第 `i` 个数对应第 `i` 所高校的参赛队伍数，数字间以空格分隔。
+
+**输出格式**
+
+> 从第 `1` 所高校的第 `1` 支队伍开始，顺次输出队员的座位号。每队占一行，座位号间以 `1` 个空格分隔，行首尾不得有多余空格。另外，每所高校的第一行按“`#X`”输出该校的编号`X`，从 `1` 开始。
+
+**输入样例**
+
+```c++
+3
+3 4 2
+```
+
+**输出样例**
+
+```c++
+#1
+1 4 7 10 13 16 19 22 25 28
+31 34 37 40 43 46 49 52 55 58
+61 63 65 67 69 71 73 75 77 79
+#2
+2 5 8 11 14 17 20 23 26 29
+32 35 38 41 44 47 50 53 56 59
+62 64 66 68 70 72 74 76 78 80
+82 84 86 88 90 92 94 96 98 100
+#3
+3 6 9 12 15 18 21 24 27 30
+33 36 39 42 45 48 51 54 57 60
+```
+
+**手写稿**
+
+![462037](img/462037.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+int n, m;
+int q[N];
+int g[N][N];
+int main() {
+    scanf("%d", &m);
+    for (int i = 0; i < m; i ++ ) {
+        scanf("%d", &q[i]);
+        n = max(n, q[i] * 10);
+    }
+    int num = 0;
+    int which = -1; // 记录上一个轮的最后一个报数的队伍的ID
+    for (int i = 0; i < n; i ++ )
+        for (int j = 0; j < m; j ++ ) {
+            if (i >= q[j] * 10) continue;
+            // 如果上一轮最后一个报数的队伍的ID和当前的队伍是同一个队伍
+            // 说明只剩下一个队伍, 需要隔位就做, ++ num
+            if (j == which) ++ num;
+            g[i][j] = ++ num;
+            which = j;
+        }
+    for (int i = 0; i < m; i ++ ) {
+        printf("#%d\n", i + 1);
+        for (int j = 0; j < q[i]; j ++ ) {
+            for (int k = 0; k < 10; k ++ ) {
+                cout << g[j * 10 + k][i];
+                if (k + 1 < 10) cout << ' ';
+            }
+            cout << endl;
+        }
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(nm)$
+
+**空间复杂度**
+
+$O(n^2)$
+
+**标签**
+
+`模拟题`
+
+**缝合怪**
+
+
+
+### [LeetCode 38. 外观数列](https://leetcode-cn.com/problems/count-and-say/)
+
+**题目描述**
+
+> 给定一个正整数 `n` ，输出外观数列的第 `n` 项。
+>
+> 「外观数列」是一个整数序列，从数字 `1` 开始，序列中的每一项都是对前一项的描述。
+>
+> 你可以将其视作是由递归公式定义的数字字符串序列：
+>
+> + `countAndSay(1) = "1"`
+> + `countAndSay(n)` 是对 `countAndSay(n - 1)` 的描述，然后转换成另一个数字字符串。
+>
+> 前五项如下:
+>
+> > 1.     `1`
+> > 2.     `11`
+> > 3.     `21`
+> > 4.     ``1211``
+> > 5.     `111221`
+> >
+> > 第一项是数字 `1` 
+> > 描述前一项，这个数是 `1` 即 “ 一 个 `1` ”，记作 "`11`"
+> > 描述前一项，这个数是 `11` 即 “ 二 个 `1` ” ，记作 "`21`"
+> > 描述前一项，这个数是 `21` 即 “ 一 个 `2` + 一 个 `1` ” ，记作 "`1211`"
+> > 描述前一项，这个数是 `1211` 即 “ 一 个 ``1`` + 一 个 `2` + 二 个 `1` ” ，记作 "`111221`"
+>
+>
+> 要 描述 一个数字字符串，首先要将字符串分割为 最小 数量的组，每个组都由连续的最多 相同字符 组成。然后对于每个组，先描述字符的数量，然后描述字符，形成一个描述组。要将描述转换为数字字符串，先将每组中的字符数量用数字替换，再将所有描述组连接起来。
+>
+> 例如，数字字符串 "`3322251`" 的描述如下图：
+>
+> ![img](img/1629874763-TGmKUh-image.png)
+
+**示例 1**
+
+> 输入：`n = 1`
+> 输出：`"1"`
+> 解释：这是一个基本样例。
+
+**示例 2**
+
+> 输入：`n = 4`
+> 输出：`"1211"`
+> 解释：
+> `countAndSay(1) = "1"`
+> `countAndSay(2) = 读 "1" = 一 个 1 = "11"`
+> `countAndSay(3) = 读 "11" = 二 个 1 = "21"`
+> `countAndSay(4) = 读 "21" = 一 个 2 + 一 个 1 = "12" + "11" = "1211"`
+
+**提示**
+
+> + $1 <= n <= 30$
+
+**手写稿**
+
+>   1.   模拟即可
+>   2.   注意事项: 看代码
+
+**代码**
+
+```c++
+class Solution {
+public:
+    string countAndSay(int n) {
+        string str = "1";
+        for (int i = 2; i <= n; i ++ ) {
+            string tmp;
+            for (int j = 0; j < str.size(); j ++ ) {
+                int k = j;
+                // 判断字符str[j]的个数
+                while (k < str.size() && str[k] == str[j]) k ++;
+                // (k - j)个字符str[j]
+                tmp += to_string(k - j) + str[j];
+                j = k - 1;
+            }
+            str = tmp;
+        }
+        return str;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(nm), n是给定的正整数, m是生成字符串的长度$
+
+**空间复杂度**
+
+$O(m), m是生成字符串的最大长度$
+
+**标签**
+
+`模拟`
+
+**缝合怪**
+
+
+
+### [LeetCode 68. 文本左右对齐](https://leetcode-cn.com/problems/text-justification/)
+
+**题目描述**
+
+>   给定一个单词数组 `words` 和一个长度 `maxWidth` ，重新排版单词，使其成为每行恰好有 `maxWidth` 个字符，且左右两端对齐的文本。
+>
+>   你应该使用 “贪心算法” 来放置给定的单词；也就是说，尽可能多地往每行中放置单词。必要时可用空格 ' ' 填充，使得每行恰好有 `maxWidth` 个字符。
+>
+>   要求尽可能均匀分配单词间的空格数量。如果某一行单词间的空格不能均匀分配，则左侧放置的空格数要多于右侧的空格数。
+>
+>   文本的最后一行应为左对齐，且单词之间不插入额外的空格。
+>
+>   注意:
+>
+>   单词是指由非空格字符组成的字符序列。
+>   每个单词的长度大于 `0`，小于等于 `maxWidth`。
+>   输入单词数组 `words` 至少包含一个单词。
+
+**示例 1**
+
+>   输入: `words = ["This", "is", "an", "example", "of", "text", "justification."], maxWidth = 16`
+>   输出:
+>   `[
+>     "This    is    an",
+>     "example  of text",
+>     "justification.  "
+>   ]`
+
+**示例 2**
+
+>   输入:`words = ["What","must","be","acknowledgment","shall","be"], maxWidth = 16`
+>   输出:
+>   `[
+>    "What   must   be",
+>    "acknowledgment  ",
+>    "shall be        "
+>   ]`
+>   解释: 注意最后一行的格式应为 `"shall be    "` 而不是 `"shall     be"`,
+>       因为最后一行应为左对齐，而不是左右两端对齐。       
+>       第二行同样为左对齐，这是因为这行只包含一个单词。
+
+**示例 3**
+
+>   输入:`words = ["Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"]，maxWidth = 20`
+>   输出:
+>   `[
+>    "Science  is  what we",
+>    "understand      well",
+>    "enough to explain to",
+>    "a  computer.  Art is",
+>    "everything  else  we",
+>    "do                  "
+>   ]`
+
+**提示**
+
+>   +   $1 <= words.length <= 300$
+>   +   $1 <= words[i].length <= 20$
+>   +   $words[i] 由小写英文字母和符号组成$
+>   +   $1 <= maxWidth <= 100$
+>   +   $words[i].length <= maxWidth$
+
+**手写稿**
+
+>   1.   模拟, 分两步进行
+>        +   左对齐
+>        +   两端对齐
+>   2.   `++ usednum <= leftnum` 解释
+>        +   `usednum` 表示的含义是在多出来的空格中已经使用的个数
+>        +   `leftnum` 表示多出来空格的总个数
+>        +   假设 `leftnum = 0`
+>        +   `usednum` 初始值为 `0`, 表示一个数字都没有被使用过
+>        +   上式含义是用过一个数字之后如果小于等于总个数, 说明合法, 返回 `true(1)`, 否则, 返回 `false(0)`
+
+**代码**
+
+```c++
+class Solution {
+public:
+    vector<string> fullJustify(vector<string>& g, int Max) {
+        int n = g.size();
+        vector<string> res;
+        for (int i = 0; i < n; i ++ ) {
+            // spe含义为空格的数量
+            int j = i, len = 0, spe = 0;
+            string line;
+            while (j < n && len + spe + g[j].size() <= Max) {
+                len = len + spe + g[j].size();
+                spe = 1, j ++ ;
+            }
+            int wdnum = j - i; // 单词的数量
+            if (j == n || wdnum == 1) { // 到达最后一行活着本行只有一个单词, 左对齐
+                // 先输入一个单词
+                line = g[i];
+                for (int k = i + 1; k < j; k ++ ) line += ' ' + g[k];
+                // 将剩余的空格补齐
+                line += string(Max - line.size(), ' ');
+            }
+            else { // 两端对齐
+                // 空格的平均数量
+                int spenum = (Max - len + wdnum - 1) / (wdnum - 1);
+               	// 剩余空格的数量
+                int leftnum = (Max - len + wdnum - 1) % (wdnum - 1);
+                int usednum = 0; // 已经用过的空格的数量
+                line = g[i ++]; // 先输入一个单词
+                // 严格小于
+                // ++ usednum <= leftnum[手写稿解释原因]
+                while (line.size() < Max)
+                    line += string(spenum + (++ usednum <= leftnum), ' ') + g[i ++ ];
+            }
+            i = j - 1;
+            res.push_back(line);
+        }
+        return res;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n), n表示单词的数量$
+
+**空间复杂度**
+
+$O(n), n表示单词的总长度$
+
+**标签**
+
+`模拟`、`字符串`
+
+**缝合怪**
+
+
+
+## 阅读理解题
+
+### [LeetCode 275. H 指数 II](https://leetcode-cn.com/problems/h-index-ii/)
+
+**题目描述**
+
+> 给你一个整数数组 `citations` ，其中 `citations[i]` 表示研究者的第 `i` 篇论文被引用的次数，`citations` 已经按照 升序排列 。计算并返回该研究者的 `h` 指数。
+>
+> `h` 指数的定义：`h` 代表“高引用次数”（`high citations`），一名科研人员的 `h` 指数是指他（她）的 （`n` 篇论文中）总共有 `h` 篇论文分别被引用了至少 `h` 次。且其余的 `n - h` 篇论文每篇被引用次数 不超过 `h` 次。
+>
+> 提示：如果 `h` 有多种可能的值，h 指数 是其中最大的那个。
+>
+> 请你设计并实现对数时间复杂度的算法解决此问题。
+
+**示例 1**
+
+> 输入：`citations = [0,1,3,5,6]`
+> 输出：`3`
+> 解释：给定数组表示研究者总共有 `5` 篇论文，每篇论文相应的被引用了 `0, 1, 3, 5, 6` 次。
+> 由于研究者有 `3` 篇论文每篇 至少 被引用了 `3` 次，其余两篇论文每篇被引用 不多于 `3` 次，所以她的 `h` 指数是 `3` 。
+
+**示例 2**
+
+> 输入：`citations = [1,2,100]`
+> 输出：`2`
+
+**提示**
+
+> + $n == citations.length$
+> + $1 <= n <= 10^5$
+> + $0 <= citations[i] <= 1000$
+> + $citations 按 升序排列$
+
+**分析**
+
+> 1. 将数组从大到小排序，然后从前往后一次枚举每一个数字，如果当前数字 `g[i] >= n - i`，则找到答案
+> 2. 本题中由于按照从小到大排序的，所以做的时候需要进行坐标变换 `g[n - mid]` 表示的是从大到小的第 `mid` 个数字
+> 3. 本题中二分的是答案也就是 `H` 的值，最小是 `0`，最大是 `n`
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int hIndex(vector<int>& g) {
+        int n = g.size(), l = 0, r = n;
+        while (l < r) {
+            int mid = l + r + 1 >> 1;
+            if (g[n - mid] >= mid) l = mid;
+            else r = mid - 1;
+        }
+        return l;
+    }
+};
+```
+
+**标签**
+
+`阅读理解`
+
+### [LeetCode 393. UTF-8 编码验证](https://leetcode-cn.com/problems/utf-8-validation/)
+
+**题目描述**
+
+>   给定一个表示数据的整数数组 `data` ，返回它是否为有效的 `UTF-8` 编码。
+>
+>   `UTF-8` 中的一个字符可能的长度为 `1` 到 `4` 字节，遵循以下的规则：
+>
+>   +   对于 `1` 字节 的字符，字节的第一位设为 `0` ，后面 `7` 位为这个符号的 `unicode` 码。
+>   +   对于 `n` 字节 的字符 (`n > 1`)，第一个字节的前 `n` 位都设为`1`，第 `n + 1` 位设为 `0` ，后面字节的前两位一律设为 `10` 。剩下的没有提及的二进制位，全部为这个符号的 `unicode` 码。
+>
+>   这是 `UTF-8` 编码的工作方式：
+>
+>   ```c++
+>      Char. number range  |        UTF-8 octet sequence
+>         (hexadecimal)    |              (binary)
+>      --------------------+---------------------------------------------
+>      0000 0000-0000 007F | 0xxxxxxx
+>      0000 0080-0000 07FF | 110xxxxx 10xxxxxx
+>      0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+>      0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+>   ```
+>
+>
+>   注意：输入是整数数组。只有每个整数的 最低 `8` 个有效位 用来存储数据。这意味着每个整数只表示 `1` 字节的数据。
+
+**示例 1**
+
+>   输入：`data = [197,130,1]`
+>   输出：`true`
+>   解释：数据表示字节序列:`11000101 10000010 00000001`。
+>   这是有效的 `utf-8` 编码，为一个 `2` 字节字符，跟着一个 `1` 字节字符。
+
+**示例 2**
+
+>   输入：`data = [235,140,4]`
+>   输出：`false`
+>   解释：数据表示 `8` 位的序列: `11101011 10001100 00000100`.
+>   前 `3` 位都是 `1` ，第 `4` 位为 `0` 表示它是一个 `3` 字节字符。
+>   下一个字节是开头为 `10` 的延续字节，这是正确的。
+>   但第二个延续字节不以 `10` 开头，所以是不符合规则的。
+
+**提示**
+
+>   +   $1 <= data.length <= 2 * 10^4$
+>   +   $0 <= data[i] <= 255$
+
+**手写稿**
+
+![4241610](img/4241610.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    int get(int x, int k) {
+        return x >> k & 1;
+    }
+    bool validUtf8(vector<int>& data) {
+        for (int i = 0; i < data.size(); i ++ ) {
+            // 如果是一个字节, 则跳过
+            if (!get(data[i], 7)) continue;
+            int k = 0;
+            // 查看当前字符占据的字节数
+            while (k <= 4 && get(data[i], 7 - k)) k ++ ;
+            if (k < 2 || k > 4) return false;
+           	// 查看之后的k个字节[包括当前位置]
+            for (int j = 1; j < k; j ++ )
+                // 不能越界
+                if (i + j < data.size() && get(data[i + j], 7) && !get(data[i + j], 6))
+                    continue;
+                else return false;
+            i += k - 1;
+        }
+        return true;
+    }
+};
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(1)$
+
+**标签**
+
+`阅读理解题`
+
+**缝合怪**
+
+
+
+## 表达式求值
+
+### [LeetCode 224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
+
+**题目描述**
+
+> 给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
+
+**示例 1**
+
+> 输入：`s = "1 + 1"`
+> 输出：`2`
+
+**示例 2**
+
+> 输入：`s = " 2-1 + 2 "`
+> 输出：`3`
+
+**示例 3**
+
+> 输入：`s = "(1+(4+5+2)-3)+(6+8)"`
+> 输出：`23`
+
+**提示**
+
+> + $1 <= s.length <= 3 * 10^5$
+> + `s` 由数字`、'+'、'-'、'('、')'、`和 `' '` 组成
+> + `s` 表示一个有效的表达式
+
+**题解**
+
+> 1. 使用两个栈，一个是数字栈 `num` ，另一个是字符串栈 `oper`
+> 2. 遍历每一个字符，分以下五种情况：
+>     + 如果遇到空格，直接 `continue`
+>     + 如果遇到`(`，直接入栈 `oper`
+>     + 如果遇到 `)` ，计算答案，直到 `oper` 栈顶为 `(` 的时候停止
+>     + 如果遇到数字，则计算数字的大小，入栈 `num`<font style="color:red">**（注意数字不一定是一位数）**</font>
+>     + 如果遇到 `+`，`-`，则继续进行如下判断：
+>         + 如果当前值是第一位，例如 `+2`，则为了方便计算，在前面补一个 `0` 即可
+>         + 如果当前位不是第一位并且前一位是括号，例如 `(+2)`，则为了方便，补一个 `0` 即可
+>         + 除上述情况外，正常计算，直到栈为空或者遇到 `(` 的时候停止
+> 3. 如果栈中还有运算符，则继续计算，直到栈为空，答案就是栈顶元素
+
+**代码**
+
+```c++
+class Solution {
+public:
+    stack<int> num;
+    stack<char> oper;
+    void eval() {
+        int b = num.top(); num.pop();
+        int a = num.top(); num.pop();
+        char op = oper.top(); oper.pop();
+        if (op == '+') num.push(a + b);
+        else num.push(a - b);
+        return;
+    }
+    int calculate(string s) {
+        for (int i = 0; i < s.size(); i ++ ) {
+            if (s[i] == ' ') continue;
+            else if (s[i] == '(') oper.push(s[i]);
+            else if (s[i] == ')') {
+                while (oper.top() != '(') eval();
+                // 弹出左括号
+                oper.pop();
+            }
+            else if (isdigit(s[i])) {
+                int sum = 0;
+                while (i < s.size() && isdigit(s[i]))
+                    sum = sum * 10 + (s[i ++ ] - '0');
+                num.push(sum);
+                i --;
+            }
+            else {
+                // 处理特殊情况，如 +2 + a 或者 (-2 + a) 等类似情况
+                if (!i || s[i - 1] == '(') num.push(0);
+                while (oper.size() && oper.top() != '(') eval();
+                // 将当前括号入栈
+                oper.push(s[i]);
+            }
+        }
+        while (oper.size()) eval();
+        return num.top();
+    }
+};
+```
+
+**标签**
+
+`栈`、`表达式求值`
+
+### [LeetCode 282. 给表达式添加运算符](https://leetcode-cn.com/problems/expression-add-operators/)
+
+**题目描述**
+
+> 给定一个仅包含数字 `0-9` 的字符串 `num` 和一个目标值整数 `target` ，在 `num` 的数字之间添加 二元 运算符（不是一元）`+`、`-` 或 `*` ，返回所有能够得到目标值的表达式。
+
+**示例 1**
+
+> 输入: `num = "123", target = 6`
+> 输出: `["1+2+3", "1*2*3"] `
+
+**示例 2**
+
+> 输入: `num = "232", target = 8`
+> 输出: `["2*3+2", "2+3*2"]`
+
+**示例 3**
+
+> 输入: `num = "105", target = 5`
+> 输出: `["1*0+5","10-5"]`
+
+**示例 4**
+
+> 输入: `num = "00", target = 0`
+> 输出: `["0+0", "0-0", "0*0"]`
+
+**示例 5**
+
+> 输入: `num = "3456237490", target = 9191`
+> 输出: `[]`
+
+**提示**
+
+> + $1 <= num.length <= 10$
+> + $num 仅含数字$
+> + $-2^{31} <= target <= 2^{31} - 1$
+
+**手写稿**
+
+![w](img/w.png)
+
+**代码**
+
+```c++
+class Solution {
+public:
+    typedef long long LL;
+    string path;
+    vector<string> res;
+    // 保证答案不越界，但是不保证中间过程不越界
+    void dfs(string& num, int u, int len, LL a, LL b, LL target) {
+        if (u == num.size())
+            if (a == target) {
+                res.push_back(path.substr(0, len - 1));
+                return;
+            }
+        LL c = 0;
+        for (int i = u; i < num.size(); i ++ ) {
+            c = c * 10 + (num[i] - '0');
+            path[len ++ ] = num[i];
+            // 枚举第len位填写的运算符
+            // +
+            path[len] = '+';
+            dfs(num, i + 1, len + 1, a + b * c, 1, target);
+            if (i + 1 < num.size()) {
+                // -
+                path[len] = '-';
+                dfs(num, i + 1, len + 1, a + b * c, -1, target);
+                // *
+                path[len] = '*';
+                dfs(num, i + 1, len + 1, a, b * c, target);
+            }
+            // 不能有前导0
+            if (num[u] == '0') return;
+        }
+        return;
+    }
+    vector<string> addOperators(string num, int target) {
+        // 扩容
+        path.resize(100);
+        /*
+        	参数1: num字符串
+        	参数2: 当前枚举的是num中的哪位字符
+        	参数3: 答案字符串的长度
+        	参数4: a的值
+        	参数5: b的值
+        	参数6: 目标值
+        */
+        dfs(num, 0, 0, 0, 1, target);
+        return res;
+    }
+};
+```
+
+**标签**
+
+`dfs`、`表达式求值`
+
+## 高精度
+
+### 注意事项【必看】
+
+>   1.   分析如下代码【以高精度加法为例】
+>
+>        ```c++
+>        vector<int> add(vector<int>& A, vector<int>& B) {
+>            vector<int> C;
+>            // 进位
+>            int t = 0;
+>            for (int i = 0, j = 0; i < A.size() || j < B.size(); i ++, j ++ ) {
+>                if (i < A.size()) t += A[i];
+>                if (j < B.size()) t += B[i];
+>                C.push_back(t % 10);
+>                t /= 10;
+>            }
+>            // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
+>            while (t) {
+>                C.push_back(t % 10);
+>                t /= 10;
+>            }
+>            // 逆序返回
+>            return vector<int>(C.rbegin(), C.rend());
+>        }
+>        ```
+>
+>        +   问题如下
+>
+>            +   产生进位的时候，为啥要使用 `while(t)` 而不是 `if(t)` ?
+>
+>                >   1.   明确目标：`C` 中的<font style = "color: red">**每一个元素**</font>只能是<font style = "color: red">**一位数**</font>
+>                >
+>                >        +   为啥 `C` 中的每一个元素必须只能是一位数？
+>                >
+>                >            >   假设`A` 和 `B` 中的每一个元素有可能不是一位数，例如，`A = {2e9}, B = {2e9}`，调用 `add(A, B)`，此时，答案应为 ` 4e9`，由于，`C` 中的每一个元素都是 `int` 类型，此时就越界了，无法计算出正确答案，因此，`C` 中的每一个元素必须只能是一位数，这样就不会产生越界的问题，`long long` 和 `double` 等其他类型，都是会产生相似的问题
+
+### [AcWing 791. 高精度加法](https://www.acwing.com/problem/content/793/)
+
+**题目描述**
+
+>   给定两个正整数（不含前导 `0`），计算它们的和。
+
+**输入格式**
+
+>   共两行，每行包含一个整数。
+
+**输出格式**
+
+>   共一行，包含所求的和。
+
+**数据范围**
+
+>   +   $1≤整数长度≤100000$
+
+**输入样例**
+
+```c++
+12
+23
+```
+
+**输出样例**
+
+```c++
+35
+```
+
+**手写稿**
+
+>   1.   模拟手算即可
+>
+>   2.   注意事项：
+>
+>        +   数字需要<font style = "color: red">**倒着存储**</font>，原因如下
+>
+>            ![392036](img/392036.png)
+
+**代码一：`vector` 存储**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a, b;
+vector<int> A, B;
+vector<int> add(vector<int>& A, vector<int>& B) {
+    vector<int> C;
+    // 进位
+    int t = 0;
+    for (int i = 0, j = 0; i < A.size() || j < B.size(); i ++, j ++ ) {
+        if (i < A.size()) t += A[i];
+        if (j < B.size()) t += B[i];
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
+    while (t) {
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    // 逆序返回
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    for (int i = a.size() - 1; i >= 0; i -- ) A.push_back(a[i] - '0');
+    for (int i = b.size() - 1; i >= 0; i -- ) B.push_back(b[i] - '0');
+    vector<int> C = add(A, B);
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**代码二：数组存储**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100005;
+string a, b;
+// 记录A数组长度，B数组长度和C数组长度
+int n, m, idx;
+int A[N], B[N], C[N];
+void add(int A[], int B[]) {
+    // 进位
+    int t = 0;
+    for (int i = 0, j = 0; i < n || j < m; i ++, j ++ ) {
+        if (i < n) t += A[i];
+        if (j < m) t += B[i];
+        C[idx ++ ] = t % 10; 
+        t /= 10;
+    }
+    // 如果产生位数的变化，即类似于99 + 1，故还需处理进位
+    while (t) {
+        C[idx ++ ] = t % 10;
+        t /= 10;
+    }
+    // 逆序
+    for (int i = 0; i < idx / 2; i ++ ) swap(C[i], C[idx - 1 - i]);
+    return;
+}
+int main() {
+    cin >> a >> b;
+    n = a.size(), m = b.size();
+    for (int i = n - 1; i >= 0; i -- ) A[n - 1 - i] = a[i] - '0';
+    for (int i = m - 1; i >= 0; i -- ) B[m - 1 - i] = b[i] - '0';
+    add(A, B);
+    for (int i = 0; i < idx; i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度加法`
+
+### [AcWing 792. 高精度减法](https://www.acwing.com/problem/content/794/)
+
+**题目描述**
+
+>   给定两个正整数（不含前导 `0`），计算它们的差，计算结果可能为负数。
+
+**输入格式**
+
+>   共两行，每行包含一个整数。
+
+**输出格式**
+
+>   共一行，包含所求的差。
+
+**数据范围**
+
+>   +   $1≤整数长度≤10^5$
+
+**输入样例**
+
+```c++
+32
+11
+```
+
+**输出样例**
+
+```c++
+21
+```
+
+**手写稿**
+
+>   <font style = "color: red">**注意事项：**</font>
+>
+>   +   为了使得高精度模板统一，故<font style="color: red">**倒着存储**</font>
+>   +   计算 `A - B` 的时候，为了写代码方便，规定 `A >= B`（手写写个判断函数 `cmp` ）
+>   +   其余细节部分体现在代码中
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a, b;
+vector<int> A, B;
+bool cmp(string &a, string &b) {
+    if (a.size() != b.size()) return a.size() >= b.size();
+    return a >= b;
+}
+vector<int> sub(vector<int>& A, vector<int>& B) {
+    vector<int> C;
+    int t = 0;
+    // 因为A >= B，因此，A的长度一定大于等于B的长度
+    for (int i = 0; i < A.size(); i ++ ) {
+        t = A[i] - t;
+        // 如果当前没有到达B的结尾
+        if (i < B.size()) t -= B[i];
+        C.push_back((t + 10) % 10);
+        if (t >= 0) t = 0;
+        else t = 1;
+    }
+    while (t) C.push_back(t % 10), t /= 10;
+    // 去掉前导0
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    for (int i = a.size() - 1; i >= 0; i -- ) A.push_back(a[i] - '0');
+    for (int i = b.size() - 1; i >= 0; i -- ) B.push_back(b[i] - '0');
+    vector<int> C;
+    if (cmp(a, b)) // 如果 A >= B
+        C = sub(A, B);
+    else { // 如果 A < B
+        cout << "-";
+        C = sub(B, A);
+    }
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度减法`
+
+### [AcWing 793. 高精度乘法](https://www.acwing.com/problem/content/795/)
+
+**题目描述**
+
+>   给定两个非负整数（不含前导 `0`） `A` 和 `B`，请你计算 `A×B` 的值。
+
+**输入格式**
+
+>   共两行，第一行包含整数 `A`，第二行包含整数 `B`。
+
+**输出格式**
+
+>   共一行，包含 `A×B` 的值。
+
+**数据范围**
+
+>   +   $1≤A的长度≤100000,$
+>   +   $0≤B≤10000$
+
+**输入样例**
+
+```c++
+2
+3
+```
+
+**输出样例**
+
+```c++
+6
+```
+
+**手写稿**
+
+>   1.   为了写代码方便以及格式统一<font style = "color: red">**倒着存储**</font>
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a;
+int b;
+vector<int> A;
+vector<int> mul(vector<int>& A, int b) {
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size(); i ++ ) {
+        t += A[i] * b;
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    while (t) C.push_back(t % 10),t /= 10;
+    // 处理类似 1000 * 0 的情况
+    // 如果答案是0，则只保留一个
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    for (int i = a.size() - 1;i >= 0; i -- ) A.push_back(a[i] - '0');
+    vector<int> C = mul(A, b);
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度乘法`
+
+### [AcWing 794. 高精度除法](https://www.acwing.com/problem/content/796/)
+
+**题目描述**
+
+>   给定两个非负整数（不含前导 `0`） `A，B`，请你计算 `A/B` 的商和余数。
+
+**输入格式**
+
+>   共两行，第一行包含整数 `A`，第二行包含整数 `B`。
+
+**输出格式**
+
+>   共两行，第一行输出所求的商，第二行输出所求余数。
+
+**数据范围**
+
+>   +   $1≤A的长度≤100000,$
+>   +   $1≤B≤10000,$
+>   +   $B 一定不为 0$
+
+**输入样例**
+
+```c++
+7
+2
+```
+
+**输出样例**
+
+```c++
+3
+1
+```
+
+**手写稿**
+
+>   1.   <font style = "color: red">**注意事项：**</font>
+>        +   除法是<font style = "color: red">正着存储</font>，因为除法是从<font style = "color: red">最高位</font>开始计算，而加减乘都是从<font style = "color: red">最低位</font>开始计算
+>        +   其余细节在代码中
+
+**代码**
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+string a;
+int b, re;
+vector<int> A;
+vector<int> divide(vector<int>& A, int b) {
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size(); i ++ ) {
+        t = t * 10 + A[i];
+        // /b和%b不是/10和%10
+        C.push_back(t / b);
+        t %= b;
+    }
+    re = t;
+    // 反转方便除去千岛0
+    C = vector<int>(C.rbegin(), C.rend());
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    // 再次反转
+    return vector<int>(C.rbegin(), C.rend());
+}
+int main() {
+    cin >> a >> b;
+    // 正着存储
+    for (int i = 0; i < a.size(); i ++ ) A.push_back(a[i] - '0');
+    vector<int> C = divide(A, b);
+    for (int i = 0; i < C.size(); i ++ ) cout << C[i];
+    cout << endl << re << endl;
+    return 0;
+}
+```
+
+**标签**
+
+`高精度`、`高精度除法`
 
 # 贪心
 

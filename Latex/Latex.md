@@ -179,3 +179,11 @@
 >        ```shell
 >        tlmgr update --usepackage_name
 >        ```
+
+# 常见错误
+
+## 更换文件夹后无法运行
+
+>   1.   解决方案
+>
+>        ![CleanShot 2022-06-26 at 20.36.25@2x](img/CleanShot%202022-06-26%20at%2020.36.25@2x.png)
