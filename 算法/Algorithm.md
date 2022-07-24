@@ -22863,7 +22863,7 @@ $O(n)$
 
 
 
-# 数据结构
+# 高级数据结构
 
 
 
@@ -27645,23 +27645,178 @@ $O(m)$
 
 **手写稿**
 
-
+![7211759](img/7211759.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010, INF = 1e9;
+int n, root, idx;
+struct Tree {
+    int l, r, cnt, size, key, val;
+}tr[N];
+void pushup(int u) {
+    // 更新父节点所在树的节点数目
+    tr[u].size = tr[tr[u].l].size + tr[tr[u].r].size + tr[u].cnt;
+    return;
+}
+int get_node(int x) {
+    // ++ idx新建节点
+    tr[++ idx].key = x;
+    // val取随机值即可
+    tr[idx].val = rand();
+    // 初始化cnt和size为1
+    tr[idx].cnt = tr[idx].size = 1;
+    // 返回新建节点的下标
+    return idx;
+}
+// 注意: 使用引用&[手写稿解释原因]
+void zig(int &p) {
+    // 操作步骤见手写稿
+    int q = tr[p].l;
+    tr[p].l = tr[q].r, tr[q].r = p, p = q;
+    pushup(tr[q].r), pushup(q);
+    return;
+}
+// 注意: 使用引用&[手写稿解释原因]
+void zag(int &p) {
+    // 操作步骤见手写稿
+    int q = tr[p].r;
+    tr[p].r = tr[q].l, tr[q].l = p, p = q;
+    pushup(tr[q].l), pushup(q);
+    return;
+}
+// 建树
+void build() {
+    // 初始化两个哨兵, 负无穷-∞和正无穷+∞
+    get_node(-INF), get_node(INF);
+    // -∞下标为1, +∞下标为2
+    root = 1, tr[1].r = 2;
+    // 更新root的信息
+    pushup(root);
+    return;
+}
+void insert(int &u, int x) {
+    // 如果到达空节点, 则新建节点
+    if (!u) u = get_node(x);
+    // 当前插入的值x等于当前节点的值, 则当前值的数量 ++
+    else if (x == tr[u].key) tr[u].cnt ++;
+    // 当前插入的值x小于当前节点的值, 则将其插入左半部分
+    else if (x < tr[u].key) {
+        insert(tr[u].l, x);
+        // 如果不满足大根堆的性质, 则右旋[手写稿解释]
+        if (tr[tr[u].l].val > tr[u].val) zig(u);
+    }
+    // 当前插入的值x大于当前节点的值, 则将其插入右半部分
+    else {
+        insert(tr[u].r, x);
+        // 如果不满足大根堆的性质, 则左旋[手写稿解释]
+        if (tr[tr[u].r].val > tr[u].val) zag(u);
+    }
+    // 更新父节点信息
+    pushup(u);
+    return;
+}
+void remove(int &u, int x) {
+    // 如果删除的是空节点, 则返回
+    if (!u) return;
+    // 如果当前删除的值x等于当前节点的值
+    if (x == tr[u].key) {
+        // 如果数量大于1, 则直接将cnt -- 即可
+        if (tr[u].cnt > 1) tr[u].cnt --;
+        // 如果是非叶子结点
+        else if (tr[u].l || tr[u].r) {
+            // [手写稿解释]
+            if (!tr[u].r || tr[tr[u].l].val > tr[tr[u].r].val) {
+                // 右旋
+                zig(u);
+                // 去右子树进行删除
+                remove(tr[u].r, x);
+            }
+            else {
+                // 左旋
+                zag(u);
+                // 去左子树进行删除
+                remove(tr[u].l, x);
+            }
+        }
+        // 如果是叶子结点, 则直接删除
+        else u = 0;
+    }
+    // 当前删除的值x小于根节点, 则去左边删除
+    else if (x < tr[u].key) remove(tr[u].l, x);
+    // 如果删除的值x大于根节点, 则去右边删除
+    else remove(tr[u].r, x);
+    // 更新根节点信息
+    pushup(u);
+    return;
+}
+// 根据值找排名
+int get_rank_by_key(int u, int x) {
+    // 如果是空节点, 则直接返回
+    if (!u) return 0;
+    // [手写稿解释]
+    if (x == tr[u].key) return tr[tr[u].l].size + 1;
+    if (x < tr[u].key) return get_rank_by_key(tr[u].l, x);
+    return tr[tr[u].l].size + tr[u].cnt + get_rank_by_key(tr[u].r, x);
+}
+// 根据排名找值
+int get_key_by_rank(int u, int x) {
+    // 如果是空节点, 则直接返回
+    if (!u) return 0;
+    // [手写稿解释]
+    if (tr[tr[u].l].size >= x) return get_key_by_rank(tr[u].l, x);
+    else if (tr[tr[u].l].size + tr[u].cnt >= x) return tr[u].key;
+    return get_key_by_rank(tr[u].r, x - tr[tr[u].l].size - tr[u].cnt);
+}
+// 找前驱
+int get_prev(int u, int x) {
+    // 如果是空节点, 则返回-∞
+    if (!u) return -INF;
+    // [手写稿解释]
+    if (x <= tr[u].key) return get_prev(tr[u].l, x);
+    return max(tr[u].key, get_prev(tr[u].r, x));
+}
+// 找后继
+int get_next(int u, int x) {
+    // 如果是空节点, 则返回+∞
+    if (!u) return INF;
+    // [手写稿解释]
+    if (x >= tr[u].key) return get_next(tr[u].r, x);
+    return min(tr[u].key, get_next(tr[u].l, x));
+}
+int main() {
+    scanf("%d", &n);
+    // 新建
+    build();
+    for (int i = 0; i < n; i ++ ) {
+        int opt, x;
+        scanf("%d%d", &opt, &x);
+        if (opt == 1) insert(root, x);
+        else if (opt == 2) remove(root, x);
+        // 注意3和4的写法, [手写稿解释]
+        else if (opt == 3) printf("%d\n", get_rank_by_key(root, x) - 1);
+        else if (opt == 4) printf("%d\n", get_key_by_rank(root, x + 1));
+        else if (opt == 5) printf("%d\n", get_prev(root, x));
+        else printf("%d\n", get_next(root, x));
+    }
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(nlog_n)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`平衡树`、`treap`
 
 **缝合怪**
 
@@ -27731,27 +27886,115 @@ $O(m)$
 
 **手写稿**
 
-
+![7231306](img/7231306.png)
 
 **代码**
 
-
+```c++
+#include <iostream>
+using namespace std;
+typedef long long LL;
+const int N = 33010, INF = 1e9;
+int n, idx, root;
+struct Tree {
+    int l, r, key, val;
+}tr[N];
+int get_node(int key) {
+    tr[++ idx].key = key;
+    // 随机值
+    tr[idx].val = rand();
+    // 返回新建节点的下标
+    return idx;
+}
+// 右旋
+void zig(int &p) {
+    int q = tr[p].l;
+    tr[p].l = tr[q].r, tr[q].r = p, p = q;
+    return;
+}
+// 左旋
+void zag(int &p) {
+    int q = tr[p].r;
+    tr[p].r = tr[q].l, tr[q].l = p, p = q;
+    return;
+}
+// 建树
+void build() {
+    // 建立两个哨兵
+    get_node(-INF), get_node(INF);
+    // 1号节点的右子树是2号节点, 根结点root为1
+    root = 1, tr[1].r = 2;
+    return;
+}
+// 插入
+void insert(int &u, int x) {
+    // 走到空节点, 则进行新建
+    if (!u) u = get_node(x);
+    // 向左子树插入
+    else if (x < tr[u].key) {
+        insert(tr[u].l, x);
+        // 如果不满足堆(这里指大根堆)的性质, 则进行调整
+        if (tr[tr[u].l].val > tr[u].val) zig(u);
+    }
+    // 向右子树插入
+    else if (x > tr[u].key) {
+        insert(tr[u].r, x);
+        // 如果不满足堆(这里指小根堆)的性质, 则进行调整
+        if (tr[tr[u].r].val > tr[u].val) zag(u);
+    }
+    return;
+}
+// 找前驱
+int get_prev(int u, int x) {
+    // 前驱不存在, 返回-∞
+    if (!u) return -INF;
+    // [手写稿解释]
+    if (x < tr[u].key) return get_prev(tr[u].l, x);
+    return max(tr[u].key, get_prev(tr[u].r, x));
+}
+// 找后继
+int get_next(int u, int x) {
+    // 后继不存在, 返回+∞
+    if (!u) return INF;
+    // [手写稿解释]
+    if (x > tr[u].key) return get_next(tr[u].r, x);
+    return min(tr[u].key, get_next(tr[u].l, x));
+}
+int main() {
+    scanf("%d", &n);
+    // 建树
+    build();
+    // 注意: 使用long long类型
+    LL res = 0;
+    for (int i = 1, x; i <= n; i ++ ) {
+        scanf("%d", &x);
+        // 第一个节点, 则直接相加
+        if (i == 1) res += x;
+        // 从前驱和后继中选择一个较小的值
+        else res += min(x - get_prev(root, x), get_next(root, x) - x);
+        // 插入数据[手写稿解释]
+        insert(root, x);
+    }
+    printf("%lld\n", res);
+    return 0;
+}
+```
 
 **时间复杂度**
 
-
+$O(nlog_n)$
 
 **空间复杂度**
 
-
+$O(n)$
 
 **标签**
 
-
+`平衡树`、`treap`
 
 **缝合怪**
 
-
+[AcWing 136. 邻值查找](#AcWing 136. 邻值查找)
 
 ## `AC`自动机
 
@@ -30155,6 +30398,113 @@ public:
 `二叉树`、`dfs`
 
 ### 二叉搜索树
+
+#### [AcWing 3540. 二叉搜索树](https://www.acwing.com/problem/content/description/3543/)
+
+**题目描述**
+
+>   输入一系列整数，利用所给数据建立一个二叉搜索树，并输出其前序、中序和后序遍历序列。
+
+**输入格式**
+
+>   第一行一个整数 `n`，表示输入整数数量。
+>
+>   第二行包含 `n` 个整数。
+
+**输出格式**
+
+>   共三行，第一行输出前序遍历序列，第二行输出中序遍历序列，第三行输出后序遍历序列。
+>
+>   输入中可能有重复元素，但是输出的二叉树遍历序列中重复元素不用输出。
+
+**数据范围**
+
+>   +   $1≤n≤100,$
+>   +   $输入元素取值范围 [1,1000]。$
+
+**输入样例**
+
+```c++
+5
+1 6 5 9 8
+```
+
+**输出样例**
+
+```c++
+1 6 5 9 8
+1 5 6 8 9
+5 8 9 6 1
+```
+
+**手写稿**
+
+![7172242](img/7172242.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 110;
+// root和idx的关系, 手写稿解释
+int n, root, idx;
+int l[N], r[N], w[N];
+// 插入数据, 注意: 使用引用&, 让变量发生实际的改变
+void insert(int &u, int x) {
+    // 到达空节点
+    if (!u) {
+        // 新建节点
+        u = ++ idx;
+        // 给新节点赋值
+        w[u] = x;
+    }
+    // 左子树
+    else if (x < w[u]) insert(l[u], x);
+    // 右子树
+    else if (x > w[u]) insert(r[u], x);
+    return;
+}
+void dfs(int u, int t) {
+    if (!u) return;
+    if (t == 0) cout << w[u] << " ";
+    dfs(l[u], t);
+    if (t == 1) cout << w[u] << " ";
+    dfs(r[u], t);
+    if (t == 2) cout << w[u] << " ";
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 0, x; i < n; i ++ ) {
+        scanf("%d", &x);
+        // 从根节点root开始插入
+        insert(root, x);
+    }
+    for (int i = 0; i < 3; i ++ ) {
+        // 从根节点root开始遍历
+        dfs(root, i);
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(log_n), 最坏情况O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`BST`、`二叉搜索树`
+
+**缝合怪**
+
+
 
 #### [LeetCode 501. 二叉搜索树中的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
 
@@ -32628,13 +32978,115 @@ public:
 
 `滑动窗口`
 
-## end
-
-## end
-
 # 堆专题
 
 ## 手写堆
+
+### [AcWing 838. 堆排序](https://www.acwing.com/problem/content/840/)
+
+**题目描述**
+
+>   输入一个长度为 `n` 的整数数列，从小到大输出前 `m` 小的数。
+
+**输入格式**
+
+>   第一行包含整数 `n` 和 `m`。
+>
+>   第二行包含 `n` 个整数，表示整数数列。
+
+**输出格式**
+
+>   共一行，包含 `m` 个整数，表示整数数列中前 `m` 小的数。
+
+**数据范围**
+
+>   +   $1≤m≤n≤10^5，$
+>   +   $1≤数列中元素≤10^9$
+
+**输入样例**
+
+```c++
+5 3
+4 5 1 3 2
+```
+
+**输出样例**
+
+```c++
+1 2 3
+```
+
+**手写稿**
+
+![7171103](img/7171103.png)
+
+**代码**
+
+```c++
+#include <iostream>
+using namespace std;
+const int N = 100010;
+int n, m;
+int heap[N];
+// up操作
+void up(int u) {
+    // 如果没有到达根节点并且当前点比其父节点值小, 则交换
+    if (u / 2 && heap[u] < heap[u / 2]) {
+        swap(heap[u], heap[u / 2]);
+        // 递归操作
+        up(u / 2);
+    }
+    return;
+}
+// down操作
+void down(int u) {
+    int t = u;
+    // 如果当前节点比左子树节点大
+    if (u * 2 <= n && heap[t] > heap[u * 2]) t = u * 2;
+    // 如果当前节点比右子树节点大
+    if (u * 2 + 1 <= n && heap[t] > heap[u * 2 + 1]) t = u * 2 + 1;
+    // 如果不是同一个节点, 则交换
+    if (t != u) {
+        swap(heap[t], heap[u]);
+        // 递归操作
+        down(t);
+    }
+    return;
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &heap[i]);
+        // up操作
+        up(i);
+    }
+    for (int i = 0; i < m; i ++ ) {
+        // 输出小根堆的根结点
+        cout << heap[1] << " ";
+        // 交换根节点和尾节点
+        swap(heap[1], heap[n -- ]);
+        // down操作
+        down(1);
+    }
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(mlog_n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`堆`、`堆排序`
+
+**缝合怪**
+
+
 
 ### [AcWing 839. 模拟堆](https://www.acwing.com/problem/content/841/)
 
@@ -33115,7 +33567,9 @@ int main() {
 
 # 链表专题
 
-## [AcWing 826. 单链表](https://www.acwing.com/problem/content/828/)
+## 单链表
+
+### [AcWing 826. 单链表](https://www.acwing.com/problem/content/828/)
 
 **题目描述**
 
@@ -33194,7 +33648,9 @@ D 6
 
 
 
-## [AcWing 827. 双链表](https://www.acwing.com/problem/content/829/)
+## 双链表
+
+### [AcWing 827. 双链表](https://www.acwing.com/problem/content/829/)
 
 **题目描述**
 
@@ -33338,15 +33794,17 @@ $O(m)$
 
 **缝合怪**
 
-## [SDUT 2054. 双向链表](https://acm.sdut.edu.cn/onlinejudge3/problems/2054)
+
+
+### [SDUT 2054. 双向链表](https://acm.sdut.edu.cn/onlinejudge3/problems/2054)
 
 **问题描述**
 
-> 学会了单向链表，我们又多了一种解决问题的能力，单链表利用一个指针就能在内存中找到下一个位置，这是一个不会轻易断裂的链。但单链表有一个弱点——不能回指。比如在链表中有两个节点A,B，他们的关系是B是A的后继，A指向了B，便能轻易经A找到B,但从B却不能找到A。一个简单的想法便能轻易解决这个问题——建立双向链表。在双向链表中，A有一个指针指向了节点B，同时，B又有一个指向A的指针。这样不仅能从链表头节点的位置遍历整个链表所有节点，也能从链表尾节点开始遍历所有节点。对于给定的一列数据，按照给定的顺序建立双向链表，按照关键字找到相应节点，输出此节点的前驱节点关键字及后继节点关键字。
+> 学会了单向链表，我们又多了一种解决问题的能力，单链表利用一个指针就能在内存中找到下一个位置，这是一个不会轻易断裂的链。但单链表有一个弱点——不能回指。比如在链表中有两个节点`A,B`，他们的关系是`B`是`A`的后继，`A`指向了`B`，便能轻易经`A`找到`B`,但从`B`却不能找到`A`。一个简单的想法便能轻易解决这个问题——建立双向链表。在双向链表中，`A`有一个指针指向了节点`B`，同时，`B`又有一个指向`A`的指针。这样不仅能从链表头节点的位置遍历整个链表所有节点，也能从链表尾节点开始遍历所有节点。对于给定的一列数据，按照给定的顺序建立双向链表，按照关键字找到相应节点，输出此节点的前驱节点关键字及后继节点关键字。
 
 **输入格式**
 
-> 第一行两个正整数n（代表节点个数），m（代表要找的关键字的个数）。第二行是n个数（n个数没有重复），利用这n个数建立双向链表。接下来有m个关键字，每个占一行。
+> 第一行两个正整数`n`（代表节点个数），`m`（代表要找的关键字的个数）。第二行是`n`个数（`n`个数没有重复），利用这`n`个数建立双向链表。接下来有`m`个关键字，每个占一行。
 
 **输出格式**
 
@@ -33449,7 +33907,156 @@ $O(m)$
 
 
 
-## [LeetCode 328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+### [AcWing 136. 邻值查找](https://www.acwing.com/problem/content/138/)
+
+**题目描述**
+
+>   给定一个长度为 `n` 的序列 `A`，`A` 中的数各不相同。
+>
+>   对于 `A` 中的每一个数 $A_i$，求：
+>   $$
+>   min_{1≤j<i}|A_i−A_j|
+>   $$
+>   以及令上式取到最小值的 `j`（记为 $P_i$）。若最小值点不唯一，则选择使 $A_j$ 较小的那个。
+
+**输入格式**
+
+>   第一行输入整数 `n`，代表序列长度。
+>
+>   第二行输入 `n` 个整数$A_1…A_n$,代表序列的具体数值，数值之间用空格隔开。
+
+**输出格式**
+
+>   输出共 `n−1` 行，每行输出两个整数，数值之间用空格隔开。
+>
+>   分别表示当 `i` 取 `2∼n` 时，对应的 $min_{1≤j<i}|A_i−A_j|$ 和 $P_i$ 的值。
+
+**数据范围**
+
+>   +   $n≤10^5,|A_i|≤10^9$
+
+**输入样例**
+
+```c++
+3
+1 5 3
+```
+
+**输出样例**
+
+```c++
+4 1
+2 1
+```
+
+**手写稿**
+
+![7222232](img/7222232.png)
+
+**代码**
+
+```c++
+#include <iostream>
+#include <algorithm>
+#define x first
+#define y second
+using namespace std;
+typedef pair<int, int> PII;
+// 注意: 使用long long类型
+typedef long long LL;
+const int N = 100010;
+const LL INF = 1e18;
+int n, idx;
+LL l[N], r[N], e[N], w[N], p[N];
+PII g[N], ans[N];
+// 初始化[手写稿解释]
+void init() {
+    r[0] = 1, e[0] = -INF;
+    l[1] = 0, e[1] = INF;
+    idx = 2;
+    return;
+}
+// 插入数模板
+void insert(PII node) {
+    e[idx] = node.x;
+    w[idx] = node.y;
+    r[l[1]] = idx;
+    l[idx] = l[1];
+    r[idx] = 1;
+    l[1] = idx ++;
+    return;
+}
+// 删除数模板
+void remove(int k) {
+    r[l[k]] = r[k];
+    l[r[k]] = l[k];
+    return;
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ ) {
+        scanf("%d", &g[i].x);
+        // 记录下标
+        g[i].y = i;
+    }
+    // 排序
+    sort(g + 1, g + n + 1);
+    // 初始化
+    init();
+    // 遍历数组
+    for (int i = 1; i <= n; i ++ ) {
+        // 将下标和链表的指针进行映射[手写稿解释]
+        p[g[i].y] = idx;
+        // 插入数据
+        insert(g[i]);
+    }
+    // 倒序遍历[手写稿解释]
+    for (int i = n; i >= 2; i -- ) {
+        // 获取当前下标对应数字在链表中的位置, 注意: 是p[i]而不是p[g[i].y]!!!
+        int k = p[i];
+        // 计算左边相邻的值
+        LL left = e[k] - e[l[k]];
+        // 计算右边相邻的值
+        LL right = e[r[k]] - e[k];
+        // 左边小, 选左边
+        if (left < right) ans[i] = {left, w[l[k]]};
+        // 右边小, 选右边
+        else if (left > right) ans[i] = {right, w[r[k]]};
+        else { // 相等, 选择值小的
+            // 右边小, 选右边
+            if (e[l[k]] > e[r[k]]) ans[i] = {left, w[r[k]]};
+            // 左边小, 选左边
+            else ans[i] = {left, w[l[k]]};
+        }
+        // 将此节点删除
+        remove(k);
+    }
+    // 正序输出即可
+    for (int i = 2; i <= n; i ++ )
+        printf("%d %d\n", ans[i].x, ans[i].y);
+    return 0;
+}
+```
+
+**时间复杂度**
+
+$O(n)$
+
+**空间复杂度**
+
+$O(n)$
+
+**标签**
+
+`双向链表`
+
+**缝合怪**
+
+[AcWing 265. 营业额统计](#AcWing 265. 营业额统计)
+
+## 奇偶链表
+
+### [LeetCode 328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
 
 **题目描述**
 
